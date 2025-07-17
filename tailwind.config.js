@@ -56,6 +56,8 @@ module.exports = {
         'float-1': 'float1 3s ease-in-out infinite',
         'float-2': 'float2 4s ease-in-out infinite',
         'float-3': 'float3 2.5s ease-in-out infinite',
+        'slide-in-right': 'slideInRight 0.3s ease-out',
+        'slide-out-right': 'slideOutRight 0.3s ease-in',
       },
       keyframes: {
         fadeIn: {
@@ -95,6 +97,14 @@ module.exports = {
             transform: 'translateY(-10px) translateX(5px) scale(1.1)',
             boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -4px rgba(0, 0, 0, 0.1)'
           },
+        },
+        slideInRight: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        slideOutRight: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(100%)' },
         },
       },
     },
