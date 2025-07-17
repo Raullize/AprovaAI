@@ -1,18 +1,10 @@
 # AprovaAI
 
-![AprovaAI Logo](placeholder-mascot-link)
-*Prof. Sabichão - Seu assistente inteligente*
+![AprovaAI Logo](public/images/prof-sabichao.png)
 
 ## 🚀 Landing Page Desenvolvida
 
 A landing page do AprovaAI foi desenvolvida com tecnologias modernas e está pronta para uso!
-
-### 📚 Documentação Técnica
-Para informações detalhadas sobre desenvolvimento e configuração, consulte a **[documentação técnica completa](./docs/)**.
-
-**Acesso rápido:**
-- **[Setup Inicial](./docs/SETUP-CHECKLIST.md)** - Lista de configuração
-- **[Guia de Imagens](./docs/GUIA-IMAGENS.md)** - Prof. Sabichão, logo e favicon
 
 ## Sobre o AprovaAI
 
