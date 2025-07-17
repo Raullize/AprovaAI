@@ -24,7 +24,7 @@ const features: Feature[] = [
   {
     id: '4',
     title: 'Conteúdo Abrangente',
-    description: 'Preparação completa para vestibulares (ENEM, ITA) e certificações profissionais (AWS) em uma única plataforma.',
+    description: 'Preparação completa para vestibulares e certificações profissionais em uma única plataforma.',
     icon: 'Target'
   }
 ];
