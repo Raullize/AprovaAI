@@ -81,21 +81,6 @@ export const Hero: React.FC = () => {
                         height={256}
                         className="object-contain"
                         priority
-                        onError={(e) => {
-                          // Fallback para quando a imagem não existe
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.innerHTML = `
-                              <div class="w-24 h-24 bg-blue-600 rounded-full mx-auto flex items-center justify-center">
-                                <span class="text-3xl">🌍</span>
-                              </div>
-                              <div class="w-16 h-8 bg-black rounded-full mx-auto opacity-80 mt-2"></div>
-                              <div class="w-12 h-6 bg-black rounded-t-full mx-auto mt-1"></div>
-                            `;
-                          }
-                        }}
                       />
                     </div>
                   </div>
