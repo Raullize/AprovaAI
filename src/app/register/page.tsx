@@ -127,7 +127,7 @@ export default function RegisterPage() {
         <div className="flex items-center space-x-4">
           {/* Step 1 */}
           <div className="flex items-center">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
+            <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
               currentStep >= 1 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
             }`}>
               {currentStep > 1 ? <Check className="h-5 w-5" /> : '1'}
@@ -146,7 +146,7 @@ export default function RegisterPage() {
           
           {/* Step 2 */}
           <div className="flex items-center">
-            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold ${
+            <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
               currentStep >= 2 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
             }`}>
               2
