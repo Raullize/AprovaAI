@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, GraduationCap, Mail, Phone, Star, Users, BookOpen } from 'lucide-react';
+import { Menu, X, GraduationCap, Star, Users, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import type { NavItem } from '@/types';
 
@@ -9,7 +9,7 @@ const navItems: NavItem[] = [
   { label: 'Home', href: '#home' },
   { label: 'Como Funciona', href: '#features' },
   { label: 'Planos', href: '#pricing' },
-  { label: 'Login', href: '#login' },
+  { label: 'Login', href: '/login' },
 ];
 
 export const Header: React.FC = () => {
@@ -19,10 +19,16 @@ export const Header: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const scrollToSection = (href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+  const handleNavigation = (href: string) => {
+    if (href.startsWith('#')) {
+      // Handle scroll navigation for sections
+      const element = document.querySelector(href);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    } else {
+      // Handle page navigation
+      window.location.href = href;
     }
     setIsMenuOpen(false);
   };
@@ -60,7 +66,7 @@ export const Header: React.FC = () => {
               {navItems.slice(0, -1).map((item) => (
                 <button
                   key={item.label}
-                  onClick={() => scrollToSection(item.href)}
+                  onClick={() => handleNavigation(item.href)}
                   className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
                 >
                   {item.label}
@@ -71,12 +77,12 @@ export const Header: React.FC = () => {
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center space-x-4">
               <button
-                onClick={() => scrollToSection('#login')}
+                onClick={() => handleNavigation('/login')}
                 className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
               >
                 Login
               </button>
-              <Button onClick={() => scrollToSection('#pricing')}>
+              <Button onClick={() => handleNavigation('#pricing')}>
                 Comece Grátis
               </Button>
             </div>
@@ -128,7 +134,7 @@ export const Header: React.FC = () => {
                     {navItems.slice(0, -1).map((item) => (
                       <button
                         key={item.label}
-                        onClick={() => scrollToSection(item.href)}
+                        onClick={() => handleNavigation(item.href)}
                         className="block w-full text-left px-4 py-3 text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200 font-medium"
                       >
                         {item.label}
@@ -178,32 +184,19 @@ export const Header: React.FC = () => {
                   <div className="space-y-4">
                     <Button 
                       className="w-full"
-                      onClick={() => scrollToSection('#pricing')}
+                      onClick={() => handleNavigation('#pricing')}
                     >
                       Comece Grátis Agora
                     </Button>
                     <button
-                      onClick={() => scrollToSection('#login')}
+                      onClick={() => handleNavigation('/login')}
                       className="w-full text-center text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
                     >
                       Já tenho conta - Fazer Login
                     </button>
                   </div>
                   
-                  {/* Contato */}
-                  <div className="mt-6 pt-4 border-t border-gray-200">
-                    <h4 className="text-sm font-semibold text-gray-700 mb-3">Suporte</h4>
-                    <div className="space-y-2">
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Mail className="h-4 w-4" />
-                        <span>suporte@aprovaai.com.br</span>
-                      </div>
-                      <div className="flex items-center space-x-2 text-sm text-gray-600">
-                        <Phone className="h-4 w-4" />
-                        <span>(11) 9999-9999</span>
-                      </div>
-                    </div>
-                  </div>
+
                 </div>
               </div>
             </div>
@@ -211,4 +204,4 @@ export const Header: React.FC = () => {
         )}
     </>
   );
-}; 
+};
