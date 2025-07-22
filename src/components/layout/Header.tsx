@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Menu, X, GraduationCap, Star, Users, BookOpen } from 'lucide-react';
+import { Menu, X, GraduationCap, Star, Users, BookOpen, User } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { useSession, signOut } from 'next-auth/react';
 import type { NavItem } from '@/types';
 
 const navItems: NavItem[] = [
@@ -14,6 +15,7 @@ const navItems: NavItem[] = [
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { data: session, status } = useSession();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -76,15 +78,35 @@ export const Header: React.FC = () => {
 
             {/* Desktop CTA */}
             <div className="hidden md:flex items-center space-x-4">
-              <button
-                onClick={() => handleNavigation('/login')}
-                className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
-              >
-                Login
-              </button>
-              <Button onClick={() => handleNavigation('#pricing')}>
-                Comece Grátis
-              </Button>
+              {session ? (
+                <>
+                  <button
+                    onClick={() => handleNavigation('/dashboard')}
+                    className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
+                  >
+                    <User className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </button>
+                  <Button 
+                    variant="outline" 
+                    onClick={() => signOut({ callbackUrl: '/' })}
+                  >
+                    Sair
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => handleNavigation('/login')}
+                    className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
+                  >
+                    Login
+                  </button>
+                  <Button onClick={() => handleNavigation('#pricing')}>
+                    Comece Grátis
+                  </Button>
+                </>
+              )}
             </div>
 
             {/* Mobile menu button */}
@@ -131,6 +153,15 @@ export const Header: React.FC = () => {
                 {/* Navegação */}
                 <div className="flex-1 py-6">
                   <nav className="px-6 space-y-2">
+                    {session && (
+                      <button
+                        onClick={() => handleNavigation('/dashboard')}
+                        className="flex items-center space-x-3 w-full text-left px-4 py-3 text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200 font-medium"
+                      >
+                        <User className="h-4 w-4" />
+                        <span>Dashboard</span>
+                      </button>
+                    )}
                     {navItems.slice(0, -1).map((item) => (
                       <button
                         key={item.label}
@@ -182,21 +213,36 @@ export const Header: React.FC = () => {
                 {/* Footer do Sidebar */}
                 <div className="p-6 border-t border-gray-200 bg-gray-50">
                   <div className="space-y-4">
-                    <Button 
-                      className="w-full"
-                      onClick={() => handleNavigation('#pricing')}
-                    >
-                      Comece Grátis Agora
-                    </Button>
-                    <button
-                      onClick={() => handleNavigation('/login')}
-                      className="w-full text-center text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
-                    >
-                      Já tenho conta - Fazer Login
-                    </button>
+                    {session ? (
+                      <>
+                        <div className="text-center mb-4">
+                          <p className="text-sm text-gray-600">Olá, {session.user?.name || session.user?.email}</p>
+                        </div>
+                        <Button 
+                          className="w-full"
+                          variant="outline"
+                          onClick={() => signOut({ callbackUrl: '/' })}
+                        >
+                          Sair
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button 
+                          className="w-full"
+                          onClick={() => handleNavigation('#pricing')}
+                        >
+                          Comece Grátis Agora
+                        </Button>
+                        <button
+                          onClick={() => handleNavigation('/login')}
+                          className="w-full text-center text-sm text-gray-600 hover:text-primary-600 transition-colors duration-200"
+                        >
+                          Já tenho conta - Fazer Login
+                        </button>
+                      </>
+                    )}
                   </div>
-                  
-
                 </div>
               </div>
             </div>
