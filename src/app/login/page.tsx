@@ -1,7 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { signIn, getSession } from 'next-auth/react';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -20,6 +22,16 @@ export default function LoginPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   const { validateLoginForm, getFieldError, clearErrors } = useFormValidation();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    // Check for success message from registration
+    const urlMessage = searchParams.get('message');
+    if (urlMessage) {
+      setMessage({ type: 'success', text: urlMessage });
+    }
+  }, [searchParams]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,18 +59,23 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Integrate with NextAuth.js signIn function
-      // For now, simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Check for demo credentials
-      if (formData.email === 'demo@aprovaai.com' && formData.password === '123456') {
-        setMessage({ type: 'success', text: 'Login realizado com sucesso!' });
-        // TODO: Redirect to dashboard
-      } else {
+      const result = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
         setMessage({ type: 'error', text: 'E-mail ou senha inválidos.' });
+      } else if (result?.ok) {
+        setMessage({ type: 'success', text: 'Login realizado com sucesso!' });
+        // Wait a moment to show success message, then redirect
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1000);
       }
     } catch (error) {
+      console.error('Login error:', error);
       setMessage({ type: 'error', text: 'Erro interno do servidor. Tente novamente.' });
     } finally {
       setIsLoading(false);
@@ -158,4 +175,4 @@ export default function LoginPage() {
       </form>
     </AuthLayout>
   );
-} 
+}

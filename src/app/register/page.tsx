@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { AuthLayout } from '@/components/auth/AuthLayout';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -27,6 +28,7 @@ export default function RegisterPage() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   const { validateRegisterForm, getFieldError, clearErrors, calculatePasswordStrength } = useFormValidation();
+  const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -88,27 +90,39 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      // TODO: Replace with actual API call to /api/register
-      // For now, simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate different responses
-      if (formData.email === 'teste@exemplo.com') {
-        setMessage({ type: 'error', text: 'E-mail já está em uso.' });
-      } else if (formData.username === 'admin') {
-        setMessage({ type: 'error', text: 'Nome de usuário não disponível.' });
-      } else {
-        setMessage({ 
-          type: 'success', 
-          text: 'Usuário cadastrado com sucesso! Redirecionando para o login...' 
-        });
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          username: formData.username,
+          email: formData.email,
+          password: formData.password,
+          dateOfBirth: formData.dateOfBirth,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Conta criada com sucesso! Redirecionando para login...' });
         
         // Redirect to login after success
         setTimeout(() => {
-          window.location.href = '/login';
+          router.push('/login?message=Conta criada com sucesso! Faça login para continuar.');
         }, 2000);
+      } else {
+        // Handle specific error messages from API
+        setMessage({ 
+          type: 'error', 
+          text: data.error || 'Erro ao criar conta. Tente novamente.' 
+        });
       }
+      
     } catch (error) {
+      console.error('Registration error:', error);
       setMessage({ type: 'error', text: 'Erro interno do servidor. Tente novamente.' });
     } finally {
       setIsLoading(false);
