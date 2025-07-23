@@ -27,7 +27,6 @@ export interface SocialLink {
   icon: string;
 }
 
-// Authentication Types
 export interface LoginForm {
   email: string;
   password: string;
