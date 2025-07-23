@@ -18,16 +18,16 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <Sidebar />
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden lg:ml-64">
         {/* Top Header */}
         <header className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Bem-vindo de volta, {session?.user?.name?.split(' ')[0]}! 👋
+                Bem-vindo, {session?.user?.name?.split(' ')[0]}! 👋
               </h1>
               <p className="text-gray-600 mt-1">
-                Continue sua jornada de estudos e alcance seus objetivos.
+                Explore seus estudos e conquiste novos conhecimentos.
               </p>
             </div>
             
@@ -45,7 +45,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
         </header>
         
         {/* Page Content */}
-        <main className="flex-1 overflow-y-auto p-6">
+        <main className="flex-1 overflow-y-auto p-6 pb-20 lg:pb-6">
           {children}
         </main>
       </div>
