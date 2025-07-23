@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import Loading from '@/components/ui/Loading';
 
-export default function DashboardPage() {
+export default function ExamsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 

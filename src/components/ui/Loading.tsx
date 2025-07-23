@@ -6,7 +6,7 @@ interface LoadingProps {
   fullScreen?: boolean;
 }
 
-export const Loading: React.FC<LoadingProps> = ({ 
+const Loading: React.FC<LoadingProps> = ({ 
   message = 'Carregando...', 
   fullScreen = false 
 }) => {
@@ -26,3 +26,5 @@ export const Loading: React.FC<LoadingProps> = ({
     </div>
   );
 };
+
+export default Loading;

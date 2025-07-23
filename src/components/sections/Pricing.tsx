@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Check, X, Star, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
+import Button from '@/components/ui/Button';
 import type { Plan } from '@/types';
 
 const plans: Plan[] = [
@@ -147,4 +147,4 @@ export const Pricing: React.FC = () => {
       </div>
     </section>
   );
-}; 
+};

@@ -9,7 +9,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   onTogglePassword?: () => void;
 }
 
-export const Input = forwardRef<HTMLInputElement, InputProps>(({
+const Input = forwardRef<HTMLInputElement, InputProps>(({
   label,
   error,
   className = '',
@@ -63,4 +63,6 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
       )}
     </div>
   );
-}); 
+});
+
+export default Input;

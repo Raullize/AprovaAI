@@ -9,7 +9,7 @@ interface AuthLayoutProps {
   subtitle?: string;
 }
 
-export const AuthLayout: React.FC<AuthLayoutProps> = ({ 
+const AuthLayout: React.FC<AuthLayoutProps> = ({ 
   children, 
   title, 
   subtitle 
@@ -53,3 +53,5 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({
     </div>
   );
 };
+
+export default AuthLayout;

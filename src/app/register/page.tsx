@@ -3,9 +3,9 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { AuthLayout } from '@/components/auth/AuthLayout';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import AuthLayout from '@/components/auth/AuthLayout';
+import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 import { useFormValidation } from '@/hooks/useFormValidation';
 import type { RegisterForm } from '@/types';
 import { Loader2, ArrowRight, ArrowLeft, Check } from 'lucide-react';
