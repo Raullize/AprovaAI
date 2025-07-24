@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
-                Bem-vindo, {session?.user?.name?.split(' ')[0]}! 👋
+                Bem-vindo, {session?.user?.name?.split(' ')[0]}!
               </h1>
               <p className="text-gray-600 mt-1">
                 Explore seus estudos e conquiste novos conhecimentos.
