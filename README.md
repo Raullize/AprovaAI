@@ -37,6 +37,11 @@ O **AprovaAI** é uma plataforma inovadora de estudos focada em auxiliar estudan
 - **Docker** - Containerização do banco de dados
 - **Docker Compose** - Orquestração de containers
 
+#### Stack Resumido
+- **Frontend:** React, Next.js, TypeScript
+- **Estilização:** Tailwind CSS
+- **Banco de Dados:** PostgreSQL
+
 ## 🗂️ Estrutura do Projeto
 
 ```
@@ -65,6 +70,25 @@ aprovaai/
 ├── middleware.ts            # Middleware de autenticação
 └── tailwind.config.js       # Configuração do Tailwind
 ```
+
+## Planos de Acesso
+
+O AprovaAI oferece dois planos para atender às suas necessidades de estudo:
+
+**Free Tier:**
+- Acesso limitado a certos conteúdos e níveis iniciais.
+- Limitação de simulados: Período de espera de **6 horas** entre a realização de cada simulado.
+- Acesso limitado ao chatbot Prof. Sabichão (futuramente).
+- Pode conter anúncios.
+
+**Premium:**
+- Simulados ilimitados.
+- Acesso ilimitado ao chatbot Prof. Sabichão (futuramente).
+- Relatórios de desempenho detalhados (análise de pontos fortes/fracos, evolução por conteúdo).
+- Acesso antecipado a novos conteúdos e exames.
+- Questões exclusivas.
+- Remoção de anúncios.
+- Prioridade no suporte.
 
 ## Funcionalidades da Primeira Versão (MVP)
 
@@ -197,53 +221,22 @@ Contribuições são sempre bem-vindas! Para contribuir:
   </tr>
 </table>
 
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
 ## 🎯 Roadmap
 
 - [x] Sistema de autenticação completo
 - [x] Landing page responsiva
+- [ ] Dashboard do admin
 - [ ] Dashboard do usuário
 - [ ] Sistema de simulados
 - [ ] Gamificação e conquistas
 - [ ] Integração com IA (Prof. Sabichão)
 - [ ] Sistema de pagamentos
 - [ ] Aplicativo mobile
+- [ ] Ranqueamento
+- [ ] Página de Blog/Comunidade
 
 ---
 
 <div align="center">
-  Feito com ❤️ pelos estudantes do IFSUL
+  Desenvolvido com ❤️ 
 </div>
-
-## Planos de Acesso
-
-O AprovaAI oferece dois planos para atender às suas necessidades de estudo:
-
-1.  **Free Tier:**
-      * Acesso limitado a certos conteúdos e níveis iniciais.
-      * Limitação de simulados: Período de espera de **6 horas** entre a realização de cada simulado.
-      * Acesso limitado ao chatbot Prof. Sabichão (futuramente).
-      * Pode conter anúncios.
-2.  **Premium:**
-      * Simulados ilimitados.
-      * Acesso ilimitado ao chatbot Prof. Sabichão (futuramente).
-      * Relatórios de desempenho detalhados (análise de pontos fortes/fracos, evolução por conteúdo).
-      * Acesso antecipado a novos conteúdos e exames.
-      * Questões exclusivas.
-      * Remoção de anúncios.
-      * Prioridade no suporte.
-
-## Tecnologias Utilizadas (Stack)
-
-  * **Frontend:** React, Next.js, TypeScript
-  * **Estilização:** Tailwind CSS
-  * **Banco de Dados:** PostgreSQL
-
-## Funcionalidades Futuras (Em Desenvolvimento)
-
-  * **Chatbot com IA (Prof. Sabichão):** O assistente inteligente para tirar dúvidas estará disponível para usuários Premium.
-  * **Ranqueamento:** Um sistema de ranqueamento global e/ou por amigos será implementado para fomentar a competição saudável.
-  * **Página de Blog/Comunidade:** Um espaço para usuários publicarem, compartilharem conhecimento e interagirem, facilitando a troca de informações e o esclarecimento de dúvidas entre a comunidade.
