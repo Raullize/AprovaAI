@@ -1,4 +1,8 @@
+> Este README serve como referência para o projeto AprovaAI. Como a aplicação está em fase de desenvolvimento, algumas características descritas aqui podem ser alteradas ou ajustadas ao longo do tempo.
+
 # AprovaAI 🎓
+
+[![en](https://img.shields.io/badge/lang-en-red.svg)](./README.en.md)
 
 ![AprovaAI Logo](public/images/prof-sabichao.png)
 
