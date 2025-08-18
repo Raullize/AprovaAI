@@ -9,7 +9,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { useFormValidation } from '@/hooks/useFormValidation';
 import type { LoginForm } from '@/types';
-import { Loader2 } from 'lucide-react';
+import Loading from '@/components/ui/Loading';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState<LoginForm>({
@@ -70,8 +70,13 @@ export default function LoginPage() {
       } else if (result?.ok) {
         setMessage({ type: 'success', text: 'Login realizado com sucesso!' });
         // Wait a moment to show success message, then redirect
-        setTimeout(() => {
-          router.push('/dashboard');
+        setTimeout(async () => {
+          const session = await getSession();
+          if (session?.user?.isAdmin) {
+            router.push('/admin');
+          } else {
+            router.push('/dashboard');
+          }
         }, 1000);
       }
     } catch (error) {
@@ -150,14 +155,8 @@ export default function LoginPage() {
           className="w-full"
           disabled={isLoading}
         >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Entrando...
-            </>
-          ) : (
-            'Entrar'
-          )}
+          {isLoading && <Loading size="xs" className="mr-2" />}
+          Entrar
         </Button>
 
         {/* Register Link */}

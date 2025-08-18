@@ -144,7 +144,7 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/aprovaai.git
+   git clone https://github.com/Raullize/aprovaai.git
    cd aprovaai
    ```
 
@@ -170,12 +170,22 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
    npx prisma generate
    ```
 
-6. **Inicie o servidor de desenvolvimento**
+6. **Popule o banco com dados iniciais (opcional)**
+   ```bash
+   npm run db:seed
+   ```
+   Isso criará:
+   - Usuário administrador: `admin@aprovaai.com` / `admin123`
+   - Usuário demo: `demo@aprovaai.com` / `demo123`
+   
+   Para mais informações sobre seeders, consulte [SEEDERS.md](SEEDERS.md)
+
+7. **Inicie o servidor de desenvolvimento**
    ```bash
    npm run dev
    ```
 
-7. **Acesse a aplicação**
+8. **Acesse a aplicação**
    Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
 
 ### Scripts Disponíveis
@@ -186,6 +196,8 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
 - `npm run lint` - Executa o linter
 - `npm run db:push` - Aplica mudanças no schema do banco
 - `npm run db:studio` - Abre o Prisma Studio
+- `npm run db:seed` - Popula o banco com dados iniciais
+- `npm run db:seed:cleanup` - Remove dados dos seeders
 
 ## 🤝 Contribuição
 

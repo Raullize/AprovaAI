@@ -10,6 +10,10 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl
         
+        if (pathname.startsWith('/admin')) {
+          return !!token && token.isAdmin === true
+        }
+        
         if (pathname.startsWith('/dashboard')) {
           return !!token
         }
@@ -22,6 +26,7 @@ export default withAuth(
 export const config = {
   matcher: [
     '/dashboard/:path*',
-    // Add other protected routes here
+    '/admin/:path*',
+    '/api/admin/:path*'
   ]
 }

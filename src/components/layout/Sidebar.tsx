@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { usePathname } from 'next/navigation';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { 
   Home, 
@@ -12,7 +12,8 @@ import {
   BarChart3, 
   User, 
   GraduationCap,
-  LogOut
+  LogOut,
+  Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -48,8 +49,35 @@ const navigation = [
   },
 ];
 
+const adminNavigation = [
+  {
+    name: 'Início',
+    href: '/admin',
+    icon: Home,
+  },
+  {
+    name: 'Simulados',
+    href: '/admin/exams',
+    icon: BookOpen,
+  },
+  {
+    name: 'Usuários',
+    href: '/admin/users',
+    icon: User,
+  },
+  {
+    name: 'Configurações',
+    href: '/admin/settings',
+    icon: Settings,
+  },
+];
+
 export default function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  
+  // Usar navegação específica para admin ou usuário normal
+  const navigationItems = session?.user?.isAdmin ? adminNavigation : navigation;
 
   return (
     <>
@@ -70,7 +98,7 @@ export default function Sidebar({ className }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {navigation.map((item) => {
+          {navigationItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
@@ -105,7 +133,7 @@ export default function Sidebar({ className }: SidebarProps) {
       {/* Mobile Bottom Dock */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
         <div className="flex items-center justify-around px-2 py-2">
-          {navigation.map((item) => {
+          {navigationItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link

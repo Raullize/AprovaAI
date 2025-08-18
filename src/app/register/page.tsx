@@ -8,7 +8,8 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { useFormValidation } from '@/hooks/useFormValidation';
 import type { RegisterForm } from '@/types';
-import { Loader2, ArrowRight, ArrowLeft, Check } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
+import Loading from '@/components/ui/Loading';
 
 export default function RegisterPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -367,14 +368,8 @@ export default function RegisterPage() {
                 className="flex-1"
                 disabled={isLoading}
               >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                    Cadastrando...
-                  </>
-                ) : (
-                  'Cadastrar'
-                )}
+                {isLoading && <Loading size="xs" className="mr-2" />}
+                Cadastrar
               </Button>
             </div>
           </>
