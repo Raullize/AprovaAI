@@ -2,8 +2,6 @@
 
 # AprovaAI 🎓
 
-[![en](https://img.shields.io/badge/lang-en-red.svg)](./README.en.md)
-
 ![AprovaAI Logo](public/images/prof-sabichao.png)
 
 ## 📋 Descrição
