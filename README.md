@@ -176,7 +176,7 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
    - Usuário administrador: `admin@aprovaai.com` / `admin123`
    - Usuário demo: `demo@aprovaai.com` / `demo123`
    
-   Para mais informações sobre seeders, consulte [SEEDERS.md](SEEDERS.md)
+   📋 Para mais informações sobre seeders, consulte **[SEEDERS.md](SEEDERS.md)**
 
 7. **Inicie o servidor de desenvolvimento**
    ```bash

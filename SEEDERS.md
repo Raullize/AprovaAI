@@ -1,8 +1,10 @@
-# Seeders do AprovaAI
+# 🌱 Seeders do AprovaAI
+
+⬅️ **[Voltar para README.md](README.md)**
 
 Este diretório contém os seeders organizados para popular o banco de dados com dados iniciais.
 
-## Estrutura
+## 📁 Estrutura
 
 ```
 seeders/
@@ -12,19 +14,19 @@ seeders/
 └── README.md         # Este arquivo
 ```
 
-## Como usar
+## 🚀 Como usar
 
-### Executar todos os seeders
+### ▶️ Executar todos os seeders
 ```bash
 npm run db:seed
 ```
 
-### Limpar dados dos seeders
+### 🧹 Limpar dados dos seeders
 ```bash
 npm run db:seed:cleanup
 ```
 
-### Executar seeders específicos
+### 🎯 Executar seeders específicos
 ```bash
 # Apenas o seeder de admin
 npx tsx prisma/seeders/adminSeeder.ts
@@ -33,25 +35,25 @@ npx tsx prisma/seeders/adminSeeder.ts
 npx tsx prisma/seeders/userSeeder.ts
 ```
 
-## Dados criados
+## 👥 Dados criados
 
-### Administrador
+### 👑 Administrador
 - **Email**: admin@aprovaai.com
 - **Senha**: admin123
 - **Tipo**: Administrador (isAdmin: true)
 
-### Usuário Demo
+### 🧪 Usuário Demo
 - **Email**: demo@aprovaai.com
 - **Senha**: demo123
 - **Tipo**: Usuário normal (isAdmin: false)
 
-## Adicionando novos seeders
+## ➕ Adicionando novos seeders
 
 1. Crie um novo arquivo `nomeSeeder.ts`
 2. Exporte funções `seedNome()` e `cleanupNome()`
 3. Importe e chame no `index.ts`
 
-### Exemplo de novo seeder
+### 💡 Exemplo de novo seeder
 
 ```typescript
 // userSeeder.ts
