@@ -1,0 +1,429 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft, Plus, Search, Edit, Trash2, Move, BookOpen } from 'lucide-react';
+import Button from '@/components/ui/Button';
+import Loading from '@/components/ui/Loading';
+import QuestionModal from '@/components/admin/QuestionModal';
+
+interface Exam {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+interface Topic {
+  id: string;
+  name: string;
+  slug: string;
+  exam: Exam;
+}
+
+interface Level {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  topic: Topic;
+}
+
+interface Option {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+  order: number;
+  questionId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface Question {
+  id: string;
+  content: string;
+  imageUrl?: string;
+  explanation?: string;
+  studyLink?: string;
+  order: number;
+  levelId: string;
+  options: Option[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export default function LevelQuestionsPageBySlug() {
+  const params = useParams();
+  const router = useRouter();
+  const examSlug = params.slug as string;
+  const topicSlug = params.topicSlug as string;
+  const levelSlug = params.levelSlug as string;
+  
+  const [level, setLevel] = useState<Level | null>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [draggedQuestion, setDraggedQuestion] = useState<Question | null>(null);
+
+  useEffect(() => {
+    if (examSlug && topicSlug && levelSlug) {
+      fetchLevelAndQuestions();
+    }
+  }, [examSlug, topicSlug, levelSlug]);
+
+  const fetchLevelAndQuestions = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`/api/admin/levels/by-slug/${examSlug}/${topicSlug}/${levelSlug}`);
+      if (response.ok) {
+        const data = await response.json();
+        setLevel({
+          id: data.id,
+          name: data.name,
+          slug: data.slug,
+          description: data.description,
+          topic: data.topic
+        });
+        setQuestions(data.questions || []);
+      } else if (response.status === 404) {
+        router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar nível e questões:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteQuestion = async (questionId: string) => {
+    if (!confirm('Tem certeza que deseja excluir esta questão? Esta ação não pode ser desfeita.')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/questions/${questionId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setQuestions(questions.filter(question => question.id !== questionId));
+      }
+    } catch (error) {
+      console.error('Erro ao excluir questão:', error);
+    }
+  };
+
+  const handleQuestionSaved = (savedQuestion: Question) => {
+    if (editingQuestion) {
+      // Atualizar questão existente
+      setQuestions(questions.map(question => 
+        question.id === savedQuestion.id ? savedQuestion : question
+      ));
+    } else {
+      // Adicionar nova questão
+      setQuestions([...questions, savedQuestion]);
+    }
+  };
+
+  const handleReorderQuestions = async (newOrder: Question[]) => {
+    try {
+      const response = await fetch('/api/admin/questions/reorder', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          levelId: level?.id,
+          questionIds: newOrder.map(q => q.id),
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setQuestions(data.questions);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Erro ao reordenar questões');
+      }
+    } catch (error) {
+      console.error('Erro ao reordenar questões:', error);
+      alert('Erro de conexão. Tente novamente.');
+    }
+  };
+
+  const handleDragStart = (e: React.DragEvent, question: Question) => {
+    setDraggedQuestion(question);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetQuestion: Question) => {
+    e.preventDefault();
+    
+    if (!draggedQuestion || draggedQuestion.id === targetQuestion.id) {
+      setDraggedQuestion(null);
+      return;
+    }
+
+    const newQuestions = [...questions];
+    const draggedIndex = newQuestions.findIndex(q => q.id === draggedQuestion.id);
+    const targetIndex = newQuestions.findIndex(q => q.id === targetQuestion.id);
+
+    // Remove o item arrastado
+    const [removed] = newQuestions.splice(draggedIndex, 1);
+    // Insere na nova posição
+    newQuestions.splice(targetIndex, 0, removed);
+
+    setQuestions(newQuestions);
+    handleReorderQuestions(newQuestions);
+    setDraggedQuestion(null);
+  };
+
+  const filteredQuestions = questions.filter(question =>
+    question.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    question.explanation?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loading size="lg" />
+      </div>
+    );
+  }
+
+  if (!level) {
+    return (
+      <div className="text-center py-12">
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Nível não encontrado</h1>
+        <Button onClick={() => router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`)}>Voltar para Níveis</Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Breadcrumb */}
+      <nav className="flex items-center space-x-2 text-sm text-gray-600">
+        <button
+          onClick={() => router.push('/admin/exams')}
+          className="hover:text-primary-600 transition-colors"
+        >
+          Exames
+        </button>
+        <span>></span>
+        <button
+          onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics`)}
+          className="hover:text-primary-600 transition-colors"
+        >
+          {level.topic.exam.name}
+        </button>
+        <span>></span>
+        <button
+          onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics/${level.topic.slug}/levels`)}
+          className="hover:text-primary-600 transition-colors"
+        >
+          {level.topic.name}
+        </button>
+        <span>></span>
+        <button
+          onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics/${level.topic.slug}/levels/${level.slug}/questions`)}
+          className="hover:text-primary-600 transition-colors"
+        >
+          {level.name}
+        </button>
+        <span>></span>
+        <span className="text-gray-900 font-medium">Questões</span>
+      </nav>
+
+      {/* Header */}
+      <div className="flex items-center gap-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`)}
+          className="flex items-center gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Voltar
+        </Button>
+        <div className="flex-1">
+          <h1 className="text-2xl font-bold text-gray-900">Questões</h1>
+          <p className="text-gray-600 mt-1">
+            Gerencie as questões do {level.name}
+          </p>
+        </div>
+        <Button
+          onClick={() => setShowCreateModal(true)}
+          className="flex items-center gap-2"
+        >
+          <Plus className="h-4 w-4" />
+          Nova Questão
+        </Button>
+      </div>
+
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+        <input
+          type="text"
+          placeholder="Buscar questões..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        />
+      </div>
+
+      {/* Questions List */}
+      {filteredQuestions.length === 0 ? (
+        <div className="text-center py-12">
+          <BookOpen className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            {searchTerm ? 'Nenhuma questão encontrada' : 'Nenhuma questão cadastrada'}
+          </h3>
+          <p className="text-gray-600 mb-4">
+            {searchTerm 
+              ? 'Tente ajustar os termos de busca'
+              : 'Comece criando a primeira questão para este nível'
+            }
+          </p>
+          {!searchTerm && (
+            <Button onClick={() => setShowCreateModal(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Criar Primeira Questão
+            </Button>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredQuestions.map((question, index) => (
+            <div
+              key={question.id}
+              className={`bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow ${
+                draggedQuestion?.id === question.id ? 'opacity-50' : ''
+              }`}
+              draggable
+              onDragStart={(e) => handleDragStart(e, question)}
+              onDragOver={handleDragOver}
+              onDrop={(e) => handleDrop(e, question)}
+            >
+              {/* Header */}
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-3">
+                  <Move className="h-4 w-4 text-gray-400 cursor-move" />
+                  <div>
+                    <span className="text-xs text-gray-500">Questão #{index + 1}</span>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
+                        Múltipla Escolha
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        {question.options?.filter(option => option.isCorrect).length || 0} resposta(s) correta(s)
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setEditingQuestion(question)}
+                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                    title="Editar"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteQuestion(question.id)}
+                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    title="Excluir"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Question Text */}
+              <div className="mb-4">
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {question.content}
+                </h3>
+              </div>
+
+              {/* Options */}
+              <div className="space-y-2 mb-4">
+                {question.options?.map((option, optionIndex) => (
+                  <div
+                    key={optionIndex}
+                    className={`flex items-center gap-3 p-3 rounded-lg border ${
+                      option.isCorrect
+                        ? 'bg-green-50 border-green-200'
+                        : 'bg-gray-50 border-gray-200'
+                    }`}
+                  >
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-medium ${
+                      option.isCorrect
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-300 text-gray-600'
+                    }`}>
+                      {String.fromCharCode(65 + optionIndex)}
+                    </span>
+                    <span className="flex-1">{option.text}</span>
+                    {option.isCorrect && (
+                      <span className="text-green-600 text-sm font-medium">✓ Correta</span>
+                    )}
+                  </div>
+                )) || []}
+              </div>
+
+              {/* Explanation and Study Link */}
+              {(question.explanation || question.studyLink) && (
+                <div className="pt-4 border-t border-gray-100 space-y-2">
+                  {question.explanation && (
+                    <div>
+                      <span className="text-sm font-medium text-gray-700">Explicação:</span>
+                      <p className="text-sm text-gray-600 mt-1">{question.explanation}</p>
+                    </div>
+                  )}
+                  {question.studyLink && (
+                    <div>
+                      <span className="text-sm font-medium text-gray-700">Link de estudo:</span>
+                      <a
+                        href={question.studyLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:text-blue-800 ml-2"
+                      >
+                        {question.studyLink}
+                      </a>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Creation Date */}
+              <div className="text-xs text-gray-400 mt-3">
+                Criada em {new Date(question.createdAt).toLocaleDateString('pt-BR')}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Create/Edit Modal */}
+      <QuestionModal
+        isOpen={showCreateModal || !!editingQuestion}
+        onClose={() => {
+          setShowCreateModal(false);
+          setEditingQuestion(null);
+        }}
+        onSave={handleQuestionSaved}
+        question={editingQuestion}
+        levelId={level.id}
+      />
+    </div>
+  );
+}
