@@ -17,7 +17,7 @@ export const Hero: React.FC = () => {
     <section id="home" className="pt-16 bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          {/* Content */}
+  
           <div className="text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display text-gray-900 leading-tight mb-6">
               Sua Jornada para a{' '}
@@ -48,7 +48,7 @@ export const Hero: React.FC = () => {
               </Button>
             </div>
 
-            {/* Stats */}
+    
             <div className="flex flex-wrap justify-center lg:justify-start gap-8 text-sm text-gray-600">
               <div className="flex items-center">
                 <Target className="h-5 w-5 text-primary-600 mr-2" />
@@ -65,14 +65,14 @@ export const Hero: React.FC = () => {
             </div>
           </div>
 
-          {/* Visual Element - Prof. Sabichão */}
+    
           <div className="flex justify-center lg:justify-end animate-slide-up">
             <div className="flex flex-col items-center">
               <div className="relative">
-                {/* Mascote - Prof. Sabichão */}
+        
                 <div className="w-80 h-80 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center border-4 border-white shadow-2xl overflow-hidden">
                   <div className="text-center">
-                    {/* Imagem do Prof. Sabichão */}
+          
                     <div className="w-64 h-64 relative mx-auto">
                       <Image
                         src="/images/prof-sabichao.png"
@@ -86,7 +86,7 @@ export const Hero: React.FC = () => {
                   </div>
                 </div>
                 
-                {/* Floating Elements com animações modernas */}
+        
                 <div className="absolute -top-4 -right-4 w-16 h-16 bg-success-100 rounded-full flex items-center justify-center shadow-lg animate-float-1">
                   <span className="text-2xl">🏆</span>
                 </div>
@@ -98,7 +98,7 @@ export const Hero: React.FC = () => {
                 </div>
               </div>
               
-              {/* Texto do Prof. Sabichão - Centralizado em relação ao círculo */}
+      
               <div className="mt-6 text-center">
                 <p className="text-lg font-semibold text-gray-800 mb-1">Prof. Sabichão</p>
                 <p className="text-sm text-gray-600">Seu assistente inteligente</p>

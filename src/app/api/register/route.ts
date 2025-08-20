@@ -101,10 +101,3 @@ export async function POST(request: NextRequest) {
     )
   }
 }
-
-export async function GET() {
-  return NextResponse.json(
-    { error: 'Método não permitido' },
-    { status: 405 }
-  )
-}
