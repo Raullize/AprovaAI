@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Search, Edit, Trash2, Layers, Eye, EyeOff } from 'luci
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import TopicModal from '@/components/admin/TopicModal';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 interface Exam {
   id: string;
@@ -40,6 +41,8 @@ export default function ExamTopicsPageBySlug() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
+  const [topicToDelete, setTopicToDelete] = useState<Topic | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (examSlug) {
@@ -71,21 +74,31 @@ export default function ExamTopicsPageBySlug() {
     }
   };
 
-  const handleDeleteTopic = async (topicId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este tópico? Esta ação não pode ser desfeita.')) {
-      return;
-    }
+  const handleDeleteTopic = (topic: Topic) => {
+    setTopicToDelete(topic);
+  };
 
+  const confirmDeleteTopic = async () => {
+    if (!topicToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/topics/${topicId}`, {
+      const response = await fetch(`/api/admin/topics/${topicToDelete.id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setTopics(topics.filter(topic => topic.id !== topicId));
+        setTopics(topics.filter(topic => topic.id !== topicToDelete.id));
+        setTopicToDelete(null);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Erro ao excluir tópico');
       }
     } catch (error) {
       console.error('Erro ao excluir tópico:', error);
+      alert('Erro de conexão. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -249,7 +262,7 @@ export default function ExamTopicsPageBySlug() {
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDeleteTopic(topic.id)}
+                    onClick={() => handleDeleteTopic(topic)}
                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                     title="Excluir"
                   >
@@ -304,6 +317,19 @@ export default function ExamTopicsPageBySlug() {
         onSave={handleTopicSaved}
         topic={editingTopic}
         examId={exam.id}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!topicToDelete}
+        onClose={() => setTopicToDelete(null)}
+        onConfirm={confirmDeleteTopic}
+        title="Excluir Tópico"
+        message={`Tem certeza que deseja excluir o tópico "${topicToDelete?.name}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        loading={isDeleting}
       />
     </div>
   );

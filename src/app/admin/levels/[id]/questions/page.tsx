@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Search, Edit, Trash2, HelpCircle, Move } from 'lucide-
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import QuestionModal from '@/components/admin/QuestionModal';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 interface Level {
   id: string;
@@ -102,18 +103,25 @@ export default function LevelQuestionsPage() {
     setShowCreateModal(false);
   };
 
-  const handleDeleteQuestion = async (questionId: string) => {
-    if (!confirm('Tem certeza que deseja excluir esta questão?')) {
-      return;
-    }
+  const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  const handleDeleteQuestion = (question: Question) => {
+    setQuestionToDelete(question);
+  };
+
+  const confirmDeleteQuestion = async () => {
+    if (!questionToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/questions/${questionId}`, {
+      const response = await fetch(`/api/admin/questions/${questionToDelete.id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setQuestions(prev => prev.filter(q => q.id !== questionId));
+        setQuestions(prev => prev.filter(q => q.id !== questionToDelete.id));
+        setQuestionToDelete(null);
       } else {
         const data = await response.json();
         alert(data.error || 'Erro ao excluir questão');
@@ -121,6 +129,8 @@ export default function LevelQuestionsPage() {
     } catch (error) {
       console.error('Erro ao excluir questão:', error);
       alert('Erro de conexão. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -325,7 +335,7 @@ export default function LevelQuestionsPage() {
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDeleteQuestion(question.id)}
+                    onClick={() => handleDeleteQuestion(question)}
                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                     title="Excluir"
                   >
@@ -393,6 +403,19 @@ export default function LevelQuestionsPage() {
         onSave={handleQuestionSaved}
         question={editingQuestion}
         levelId={levelId}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!questionToDelete}
+        onClose={() => setQuestionToDelete(null)}
+        onConfirm={confirmDeleteQuestion}
+        title="Excluir Questão"
+        message={`Tem certeza que deseja excluir esta questão? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        loading={isDeleting}
       />
     </div>
   );
