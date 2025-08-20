@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Portal from '@/components/ui/Portal';
 
 interface Topic {
   id: string;
@@ -112,7 +113,8 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <Portal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -196,8 +198,9 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
               {loading ? 'Salvando...' : (topic ? 'Atualizar' : 'Criar')}
             </Button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 }
