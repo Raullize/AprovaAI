@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Search, Edit, Trash2, Layers } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Edit, Trash2, Layers, Eye, EyeOff } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import TopicModal from '@/components/admin/TopicModal';
@@ -12,7 +12,7 @@ interface Exam {
   name: string;
   slug: string;
   description?: string;
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 interface Topic {
@@ -20,6 +20,7 @@ interface Topic {
   name: string;
   slug: string;
   description?: string;
+  status: 'ACTIVE' | 'INACTIVE';
   examId: string;
   createdAt: string;
   updatedAt: string;
@@ -85,6 +86,26 @@ export default function ExamTopicsPageBySlug() {
       }
     } catch (error) {
       console.error('Erro ao excluir tópico:', error);
+    }
+  };
+
+  const handleStatusChange = async (topicId: string, newStatus: 'ACTIVE' | 'INACTIVE') => {
+    try {
+      const response = await fetch(`/api/admin/topics/${topicId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        setTopics(topics.map(topic => 
+          topic.id === topicId ? { ...topic, status: newStatus } : topic
+        ));
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
     }
   };
 
@@ -201,22 +222,40 @@ export default function ExamTopicsPageBySlug() {
               key={topic.id}
               className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
             >
-              {/* Actions */}
-              <div className="flex justify-end items-center gap-1 mb-4">
-                <button
-                  onClick={() => setEditingTopic(topic)}
-                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                  title="Editar"
-                >
-                  <Edit className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => handleDeleteTopic(topic.id)}
-                  className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                  title="Excluir"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+              {/* Status Badge */}
+              <div className="flex justify-between items-start mb-4">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  topic.status === 'ACTIVE' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {topic.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
+                </span>
+                
+                {/* Actions */}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleStatusChange(topic.id, topic.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    title={topic.status === 'ACTIVE' ? 'Desativar tópico' : 'Ativar tópico'}
+                  >
+                    {topic.status === 'ACTIVE' ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                  <button
+                    onClick={() => setEditingTopic(topic)}
+                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                    title="Editar"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTopic(topic.id)}
+                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    title="Excluir"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               {/* Topic Info */}

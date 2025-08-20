@@ -11,7 +11,7 @@ interface Exam {
   id: string;
   name: string;
   description?: string;
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE';
   createdAt: string;
   updatedAt: string;
   _count: {
@@ -29,7 +29,7 @@ interface ExamModalProps {
 interface FormData {
   name: string;
   description: string;
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 interface FormErrors {
@@ -42,7 +42,7 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
-    status: 'DRAFT'
+    status: 'ACTIVE'
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
@@ -194,11 +194,10 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
             </label>
             <select
               value={formData.status}
-              onChange={(e) => handleInputChange('status', e.target.value as 'DRAFT' | 'ACTIVE' | 'INACTIVE')}
+              onChange={(e) => handleInputChange('status', e.target.value as 'ACTIVE' | 'INACTIVE')}
               disabled={loading}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
-              <option value="DRAFT">Rascunho</option>
               <option value="ACTIVE">Ativo</option>
               <option value="INACTIVE">Inativo</option>
             </select>

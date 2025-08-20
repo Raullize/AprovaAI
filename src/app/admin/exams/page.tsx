@@ -11,7 +11,7 @@ interface Exam {
   name: string;
   slug: string;
   description?: string;
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE';
   createdAt: string;
   updatedAt: string;
   _count: {
@@ -20,13 +20,11 @@ interface Exam {
 }
 
 const statusLabels = {
-  DRAFT: 'Rascunho',
   ACTIVE: 'Ativo',
   INACTIVE: 'Inativo'
 };
 
 const statusColors = {
-  DRAFT: 'bg-gray-100 text-gray-800',
   ACTIVE: 'bg-green-100 text-green-800',
   INACTIVE: 'bg-red-100 text-red-800'
 };
@@ -69,7 +67,7 @@ export default function ExamsPage() {
     }
   };
 
-  const handleStatusChange = async (examId: string, newStatus: 'DRAFT' | 'ACTIVE' | 'INACTIVE') => {
+  const handleStatusChange = async (examId: string, newStatus: 'ACTIVE' | 'INACTIVE') => {
     try {
       const response = await fetch(`/api/admin/exams/${examId}`, {
         method: 'PATCH',
