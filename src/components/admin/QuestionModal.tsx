@@ -420,8 +420,8 @@ export default function QuestionModal({
             disabled={loading}
             className="flex items-center gap-2"
           >
-            {loading && <Loading size="sm" />}
-            {question ? 'Atualizar' : 'Criar'} Questão
+            {loading && <Loading size="xs" />}
+            {question ? 'Atualizar' : 'Criar'}
           </Button>
         </div>
       </div>

@@ -107,6 +107,13 @@ export async function PATCH(
     const exam = await prisma.exam.update({
       where: { id: params.id },
       data: updateData,
+      include: {
+        _count: {
+          select: {
+            topics: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json(exam);

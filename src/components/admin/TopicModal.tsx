@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Portal from '@/components/ui/Portal';
+import Loading from '@/components/ui/Loading';
 
 interface Topic {
   id: string;
@@ -219,9 +220,10 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
             <Button
               type="submit"
               disabled={loading || !formData.name.trim()}
-              className="flex-1"
+              className="flex-1 flex items-center justify-center gap-2"
             >
-              {loading ? 'Salvando...' : (topic ? 'Atualizar' : 'Criar')}
+              {loading && <Loading size="xs" />}
+              {topic ? 'Atualizar' : 'Criar'}
             </Button>
           </div>
           </form>

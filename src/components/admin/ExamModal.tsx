@@ -223,7 +223,7 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
               className="flex-1 flex items-center justify-center gap-2"
             >
               {loading && <Loading size="xs" />}
-              {exam ? 'Salvar Alterações' : 'Criar Exame'}
+              {exam ? 'Atualizar' : 'Criar'}
             </Button>
           </div>
           </form>
