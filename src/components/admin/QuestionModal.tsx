@@ -100,6 +100,23 @@ export default function QuestionModal({
     }
   };
 
+  const handleImageRemove = async () => {
+    if (formData.imageUrl && formData.imageUrl.startsWith('/uploads/')) {
+      try {
+        // Extrair o nome do arquivo da URL
+        const fileName = formData.imageUrl.split('/').pop();
+        if (fileName) {
+          await fetch(`/api/admin/upload?fileName=${fileName}`, {
+            method: 'DELETE',
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao remover arquivo:', error);
+      }
+    }
+    handleInputChange('imageUrl', '');
+  };
+
   const handleOptionChange = (index: number, field: 'text' | 'isCorrect', value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
@@ -196,6 +213,22 @@ export default function QuestionModal({
     setLoading(true);
     
     try {
+      // Se estamos editando uma questão e a imagem foi alterada, remover a imagem antiga
+      if (question && question.imageUrl && 
+          question.imageUrl !== formData.imageUrl && 
+          question.imageUrl.startsWith('/uploads/')) {
+        try {
+          const fileName = question.imageUrl.split('/').pop();
+          if (fileName) {
+            await fetch(`/api/admin/upload?fileName=${fileName}`, {
+              method: 'DELETE',
+            });
+          }
+        } catch (error) {
+          console.error('Erro ao remover imagem antiga:', error);
+        }
+      }
+
       const url = question 
         ? `/api/admin/questions/${question.id}`
         : '/api/admin/questions';
@@ -204,7 +237,7 @@ export default function QuestionModal({
       
       const payload = {
         content: formData.content.trim(),
-        imageUrl: formData.imageUrl.trim() || undefined,
+        imageUrl: formData.imageUrl.trim() || '',
         explanation: formData.explanation.trim() || undefined,
         studyLink: formData.studyLink.trim() || undefined,
         levelId,
@@ -273,7 +306,7 @@ export default function QuestionModal({
               <ImageUpload
                 value={formData.imageUrl}
                 onChange={(url) => handleInputChange('imageUrl', url)}
-                onRemove={() => handleInputChange('imageUrl', '')}
+                onRemove={handleImageRemove}
                 disabled={loading}
               />
               {errors.imageUrl && (
