@@ -58,7 +58,7 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
       setFormData({
         name: '',
         description: '',
-        status: 'DRAFT'
+        status: 'ACTIVE'
       });
     }
     setErrors({});
