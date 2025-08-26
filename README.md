@@ -150,6 +150,10 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
 
 8. **Acesse a aplicação**
    Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
+   
+   **🔗 Links úteis:**
+   - 🔍 **API Health Check**: [http://localhost:3000/api/health](http://localhost:3000/api/health) *(teste no Insomnia/Postman ou navegador)*
+   - 🗄️ **Adminer (Gerenciar DB)**: [http://localhost:8080](http://localhost:8080) *(interface web para gerenciar o banco PostgreSQL)*
 
 ### Scripts Disponíveis
 
