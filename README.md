@@ -10,7 +10,7 @@ O **AprovaAI** é uma plataforma inovadora de estudos focada em auxiliar estudan
 
 ### 🚀 Características Principais
 
-- **🎯 Simulados por Nível**: Sistema estruturado de `Exame > Área de Conhecimento > Tópico > Nível`
+- **🎯 Simulados por Nível**: Sistema estruturado de `Exame > Tópico > Nível > Questões`
 - **🎮 Gamificação**: Sistema de medalhas, conquistas e streaks para motivar o aprendizado
 - **🤖 Prof. Sabichão**: Nosso mascote e assistente inteligente para tirar dúvidas
 - **📊 Feedback Detalhado**: Explicações específicas para cada alternativa e links de aprofundamento
@@ -61,7 +61,7 @@ O AprovaAI oferece dois planos para atender às suas necessidades de estudo:
 
 ### Para o Usuário (Estudante):
 
-  * **Simulados por Nível:** Faça simulados divididos por `Exame > Área de Conhecimento > Tópico > Nível`.
+  * **Simulados por Nível:** Faça simulados divididos por `Exame > Tópico > Nível > Questões`.
   * **Níveis de Dificuldade:** Cada nível oferece questões focadas naquele conteúdo.
   * **Simulado Diversificado:** O último nível de cada tópico apresenta questões mais variadas em dificuldade para consolidar o aprendizado.
   * **Tipos de Questões:** Questões de múltipla escolha, podendo ter uma ou duas alternativas corretas (com a necessidade de acertar todas as corretas para pontuar).
@@ -85,7 +85,7 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
       * **CRUD completo:** Cadastrar, atualizar e remover exames.
       * **Configuração de Exames:** Adicionar descrição, link para informações oficiais e, opcionalmente, a data da próxima prova (se aplicável ao tipo de exame, como ENEM; não exibido para exames sem data fixa, como AWS).
   * **Gerenciamento de Conteúdo:**
-      * **CRUD completo:** Cadastrar, atualizar e remover `Áreas de Conhecimento`, `Tópicos` e `Níveis` dentro de cada exame.
+      * **CRUD completo:** Cadastrar, atualizar e remover `Tópico, Nível e Questões` dentro de cada exame.
       * **Personalização de Níveis:** Definir a quantidade de questões por nível e a quantidade de alternativas por questão.
       * **Critérios de Aprovação:** Configurar o número ou a porcentagem de acertos para passar de nível (com opção de "treino/revisão" sem critério de aprovação).
       * **Controle de Acesso:** Definir quais exames, áreas, tópicos ou níveis são acessíveis para usuários `Free Tier` ou apenas `Premium`.
