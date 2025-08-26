@@ -21,8 +21,6 @@ export interface NavItem {
   href: string;
 }
 
-
-
 export interface LoginForm {
   email: string;
   password: string;
