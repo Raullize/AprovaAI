@@ -199,23 +199,3 @@ Contribuições são sempre bem-vindas! Para contribuir:
     </td>
   </tr>
 </table>
-
-## 🎯 Roadmap
-
-- [x] Sistema de autenticação completo
-- [x] Landing page responsiva
-- [ ] Dashboard do admin
-- [ ] Dashboard do usuário
-- [ ] Sistema de simulados
-- [ ] Gamificação e conquistas
-- [ ] Integração com IA (Prof. Sabichão)
-- [ ] Sistema de pagamentos
-- [ ] Aplicativo mobile
-- [ ] Ranqueamento
-- [ ] Página de Blog/Comunidade
-
----
-
-<div align="center">
-  Desenvolvido com ❤️ 
-</div>
