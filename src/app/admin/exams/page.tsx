@@ -132,6 +132,17 @@ export default function ExamsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb */}
+      <nav className="flex" aria-label="Breadcrumb">
+        <ol className="inline-flex items-center space-x-1 md:space-x-3">
+          <li className="inline-flex items-center">
+            <span className="text-sm font-medium text-gray-500">
+              Exames
+            </span>
+          </li>
+        </ol>
+      </nav>
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>

@@ -257,15 +257,6 @@ export default function LevelQuestionsPageBySlug() {
 
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`)}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">Questões</h1>
           <p className="text-gray-600 mt-1">
