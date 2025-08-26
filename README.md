@@ -21,56 +21,21 @@ O **AprovaAI** é uma plataforma inovadora de estudos focada em auxiliar estudan
 ## 🛠️ Tecnologias Utilizadas
 
 ### Frontend
-- **Next.js 14** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS** - Framework CSS utilitário
-- **Lucide React** - Ícones modernos
-- **React Hook Form** - Gerenciamento de formulários
-- **Zod** - Validação de schemas
+- Detalhar...
 
 ### Backend
-- **Next.js API Routes** - Endpoints serverless
-- **NextAuth.js** - Autenticação completa
-- **Prisma** - ORM moderno para TypeScript
-- **PostgreSQL** - Banco de dados relacional
-- **bcryptjs** - Hash de senhas
+- Detalhar...
 
 ### Infraestrutura
-- **Docker** - Containerização do banco de dados
-- **Docker Compose** - Orquestração de containers
+- Detalhar...
 
 #### Stack Resumido
-- **Frontend:** React, Next.js, TypeScript
-- **Estilização:** Tailwind CSS
-- **Banco de Dados:** PostgreSQL
+- Detalhar...
 
 ## 🗂️ Estrutura do Projeto
 
 ```
-aprovaai/
-├── src/
-│   ├── app/                    # App Router do Next.js
-│   │   ├── api/               # API Routes
-│   │   │   ├── auth/          # Autenticação NextAuth.js
-│   │   │   └── register/      # Endpoint de registro
-│   │   ├── dashboard/         # Área do usuário
-│   │   ├── login/            # Página de login
-│   │   ├── register/         # Página de cadastro
-│   │   └── globals.css       # Estilos globais
-│   ├── components/           # Componentes React
-│   │   ├── auth/            # Componentes de autenticação
-│   │   ├── layout/          # Layout e navegação
-│   │   ├── providers/       # Providers (Session, etc.)
-│   │   ├── sections/        # Seções da landing page
-│   │   └── ui/              # Componentes de UI
-│   ├── hooks/               # Custom hooks
-│   ├── lib/                 # Utilitários e configurações
-│   └── types/               # Definições de tipos TypeScript
-├── prisma/                  # Schema do banco de dados
-├── public/                  # Arquivos estáticos
-├── docker-compose.yml       # Configuração do PostgreSQL
-├── middleware.ts            # Middleware de autenticação
-└── tailwind.config.js       # Configuração do Tailwind
+Detalhar...
 ```
 
 ## Planos de Acesso
