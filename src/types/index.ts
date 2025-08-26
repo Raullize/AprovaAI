@@ -21,12 +21,6 @@ export interface NavItem {
   href: string;
 }
 
-export interface SocialLink {
-  platform: string;
-  url: string;
-  icon: string;
-}
-
 export interface LoginForm {
   email: string;
   password: string;

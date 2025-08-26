@@ -5,13 +5,13 @@ import { Plus, Search, Edit, Trash2, Eye, EyeOff, FileText } from 'lucide-react'
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import ExamModal from '@/components/admin/ExamModal';
-
+import ConfirmModal from '@/components/ui/ConfirmModal';
 interface Exam {
   id: string;
   name: string;
   slug: string;
   description?: string;
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE';
   createdAt: string;
   updatedAt: string;
   _count: {
@@ -20,13 +20,11 @@ interface Exam {
 }
 
 const statusLabels = {
-  DRAFT: 'Rascunho',
   ACTIVE: 'Ativo',
   INACTIVE: 'Inativo'
 };
 
 const statusColors = {
-  DRAFT: 'bg-gray-100 text-gray-800',
   ACTIVE: 'bg-green-100 text-green-800',
   INACTIVE: 'bg-red-100 text-red-800'
 };
@@ -37,6 +35,8 @@ export default function ExamsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingExam, setEditingExam] = useState<Exam | null>(null);
+  const [examToDelete, setExamToDelete] = useState<Exam | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     fetchExams();
@@ -69,7 +69,7 @@ export default function ExamsPage() {
     }
   };
 
-  const handleStatusChange = async (examId: string, newStatus: 'DRAFT' | 'ACTIVE' | 'INACTIVE') => {
+  const handleStatusChange = async (examId: string, newStatus: 'ACTIVE' | 'INACTIVE') => {
     try {
       const response = await fetch(`/api/admin/exams/${examId}`, {
         method: 'PATCH',
@@ -89,21 +89,31 @@ export default function ExamsPage() {
     }
   };
 
-  const handleDeleteExam = async (examId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este exame? Esta ação não pode ser desfeita.')) {
-      return;
-    }
+  const handleDeleteExam = (exam: Exam) => {
+    setExamToDelete(exam);
+  };
 
+  const confirmDeleteExam = async () => {
+    if (!examToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/exams/${examId}`, {
+      const response = await fetch(`/api/admin/exams/${examToDelete.id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setExams(exams.filter(exam => exam.id !== examId));
+        await fetchExams();
+        setExamToDelete(null);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Erro ao excluir exame');
       }
     } catch (error) {
       console.error('Erro ao excluir exame:', error);
+      alert('Erro de conexão. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -122,9 +132,20 @@ export default function ExamsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Breadcrumb */}
+      <nav className="flex" aria-label="Breadcrumb">
+        <ol className="inline-flex items-center space-x-1 md:space-x-3">
+          <li className="inline-flex items-center">
+            <span className="text-sm font-medium text-gray-500">
+              Exames
+            </span>
+          </li>
+        </ol>
+      </nav>
+
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
+      <div className="flex items-center gap-4">
+        <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">Gerenciar Exames</h1>
           <p className="text-gray-600 mt-1">
             Crie e gerencie exames, tópicos e níveis para os simulados
@@ -213,7 +234,7 @@ export default function ExamsPage() {
                   
                   {/* Delete Button */}
                   <button
-                    onClick={() => handleDeleteExam(exam.id)}
+                    onClick={() => handleDeleteExam(exam)}
                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                     title="Excluir"
                   >
@@ -267,6 +288,19 @@ export default function ExamsPage() {
         }}
         onSave={handleExamSaved}
         exam={editingExam}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!examToDelete}
+        onClose={() => setExamToDelete(null)}
+        onConfirm={confirmDeleteExam}
+        title="Excluir Exame"
+        message={`Tem certeza que deseja excluir o exame "${examToDelete?.name}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        loading={isDeleting}
       />
     </div>
   );

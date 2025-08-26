@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Search, Edit, Trash2, Target, Move } from 'lucide-reac
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import LevelModal from '@/components/admin/LevelModal';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 interface Exam {
   id: string;
@@ -48,6 +49,8 @@ export default function TopicLevelsPageBySlug() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [levelToDelete, setLevelToDelete] = useState<Level | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [editingLevel, setEditingLevel] = useState<Level | null>(null);
   const [draggedLevel, setDraggedLevel] = useState<Level | null>(null);
 
@@ -81,21 +84,31 @@ export default function TopicLevelsPageBySlug() {
     }
   };
 
-  const handleDeleteLevel = async (levelId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este nível? Esta ação não pode ser desfeita.')) {
-      return;
-    }
+  const handleDeleteLevel = (level: Level) => {
+    setLevelToDelete(level);
+  };
 
+  const confirmDeleteLevel = async () => {
+    if (!levelToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/levels/${levelId}`, {
+      const response = await fetch(`/api/admin/levels/${levelToDelete.id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setLevels(levels.filter(level => level.id !== levelId));
+        setLevels(levels.filter(level => level.id !== levelToDelete.id));
+        setLevelToDelete(null);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Erro ao excluir nível');
       }
     } catch (error) {
       console.error('Erro ao excluir nível:', error);
+      alert('Erro de conexão. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -221,19 +234,10 @@ export default function TopicLevelsPageBySlug() {
 
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push(`/admin/exams/${examSlug}/topics`)}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">Níveis</h1>
           <p className="text-gray-600 mt-1">
-            Gerencie os níveis de dificuldade deste tópico
+            Gerencie os níveis deste tópico
           </p>
         </div>
         <Button
@@ -305,7 +309,7 @@ export default function TopicLevelsPageBySlug() {
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDeleteLevel(level.id)}
+                    onClick={() => handleDeleteLevel(level)}
                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                     title="Excluir"
                   >
@@ -376,6 +380,19 @@ export default function TopicLevelsPageBySlug() {
         onSave={handleLevelSaved}
         level={editingLevel}
         topicId={topic.id}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!levelToDelete}
+        onClose={() => setLevelToDelete(null)}
+        onConfirm={confirmDeleteLevel}
+        title="Excluir Nível"
+        message={`Tem certeza que deseja excluir o nível "${levelToDelete?.name}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        loading={isDeleting}
       />
     </div>
   );

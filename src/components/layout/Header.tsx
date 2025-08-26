@@ -23,19 +23,19 @@ export const Header: React.FC = () => {
 
   const handleNavigation = (href: string) => {
     if (href.startsWith('#')) {
-      // Handle scroll navigation for sections
+    
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
     } else {
-      // Handle page navigation
+    
       window.location.href = href;
     }
     setIsMenuOpen(false);
   };
 
-  // Bloquear scroll quando menu estiver aberto
+
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -53,7 +53,7 @@ export const Header: React.FC = () => {
       <header className={`fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50 transition-all duration-300 ${isMenuOpen ? 'blur-md' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
+    
             <div className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
                 <GraduationCap className="h-6 w-6 text-white" />
@@ -63,7 +63,7 @@ export const Header: React.FC = () => {
               </span>
             </div>
 
-            {/* Desktop Navigation */}
+    
             <nav className="hidden md:flex items-center space-x-8">
               {navItems.slice(0, -1).map((item) => (
                 <button
@@ -76,7 +76,7 @@ export const Header: React.FC = () => {
               ))}
             </nav>
 
-            {/* Desktop CTA */}
+    
             <div className="hidden md:flex items-center space-x-4">
               {session ? (
                 <>
@@ -109,7 +109,7 @@ export const Header: React.FC = () => {
               )}
             </div>
 
-            {/* Mobile menu button */}
+    
             <div className="md:hidden">
               <button
                 onClick={toggleMenu}
@@ -122,19 +122,19 @@ export const Header: React.FC = () => {
         </div>
       </header>
 
-      {/* Mobile Navigation - Overlay e Sidebar */}
+
       {isMenuOpen && (
         <>
-          {/* Overlay */}
+  
           <div 
             className="fixed inset-0 bg-black/30 backdrop-blur-md z-40 md:hidden transition-all duration-300"
             onClick={toggleMenu}
           />
           
-          {/* Sidebar */}
+  
           <div className="fixed top-0 right-0 h-full w-80 bg-white shadow-2xl z-50 md:hidden animate-slide-in-right">
               <div className="flex flex-col h-full">
-                {/* Header do Sidebar */}
+      
                 <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-primary-600">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center">
@@ -150,7 +150,7 @@ export const Header: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Navegação */}
+      
                 <div className="flex-1 py-6">
                   <nav className="px-6 space-y-2">
                     {session && (
@@ -173,7 +173,7 @@ export const Header: React.FC = () => {
                     ))}
                   </nav>
 
-                  {/* Stats Section */}
+        
                   <div className="px-6 mt-8">
                     <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
                       🚀 Por que AprovaAI?
@@ -210,7 +210,7 @@ export const Header: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Footer do Sidebar */}
+      
                 <div className="p-6 border-t border-gray-200 bg-gray-50">
                   <div className="space-y-4">
                     {session ? (

@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Portal from '@/components/ui/Portal';
+import Loading from '@/components/ui/Loading';
 
 interface Level {
   id: string;
@@ -134,7 +136,8 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <Portal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -257,13 +260,15 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
             <Button
               type="submit"
               disabled={loading || !formData.name.trim()}
-              className="flex-1"
+              className="flex-1 flex items-center justify-center gap-2"
             >
-              {loading ? 'Salvando...' : (level ? 'Atualizar' : 'Criar')}
+              {loading && <Loading size="xs" />}
+              {level ? 'Atualizar' : 'Criar'}
             </Button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 }

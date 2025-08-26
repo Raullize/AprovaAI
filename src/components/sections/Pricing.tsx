@@ -48,7 +48,7 @@ export const Pricing: React.FC = () => {
   return (
     <section id="pricing" className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold font-display text-gray-900 mb-4">
             Escolha Seu Caminho para a Aprovação
@@ -59,7 +59,7 @@ export const Pricing: React.FC = () => {
           </p>
         </div>
 
-        {/* Plans Grid */}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {plans.map((plan) => (
             <div 
@@ -68,7 +68,7 @@ export const Pricing: React.FC = () => {
                 plan.isPopular ? 'ring-2 ring-primary-600 transform scale-105' : ''
               }`}
             >
-              {/* Popular Badge */}
+  
               {plan.isPopular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <div className="bg-primary-600 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
@@ -78,7 +78,7 @@ export const Pricing: React.FC = () => {
                 </div>
               )}
 
-              {/* Plan Header */}
+  
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold font-display text-gray-900 mb-2">
                   {plan.name}
@@ -93,7 +93,7 @@ export const Pricing: React.FC = () => {
                 </p>
               </div>
 
-              {/* Features List */}
+  
               <div className="space-y-4 mb-8">
                 {plan.features.map((feature, index) => (
                   <div key={index} className="flex items-start">
@@ -107,7 +107,7 @@ export const Pricing: React.FC = () => {
                 ))}
               </div>
 
-              {/* CTA Button */}
+  
               <Button 
                 variant={plan.ctaVariant}
                 className="w-full justify-center"
@@ -117,7 +117,7 @@ export const Pricing: React.FC = () => {
                 {plan.ctaText}
               </Button>
 
-              {/* Additional Info for Premium */}
+  
               {plan.isPopular && (
                 <div className="mt-4 text-center">
                   <p className="text-sm text-gray-500">
@@ -129,7 +129,7 @@ export const Pricing: React.FC = () => {
           ))}
         </div>
 
-        {/* Bottom Note */}
+
         <div className="text-center mt-12">
           <p className="text-gray-600 text-sm">
             * Prof. Sabichão estará disponível em breve para usuários Premium

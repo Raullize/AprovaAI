@@ -8,13 +8,13 @@ import { z } from 'zod';
 const createExamSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
   description: z.string().optional(),
-  status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE']).default('DRAFT'),
+  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
 });
 
 const updateExamSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório').optional(),
   description: z.string().optional(),
-  status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE']).optional(),
+  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
 });
 
 // GET /api/admin/exams - Listar exames

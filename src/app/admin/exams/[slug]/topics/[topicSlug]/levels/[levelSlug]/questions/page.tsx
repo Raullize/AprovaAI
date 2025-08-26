@@ -6,6 +6,7 @@ import { ArrowLeft, Plus, Search, Edit, Trash2, Move, BookOpen } from 'lucide-re
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import QuestionModal from '@/components/admin/QuestionModal';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 interface Exam {
   id: string;
@@ -96,21 +97,34 @@ export default function LevelQuestionsPageBySlug() {
     }
   };
 
-  const handleDeleteQuestion = async (questionId: string) => {
-    if (!confirm('Tem certeza que deseja excluir esta questão? Esta ação não pode ser desfeita.')) {
-      return;
-    }
+  const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
+  const handleDeleteQuestion = (question: Question) => {
+    setQuestionToDelete(question);
+  };
+
+  const confirmDeleteQuestion = async () => {
+    if (!questionToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/questions/${questionId}`, {
+      const response = await fetch(`/api/admin/questions/${questionToDelete.id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setQuestions(questions.filter(question => question.id !== questionId));
+        setQuestions(questions.filter(question => question.id !== questionToDelete.id));
+        setQuestionToDelete(null);
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Erro ao excluir questão');
       }
     } catch (error) {
       console.error('Erro ao excluir questão:', error);
+      alert('Erro de conexão. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -243,15 +257,6 @@ export default function LevelQuestionsPageBySlug() {
 
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`)}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">Questões</h1>
           <p className="text-gray-600 mt-1">
@@ -337,7 +342,7 @@ export default function LevelQuestionsPageBySlug() {
                     <Edit className="h-4 w-4" />
                   </button>
                   <button
-                    onClick={() => handleDeleteQuestion(question.id)}
+                    onClick={() => handleDeleteQuestion(question)}
                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
                     title="Excluir"
                   >
@@ -423,6 +428,19 @@ export default function LevelQuestionsPageBySlug() {
         onSave={handleQuestionSaved}
         question={editingQuestion}
         levelId={level.id}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!questionToDelete}
+        onClose={() => setQuestionToDelete(null)}
+        onConfirm={confirmDeleteQuestion}
+        title="Excluir Questão"
+        message={`Tem certeza que deseja excluir esta questão? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        loading={isDeleting}
       />
     </div>
   );

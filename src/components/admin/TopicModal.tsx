@@ -4,11 +4,14 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Portal from '@/components/ui/Portal';
+import Loading from '@/components/ui/Loading';
 
 interface Topic {
   id: string;
   name: string;
   description?: string;
+  status: 'ACTIVE' | 'INACTIVE';
   examId: string;
   createdAt: string;
   updatedAt: string;
@@ -29,6 +32,7 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE',
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -39,11 +43,13 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
         setFormData({
           name: topic.name,
           description: topic.description || '',
+          status: topic.status,
         });
       } else {
         setFormData({
           name: '',
           description: '',
+          status: 'ACTIVE',
         });
       }
       setErrors({});
@@ -112,7 +118,8 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <Portal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -177,6 +184,28 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
             )}
           </div>
 
+          {/* Status */}
+          <div>
+            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+              Status *
+            </label>
+            <select
+              id="status"
+              value={formData.status}
+              onChange={(e) => handleInputChange('status', e.target.value)}
+              disabled={loading}
+              className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
+                errors.status ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''
+              }`}
+            >
+              <option value="ACTIVE">Ativo</option>
+              <option value="INACTIVE">Inativo</option>
+            </select>
+            {errors.status && (
+              <p className="mt-1 text-sm text-red-600">{errors.status}</p>
+            )}
+          </div>
+
           {/* Actions */}
           <div className="flex gap-3 pt-4">
             <Button
@@ -191,13 +220,15 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
             <Button
               type="submit"
               disabled={loading || !formData.name.trim()}
-              className="flex-1"
+              className="flex-1 flex items-center justify-center gap-2"
             >
-              {loading ? 'Salvando...' : (topic ? 'Atualizar' : 'Criar')}
+              {loading && <Loading size="xs" />}
+              {topic ? 'Atualizar' : 'Criar'}
             </Button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 }

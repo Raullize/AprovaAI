@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Trophy, MessageSquare, Target, Zap, Users } from 'lucide-react';
+import { BarChart3, Trophy, MessageSquare, Target } from 'lucide-react';
 import type { Feature } from '@/types';
 
 const features: Feature[] = [
@@ -33,16 +33,14 @@ const iconMap = {
   BarChart3,
   Trophy,
   MessageSquare,
-  Target,
-  Zap,
-  Users
+  Target
 };
 
 export const Features: React.FC = () => {
   return (
     <section id="features" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
+
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold font-display text-gray-900 mb-4">
             Como o AprovaAI Revoluciona seus Estudos
@@ -53,7 +51,7 @@ export const Features: React.FC = () => {
           </p>
         </div>
 
-        {/* Features Grid */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => {
             const IconComponent = iconMap[feature.icon as keyof typeof iconMap];
@@ -77,7 +75,7 @@ export const Features: React.FC = () => {
           })}
         </div>
 
-        {/* Bottom CTA */}
+
         <div className="text-center mt-16">
           <div className="bg-gradient-to-r from-primary-600 to-purple-600 rounded-2xl p-8 text-white">
             <h3 className="text-2xl font-bold font-display mb-4">
@@ -99,4 +97,4 @@ export const Features: React.FC = () => {
       </div>
     </section>
   );
-}; 
+};

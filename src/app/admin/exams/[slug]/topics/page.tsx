@@ -2,17 +2,18 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Plus, Search, Edit, Trash2, Layers } from 'lucide-react';
+import { ArrowLeft, Plus, Search, Edit, Trash2, Layers, Eye, EyeOff } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import TopicModal from '@/components/admin/TopicModal';
+import ConfirmModal from '@/components/ui/ConfirmModal';
 
 interface Exam {
   id: string;
   name: string;
   slug: string;
   description?: string;
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 interface Topic {
@@ -20,6 +21,7 @@ interface Topic {
   name: string;
   slug: string;
   description?: string;
+  status: 'ACTIVE' | 'INACTIVE';
   examId: string;
   createdAt: string;
   updatedAt: string;
@@ -39,6 +41,8 @@ export default function ExamTopicsPageBySlug() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
+  const [topicToDelete, setTopicToDelete] = useState<Topic | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (examSlug) {
@@ -70,21 +74,51 @@ export default function ExamTopicsPageBySlug() {
     }
   };
 
-  const handleDeleteTopic = async (topicId: string) => {
-    if (!confirm('Tem certeza que deseja excluir este tópico? Esta ação não pode ser desfeita.')) {
-      return;
-    }
+  const handleDeleteTopic = (topic: Topic) => {
+    setTopicToDelete(topic);
+  };
 
+  const confirmDeleteTopic = async () => {
+    if (!topicToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/topics/${topicId}`, {
+      const response = await fetch(`/api/admin/topics/${topicToDelete.id}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        setTopics(topics.filter(topic => topic.id !== topicId));
+        setTopics(topics.filter(topic => topic.id !== topicToDelete.id));
+        setTopicToDelete(null);
+      } else {
+        const errorData = await response.json();
+        alert(errorData.error || 'Erro ao excluir tópico');
       }
     } catch (error) {
       console.error('Erro ao excluir tópico:', error);
+      alert('Erro de conexão. Tente novamente.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleStatusChange = async (topicId: string, newStatus: 'ACTIVE' | 'INACTIVE') => {
+    try {
+      const response = await fetch(`/api/admin/topics/${topicId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (response.ok) {
+        setTopics(topics.map(topic => 
+          topic.id === topicId ? { ...topic, status: newStatus } : topic
+        ));
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar status:', error);
     }
   };
 
@@ -138,15 +172,6 @@ export default function ExamTopicsPageBySlug() {
 
       {/* Header */}
       <div className="flex items-center gap-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => router.push('/admin/exams')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Button>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">{exam.name}</h1>
           <p className="text-gray-600 mt-1">
@@ -201,22 +226,40 @@ export default function ExamTopicsPageBySlug() {
               key={topic.id}
               className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
             >
-              {/* Actions */}
-              <div className="flex justify-end items-center gap-1 mb-4">
-                <button
-                  onClick={() => setEditingTopic(topic)}
-                  className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
-                  title="Editar"
-                >
-                  <Edit className="h-4 w-4" />
-                </button>
-                <button
-                  onClick={() => handleDeleteTopic(topic.id)}
-                  className="p-1 text-gray-400 hover:text-red-600 transition-colors"
-                  title="Excluir"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+              {/* Status Badge */}
+              <div className="flex justify-between items-start mb-4">
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  topic.status === 'ACTIVE' 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-red-100 text-red-800'
+                }`}>
+                  {topic.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
+                </span>
+                
+                {/* Actions */}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => handleStatusChange(topic.id, topic.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
+                    className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                    title={topic.status === 'ACTIVE' ? 'Desativar tópico' : 'Ativar tópico'}
+                  >
+                    {topic.status === 'ACTIVE' ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                  <button
+                    onClick={() => setEditingTopic(topic)}
+                    className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
+                    title="Editar"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTopic(topic)}
+                    className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                    title="Excluir"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               {/* Topic Info */}
@@ -265,6 +308,19 @@ export default function ExamTopicsPageBySlug() {
         onSave={handleTopicSaved}
         topic={editingTopic}
         examId={exam.id}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        isOpen={!!topicToDelete}
+        onClose={() => setTopicToDelete(null)}
+        onConfirm={confirmDeleteTopic}
+        title="Excluir Tópico"
+        message={`Tem certeza que deseja excluir o tópico "${topicToDelete?.name}"? Esta ação não pode ser desfeita.`}
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        variant="danger"
+        loading={isDeleting}
       />
     </div>
   );

@@ -10,7 +10,7 @@ O **AprovaAI** é uma plataforma inovadora de estudos focada em auxiliar estudan
 
 ### 🚀 Características Principais
 
-- **🎯 Simulados por Nível**: Sistema estruturado de `Exame > Área de Conhecimento > Tópico > Nível`
+- **🎯 Simulados por Nível**: Sistema estruturado de `Exame > Tópico > Nível > Questões`
 - **🎮 Gamificação**: Sistema de medalhas, conquistas e streaks para motivar o aprendizado
 - **🤖 Prof. Sabichão**: Nosso mascote e assistente inteligente para tirar dúvidas
 - **📊 Feedback Detalhado**: Explicações específicas para cada alternativa e links de aprofundamento
@@ -21,56 +21,21 @@ O **AprovaAI** é uma plataforma inovadora de estudos focada em auxiliar estudan
 ## 🛠️ Tecnologias Utilizadas
 
 ### Frontend
-- **Next.js 14** - Framework React com App Router
-- **TypeScript** - Tipagem estática
-- **Tailwind CSS** - Framework CSS utilitário
-- **Lucide React** - Ícones modernos
-- **React Hook Form** - Gerenciamento de formulários
-- **Zod** - Validação de schemas
+- Detalhar...
 
 ### Backend
-- **Next.js API Routes** - Endpoints serverless
-- **NextAuth.js** - Autenticação completa
-- **Prisma** - ORM moderno para TypeScript
-- **PostgreSQL** - Banco de dados relacional
-- **bcryptjs** - Hash de senhas
+- Detalhar...
 
 ### Infraestrutura
-- **Docker** - Containerização do banco de dados
-- **Docker Compose** - Orquestração de containers
+- Detalhar...
 
 #### Stack Resumido
-- **Frontend:** React, Next.js, TypeScript
-- **Estilização:** Tailwind CSS
-- **Banco de Dados:** PostgreSQL
+- Detalhar...
 
 ## 🗂️ Estrutura do Projeto
 
 ```
-aprovaai/
-├── src/
-│   ├── app/                    # App Router do Next.js
-│   │   ├── api/               # API Routes
-│   │   │   ├── auth/          # Autenticação NextAuth.js
-│   │   │   └── register/      # Endpoint de registro
-│   │   ├── dashboard/         # Área do usuário
-│   │   ├── login/            # Página de login
-│   │   ├── register/         # Página de cadastro
-│   │   └── globals.css       # Estilos globais
-│   ├── components/           # Componentes React
-│   │   ├── auth/            # Componentes de autenticação
-│   │   ├── layout/          # Layout e navegação
-│   │   ├── providers/       # Providers (Session, etc.)
-│   │   ├── sections/        # Seções da landing page
-│   │   └── ui/              # Componentes de UI
-│   ├── hooks/               # Custom hooks
-│   ├── lib/                 # Utilitários e configurações
-│   └── types/               # Definições de tipos TypeScript
-├── prisma/                  # Schema do banco de dados
-├── public/                  # Arquivos estáticos
-├── docker-compose.yml       # Configuração do PostgreSQL
-├── middleware.ts            # Middleware de autenticação
-└── tailwind.config.js       # Configuração do Tailwind
+Detalhar...
 ```
 
 ## Planos de Acesso
@@ -96,7 +61,7 @@ O AprovaAI oferece dois planos para atender às suas necessidades de estudo:
 
 ### Para o Usuário (Estudante):
 
-  * **Simulados por Nível:** Faça simulados divididos por `Exame > Área de Conhecimento > Tópico > Nível`.
+  * **Simulados por Nível:** Faça simulados divididos por `Exame > Tópico > Nível > Questões`.
   * **Níveis de Dificuldade:** Cada nível oferece questões focadas naquele conteúdo.
   * **Simulado Diversificado:** O último nível de cada tópico apresenta questões mais variadas em dificuldade para consolidar o aprendizado.
   * **Tipos de Questões:** Questões de múltipla escolha, podendo ter uma ou duas alternativas corretas (com a necessidade de acertar todas as corretas para pontuar).
@@ -120,7 +85,7 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
       * **CRUD completo:** Cadastrar, atualizar e remover exames.
       * **Configuração de Exames:** Adicionar descrição, link para informações oficiais e, opcionalmente, a data da próxima prova (se aplicável ao tipo de exame, como ENEM; não exibido para exames sem data fixa, como AWS).
   * **Gerenciamento de Conteúdo:**
-      * **CRUD completo:** Cadastrar, atualizar e remover `Áreas de Conhecimento`, `Tópicos` e `Níveis` dentro de cada exame.
+      * **CRUD completo:** Cadastrar, atualizar e remover `Tópico, Nível e Questões` dentro de cada exame.
       * **Personalização de Níveis:** Definir a quantidade de questões por nível e a quantidade de alternativas por questão.
       * **Critérios de Aprovação:** Configurar o número ou a porcentagem de acertos para passar de nível (com opção de "treino/revisão" sem critério de aprovação).
       * **Controle de Acesso:** Definir quais exames, áreas, tópicos ou níveis são acessíveis para usuários `Free Tier` ou apenas `Premium`.
@@ -185,6 +150,10 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
 
 8. **Acesse a aplicação**
    Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
+   
+   **🔗 Links úteis:**
+   - 🔍 **API Health Check**: [http://localhost:3000/api/health](http://localhost:3000/api/health) *(teste no Insomnia/Postman ou navegador)*
+   - 🗄️ **Adminer (Gerenciar DB)**: [http://localhost:8080](http://localhost:8080) *(interface web para gerenciar o banco PostgreSQL)*
 
 ## 🐳 Como Rodar o Docker no Linux
 
@@ -254,23 +223,3 @@ Contribuições são sempre bem-vindas! Para contribuir:
     </td>
   </tr>
 </table>
-
-## 🎯 Roadmap
-
-- [x] Sistema de autenticação completo
-- [x] Landing page responsiva
-- [ ] Dashboard do admin
-- [ ] Dashboard do usuário
-- [ ] Sistema de simulados
-- [ ] Gamificação e conquistas
-- [ ] Integração com IA (Prof. Sabichão)
-- [ ] Sistema de pagamentos
-- [ ] Aplicativo mobile
-- [ ] Ranqueamento
-- [ ] Página de Blog/Comunidade
-
----
-
-<div align="center">
-  Desenvolvido com ❤️ 
-</div>

@@ -4,13 +4,14 @@ import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
+import Portal from '@/components/ui/Portal';
 import Loading from '@/components/ui/Loading';
 
 interface Exam {
   id: string;
   name: string;
   description?: string;
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE';
   createdAt: string;
   updatedAt: string;
   _count: {
@@ -28,7 +29,7 @@ interface ExamModalProps {
 interface FormData {
   name: string;
   description: string;
-  status: 'DRAFT' | 'ACTIVE' | 'INACTIVE';
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 interface FormErrors {
@@ -41,7 +42,7 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
   const [formData, setFormData] = useState<FormData>({
     name: '',
     description: '',
-    status: 'DRAFT'
+    status: 'ACTIVE'
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [loading, setLoading] = useState(false);
@@ -57,7 +58,7 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
       setFormData({
         name: '',
         description: '',
-        status: 'DRAFT'
+        status: 'ACTIVE'
       });
     }
     setErrors({});
@@ -131,7 +132,8 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <Portal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -192,11 +194,10 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
             </label>
             <select
               value={formData.status}
-              onChange={(e) => handleInputChange('status', e.target.value as 'DRAFT' | 'ACTIVE' | 'INACTIVE')}
+              onChange={(e) => handleInputChange('status', e.target.value as 'ACTIVE' | 'INACTIVE')}
               disabled={loading}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             >
-              <option value="DRAFT">Rascunho</option>
               <option value="ACTIVE">Ativo</option>
               <option value="INACTIVE">Inativo</option>
             </select>
@@ -222,11 +223,12 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
               className="flex-1 flex items-center justify-center gap-2"
             >
               {loading && <Loading size="xs" />}
-              {exam ? 'Salvar Alterações' : 'Criar Exame'}
+              {exam ? 'Atualizar' : 'Criar'}
             </Button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 }

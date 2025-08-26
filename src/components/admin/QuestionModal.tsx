@@ -5,6 +5,7 @@ import { X, Plus, Trash2, Link, HelpCircle } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import ImageUpload from '@/components/ui/ImageUpload';
+import Portal from '@/components/ui/Portal';
 
 interface Option {
   id?: string;
@@ -97,6 +98,23 @@ export default function QuestionModal({
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const handleImageRemove = async () => {
+    if (formData.imageUrl && formData.imageUrl.startsWith('/uploads/')) {
+      try {
+        // Extrair o nome do arquivo da URL
+        const fileName = formData.imageUrl.split('/').pop();
+        if (fileName) {
+          await fetch(`/api/admin/upload?fileName=${fileName}`, {
+            method: 'DELETE',
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao remover arquivo:', error);
+      }
+    }
+    handleInputChange('imageUrl', '');
   };
 
   const handleOptionChange = (index: number, field: 'text' | 'isCorrect', value: string | boolean) => {
@@ -195,6 +213,22 @@ export default function QuestionModal({
     setLoading(true);
     
     try {
+      // Se estamos editando uma questão e a imagem foi alterada, remover a imagem antiga
+      if (question && question.imageUrl && 
+          question.imageUrl !== formData.imageUrl && 
+          question.imageUrl.startsWith('/uploads/')) {
+        try {
+          const fileName = question.imageUrl.split('/').pop();
+          if (fileName) {
+            await fetch(`/api/admin/upload?fileName=${fileName}`, {
+              method: 'DELETE',
+            });
+          }
+        } catch (error) {
+          console.error('Erro ao remover imagem antiga:', error);
+        }
+      }
+
       const url = question 
         ? `/api/admin/questions/${question.id}`
         : '/api/admin/questions';
@@ -203,7 +237,7 @@ export default function QuestionModal({
       
       const payload = {
         content: formData.content.trim(),
-        imageUrl: formData.imageUrl.trim() || undefined,
+        imageUrl: formData.imageUrl.trim() || '',
         explanation: formData.explanation.trim() || undefined,
         studyLink: formData.studyLink.trim() || undefined,
         levelId,
@@ -245,8 +279,9 @@ export default function QuestionModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
+    <Portal>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
+        <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
@@ -271,7 +306,7 @@ export default function QuestionModal({
               <ImageUpload
                 value={formData.imageUrl}
                 onChange={(url) => handleInputChange('imageUrl', url)}
-                onRemove={() => handleInputChange('imageUrl', '')}
+                onRemove={handleImageRemove}
                 disabled={loading}
               />
               {errors.imageUrl && (
@@ -418,11 +453,12 @@ export default function QuestionModal({
             disabled={loading}
             className="flex items-center gap-2"
           >
-            {loading && <Loading size="sm" />}
-            {question ? 'Atualizar' : 'Criar'} Questão
+            {loading && <Loading size="xs" />}
+            {question ? 'Atualizar' : 'Criar'}
           </Button>
         </div>
       </div>
     </div>
+    </Portal>
   );
 }

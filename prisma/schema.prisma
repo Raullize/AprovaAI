@@ -27,11 +27,17 @@ model User {
 }
 
 enum ExamStatus {
-  DRAFT
   ACTIVE
   INACTIVE
 
   @@map("exam_status")
+}
+
+enum TopicStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("topic_status")
 }
 
 model Exam {
@@ -39,7 +45,7 @@ model Exam {
   name        String     @map("name")
   slug        String     @unique @map("slug")
   description String?    @map("description")
-  status      ExamStatus @default(DRAFT) @map("status")
+  status      ExamStatus @default(ACTIVE) @map("status")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
@@ -50,13 +56,14 @@ model Exam {
 }
 
 model Topic {
-  id          String   @id @default(cuid()) @map("id")
-  name        String   @map("name")
-  slug        String   @map("slug")
-  description String?  @map("description")
-  examId      String   @map("exam_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id          String      @id @default(cuid()) @map("id")
+  name        String      @map("name")
+  slug        String      @map("slug")
+  description String?     @map("description")
+  status      TopicStatus @default(ACTIVE) @map("status")
+  examId      String      @map("exam_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
 
   // Relationships
   exam   Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
