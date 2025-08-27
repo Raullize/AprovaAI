@@ -40,7 +40,9 @@ export default function ExamTopicsPageBySlug() {
           name: data.name,
           slug: data.slug,
           description: data.description,
-          status: data.status
+          status: data.status,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt
         });
         setTopics(data.topics || []);
       } else if (response.status === 404) {
@@ -253,7 +255,7 @@ export default function ExamTopicsPageBySlug() {
 
               {/* Stats */}
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span>{topic._count.levels} níveis</span>
+                <span>{topic._count?.levels || 0} níveis</span>
                 <span>
                   Criado em {new Date(topic.createdAt).toLocaleDateString('pt-BR')}
                 </span>

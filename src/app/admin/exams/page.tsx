@@ -246,7 +246,7 @@ export default function ExamsPage() {
 
               {/* Stats */}
               <div className="flex items-center justify-between text-sm text-gray-500">
-                <span>{exam._count.topics} tópicos</span>
+                <span>{exam._count?.topics || 0} tópicos</span>
                 <span>
                   Criado em {new Date(exam.createdAt).toLocaleDateString('pt-BR')}
                 </span>

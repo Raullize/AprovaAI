@@ -42,6 +42,10 @@ export default function TopicLevelsPageBySlug() {
           name: data.name,
           slug: data.slug,
           description: data.description,
+          status: data.status || 'ACTIVE',
+          examId: data.examId,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
           exam: data.exam
         });
         setLevels(data.levels || []);
@@ -187,14 +191,14 @@ export default function TopicLevelsPageBySlug() {
         </button>
         <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
-          onClick={() => router.push(`/admin/exams/${topic.exam.slug}/topics`)}
+          onClick={() => router.push(`/admin/exams/${topic.exam?.slug}/topics`)}
           className="hover:text-primary-600 transition-colors"
         >
-          {topic.exam.name}
+          {topic.exam?.name}
         </button>
         <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
-          onClick={() => router.push(`/admin/exams/${topic.exam.slug}/topics/${topic.slug}/levels`)}
+          onClick={() => router.push(`/admin/exams/${topic.exam?.slug}/topics/${topic.slug}/levels`)}
           className="hover:text-primary-600 transition-colors"
         >
           {topic.name}
@@ -325,7 +329,7 @@ export default function TopicLevelsPageBySlug() {
                   size="sm"
                   className="w-full"
                   onClick={() => {
-                    router.push(`/admin/exams/${topic.exam.slug}/topics/${topic.slug}/levels/${level.slug}/questions`);
+                    router.push(`/admin/exams/${topic.exam?.slug}/topics/${topic.slug}/levels/${level.slug}/questions`);
                   }}
                 >
                   Gerenciar Questões

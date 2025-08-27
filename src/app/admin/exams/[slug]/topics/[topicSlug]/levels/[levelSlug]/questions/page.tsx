@@ -41,6 +41,14 @@ export default function LevelQuestionsPageBySlug() {
           name: data.name,
           slug: data.slug,
           description: data.description,
+          order: data.order || 0,
+          topicId: data.topicId,
+          simuladoName: data.simuladoName,
+          simuladoDescription: data.simuladoDescription,
+          xpReward: data.xpReward || 0,
+          passingPercentage: data.passingPercentage || 70,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
           topic: data.topic
         });
         setQuestions(data.questions || []);
@@ -189,21 +197,21 @@ export default function LevelQuestionsPageBySlug() {
         </button>
         <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
-          onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics`)}
+          onClick={() => router.push(`/admin/exams/${level.topic?.exam?.slug}/topics`)}
           className="hover:text-primary-600 transition-colors"
         >
-          {level.topic.exam.name}
+          {level.topic?.exam?.name}
         </button>
         <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
-          onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics/${level.topic.slug}/levels`)}
+          onClick={() => router.push(`/admin/exams/${level.topic?.exam?.slug}/topics/${level.topic?.slug}/levels`)}
           className="hover:text-primary-600 transition-colors"
         >
-          {level.topic.name}
+          {level.topic?.name}
         </button>
         <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
-          onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics/${level.topic.slug}/levels`)}
+          onClick={() => router.push(`/admin/exams/${level.topic?.exam?.slug}/topics/${level.topic?.slug}/levels`)}
           className="hover:text-primary-600 transition-colors"
         >
           {level.name}
