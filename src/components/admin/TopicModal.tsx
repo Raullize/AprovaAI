@@ -6,19 +6,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Portal from '@/components/ui/Portal';
 import Loading from '@/components/ui/Loading';
-
-interface Topic {
-  id: string;
-  name: string;
-  description?: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  examId: string;
-  createdAt: string;
-  updatedAt: string;
-  _count: {
-    levels: number;
-  };
-}
+import { Topic } from '@/types';
 
 interface TopicModalProps {
   isOpen: boolean;

@@ -7,28 +7,7 @@ import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import TopicModal from '@/components/admin/TopicModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';
-
-interface Exam {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  status: 'ACTIVE' | 'INACTIVE';
-}
-
-interface Topic {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  examId: string;
-  createdAt: string;
-  updatedAt: string;
-  _count: {
-    levels: number;
-  };
-}
+import { Exam, Topic } from '@/types';
 
 export default function ExamTopicsPageBySlug() {
   const params = useParams();

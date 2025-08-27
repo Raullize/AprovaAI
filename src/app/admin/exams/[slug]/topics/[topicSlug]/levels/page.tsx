@@ -7,36 +7,7 @@ import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import LevelModal from '@/components/admin/LevelModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';
-
-interface Exam {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-interface Topic {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  exam: Exam;
-}
-
-interface Level {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  order: number;
-  topicId: string;
-  xpReward: number;
-  passingPercentage: number;
-  createdAt: string;
-  updatedAt: string;
-  _count?: {
-    questions: number;
-  };
-}
+import { Exam, Topic, Level } from '@/types';
 
 export default function TopicLevelsPageBySlug() {
   const params = useParams();

@@ -6,18 +6,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Portal from '@/components/ui/Portal';
 import Loading from '@/components/ui/Loading';
-
-interface Exam {
-  id: string;
-  name: string;
-  description?: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  createdAt: string;
-  updatedAt: string;
-  _count: {
-    topics: number;
-  };
-}
+import { Exam } from '@/types';
 
 interface ExamModalProps {
   isOpen: boolean;

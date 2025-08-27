@@ -7,50 +7,7 @@ import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import QuestionModal from '@/components/admin/QuestionModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';
-
-interface Exam {
-  id: string;
-  name: string;
-  slug: string;
-}
-
-interface Topic {
-  id: string;
-  name: string;
-  slug: string;
-  exam: Exam;
-}
-
-interface Level {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  topic: Topic;
-}
-
-interface Option {
-  id: string;
-  text: string;
-  isCorrect: boolean;
-  order: number;
-  questionId: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface Question {
-  id: string;
-  content: string;
-  imageUrl?: string;
-  explanation?: string;
-  studyLink?: string;
-  order: number;
-  levelId: string;
-  options: Option[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { Exam, Topic, Level, Option, Question } from '@/types';
 
 export default function LevelQuestionsPageBySlug() {
   const params = useParams();

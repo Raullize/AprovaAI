@@ -7,18 +7,7 @@ import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import ExamModal from '@/components/admin/ExamModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';
-interface Exam {
-  id: string;
-  name: string;
-  slug: string;
-  description?: string;
-  status: 'ACTIVE' | 'INACTIVE';
-  createdAt: string;
-  updatedAt: string;
-  _count: {
-    topics: number;
-  };
-}
+import { Exam } from '@/types';
 
 const statusLabels = {
   ACTIVE: 'Ativo',
