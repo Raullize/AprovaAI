@@ -3,9 +3,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/admin/exams/slug/[slug] - Buscar exame específico por slug
 export async function GET(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { slug: string } }
 ) {
   try {
