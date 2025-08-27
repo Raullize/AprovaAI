@@ -63,7 +63,7 @@ export default function TopicLevelsPageBySlug() {
   const fetchTopicAndLevels = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/topics/by-slug/${examSlug}/${topicSlug}`);
+      const response = await fetch(`/api/admin/topics/slug/${examSlug}/${topicSlug}`);
       if (response.ok) {
         const data = await response.json();
         setTopic({

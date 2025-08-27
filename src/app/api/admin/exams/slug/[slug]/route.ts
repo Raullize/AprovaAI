@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 
-// GET /api/admin/exams/by-slug/[slug] - Buscar exame específico por slug
+// GET /api/admin/exams/slug/[slug] - Buscar exame específico por slug
 export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }

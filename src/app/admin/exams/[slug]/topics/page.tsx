@@ -53,7 +53,7 @@ export default function ExamTopicsPageBySlug() {
   const fetchExamAndTopics = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/exams/by-slug/${examSlug}`);
+      const response = await fetch(`/api/admin/exams/slug/${examSlug}`);
       if (response.ok) {
         const data = await response.json();
         setExam({

@@ -76,7 +76,7 @@ export default function LevelQuestionsPageBySlug() {
   const fetchLevelAndQuestions = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/levels/by-slug/${examSlug}/${topicSlug}/${levelSlug}`);
+      const response = await fetch(`/api/admin/levels/slug/${examSlug}/${topicSlug}/${levelSlug}`);
       if (response.ok) {
         const data = await response.json();
         setLevel({
