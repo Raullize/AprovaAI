@@ -77,7 +77,7 @@ export default function Sidebar({ className }: SidebarProps) {
   const { data: session } = useSession();
   
   // Usar navegação específica para admin ou usuário normal
-  const navigationItems = session?.user?.isAdmin ? adminNavigation : navigation;
+  const navigationItems = session?.user?.role === 'ADMIN' ? adminNavigation : navigation;
 
   return (
     <>

@@ -27,7 +27,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 Bem-vindo, {session?.user?.name?.split(' ')[0]}!
               </h1>
               <p className="text-gray-600 mt-1">
-                {session?.user?.isAdmin 
+                {session?.user?.role === 'ADMIN' 
                   ? 'Gerencie a plataforma e acompanhe o desempenho dos usuários.'
                   : 'Explore seus estudos e conquiste novos conhecimentos.'
                 }

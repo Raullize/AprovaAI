@@ -11,7 +11,7 @@ export async function PATCH(
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.isAdmin) {
+    if (!session?.user?.role || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Acesso negado. Apenas administradores podem acessar esta rota.' },
         { status: 403 }
@@ -34,7 +34,7 @@ export async function PATCH(
     }
     
     // Não permitir que admins alterem outros admins
-    if (existingUser.isAdmin && existingUser.id !== session.user.id) {
+    if (existingUser.role === 'ADMIN' && existingUser.id !== session.user.id) {
       return NextResponse.json(
         { error: 'Não é possível alterar dados de outros administradores' },
         { status: 403 }
@@ -42,7 +42,7 @@ export async function PATCH(
     }
 
     // Campos permitidos para atualização
-    const allowedFields = ['isPremium', 'isAdmin'];
+    const allowedFields = ['subscriptionPlan', 'role'];
     const updateData: any = {};
     
     for (const field of allowedFields) {
@@ -66,8 +66,8 @@ export async function PATCH(
         fullName: true,
         username: true,
         email: true,
-        isPremium: true,
-        isAdmin: true,
+        subscriptionPlan: 'PREMIUM',
+        role: 'ADMIN',
         updatedAt: true
       }
     });
@@ -93,7 +93,7 @@ export async function DELETE(
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.isAdmin) {
+    if (!session?.user?.role || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Acesso negado. Apenas administradores podem acessar esta rota.' },
         { status: 403 }
@@ -115,7 +115,7 @@ export async function DELETE(
     }
     
     // Não permitir que admins deletem outros admins ou a si mesmos
-    if (existingUser.isAdmin) {
+    if (existingUser.role === 'ADMIN') {
       return NextResponse.json(
         { error: 'Não é possível deletar administradores' },
         { status: 403 }

@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.isAdmin) {
+    if (!session?.user?.role || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Acesso negado. Apenas administradores podem acessar esta funcionalidade.' },
         { status: 403 }
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.isAdmin) {
+    if (!session?.user?.role || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Acesso negado. Apenas administradores podem acessar esta funcionalidade.' },
         { status: 403 }

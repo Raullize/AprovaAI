@@ -72,7 +72,7 @@ export default function LoginPage() {
         // Wait a moment to show success message, then redirect
         setTimeout(async () => {
           const session = await getSession();
-          if (session?.user?.isAdmin) {
+          if (session?.user?.role === 'ADMIN') {
             router.push('/admin');
           } else {
             router.push('/dashboard');

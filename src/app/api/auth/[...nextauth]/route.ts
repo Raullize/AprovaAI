@@ -46,8 +46,8 @@ const authOptions: NextAuthOptions = {
             id: user.id,
             name: user.username,
             email: user.email,
-            isPremium: user.isPremium,
-            isAdmin: user.isAdmin
+            subscriptionPlan: user.subscriptionPlan,
+            role: user.role
           }
         } catch (error) {
           console.error('Authentication error:', error)
@@ -67,16 +67,16 @@ const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id
-        token.isPremium = user.isPremium
-        token.isAdmin = user.isAdmin
+        token.subscriptionPlan = user.subscriptionPlan
+        token.role = user.role
       }
       return token
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id as string
-        session.user.isPremium = token.isPremium as boolean
-        session.user.isAdmin = token.isAdmin as boolean
+        session.user.subscriptionPlan = token.subscriptionPlan as any
+        session.user.role = token.role as any
       }
       return session
     },

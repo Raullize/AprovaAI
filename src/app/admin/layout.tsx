@@ -22,7 +22,7 @@ export default function AdminLayout({
       return;
     }
 
-    if (!session.user?.isAdmin) {
+    if (!session.user?.role || session.user.role !== 'ADMIN') {
       router.push('/dashboard');
       return;
     }
@@ -32,7 +32,7 @@ export default function AdminLayout({
     return <Loading fullScreen />;
   }
 
-  if (!session || !session.user?.isAdmin) {
+  if (!session || !session.user?.role || session.user.role !== 'ADMIN') {
     return null;
   }
 

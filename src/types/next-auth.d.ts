@@ -1,4 +1,5 @@
 import NextAuth from 'next-auth'
+import { UserRole, SubscriptionPlan } from '@prisma/client'
 
 declare module 'next-auth' {
   interface Session {
@@ -7,8 +8,8 @@ declare module 'next-auth' {
       name?: string | null
       email?: string | null
       image?: string | null
-      isPremium: boolean
-      isAdmin: boolean
+      subscriptionPlan: SubscriptionPlan
+      role: UserRole
     }
   }
 
@@ -17,15 +18,15 @@ declare module 'next-auth' {
     name?: string | null
     email?: string | null
     image?: string | null
-    isPremium: boolean
-    isAdmin: boolean
+    subscriptionPlan: SubscriptionPlan
+    role: UserRole
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string
-    isPremium: boolean
-    isAdmin: boolean
+    subscriptionPlan: SubscriptionPlan
+    role: UserRole
   }
 }

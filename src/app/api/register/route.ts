@@ -70,8 +70,8 @@ export async function POST(request: NextRequest) {
         email,
         passwordHash,
         dateOfBirth: new Date(dateOfBirth),
-        isPremium: false,
-        isAdmin: false
+        subscriptionPlan: 'FREE',
+        role: 'USER'
       },
       select: {
         id: true,
@@ -79,8 +79,8 @@ export async function POST(request: NextRequest) {
         username: true,
         email: true,
         dateOfBirth: true,
-        isPremium: true,
-        isAdmin: true,
+        subscriptionPlan: 'PREMIUM',
+        role: 'ADMIN',
         createdAt: true
       }
     })

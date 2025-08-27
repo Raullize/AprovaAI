@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session?.user?.isAdmin) {
+    if (!session?.user?.role || session.user.role !== 'ADMIN') {
       return NextResponse.json(
         { error: 'Acesso negado. Apenas administradores podem acessar esta rota.' },
         { status: 403 }
@@ -21,8 +21,8 @@ export async function GET() {
         fullName: true,
         username: true,
         email: true,
-        isPremium: true,
-        isAdmin: true,
+        subscriptionPlan: 'PREMIUM',
+        role: 'ADMIN',
         createdAt: true,
         updatedAt: true
       },
