@@ -25,23 +25,18 @@ const Loading: React.FC<LoadingProps> = ({
 
   const content = (
     <div className={`flex flex-col items-center justify-center space-y-4 ${className}`}>
-      {/* Spinner customizado com identidade visual */}
       <div className="relative">
-        {/* Círculo externo girando */}
         <div className={`${currentSize.spinner} border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin`}></div>
         
-        {/* Ícone central */}
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="bg-primary-600 rounded-full p-2 animate-pulse">
             <GraduationCap className={`${currentSize.icon} text-white`} />
           </div>
         </div>
         
-        {/* Círculo interno com efeito de pulso */}
         <div className={`absolute inset-2 border-2 border-primary-300 rounded-full animate-ping opacity-20`}></div>
       </div>
       
-      {/* Texto com animação */}
       {text && (
         <div className="text-center">
           <p className={`${currentSize.text} font-medium text-primary-700 animate-pulse`}>

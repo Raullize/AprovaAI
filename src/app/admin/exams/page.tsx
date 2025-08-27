@@ -50,12 +50,10 @@ export default function ExamsPage() {
 
   const handleExamSaved = (savedExam: Exam) => {
     if (editingExam) {
-      // Atualizar exame existente
       setExams(exams.map(exam => 
         exam.id === savedExam.id ? savedExam : exam
       ));
     } else {
-      // Adicionar novo exame
       setExams([savedExam, ...exams]);
     }
   };
@@ -123,7 +121,6 @@ export default function ExamsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
       <nav className="flex" aria-label="Breadcrumb">
         <ol className="inline-flex items-center space-x-1 md:space-x-3">
           <li className="inline-flex items-center">
@@ -133,8 +130,6 @@ export default function ExamsPage() {
           </li>
         </ol>
       </nav>
-
-      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">Gerenciar Exames</h1>
@@ -151,7 +146,7 @@ export default function ExamsPage() {
         </Button>
       </div>
 
-      {/* Search */}
+
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
         <input
@@ -163,7 +158,7 @@ export default function ExamsPage() {
         />
       </div>
 
-      {/* Exams Grid */}
+
       {filteredExams.length === 0 ? (
         <div className="text-center py-12">
           <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -190,7 +185,7 @@ export default function ExamsPage() {
               key={exam.id}
               className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
             >
-              {/* Status Badge */}
+
               <div className="flex justify-between items-start mb-4">
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                   statusColors[exam.status]
@@ -198,7 +193,6 @@ export default function ExamsPage() {
                   {statusLabels[exam.status]}
                 </span>
                 <div className="flex items-center gap-1">
-                  {/* Status Toggle */}
                   <button
                     onClick={() => handleStatusChange(
                       exam.id, 
@@ -214,7 +208,6 @@ export default function ExamsPage() {
                     )}
                   </button>
                   
-                  {/* Edit Button */}
                   <button
                     onClick={() => setEditingExam(exam)}
                     className="p-1 text-gray-400 hover:text-blue-600 transition-colors"
@@ -223,7 +216,6 @@ export default function ExamsPage() {
                     <Edit className="h-4 w-4" />
                   </button>
                   
-                  {/* Delete Button */}
                   <button
                     onClick={() => handleDeleteExam(exam)}
                     className="p-1 text-gray-400 hover:text-red-600 transition-colors"
@@ -234,7 +226,7 @@ export default function ExamsPage() {
                 </div>
               </div>
 
-              {/* Exam Info */}
+
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {exam.name}
               </h3>
@@ -244,7 +236,7 @@ export default function ExamsPage() {
                 </p>
               )}
 
-              {/* Stats */}
+
               <div className="flex items-center justify-between text-sm text-gray-500">
                 <span>{exam._count?.topics || 0} tópicos</span>
                 <span>
@@ -252,7 +244,7 @@ export default function ExamsPage() {
                 </span>
               </div>
 
-              {/* Manage Topics Button */}
+
               <div className="mt-4 pt-4 border-t border-gray-100">
                 <Button
                   variant="outline"
@@ -270,7 +262,7 @@ export default function ExamsPage() {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
+
       <ExamModal
         isOpen={showCreateModal || !!editingExam}
         onClose={() => {
@@ -281,7 +273,7 @@ export default function ExamsPage() {
         exam={editingExam}
       />
 
-      {/* Delete Confirmation Modal */}
+
       <ConfirmModal
         isOpen={!!examToDelete}
         onClose={() => setExamToDelete(null)}

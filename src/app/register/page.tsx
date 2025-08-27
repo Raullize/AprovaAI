@@ -38,7 +38,6 @@ export default function RegisterPage() {
       [name]: type === 'checkbox' ? checked : value 
     }));
     
-    // Clear message when user starts typing
     if (message) {
       setMessage(null);
     }
@@ -78,11 +77,9 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Clear previous messages
     setMessage(null);
     clearErrors();
     
-    // Validate form
     const validation = validateRegisterForm(formData);
     if (!validation.isValid) {
       return;
@@ -110,12 +107,10 @@ export default function RegisterPage() {
       if (response.ok) {
         setMessage({ type: 'success', text: 'Conta criada com sucesso! Redirecionando para login...' });
         
-        // Redirect to login after success
         setTimeout(() => {
           router.push('/login?message=Conta criada com sucesso! Faça login para continuar.');
         }, 2000);
       } else {
-        // Handle specific error messages from API
         setMessage({ 
           type: 'error', 
           text: data.error || 'Erro ao criar conta. Tente novamente.' 
@@ -137,10 +132,8 @@ export default function RegisterPage() {
       title="Crie sua conta no AprovaAI"
       subtitle="Junte-se a milhares de estudantes e comece sua jornada"
     >
-      {/* Step Indicator */}
       <div className="flex items-center justify-center mb-8">
         <div className="flex items-center space-x-4">
-          {/* Step 1 */}
           <div className="flex items-center">
             <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
               currentStep >= 1 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
@@ -154,12 +147,10 @@ export default function RegisterPage() {
             </span>
           </div>
           
-          {/* Connector */}
           <div className={`w-8 h-0.5 ${
             currentStep >= 2 ? 'bg-primary-600' : 'bg-gray-200'
           }`} />
           
-          {/* Step 2 */}
           <div className="flex items-center">
             <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
               currentStep >= 2 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
@@ -175,7 +166,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Message Display */}
       {message && (
         <div className={`p-4 rounded-lg border mb-6 ${
           message.type === 'success' 
@@ -193,9 +183,7 @@ export default function RegisterPage() {
 
       <form onSubmit={currentStep === 1 ? (e) => { e.preventDefault(); handleNextStep(); } : handleSubmit} className="space-y-6">
         {currentStep === 1 ? (
-          // Step 1: Personal Data
           <>
-            {/* Full Name Field */}
             <Input
               name="fullName"
               type="text"
@@ -208,7 +196,6 @@ export default function RegisterPage() {
               required
             />
 
-            {/* Username Field */}
             <Input
               name="username"
               type="text"
@@ -221,7 +208,6 @@ export default function RegisterPage() {
               required
             />
 
-            {/* Email Field */}
             <Input
               name="email"
               type="email"
@@ -234,7 +220,6 @@ export default function RegisterPage() {
               required
             />
 
-            {/* Date of Birth Field */}
             <Input
               name="dateOfBirth"
               type="date"
@@ -246,7 +231,6 @@ export default function RegisterPage() {
               required
             />
 
-            {/* Next Button */}
             <Button
               type="submit"
               size="lg"
@@ -258,9 +242,7 @@ export default function RegisterPage() {
             </Button>
           </>
         ) : (
-          // Step 2: Security
           <>
-            {/* Password Field */}
             <div className="space-y-2">
               <Input
                 name="password"
@@ -277,7 +259,6 @@ export default function RegisterPage() {
                 required
               />
               
-              {/* Password Strength Indicator */}
               {formData.password && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
@@ -304,7 +285,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Confirm Password Field */}
             <Input
               name="confirmPassword"
               type="password"
@@ -320,7 +300,6 @@ export default function RegisterPage() {
               required
             />
 
-            {/* Terms Checkbox */}
             <div className="space-y-2">
               <label className="flex items-start space-x-3 cursor-pointer">
                 <input
@@ -348,7 +327,6 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* Navigation Buttons */}
             <div className="flex space-x-4">
               <Button
                 type="button"
@@ -375,7 +353,6 @@ export default function RegisterPage() {
           </>
         )}
 
-        {/* Login Link */}
         <div className="text-center pt-4 border-t border-gray-200">
           <p className="text-gray-600">
             Já tem uma conta?{' '}

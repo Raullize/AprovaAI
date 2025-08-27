@@ -20,7 +20,6 @@ const authOptions: NextAuthOptions = {
         }
 
         try {
-          // Find user by email
           const user = await prisma.user.findUnique({
             where: {
               email: credentials.email
@@ -31,7 +30,6 @@ const authOptions: NextAuthOptions = {
             return null
           }
 
-          // Compare password
           const isPasswordValid = await bcrypt.compare(
             credentials.password,
             user.passwordHash
@@ -41,7 +39,6 @@ const authOptions: NextAuthOptions = {
             return null
           }
 
-          // Return user object
           return {
             id: user.id,
             name: user.username,
@@ -81,9 +78,7 @@ const authOptions: NextAuthOptions = {
       return session
     },
     async redirect({ url, baseUrl }) {
-      // Allows relative callback URLs
       if (url.startsWith("/")) return `${baseUrl}${url}`
-      // Allows callback URLs on the same origin
       else if (new URL(url).origin === baseUrl) return url
       return baseUrl
     }

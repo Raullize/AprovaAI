@@ -71,7 +71,6 @@ export default function QuestionModal({
     }
   }, [isOpen, question]);
 
-  // Handle ESC key press
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen && !loading) {
@@ -88,7 +87,6 @@ export default function QuestionModal({
     };
   }, [isOpen, loading, onClose]);
 
-  // Handle click outside modal
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && !loading) {
       onClose();
@@ -287,7 +285,6 @@ export default function QuestionModal({
         onClick={handleBackdropClick}
       >
         <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
             {question ? 'Editar Questão' : 'Nova Questão'}
@@ -300,10 +297,8 @@ export default function QuestionModal({
           </button>
         </div>
 
-        {/* Content */}
         <div className="overflow-y-auto max-h-[calc(90vh-140px)]">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            {/* Imagem da Questão */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Imagem da Questão (opcional)
@@ -319,7 +314,6 @@ export default function QuestionModal({
               )}
             </div>
 
-            {/* Conteúdo */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Conteúdo da Questão *
@@ -338,7 +332,6 @@ export default function QuestionModal({
               )}
             </div>
 
-            {/* Alternativas */}
             <div>
               <div className="flex items-center justify-between mb-4">
                 <label className="block text-sm font-medium text-gray-700">
@@ -403,7 +396,6 @@ export default function QuestionModal({
               </div>
             </div>
 
-            {/* Explicação */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <HelpCircle className="inline h-4 w-4 mr-1" />
@@ -418,7 +410,6 @@ export default function QuestionModal({
               />
             </div>
 
-            {/* Link de Estudo */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 <Link className="inline h-4 w-4 mr-1" />
@@ -443,7 +434,6 @@ export default function QuestionModal({
           </form>
         </div>
 
-        {/* Footer */}
         <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200">
           <Button
             type="button"

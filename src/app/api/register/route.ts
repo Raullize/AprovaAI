@@ -3,7 +3,6 @@ import bcrypt from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 import { z } from 'zod'
 
-// Validation schema
 const registerSchema = z.object({
   fullName: z.string().min(1, 'Nome completo é obrigatório'),
   username: z.string().min(3, 'Nome de usuário deve ter pelo menos 3 caracteres'),
@@ -19,7 +18,6 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     
-    // Validate input data
     const validationResult = registerSchema.safeParse(body)
     if (!validationResult.success) {
       return NextResponse.json(
@@ -33,7 +31,6 @@ export async function POST(request: NextRequest) {
 
     const { fullName, username, email, password, dateOfBirth } = validationResult.data
 
-    // Check if user already exists
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [
@@ -58,11 +55,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Hash password
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(password, saltRounds)
 
-    // Create user
     const newUser = await prisma.user.create({
       data: {
         fullName,

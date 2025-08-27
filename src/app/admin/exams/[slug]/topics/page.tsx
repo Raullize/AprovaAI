@@ -105,12 +105,10 @@ export default function ExamTopicsPageBySlug() {
 
   const handleTopicSaved = (savedTopic: Topic) => {
     if (editingTopic) {
-      // Atualizar tópico existente
       setTopics(topics.map(topic => 
         topic.id === savedTopic.id ? savedTopic : topic
       ));
     } else {
-      // Adicionar novo tópico
       setTopics([...topics, savedTopic]);
     }
   };
@@ -139,7 +137,6 @@ export default function ExamTopicsPageBySlug() {
 
   return (
     <div className="space-y-6">
-      {/* Breadcrumb */}
       <nav className="flex items-center space-x-2 text-sm text-gray-600">
         <button
           onClick={() => router.push('/admin/exams')}
@@ -151,7 +148,6 @@ export default function ExamTopicsPageBySlug() {
         <span className="text-gray-900 font-medium">{exam.name}</span>
       </nav>
 
-      {/* Header */}
       <div className="flex items-center gap-4">
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-gray-900">{exam.name}</h1>
@@ -168,7 +164,6 @@ export default function ExamTopicsPageBySlug() {
         </Button>
       </div>
 
-      {/* Search */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
         <input
@@ -180,7 +175,6 @@ export default function ExamTopicsPageBySlug() {
         />
       </div>
 
-      {/* Topics Grid */}
       {filteredTopics.length === 0 ? (
         <div className="text-center py-12">
           <Layers className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -207,7 +201,6 @@ export default function ExamTopicsPageBySlug() {
               key={topic.id}
               className="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow"
             >
-              {/* Status Badge */}
               <div className="flex justify-between items-start mb-4">
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                   topic.status === 'ACTIVE' 
@@ -217,7 +210,6 @@ export default function ExamTopicsPageBySlug() {
                   {topic.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                 </span>
                 
-                {/* Actions */}
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => handleStatusChange(topic.id, topic.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE')}
@@ -243,7 +235,6 @@ export default function ExamTopicsPageBySlug() {
                 </div>
               </div>
 
-              {/* Topic Info */}
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 {topic.name}
               </h3>
@@ -253,7 +244,6 @@ export default function ExamTopicsPageBySlug() {
                 </p>
               )}
 
-              {/* Stats */}
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                 <span>{topic._count?.levels || 0} níveis</span>
                 <span>
@@ -261,7 +251,6 @@ export default function ExamTopicsPageBySlug() {
                 </span>
               </div>
 
-              {/* Manage Levels Button */}
               <div className="pt-4 border-t border-gray-100">
                 <Button
                   variant="outline"
@@ -279,7 +268,6 @@ export default function ExamTopicsPageBySlug() {
         </div>
       )}
 
-      {/* Create/Edit Modal */}
       <TopicModal
         isOpen={showCreateModal || !!editingTopic}
         onClose={() => {
@@ -291,7 +279,6 @@ export default function ExamTopicsPageBySlug() {
         examId={exam.id}
       />
 
-      {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={!!topicToDelete}
         onClose={() => setTopicToDelete(null)}

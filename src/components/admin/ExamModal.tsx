@@ -53,7 +53,6 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
     setErrors({});
   }, [exam, isOpen]);
 
-  // Handle ESC key press
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen && !loading) {
@@ -70,7 +69,6 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
     };
   }, [isOpen, loading, onClose]);
 
-  // Handle click outside modal
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && !loading) {
       onClose();
@@ -136,7 +134,6 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
 
   const handleInputChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Limpar erro do campo quando o usuário começar a digitar
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
@@ -151,7 +148,6 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
         onClick={handleBackdropClick}
       >
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
             {exam ? 'Editar Exame' : 'Novo Exame'}
@@ -165,16 +161,13 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* General Error */}
           {errors.general && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3">
               <p className="text-sm text-red-600">{errors.general}</p>
             </div>
           )}
 
-          {/* Nome */}
           <div>
             <Input
               label="Nome do Exame"
@@ -188,7 +181,6 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
             />
           </div>
 
-          {/* Descrição */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Descrição (opcional)
@@ -203,7 +195,6 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
             />
           </div>
 
-          {/* Status */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Status
@@ -221,8 +212,6 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
               Apenas exames ativos ficam visíveis para os usuários
             </p>
           </div>
-
-          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <Button
               type="button"

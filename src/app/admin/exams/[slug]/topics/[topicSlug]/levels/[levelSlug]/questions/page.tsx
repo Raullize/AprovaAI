@@ -95,12 +95,10 @@ export default function LevelQuestionsPageBySlug() {
 
   const handleQuestionSaved = (savedQuestion: Question) => {
     if (editingQuestion) {
-      // Atualizar questão existente
       setQuestions(questions.map(question => 
         question.id === savedQuestion.id ? savedQuestion : question
       ));
     } else {
-      // Adicionar nova questão
       setQuestions([...questions, savedQuestion]);
     }
   };
@@ -153,9 +151,7 @@ export default function LevelQuestionsPageBySlug() {
     const draggedIndex = newQuestions.findIndex(q => q.id === draggedQuestion.id);
     const targetIndex = newQuestions.findIndex(q => q.id === targetQuestion.id);
 
-    // Remove o item arrastado
     const [removed] = newQuestions.splice(draggedIndex, 1);
-    // Insere na nova posição
     newQuestions.splice(targetIndex, 0, removed);
 
     setQuestions(newQuestions);

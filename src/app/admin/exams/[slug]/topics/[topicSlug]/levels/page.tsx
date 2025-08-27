@@ -89,12 +89,10 @@ export default function TopicLevelsPageBySlug() {
 
   const handleLevelSaved = (savedLevel: Level) => {
     if (editingLevel) {
-      // Atualizar nível existente
       setLevels(levels.map(level => 
         level.id === savedLevel.id ? savedLevel : level
       ));
     } else {
-      // Adicionar novo nível
       setLevels([...levels, savedLevel]);
     }
   };
@@ -147,9 +145,7 @@ export default function TopicLevelsPageBySlug() {
     const draggedIndex = newLevels.findIndex(l => l.id === draggedLevel.id);
     const targetIndex = newLevels.findIndex(l => l.id === targetLevel.id);
 
-    // Remove o item arrastado
     const [removed] = newLevels.splice(draggedIndex, 1);
-    // Insere na nova posição
     newLevels.splice(targetIndex, 0, removed);
 
     setLevels(newLevels);

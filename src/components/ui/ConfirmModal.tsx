@@ -28,7 +28,6 @@ export default function ConfirmModal({
   variant = 'danger',
   loading = false
 }: ConfirmModalProps) {
-  // Handle ESC key press
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen && !loading) {
@@ -45,7 +44,6 @@ export default function ConfirmModal({
     };
   }, [isOpen, loading, onClose]);
 
-  // Handle click outside modal
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && !loading) {
       onClose();
@@ -91,7 +89,6 @@ export default function ConfirmModal({
         onClick={handleBackdropClick}
       >
         <div className="bg-white rounded-lg w-full max-w-md">
-          {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-full ${styles.bg} ${styles.border} border`}>
@@ -110,13 +107,10 @@ export default function ConfirmModal({
             </button>
           </div>
 
-          {/* Content */}
           <div className="p-6">
             <p className="text-gray-600 mb-6">
               {message}
             </p>
-
-            {/* Actions */}
             <div className="flex gap-3">
               <Button
                 type="button"

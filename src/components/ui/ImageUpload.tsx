@@ -57,7 +57,7 @@ export default function ImageUpload({
       return;
     }
 
-    if (file.size > 5 * 1024 * 1024) { // 5MB limit
+    if (file.size > 5 * 1024 * 1024) {
       alert('O arquivo deve ter no máximo 5MB.');
       return;
     }
@@ -123,7 +123,6 @@ export default function ImageUpload({
 
   return (
     <div className="space-y-4">
-      {/* Drag and Drop Area */}
       <div
         className={`relative border-2 border-dashed rounded-lg p-6 transition-colors ${
           dragActive

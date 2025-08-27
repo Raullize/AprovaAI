@@ -26,7 +26,6 @@ export default function LoginPage() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Check for success message from registration
     const urlMessage = searchParams.get('message');
     if (urlMessage) {
       setMessage({ type: 'success', text: urlMessage });
@@ -37,7 +36,6 @@ export default function LoginPage() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     
-    // Clear message when user starts typing
     if (message) {
       setMessage(null);
     }
@@ -46,11 +44,9 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Clear previous messages
     setMessage(null);
     clearErrors();
     
-    // Validate form
     const validation = validateLoginForm(formData);
     if (!validation.isValid) {
       return;
@@ -69,7 +65,6 @@ export default function LoginPage() {
         setMessage({ type: 'error', text: 'E-mail ou senha inválidos.' });
       } else if (result?.ok) {
         setMessage({ type: 'success', text: 'Login realizado com sucesso!' });
-        // Wait a moment to show success message, then redirect
         setTimeout(async () => {
           const session = await getSession();
           if (session?.user?.role === 'ADMIN') {
@@ -109,7 +104,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Email Field */}
         <Input
           name="email"
           type="email"
@@ -122,7 +116,6 @@ export default function LoginPage() {
           required
         />
 
-        {/* Password Field */}
         <Input
           name="password"
           type="password"
@@ -138,7 +131,6 @@ export default function LoginPage() {
           required
         />
 
-        {/* Forgot Password Link */}
         <div className="text-right">
           <Link 
             href="#" 
@@ -148,7 +140,6 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        {/* Submit Button */}
         <Button
           type="submit"
           size="lg"
@@ -159,7 +150,6 @@ export default function LoginPage() {
           Entrar
         </Button>
 
-        {/* Register Link */}
         <div className="text-center pt-4 border-t border-gray-200">
           <p className="text-gray-600">
             Não tem uma conta?{' '}

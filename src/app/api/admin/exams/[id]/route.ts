@@ -11,7 +11,6 @@ const updateExamSchema = z.object({
   status: z.enum(['DRAFT', 'ACTIVE', 'INACTIVE']).optional(),
 });
 
-// GET /api/admin/exams/[id] - Buscar exame específico
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -66,7 +65,6 @@ export async function GET(
   }
 }
 
-// PATCH /api/admin/exams/[id] - Atualizar exame
 export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -86,7 +84,6 @@ export async function PATCH(
 
     let updateData = { ...validatedData };
 
-    // Se o nome foi alterado, gerar novo slug
     if (validatedData.name) {
       const baseSlug = generateSlug(validatedData.name);
       const slug = await generateUniqueSlug(
@@ -133,7 +130,6 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/admin/exams/[id] - Excluir exame
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }

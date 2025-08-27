@@ -44,7 +44,6 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
     }
   }, [isOpen, topic]);
 
-  // Handle ESC key press
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen && !loading) {
@@ -61,7 +60,6 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
     };
   }, [isOpen, loading, onClose]);
 
-  // Handle click outside modal
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && !loading) {
       onClose();
@@ -121,7 +119,6 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    // Limpar erro do campo quando o usuário começar a digitar
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -136,7 +133,6 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
         onClick={handleBackdropClick}
       >
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
             {topic ? 'Editar Tópico' : 'Novo Tópico'}
@@ -150,16 +146,13 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Error geral */}
           {errors.general && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
               <p className="text-sm text-red-600">{errors.general}</p>
             </div>
           )}
 
-          {/* Nome */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Nome *
@@ -178,7 +171,6 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
             )}
           </div>
 
-          {/* Descrição */}
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
               Descrição
@@ -199,7 +191,6 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
             )}
           </div>
 
-          {/* Status */}
           <div>
             <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
               Status *
@@ -220,8 +211,6 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
               <p className="mt-1 text-sm text-red-600">{errors.status}</p>
             )}
           </div>
-
-          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <Button
               type="button"

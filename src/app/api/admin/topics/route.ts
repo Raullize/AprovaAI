@@ -11,7 +11,6 @@ const createTopicSchema = z.object({
   examId: z.string().min(1, 'ID do exame é obrigatório'),
 });
 
-// GET /api/admin/topics - Listar tópicos por exame
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -37,7 +36,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Verificar se o exame existe
     const exam = await prisma.exam.findUnique({
       where: { id: examId },
     });
@@ -96,7 +94,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/admin/topics - Criar novo tópico
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -111,7 +108,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createTopicSchema.parse(body);
 
-    // Verificar se o exame existe
     const exam = await prisma.exam.findUnique({
       where: { id: validatedData.examId },
     });
@@ -123,7 +119,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar se já existe um tópico com o mesmo nome no exame
     const existingTopic = await prisma.topic.findFirst({
       where: {
         name: validatedData.name,
@@ -138,7 +133,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Gerar slug único para o tópico dentro do exame
     const baseSlug = generateSlug(validatedData.name);
     const slug = await generateUniqueSlug(
       baseSlug,

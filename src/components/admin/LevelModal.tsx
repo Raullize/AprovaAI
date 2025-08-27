@@ -47,7 +47,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
     }
   }, [isOpen, level]);
 
-  // Handle ESC key press
   useEffect(() => {
     const handleEscKey = (event: KeyboardEvent) => {
       if (event.key === 'Escape' && isOpen && !loading) {
@@ -64,7 +63,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
     };
   }, [isOpen, loading, onClose]);
 
-  // Handle click outside modal
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget && !loading) {
       onClose();
@@ -125,7 +123,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
   const handleInputChange = (field: string, value: string) => {
     let processedValue: any = value;
     
-    // Converter valores numéricos
     if (field === 'xpReward') {
       processedValue = parseInt(value) || 0;
     } else if (field === 'passingPercentage') {
@@ -133,7 +130,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
     }
     
     setFormData(prev => ({ ...prev, [field]: processedValue }));
-    // Limpar erro do campo quando o usuário começar a digitar
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -148,7 +144,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
         onClick={handleBackdropClick}
       >
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
-        {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-lg font-semibold text-gray-900">
             {level ? 'Editar Nível' : 'Novo Nível'}
@@ -162,16 +157,13 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          {/* Error geral */}
           {errors.general && (
             <div className="bg-red-50 border border-red-200 rounded-md p-3">
               <p className="text-sm text-red-600">{errors.general}</p>
             </div>
           )}
 
-          {/* Nome */}
           <div>
             <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
               Nome *
@@ -190,9 +182,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
             )}
           </div>
 
-
-
-          {/* XP Reward */}
           <div>
             <label htmlFor="xpReward" className="block text-sm font-medium text-gray-700 mb-1">
               XP de Recompensa *
@@ -212,7 +201,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
             )}
           </div>
 
-          {/* Porcentagem para Passar */}
           <div>
             <label htmlFor="passingPercentage" className="block text-sm font-medium text-gray-700 mb-1">
               Porcentagem para Passar (%) *
@@ -234,7 +222,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
             )}
           </div>
 
-          {/* Descrição */}
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
               Descrição
@@ -254,8 +241,6 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
               <p className="mt-1 text-sm text-red-600">{errors.description}</p>
             )}
           </div>
-
-          {/* Actions */}
           <div className="flex gap-3 pt-4">
             <Button
               type="button"

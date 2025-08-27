@@ -17,7 +17,6 @@ const updateExamSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
 });
 
-// GET /api/admin/exams - Listar exames
 export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -52,7 +51,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/admin/exams - Criar exame
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
