@@ -246,7 +246,7 @@ export default function LevelQuestionsPageBySlug() {
         </button>
         <span>></span>
         <button
-          onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics/${level.topic.slug}/levels/${level.slug}/questions`)}
+          onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics/${level.topic.slug}/levels`)}
           className="hover:text-primary-600 transition-colors"
         >
           {level.name}
