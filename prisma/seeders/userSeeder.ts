@@ -24,9 +24,9 @@ export async function seedUsers() {
       username: 'demo',
       email: 'demo@aprovaai.com',
       passwordHash: hashedPassword,
-      isAdmin: false,
+      role: 'USER',
       dateOfBirth: new Date('2002-02-02'),
-      isPremium: false,
+      subscriptionPlan: 'FREE',
     },
   });
 

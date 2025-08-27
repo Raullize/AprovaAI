@@ -11,7 +11,7 @@ export default withAuth(
         const { pathname } = req.nextUrl
         
         if (pathname.startsWith('/admin')) {
-          return !!token && token.isAdmin === true
+          return !!token && token.role === 'ADMIN'
         }
         
         if (pathname.startsWith('/dashboard')) {

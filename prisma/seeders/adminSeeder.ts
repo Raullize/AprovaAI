@@ -22,9 +22,9 @@ export async function seedAdmin() {
       username: 'admin',
       email: 'admin@aprovaai.com',
       passwordHash: hashedPassword,
-      isAdmin: true,
+      role: 'ADMIN',
       dateOfBirth: new Date('2002-02-02'),
-      isPremium: false,
+      subscriptionPlan: 'FREE',
     },
   });
 
