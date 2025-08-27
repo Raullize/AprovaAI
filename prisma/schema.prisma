@@ -5,20 +5,38 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}enum UserRole {
+  USER
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum UserRole {
+  USER
+  ADMIN
+
+  @@map("user_role")
+}
+
+enum SubscriptionPlan {
+  FREE
+  PREMIUM
+
+  @@map("subscription_plan")
 }
 
 model User {
-  id           String   @id @default(cuid()) @map("id")
-  fullName     String   @map("full_name")
-  username     String   @unique @map("username")
-  dateOfBirth  DateTime @map("date_of_birth")
-  email        String   @unique @map("email")
-  passwordHash String   @map("password_hash")
-  isPremium    Boolean  @default(false) @map("is_premium")
-  isAdmin      Boolean  @default(false) @map("is_admin")
-  xp           Int      @default(0) @map("xp") // User experience points
-  createdAt    DateTime @default(now()) @map("created_at")
-  updatedAt    DateTime @updatedAt @map("updated_at")
+  id               String           @id @default(cuid()) @map("id")
+  fullName         String           @map("full_name")
+  username         String           @unique @map("username")
+  dateOfBirth      DateTime         @map("date_of_birth")
+  email            String           @unique @map("email")
+  passwordHash     String           @map("password_hash")
+  subscriptionPlan SubscriptionPlan @default(FREE) @map("subscription_plan")
+  role             UserRole         @default(USER) @map("role")
+  xp               Int              @default(0) @map("xp") // User experience points
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
 
   // Relationships
   examResults ExamResult[]
