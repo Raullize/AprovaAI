@@ -6,29 +6,7 @@ import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import ImageUpload from '@/components/ui/ImageUpload';
 import Portal from '@/components/ui/Portal';
-
-interface Option {
-  id?: string;
-  text: string;
-  isCorrect: boolean;
-  order: number;
-  questionId?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
-
-interface Question {
-  id: string;
-  content: string;
-  imageUrl?: string;
-  explanation?: string;
-  studyLink?: string;
-  order: number;
-  levelId?: string;
-  options: Option[];
-  createdAt: string;
-  updatedAt: string;
-}
+import { Question, Option } from '@/types';
 
 interface QuestionModalProps {
   isOpen: boolean;
