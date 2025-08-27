@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Plus, Search, Edit, Trash2, Layers, Eye, EyeOff } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Layers, Eye, EyeOff, ChevronRight } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import TopicModal from '@/components/admin/TopicModal';
@@ -166,7 +166,7 @@ export default function ExamTopicsPageBySlug() {
         >
           Exames
         </button>
-        <span>></span>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
         <span className="text-gray-900 font-medium">{exam.name}</span>
       </nav>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Plus, Search, Edit, Trash2, Move, BookOpen } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Move, BookOpen, ChevronRight } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import QuestionModal from '@/components/admin/QuestionModal';
@@ -230,28 +230,28 @@ export default function LevelQuestionsPageBySlug() {
         >
           Exames
         </button>
-        <span>></span>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
           onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics`)}
           className="hover:text-primary-600 transition-colors"
         >
           {level.topic.exam.name}
         </button>
-        <span>></span>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
           onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics/${level.topic.slug}/levels`)}
           className="hover:text-primary-600 transition-colors"
         >
           {level.topic.name}
         </button>
-        <span>></span>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
           onClick={() => router.push(`/admin/exams/${level.topic.exam.slug}/topics/${level.topic.slug}/levels`)}
           className="hover:text-primary-600 transition-colors"
         >
           {level.name}
         </button>
-        <span>></span>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
         <span className="text-gray-900 font-medium">Questões</span>
       </nav>
 

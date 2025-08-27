@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Plus, Search, Edit, Trash2, Target, Move } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Target, Move, ChevronRight } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import LevelModal from '@/components/admin/LevelModal';
@@ -214,21 +214,21 @@ export default function TopicLevelsPageBySlug() {
         >
           Exames
         </button>
-        <span>></span>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
           onClick={() => router.push(`/admin/exams/${topic.exam.slug}/topics`)}
           className="hover:text-primary-600 transition-colors"
         >
           {topic.exam.name}
         </button>
-        <span>></span>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
         <button
           onClick={() => router.push(`/admin/exams/${topic.exam.slug}/topics/${topic.slug}/levels`)}
           className="hover:text-primary-600 transition-colors"
         >
           {topic.name}
         </button>
-        <span>></span>
+        <ChevronRight className="w-4 h-4 text-gray-400" />
         <span className="text-gray-900 font-medium">Níveis</span>
       </nav>
 
