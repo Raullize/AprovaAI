@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Plus, Search, Edit, Trash2, Eye, EyeOff, FileText } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
@@ -30,6 +31,7 @@ const statusColors = {
 };
 
 export default function ExamsPage() {
+  const router = useRouter();
   const [exams, setExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -268,7 +270,7 @@ export default function ExamsPage() {
                   size="sm"
                   className="w-full"
                   onClick={() => {
-                    window.location.href = `/admin/exams/${exam.slug}/topics`;
+                    router.push(`/admin/exams/${exam.slug}/topics`);
                   }}
                 >
                   Gerenciar Tópicos
