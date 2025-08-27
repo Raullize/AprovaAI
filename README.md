@@ -155,6 +155,26 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
    - 🔍 **API Health Check**: [http://localhost:3000/api/health](http://localhost:3000/api/health) *(teste no Insomnia/Postman ou navegador)*
    - 🗄️ **Adminer (Gerenciar DB)**: [http://localhost:8080](http://localhost:8080) *(interface web para gerenciar o banco PostgreSQL)*
 
+## 🐳 Como Rodar o Docker no Linux
+
+1. Certifique-se de que o Docker e o Docker Compose estão instalados:
+   ```bash
+   docker --version
+   docker compose version
+   ```
+   Se não estiverem instalados, siga as instruções em https://docs.docker.com/engine/install/ e https://docs.docker.com/compose/install/.
+
+2. Certifique-se de que o serviço Docker está em execução. Caso não esteja, inicie com:
+   ```bash
+   sudo systemctl start docker
+   ```
+
+3. Para iniciar o banco de dados PostgreSQL:
+   ```bash
+   docker-compose up -d
+   ```
+   Isso criará e executará os containers necessários em segundo plano.
+
 ### Scripts Disponíveis
 
 - `npm run dev` - Inicia o servidor de desenvolvimento
