@@ -5,9 +5,9 @@ import { existsSync } from 'fs';
 
 export async function POST(request: NextRequest) {
   try {
-    const data = await request.formData();
-    const file: File | null = data.get('file') as unknown as File;
-
+    const formData = await request.formData();
+    const file = formData.get('file') as File;
+    
     if (!file) {
       return NextResponse.json(
         { error: 'Nenhum arquivo foi enviado' },
@@ -15,18 +15,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validar tipo de arquivo
-    if (!file.type.startsWith('image/')) {
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
       return NextResponse.json(
-        { error: 'Apenas arquivos de imagem são permitidos' },
+        { error: 'Tipo de arquivo não permitido. Use: JPEG, PNG, GIF ou WebP' },
         { status: 400 }
       );
     }
 
-    // Validar tamanho do arquivo (5MB)
-    if (file.size > 5 * 1024 * 1024) {
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'O arquivo deve ter no máximo 5MB' },
+        { error: 'Arquivo muito grande. Tamanho máximo: 5MB' },
         { status: 400 }
       );
     }
@@ -34,27 +34,24 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Gerar nome único para o arquivo
     const timestamp = Date.now();
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `${timestamp}.${fileExtension}`;
+    const randomString = Math.random().toString(36).substring(2, 15);
+    const extension = file.name.split('.').pop();
+    const fileName = `${timestamp}-${randomString}.${extension}`;
 
-    // Criar diretório de uploads se não existir
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'questions');
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
+    const uploadDir = join(process.cwd(), 'public', 'uploads');
+    if (!existsSync(uploadDir)) {
+      await mkdir(uploadDir, { recursive: true });
     }
 
-    // Salvar arquivo
-    const filePath = join(uploadsDir, fileName);
+    const filePath = join(uploadDir, fileName);
     await writeFile(filePath, buffer);
 
-    // Retornar URL pública do arquivo
-    const publicUrl = `/uploads/questions/${fileName}`;
+    const fileUrl = `/uploads/${fileName}`;
 
     return NextResponse.json({
       success: true,
-      url: publicUrl,
+      url: fileUrl,
       fileName: fileName
     });
 
@@ -67,7 +64,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Método DELETE para remover arquivos
 export async function DELETE(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
