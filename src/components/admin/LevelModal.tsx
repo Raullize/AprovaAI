@@ -6,23 +6,7 @@ import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Portal from '@/components/ui/Portal';
 import Loading from '@/components/ui/Loading';
-
-interface Level {
-  id: string;
-  name: string;
-  description?: string;
-  order: number;
-  topicId: string;
-  simuladoName?: string;
-  simuladoDescription?: string;
-  xpReward: number;
-  passingPercentage: number;
-  createdAt: string;
-  updatedAt: string;
-  _count?: {
-    questions: number;
-  };
-}
+import { Level } from '@/types';
 
 interface LevelModalProps {
   isOpen: boolean;
@@ -32,13 +16,11 @@ interface LevelModalProps {
   topicId: string;
 }
 
-
-
 export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: LevelModalProps) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    xpReward: 100,
+    xpReward: 0,
     passingPercentage: 70,
   });
   const [loading, setLoading] = useState(false);
@@ -57,7 +39,7 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
         setFormData({
           name: '',
           description: '',
-          xpReward: 100,
+          xpReward: 0,
           passingPercentage: 70,
         });
       }
