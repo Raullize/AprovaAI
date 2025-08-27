@@ -53,6 +53,30 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
     setErrors({});
   }, [exam, isOpen]);
 
+  // Handle ESC key press
+  useEffect(() => {
+    const handleEscKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && isOpen && !loading) {
+        onClose();
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscKey);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [isOpen, loading, onClose]);
+
+  // Handle click outside modal
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget && !loading) {
+      onClose();
+    }
+  };
+
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
 
@@ -122,7 +146,10 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
 
   return (
     <Portal>
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]">
+      <div 
+        className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-[9999]"
+        onClick={handleBackdropClick}
+      >
       <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
