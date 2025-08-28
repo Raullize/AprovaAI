@@ -6,7 +6,7 @@ const features: Feature[] = [
   {
     id: '1',
     title: 'Aprendizado por Níveis',
-    description: 'Progresso estruturado através de Exame > Área > Tópico > Nível, garantindo aprendizado consistente e evolutivo.',
+    description: 'Progresso estruturado através de Exame > Tópico > Nível > Questões, garantindo aprendizado consistente e evolutivo.',
     icon: 'BarChart3'
   },
   {

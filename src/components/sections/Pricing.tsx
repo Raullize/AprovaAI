@@ -131,9 +131,6 @@ export const Pricing: React.FC = () => {
 
 
         <div className="text-center mt-12">
-          <p className="text-gray-600 text-sm">
-            * Prof. Sabichão estará disponível em breve para usuários Premium
-          </p>
           <div className="mt-6 p-6 bg-blue-50 rounded-xl max-w-2xl mx-auto">
             <h4 className="font-semibold text-gray-900 mb-2">
               🎓 Garantia de Satisfação
