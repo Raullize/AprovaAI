@@ -76,7 +76,7 @@ export default function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
   
-  const navigation = session?.user?.role === 'ADMIN' ? adminNavigation : userNavigation;
+  const currentNavigation = session?.user?.role === 'ADMIN' ? adminNavigation : navigation;
 
   return (
     <>
@@ -97,7 +97,7 @@ export default function Sidebar({ className }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
-          {navigation.map((item) => {
+          {currentNavigation.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
@@ -132,7 +132,7 @@ export default function Sidebar({ className }: SidebarProps) {
       {/* Mobile Bottom Dock */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50">
         <div className="flex items-center justify-around px-2 py-2">
-          {navigation.map((item) => {
+          {currentNavigation.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
