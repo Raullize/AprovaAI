@@ -7,6 +7,7 @@ import { signIn, getSession } from 'next-auth/react';
 import AuthLayout from '@/components/auth/AuthLayout';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
+import GoogleButton from '@/components/ui/GoogleButton';
 import { useFormValidation } from '@/hooks/useFormValidation';
 import type { LoginForm } from '@/types';
 import Loading from '@/components/ui/Loading';
@@ -39,6 +40,10 @@ export default function LoginPage() {
     if (message) {
       setMessage(null);
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    setMessage({ type: 'success', text: 'Funcionalidade em desenvolvimento. Em breve você poderá fazer login com Google!' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -149,6 +154,22 @@ export default function LoginPage() {
           {isLoading && <Loading size="xs" className="mr-2" />}
           Entrar
         </Button>
+
+        <div className="relative">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-300" />
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white text-gray-500">ou</span>
+          </div>
+        </div>
+
+        <GoogleButton
+          onClick={handleGoogleLogin}
+          disabled={isLoading}
+        >
+          Continuar com Google
+        </GoogleButton>
 
         <div className="text-center pt-4 border-t border-gray-200">
           <p className="text-gray-600">
