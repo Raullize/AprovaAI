@@ -153,7 +153,6 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
    
    **🔗 Links úteis:**
    - 🔍 **API Health Check**: [http://localhost:3000/api/health](http://localhost:3000/api/health) *(teste no Insomnia/Postman ou navegador)*
-   - 🗄️ **Adminer (Gerenciar DB)**: [http://localhost:8080](http://localhost:8080) *(interface web para gerenciar o banco PostgreSQL)*
 
 ## 🐳 Como Rodar o Docker no Linux
 
