@@ -12,7 +12,7 @@
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seeders/index.ts",
-    "db:seed:cleanup": "tsx prisma/seeders/index.ts cleanup"
+    "db:seed:cleanup": "tsx prisma/seeders/index.ts --cleanup"
   },
   "prisma": {
     "seed": "tsx prisma/seeders/index.ts"

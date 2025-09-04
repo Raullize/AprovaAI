@@ -10,7 +10,7 @@ async function main() {
     await seedUsers();
   } catch (error) {
     console.error('Erro durante o processo de seed:', error);
-    throw error;
+    process.exit(1);
   } finally {
     await prisma.$disconnect();
   }
@@ -18,19 +18,17 @@ async function main() {
 
 async function cleanup() {
   try {
-    await cleanupAdmin();
     await cleanupUsers();
+    await cleanupAdmin();
   } catch (error) {
     console.error('Erro durante a limpeza:', error);
-    throw error;
+    process.exit(1);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-const command = process.argv[2];
-
-if (command === 'cleanup') {
+if (process.argv.includes('--cleanup')) {
   cleanup();
 } else {
   main();
