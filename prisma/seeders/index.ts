@@ -6,8 +6,10 @@ const prisma = new PrismaClient();
 
 async function main() {
   try {
+    console.log('Iniciando processo de seed...');
     await seedAdmin();
     await seedUsers();
+    console.log('Seed concluído com sucesso!');
   } catch (error) {
     console.error('Erro durante o processo de seed:', error);
     process.exit(1);
@@ -18,8 +20,10 @@ async function main() {
 
 async function cleanup() {
   try {
+    console.log('Iniciando limpeza dos dados...');
     await cleanupUsers();
     await cleanupAdmin();
+    console.log('Limpeza concluída com sucesso!');
   } catch (error) {
     console.error('Erro durante a limpeza:', error);
     process.exit(1);
