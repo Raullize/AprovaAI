@@ -5,14 +5,9 @@ import { seedUsers, cleanupUsers } from './userSeeder';
 const prisma = new PrismaClient();
 
 async function main() {
-
-  
   try {
-    // Executar seeders
     await seedAdmin();
     await seedUsers();
-    
-
   } catch (error) {
     console.error('Erro durante o processo de seed:', error);
     throw error;
@@ -21,15 +16,10 @@ async function main() {
   }
 }
 
-// Função para limpar todos os dados
 async function cleanup() {
-
-  
   try {
     await cleanupAdmin();
     await cleanupUsers();
-    
-
   } catch (error) {
     console.error('Erro durante a limpeza:', error);
     throw error;
@@ -38,7 +28,6 @@ async function cleanup() {
   }
 }
 
-// Executar baseado no argumento da linha de comando
 const command = process.argv[2];
 
 if (command === 'cleanup') {

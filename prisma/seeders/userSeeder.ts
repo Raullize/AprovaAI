@@ -4,8 +4,6 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 export async function seedUsers() {
-
-  
   const existingUser = await prisma.user.findUnique({
     where: { email: 'demo@aprovaai.com' }
   });
@@ -14,10 +12,8 @@ export async function seedUsers() {
     return existingUser;
   }
 
-  // Criar hash da senha
   const hashedPassword = await bcrypt.hash('demo123', 12);
 
-  // Criar usuário demo
   const demoUser = await prisma.user.create({
     data: {
       fullName: 'Usuário Demo',
@@ -29,18 +25,12 @@ export async function seedUsers() {
       subscriptionPlan: 'FREE',
     },
   });
-
-
   
   return demoUser;
 }
 
 export async function cleanupUsers() {
-
-  
   await prisma.user.deleteMany({
     where: { email: 'demo@aprovaai.com' }
   });
-  
-
 }

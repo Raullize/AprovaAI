@@ -4,8 +4,6 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 export async function seedAdmin() {
-
-  
   const existingAdmin = await prisma.user.findUnique({
     where: { email: 'admin@aprovaai.com' }
   });
@@ -27,18 +25,12 @@ export async function seedAdmin() {
       subscriptionPlan: 'FREE',
     },
   });
-
-
   
   return admin;
 }
 
 export async function cleanupAdmin() {
-
-  
   await prisma.user.deleteMany({
     where: { email: 'admin@aprovaai.com' }
   });
-  
-
 }
