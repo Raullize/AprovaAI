@@ -4,7 +4,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
-const validateSimuladoSchema = z.object({
+const validateSimulationSchema = z.object({
   answers: z.array(z.object({
     questionId: z.string(),
     selectedOptions: z.array(z.string())
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
     const body = await request.json();
     
     // Validar dados de entrada
-    const validationResult = validateSimuladoSchema.safeParse(body);
+    const validationResult = validateSimulationSchema.safeParse(body);
     if (!validationResult.success) {
       return NextResponse.json(
         { error: 'Dados inválidos', errors: validationResult.error.flatten().fieldErrors },
