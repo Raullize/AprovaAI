@@ -2,7 +2,7 @@
 
 import { AlertTriangle, X } from 'lucide-react';
 import { useEffect } from 'react';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/button';
 import Portal from '@/components/ui/Portal';
 
 interface ConfirmModalProps {

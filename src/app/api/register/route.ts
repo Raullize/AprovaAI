@@ -74,8 +74,8 @@ export async function POST(request: NextRequest) {
         username: true,
         email: true,
         dateOfBirth: true,
-        subscriptionPlan: 'PREMIUM',
-        role: 'ADMIN',
+        subscriptionPlan: true,
+        role: true,
         createdAt: true
       }
     })

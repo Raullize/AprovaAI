@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { signIn } from 'next-auth/react';
 import AuthLayout from '@/components/auth/AuthLayout';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import GoogleButton from '@/components/ui/GoogleButton';
 import { useFormValidation } from '@/hooks/useFormValidation';
+import { useToast } from '@/hooks/use-toast';
 import type { RegisterForm } from '@/types';
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
@@ -27,9 +29,9 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   const { validateRegisterForm, getFieldError, clearErrors, calculatePasswordStrength } = useFormValidation();
+  const { toast } = useToast();
   const router = useRouter();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -38,10 +40,6 @@ export default function RegisterPage() {
       ...prev, 
       [name]: type === 'checkbox' ? checked : value 
     }));
-    
-    if (message) {
-      setMessage(null);
-    }
   };
 
   const validateStep1 = () => {
@@ -76,13 +74,16 @@ export default function RegisterPage() {
   };
 
   const handleGoogleSignup = async () => {
-    setMessage({ type: 'success', text: 'Funcionalidade em desenvolvimento. Em breve você poderá se cadastrar com Google!' });
+    toast({
+      title: "Funcionalidade em desenvolvimento",
+      description: "Em breve você poderá se cadastrar com Google!",
+      variant: "default"
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    setMessage(null);
     clearErrors();
     
     const validation = validateRegisterForm(formData);
@@ -110,21 +111,44 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: 'Conta criada com sucesso! Redirecionando para login...' });
+        toast({
+          title: "Conta criada com sucesso!",
+          description: "Redirecionando para dashboard...",
+          variant: "success"
+        });
         
-        setTimeout(() => {
-          router.push('/login?message=Conta criada com sucesso! Faça login para continuar.');
-        }, 2000);
+        // Fazer login automático após cadastro
+        const loginResponse = await signIn('credentials', {
+          email: formData.email,
+          password: formData.password,
+          redirect: false,
+        });
+
+        if (loginResponse?.ok) {
+          setTimeout(() => {
+            router.push('/dashboard');
+          }, 1500);
+        } else {
+          // Se o login automático falhar, redireciona para login
+          setTimeout(() => {
+            router.push('/login?message=Conta criada com sucesso! Faça login para continuar.');
+          }, 2000);
+        }
       } else {
-        setMessage({ 
-          type: 'error', 
-          text: data.error || 'Erro ao criar conta. Tente novamente.' 
+        toast({
+          title: "Erro ao criar conta",
+          description: data.error || 'Erro ao criar conta. Tente novamente.',
+          variant: "destructive"
         });
       }
       
     } catch (error) {
       console.error('Registration error:', error);
-      setMessage({ type: 'error', text: 'Erro interno do servidor. Tente novamente.' });
+      toast({
+        title: "Erro interno",
+        description: "Erro interno do servidor. Tente novamente.",
+        variant: "destructive"
+      });
     } finally {
       setIsLoading(false);
     }
@@ -170,21 +194,6 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
-
-      {message && (
-        <div className={`p-4 rounded-lg border mb-6 ${
-          message.type === 'success' 
-            ? 'bg-green-50 border-green-200 text-green-700' 
-            : 'bg-red-50 border-red-200 text-red-700'
-        }`}>
-          <div className="flex items-center">
-            <span className="mr-2">
-              {message.type === 'success' ? '✓' : '⚠'}
-            </span>
-            {message.text}
-          </div>
-        </div>
-      )}
 
       <form onSubmit={currentStep === 1 ? (e) => { e.preventDefault(); handleNextStep(); } : handleSubmit} className="space-y-6">
         {currentStep === 1 ? (

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Search, Edit, Trash2, Eye, EyeOff, FileText } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import Button from '@/components/ui/button';
 import Loading from '@/components/ui/Loading';
 import ExamModal from '@/components/admin/ExamModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';

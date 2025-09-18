@@ -9,6 +9,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import GoogleButton from '@/components/ui/GoogleButton';
 import { useFormValidation } from '@/hooks/useFormValidation';
+import { useToast } from '@/hooks/use-toast';
 import type { LoginForm } from '@/types';
 import Loading from '@/components/ui/Loading';
 
@@ -20,36 +21,39 @@ export default function LoginPage() {
   
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   const { validateLoginForm, getFieldError, clearErrors } = useFormValidation();
+  const { toast } = useToast();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     const urlMessage = searchParams.get('message');
     if (urlMessage) {
-      setMessage({ type: 'success', text: urlMessage });
+      toast({
+        title: "Sucesso",
+        description: urlMessage,
+        variant: "success",
+      });
     }
-  }, [searchParams]);
+  }, [searchParams, toast]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
-    if (message) {
-      setMessage(null);
-    }
   };
 
   const handleGoogleLogin = async () => {
-    setMessage({ type: 'success', text: 'Funcionalidade em desenvolvimento. Em breve você poderá fazer login com Google!' });
+    toast({
+      title: "Em desenvolvimento",
+      description: "Funcionalidade em desenvolvimento. Em breve você poderá fazer login com Google!",
+      variant: "default",
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    setMessage(null);
     clearErrors();
     
     const validation = validateLoginForm(formData);
@@ -67,9 +71,17 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setMessage({ type: 'error', text: 'E-mail ou senha inválidos.' });
+        toast({
+          title: "Erro no login",
+          description: "E-mail ou senha inválidos.",
+          variant: "destructive",
+        });
       } else if (result?.ok) {
-        setMessage({ type: 'success', text: 'Login realizado com sucesso!' });
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Redirecionando...",
+          variant: "success",
+        });
         setTimeout(async () => {
           const session = await getSession();
           if (session?.user?.role === 'ADMIN') {
@@ -81,7 +93,11 @@ export default function LoginPage() {
       }
     } catch (error) {
       console.error('Login error:', error);
-      setMessage({ type: 'error', text: 'Erro interno do servidor. Tente novamente.' });
+      toast({
+        title: "Erro interno",
+        description: "Erro interno do servidor. Tente novamente.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -93,22 +109,6 @@ export default function LoginPage() {
       subtitle="Entre em sua conta e continue sua jornada de estudos"
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Message Display */}
-        {message && (
-          <div className={`p-4 rounded-lg border ${
-            message.type === 'success' 
-              ? 'bg-green-50 border-green-200 text-green-700' 
-              : 'bg-red-50 border-red-200 text-red-700'
-          }`}>
-            <div className="flex items-center">
-              <span className="mr-2">
-                {message.type === 'success' ? '✓' : '⚠'}
-              </span>
-              {message.text}
-            </div>
-          </div>
-        )}
-
         <Input
           name="email"
           type="email"

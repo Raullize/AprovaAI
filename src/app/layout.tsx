@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import { SessionProvider } from '@/components/providers/SessionProvider'
+import { Toaster } from '@/components/ui/Toaster'
 
 export const metadata: Metadata = {
   title: 'AprovaAI - Sua Jornada para a Aprovação Começa Aqui',
@@ -52,6 +53,7 @@ export default function RootLayout({
       <body className="min-h-screen bg-gray-50">
         <SessionProvider>
           {children}
+          <Toaster />
         </SessionProvider>
       </body>
     </html>
