@@ -1,5 +1,5 @@
 import React from 'react';
-import { GraduationCap, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { GraduationCap, Facebook, Twitter, Instagram, Linkedin, Heart } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -115,8 +115,8 @@ export const Footer: React.FC = () => {
             <p className="text-gray-400 text-sm">
               © 2025 AprovaAI. Todos os direitos reservados.
             </p>
-            <p className="text-gray-400 text-sm mt-2 md:mt-0">
-              Feito com ❤️ para estudantes brasileiros
+            <p className="text-gray-400 text-sm mt-2 md:mt-0 flex items-center">
+              Feito com <Heart className="h-4 w-4 text-red-500 mx-1 fill-current" /> para estudantes brasileiros
             </p>
           </div>
         </div>

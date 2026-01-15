@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Button from '@/components/ui/button';
-import { ArrowRight, Brain, Zap, Target } from 'lucide-react';
+import { ArrowRight, Brain, Zap, Target, Trophy } from 'lucide-react';
 
 export const Hero: React.FC = () => {
   const scrollToSection = (href: string) => {
@@ -87,15 +87,6 @@ export const Hero: React.FC = () => {
                 </div>
                 
         
-                <div className="absolute -top-4 -right-4 w-16 h-16 bg-success-100 rounded-full flex items-center justify-center shadow-lg animate-float-1">
-                  <span className="text-2xl">🏆</span>
-                </div>
-                <div className="absolute -bottom-4 -left-4 w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center shadow-lg animate-float-2">
-                  <span className="text-xl">⚡</span>
-                </div>
-                <div className="absolute top-1/2 -left-8 w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center shadow-md animate-float-3">
-                  <span className="text-lg">🎯</span>
-                </div>
               </div>
               
       

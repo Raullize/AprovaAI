@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Check, X, Star, Zap } from 'lucide-react';
+import { Check, X, Star, Zap, GraduationCap } from 'lucide-react';
 import Button from '@/components/ui/button';
 import type { Plan } from '@/types';
 
@@ -132,8 +132,9 @@ export const Pricing: React.FC = () => {
 
         <div className="text-center mt-12">
           <div className="mt-6 p-6 bg-blue-50 rounded-xl max-w-2xl mx-auto">
-            <h4 className="font-semibold text-gray-900 mb-2">
-              🎓 Garantia de Satisfação
+            <h4 className="font-semibold text-gray-900 mb-2 flex items-center justify-center">
+              <GraduationCap className="h-5 w-5 text-primary-600 mr-2" />
+              Garantia de Satisfação
             </h4>
             <p className="text-gray-700 text-sm">
               Teste o plano Premium por 7 dias grátis. Se não ficar satisfeito, 
