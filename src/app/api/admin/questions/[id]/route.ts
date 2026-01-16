@@ -13,6 +13,7 @@ const optionSchema = z.object({
 
 const updateQuestionSchema = z.object({
   content: z.string().min(1, 'Conteúdo da questão é obrigatório').optional(),
+  type: z.enum(['MULTIPLE_CHOICE', 'SINGLE_CHOICE']).optional(),
   explanation: z.string().optional(),
   studyLink: z.string().url('Link deve ser uma URL válida').optional().or(z.literal('')),
   order: z.number().int().min(1, 'Ordem deve ser um número positivo').optional(),
@@ -127,6 +128,7 @@ export async function PATCH(
     // Preparar dados para atualização
     const updateData: any = {
       ...(validatedData.content && { content: validatedData.content }),
+      ...(validatedData.type && { type: validatedData.type }),
       ...(validatedData.explanation !== undefined && { explanation: validatedData.explanation }),
       ...(validatedData.studyLink !== undefined && { studyLink: validatedData.studyLink || null }),
       ...(validatedData.order && { order: validatedData.order }),

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Portal from '@/components/ui/Portal';
 import Loading from '@/components/ui/Loading';
@@ -24,6 +24,7 @@ interface FormData {
 interface FormErrors {
   name?: string;
   description?: string;
+  status?: string;
   general?: string;
 }
 

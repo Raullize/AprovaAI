@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import { ArrowRight, Brain, Zap, Target, Trophy } from 'lucide-react';
 
 export const Hero: React.FC = () => {

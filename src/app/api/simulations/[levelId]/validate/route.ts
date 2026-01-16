@@ -77,10 +77,19 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
       
       const selectedOptions = userAnswer.selectedOptions.sort();
       
-      // Verificar se a resposta está correta (todas as opções corretas selecionadas e nenhuma incorreta)
-      const isCorrect = 
-        correctOptions.length === selectedOptions.length &&
-        correctOptions.every(id => selectedOptions.includes(id));
+      // Verificar se a resposta está correta
+      let isCorrect = false;
+
+      // @ts-ignore - type property exists on question but might not be in generated client yet
+      if ((question as any).type === 'SINGLE_CHOICE') {
+         // Para única escolha, deve haver apenas uma opção selecionada e ela deve ser correta
+         isCorrect = selectedOptions.length === 1 && correctOptions.includes(selectedOptions[0]);
+      } else {
+        // Para múltipla escolha, todas as opções corretas devem ser selecionadas e nenhuma incorreta
+        isCorrect = 
+          correctOptions.length === selectedOptions.length &&
+          correctOptions.every(id => selectedOptions.includes(id));
+      }
 
       if (isCorrect) {
         correctAnswers++;
@@ -102,7 +111,7 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
     const passed = percentage >= level.passingPercentage;
 
     // Salvar resultado do simulado
-    const simuladoResult = await prisma.simuladoResult.create({
+    const examResult = await prisma.examResult.create({
       data: {
         userId: session.user.id,
         levelId: levelId,
@@ -136,7 +145,7 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
     }
 
     return NextResponse.json({
-      resultId: simuladoResult.id,
+      resultId: examResult.id,
       score: correctAnswers,
       totalQuestions,
       percentage: Math.round(percentage * 100) / 100,
@@ -178,7 +187,7 @@ export async function GET(request: NextRequest, { params }: { params: { levelId:
       return NextResponse.json({ error: 'ID do resultado é obrigatório' }, { status: 400 });
     }
 
-    const result = await prisma.simuladoResult.findFirst({
+    const result = await prisma.examResult.findFirst({
       where: {
         id: resultId,
         userId: session.user.id,

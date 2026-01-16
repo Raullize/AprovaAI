@@ -113,6 +113,7 @@ model Level {
 
 enum QuestionType {
   MULTIPLE_CHOICE
+  SINGLE_CHOICE
   
   @@map("question_type")
 }

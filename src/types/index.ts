@@ -113,6 +113,7 @@ export interface Question {
   id: string;
   content: string;
   imageUrl?: string;
+  type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
   explanation?: string;
   studyLink?: string;
   order: number;

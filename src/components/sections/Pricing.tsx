@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Check, X, Star, Zap, GraduationCap } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import type { Plan } from '@/types';
 
 const plans: Plan[] = [

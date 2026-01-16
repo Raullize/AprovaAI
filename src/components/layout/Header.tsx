@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Menu, X, GraduationCap, Star, Users, BookOpen, User } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import { useSession, signOut } from 'next-auth/react';
 import type { NavItem } from '@/types';
 

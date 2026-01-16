@@ -285,8 +285,12 @@ export default function LevelQuestionsPageBySlug() {
                   <div>
                     <span className="text-xs text-gray-500">Questão #{index + 1}</span>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-800">
-                        Múltipla Escolha
+                      <span className={`px-2 py-1 text-xs rounded-full ${
+                        question.type === 'SINGLE_CHOICE'
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {question.type === 'SINGLE_CHOICE' ? 'Única Escolha' : 'Múltipla Escolha'}
                       </span>
                       <span className="text-xs text-gray-500">
                         {question.options?.filter(option => option.isCorrect).length || 0} resposta(s) correta(s)

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Portal from '@/components/ui/Portal';
 import Loading from '@/components/ui/Loading';
@@ -165,28 +165,21 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
           )}
 
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Nome *
-            </label>
             <Input
+              label="Nome *"
               id="name"
               type="text"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               placeholder="Ex: Básico"
               disabled={loading}
-              className={errors.name ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}
+              error={errors.name}
             />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
           </div>
 
           <div>
-            <label htmlFor="xpReward" className="block text-sm font-medium text-gray-700 mb-1">
-              XP de Recompensa *
-            </label>
             <Input
+              label="XP de Recompensa *"
               id="xpReward"
               type="number"
               min="0"
@@ -194,18 +187,13 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
               onChange={(e) => handleInputChange('xpReward', e.target.value)}
               placeholder="100"
               disabled={loading}
-              className={errors.xpReward ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}
+              error={errors.xpReward}
             />
-            {errors.xpReward && (
-              <p className="mt-1 text-sm text-red-600">{errors.xpReward}</p>
-            )}
           </div>
 
           <div>
-            <label htmlFor="passingPercentage" className="block text-sm font-medium text-gray-700 mb-1">
-              Porcentagem para Passar (%) *
-            </label>
             <Input
+              label="Porcentagem para Passar (%) *"
               id="passingPercentage"
               type="number"
               min="0"
@@ -215,11 +203,8 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
               onChange={(e) => handleInputChange('passingPercentage', e.target.value)}
               placeholder="70"
               disabled={loading}
-              className={errors.passingPercentage ? 'border-red-300 focus:ring-red-500 focus:border-red-500' : ''}
+              error={errors.passingPercentage}
             />
-            {errors.passingPercentage && (
-              <p className="mt-1 text-sm text-red-600">{errors.passingPercentage}</p>
-            )}
           </div>
 
           <div>

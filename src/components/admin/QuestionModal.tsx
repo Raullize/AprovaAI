@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Link, HelpCircle } from 'lucide-react';
-import Button from '@/components/ui/button';
+import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import ImageUpload from '@/components/ui/ImageUpload';
 import Portal from '@/components/ui/Portal';
@@ -28,6 +28,7 @@ export default function QuestionModal({
   const [formData, setFormData] = useState({
     content: '',
     imageUrl: '',
+    type: 'MULTIPLE_CHOICE' as 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE',
     explanation: '',
     studyLink: '',
     options: [
@@ -43,6 +44,7 @@ export default function QuestionModal({
         setFormData({
           content: question.content,
           imageUrl: question.imageUrl || '',
+          type: question.type || 'MULTIPLE_CHOICE',
           explanation: question.explanation || '',
           studyLink: question.studyLink || '',
           options: question.options?.map(opt => ({
@@ -59,6 +61,7 @@ export default function QuestionModal({
         setFormData({
           content: '',
           imageUrl: '',
+          type: 'SINGLE_CHOICE',
           explanation: '',
           studyLink: '',
           options: [
@@ -120,9 +123,16 @@ export default function QuestionModal({
   const handleOptionChange = (index: number, field: 'text' | 'isCorrect', value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
-      options: prev.options.map((opt, i) => 
-        i === index ? { ...opt, [field]: value } : opt
-      )
+      options: prev.options.map((opt, i) => {
+        if (i === index) {
+          return { ...opt, [field]: value };
+        }
+        // Se for SINGLE_CHOICE e estamos marcando uma opção como correta, desmarcar as outras
+        if (prev.type === 'SINGLE_CHOICE' && field === 'isCorrect' && value === true) {
+          return { ...opt, isCorrect: false };
+        }
+        return opt;
+      })
     }));
     
     if (errors[`option_${index}`]) {
@@ -176,18 +186,20 @@ export default function QuestionModal({
     }
 
     // Validar alternativas
-    let hasCorrectOption = false;
+    let correctOptionsCount = 0;
     formData.options.forEach((option, index) => {
       if (!option.text.trim()) {
         newErrors[`option_${index}`] = 'Texto da alternativa é obrigatório';
       }
       if (option.isCorrect) {
-        hasCorrectOption = true;
+        correctOptionsCount++;
       }
     });
 
-    if (!hasCorrectOption) {
+    if (correctOptionsCount === 0) {
       newErrors.options = 'Pelo menos uma alternativa deve estar marcada como correta';
+    } else if (formData.type === 'SINGLE_CHOICE' && correctOptionsCount > 1) {
+      newErrors.options = 'Questões de única escolha devem ter apenas uma alternativa correta';
     }
 
     // Validar URL se fornecida
@@ -238,6 +250,7 @@ export default function QuestionModal({
       const payload = {
         content: formData.content.trim(),
         imageUrl: formData.imageUrl.trim() || '',
+        type: formData.type,
         explanation: formData.explanation.trim() || undefined,
         studyLink: formData.studyLink.trim() || undefined,
         levelId,
@@ -312,6 +325,25 @@ export default function QuestionModal({
               {errors.imageUrl && (
                 <p className="mt-1 text-sm text-red-600">{errors.imageUrl}</p>
               )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tipo da Questão
+              </label>
+              <select
+                value={formData.type}
+                onChange={(e) => handleInputChange('type', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              >
+                <option value="MULTIPLE_CHOICE">Múltipla Escolha</option>
+                <option value="SINGLE_CHOICE">Única Escolha</option>
+              </select>
+              <p className="mt-1 text-sm text-gray-500">
+                {formData.type === 'SINGLE_CHOICE' 
+                  ? 'Questões de única escolha aceitam apenas uma resposta correta.' 
+                  : 'Questões de múltipla escolha aceitam uma ou mais respostas corretas.'}
+              </p>
             </div>
 
             <div>

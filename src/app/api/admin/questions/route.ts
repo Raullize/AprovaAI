@@ -13,6 +13,7 @@ const optionSchema = z.object({
 const createQuestionSchema = z.object({
   content: z.string().min(1, 'Conteúdo é obrigatório'),
   levelId: z.string().min(1, 'Level ID é obrigatório'),
+  type: z.enum(['MULTIPLE_CHOICE', 'SINGLE_CHOICE']).default('SINGLE_CHOICE'),
   imageUrl: z.string().optional().refine((url) => {
     if (!url) return true; // URL é opcional
     // Aceita URLs relativas (uploads locais) ou URLs completas
@@ -148,6 +149,7 @@ export async function POST(request: NextRequest) {
       data: {
         content: validatedData.content,
         levelId: validatedData.levelId,
+        type: validatedData.type as any,
         imageUrl: validatedData.imageUrl,
         order: nextOrder,
         options: {
