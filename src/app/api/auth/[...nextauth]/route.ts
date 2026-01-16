@@ -44,7 +44,8 @@ const authOptions: NextAuthOptions = {
             name: user.username,
             email: user.email,
             subscriptionPlan: user.subscriptionPlan,
-            role: user.role
+            role: user.role,
+            xp: user.xp
           }
         } catch (error) {
           console.error('Authentication error:', error)
@@ -66,6 +67,7 @@ const authOptions: NextAuthOptions = {
         token.id = user.id
         token.subscriptionPlan = user.subscriptionPlan
         token.role = user.role
+        token.xp = user.xp
       }
       return token
     },
@@ -74,6 +76,7 @@ const authOptions: NextAuthOptions = {
         session.user.id = token.id as string
         session.user.subscriptionPlan = token.subscriptionPlan as any
         session.user.role = token.role as any
+        session.user.xp = token.xp as number
       }
       return session
     },
