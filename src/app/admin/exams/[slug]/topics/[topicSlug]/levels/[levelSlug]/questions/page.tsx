@@ -52,12 +52,14 @@ export default function LevelQuestionsPageBySlug() {
           topic: data.topic
         });
         setQuestions(data.questions || []);
+        setLoading(false);
       } else if (response.status === 404) {
         router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`);
+      } else {
+        setLoading(false);
       }
     } catch (error) {
       console.error('Erro ao carregar nível e questões:', error);
-    } finally {
       setLoading(false);
     }
   };

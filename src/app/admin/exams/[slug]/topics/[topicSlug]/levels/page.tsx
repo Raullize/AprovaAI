@@ -49,12 +49,14 @@ export default function TopicLevelsPageBySlug() {
           exam: data.exam
         });
         setLevels(data.levels || []);
+        setLoading(false);
       } else if (response.status === 404) {
         router.push(`/admin/exams/${examSlug}/topics`);
+      } else {
+        setLoading(false);
       }
     } catch (error) {
       console.error('Erro ao carregar tópico e níveis:', error);
-    } finally {
       setLoading(false);
     }
   };

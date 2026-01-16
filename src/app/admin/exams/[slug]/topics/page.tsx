@@ -45,12 +45,14 @@ export default function ExamTopicsPageBySlug() {
           updatedAt: data.updatedAt
         });
         setTopics(data.topics || []);
+        setLoading(false);
       } else if (response.status === 404) {
         router.push('/admin/exams');
+      } else {
+        setLoading(false);
       }
     } catch (error) {
       console.error('Erro ao carregar exame e tópicos:', error);
-    } finally {
       setLoading(false);
     }
   };
