@@ -58,6 +58,7 @@ module.exports = {
         'float-3': 'float3 2.5s ease-in-out infinite',
         'slide-in-right': 'slideInRight 0.3s ease-out',
         'slide-out-right': 'slideOutRight 0.3s ease-in',
+        'toast-progress': 'toast-progress 5000ms linear forwards',
       },
       keyframes: {
         fadeIn: {
@@ -105,6 +106,10 @@ module.exports = {
         slideOutRight: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(100%)' },
+        },
+        'toast-progress': {
+          '0%': { width: '100%' },
+          '100%': { width: '0%' },
         },
       },
     },
