@@ -1,42 +1,37 @@
 > Este README serve como referência para o projeto AprovaAI. Como a aplicação está em fase de desenvolvimento, algumas características descritas aqui podem ser alteradas ou ajustadas ao longo do tempo.
 
-# AprovaAI 🎓
+<h1 align="center">AprovaAI</h1>
 
-![AprovaAI Logo](public/images/prof-sabichao.png)
+<p align="center">
+  <img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white"/>
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Docker-2CA5E0?style=for-the-badge&logo=docker&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Prisma-2D3748?style=for-the-badge&logo=prisma&logoColor=white"/>
+</p>
 
-## 📋 Descrição
+<p align="center">
+  <img src="public/images/prof-sabichao.png" alt="AprovaAI Logo" width="200" />
+</p>
+
+## Descrição
 
 O **AprovaAI** é uma plataforma inovadora de estudos focada em auxiliar estudantes na preparação para diversos tipos de exames, desde vestibulares tradicionais (como ENEM, ITA) até certificações profissionais (como AWS). Inspirado em uma metodologia de aprendizado por níveis e gamificação, o AprovaAI oferece simulados personalizados, feedback detalhado e acompanhamento de desempenho para otimizar a jornada de estudo do usuário.
 
-### 🚀 Características Principais
+### Características Principais
 
-- **🎯 Simulados por Nível**: Sistema estruturado de `Exame > Tópico > Nível > Questões`
-- **🎮 Gamificação**: Sistema de medalhas, conquistas e streaks para motivar o aprendizado
-- **🤖 Prof. Sabichão**: Nosso mascote e assistente inteligente para tirar dúvidas
-- **📊 Feedback Detalhado**: Explicações específicas para cada alternativa e links de aprofundamento
-- **🔐 Sistema de Autenticação**: Login seguro com NextAuth.js e proteção de rotas
-- **📱 Interface Responsiva**: Design moderno que funciona em qualquer dispositivo
-- **⚡ Performance**: Construído com Next.js 14 e otimizações modernas
+- **Simulados por Nível**: Sistema estruturado de `Exame > Tópico > Nível > Questões`
+- **Gamificação**: Sistema de medalhas, conquistas e streaks para motivar o aprendizado
+- **Prof. Sabichão**: Nosso mascote e assistente inteligente para tirar dúvidas
+- **Feedback Detalhado**: Explicações específicas para cada alternativa e links de aprofundamento
+- **Sistema de Autenticação**: Login seguro com NextAuth.js e proteção de rotas
+- **Interface Responsiva**: Design moderno que funciona em qualquer dispositivo
+- **Performance**: Construído com Next.js 14 e otimizações modernas
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
-### Frontend
 - Detalhar...
-
-### Backend
-- Detalhar...
-
-### Infraestrutura
-- Detalhar...
-
-#### Stack Resumido
-- Detalhar...
-
-## 🗂️ Estrutura do Projeto
-
-```
-Detalhar...
-```
 
 ## Planos de Acesso
 
@@ -96,7 +91,7 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
       * **CRUD de Planos:** Ativar/desativar planos, alterar tipos de plano (Free para Premium, vice-versa), e gerenciar assinaturas (data de início/expiração, suspensão).
       * **Moderação de Nomes/Nicks:** Moderação manual e filtro automático de palavras-chave ofensivas.
 
-## 🚀 Como Executar o Projeto
+## Como Executar o Projeto
 
 ### Pré-requisitos
 - Node.js 18+ instalado
@@ -141,7 +136,7 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
    - Usuário administrador: `admin@aprovaai.com` / `admin123`
    - Usuário demo: `demo@aprovaai.com` / `demo123`
    
-   📋 Para mais informações sobre seeders, consulte **[SEEDERS.md](SEEDERS.md)**
+   Para mais informações sobre seeders, consulte **[SEEDERS.md](SEEDERS.md)**
 
 7. **Inicie o servidor de desenvolvimento**
    ```bash
@@ -151,10 +146,10 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
 8. **Acesse a aplicação**
    Abra [http://localhost:3000](http://localhost:3000) no seu navegador.
    
-   **🔗 Links úteis:**
-   - 🔍 **API Health Check**: [http://localhost:3000/api/health](http://localhost:3000/api/health) *(teste no Insomnia/Postman ou navegador)*
+   **Links úteis:**
+   - **API Health Check**: [http://localhost:3000/api/health](http://localhost:3000/api/health) *(teste no Insomnia/Postman ou navegador)*
 
-## 🐳 Como Rodar o Docker no Linux
+## Como Rodar o Docker no Linux
 
 1. Certifique-se de que o Docker e o Docker Compose estão instalados:
    ```bash
@@ -185,7 +180,10 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
 - `npm run db:seed` - Popula o banco com dados iniciais
 - `npm run db:seed:cleanup` - Remove dados dos seeders
 
-## 🤝 Contribuição
+## Documentação
+- [Seeders](./docs/SEEDERS.md)
+
+## Contribuição
 
 Contribuições são sempre bem-vindas! Para contribuir:
 
@@ -195,7 +193,7 @@ Contribuições são sempre bem-vindas! Para contribuir:
 4. Push para a branch (`git push origin feature/AmazingFeature`)
 5. Abra um Pull Request
 
-## 👥 Equipe do Projeto
+## Equipe do Projeto
 
 <table>
   <tr>
