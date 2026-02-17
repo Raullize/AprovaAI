@@ -27,34 +27,34 @@ export default function ExamTopicsPageBySlug() {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
+    const fetchExamAndTopics = async () => {
+      try {
+        setLoading(true);
+        const data = await getExamBySlug(examSlug);
+        setExam({
+          id: data.id,
+          name: data.name,
+          slug: data.slug,
+          description: data.description,
+          status: data.status,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt
+        });
+        setTopics(data.topics || []);
+        setLoading(false);
+      } catch (error) {
+        console.error('Erro ao carregar exame e tópicos:', error);
+        if (error instanceof Error && error.message === 'Exame não encontrado') {
+           router.push('/admin/exams');
+        }
+        setLoading(false);
+      }
+    };
+
     if (examSlug) {
       fetchExamAndTopics();
     }
-  }, [examSlug]);
-
-  const fetchExamAndTopics = async () => {
-    try {
-      setLoading(true);
-      const data = await getExamBySlug(examSlug);
-      setExam({
-        id: data.id,
-        name: data.name,
-        slug: data.slug,
-        description: data.description,
-        status: data.status,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt
-      });
-      setTopics(data.topics || []);
-      setLoading(false);
-    } catch (error) {
-      console.error('Erro ao carregar exame e tópicos:', error);
-      if (error instanceof Error && error.message === 'Exame não encontrado') {
-         router.push('/admin/exams');
-      }
-      setLoading(false);
-    }
-  };
+  }, [examSlug, router]);
 
   const handleDeleteTopic = (topic: Topic) => {
     setTopicToDelete(topic);

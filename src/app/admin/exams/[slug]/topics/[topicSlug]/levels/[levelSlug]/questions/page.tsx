@@ -28,40 +28,56 @@ export default function LevelQuestionsPageBySlug() {
   const [draggedQuestion, setDraggedQuestion] = useState<Question | null>(null);
 
   useEffect(() => {
+    const fetchLevelAndQuestions = async () => {
+      try {
+        setLoading(true);
+        const data = await getLevelBySlug(examSlug, topicSlug, levelSlug);
+        setLevel({
+          id: data.id,
+          name: data.name,
+          slug: data.slug,
+          description: data.description,
+          order: data.order || 0,
+          topicId: data.topicId,
+          xpReward: data.xpReward || 0,
+          passingPercentage: data.passingPercentage || 70,
+          createdAt: new Date(data.createdAt).toISOString(),
+          updatedAt: new Date(data.updatedAt).toISOString(),
+          topic: data.topic ? {
+            ...data.topic,
+            createdAt: new Date(data.topic.createdAt).toISOString(),
+            updatedAt: new Date(data.topic.updatedAt).toISOString(),
+            exam: data.topic.exam ? {
+              ...data.topic.exam,
+              createdAt: new Date(data.topic.exam.createdAt).toISOString(),
+              updatedAt: new Date(data.topic.exam.updatedAt).toISOString(),
+            } : undefined
+          } : undefined
+        });
+        setQuestions(data.questions?.map(q => ({
+          ...q,
+          createdAt: new Date(q.createdAt).toISOString(),
+          updatedAt: new Date(q.updatedAt).toISOString(),
+          options: q.options?.map(o => ({
+            ...o,
+            createdAt: new Date(o.createdAt).toISOString(),
+            updatedAt: new Date(o.updatedAt).toISOString()
+          })) || []
+        })) || []);
+        setLoading(false);
+      } catch (error) {
+        console.error('Erro ao carregar nível e questões:', error);
+        if (error instanceof Error && error.message === 'Nível não encontrado') {
+          router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`);
+        }
+        setLoading(false);
+      }
+    };
+
     if (examSlug && topicSlug && levelSlug) {
       fetchLevelAndQuestions();
     }
-  }, [examSlug, topicSlug, levelSlug]);
-
-  const fetchLevelAndQuestions = async () => {
-    try {
-      setLoading(true);
-      const data = await getLevelBySlug(examSlug, topicSlug, levelSlug);
-      setLevel({
-        id: data.id,
-        name: data.name,
-        slug: data.slug,
-        description: data.description,
-        order: data.order || 0,
-        topicId: data.topicId,
-        simuladoName: data.simuladoName,
-        simuladoDescription: data.simuladoDescription,
-        xpReward: data.xpReward || 0,
-        passingPercentage: data.passingPercentage || 70,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        topic: data.topic
-      });
-      setQuestions(data.questions || []);
-      setLoading(false);
-    } catch (error) {
-      console.error('Erro ao carregar nível e questões:', error);
-      if (error instanceof Error && error.message === 'Nível não encontrado') {
-        router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`);
-      }
-      setLoading(false);
-    }
-  };
+  }, [examSlug, topicSlug, levelSlug, router]);
 
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 import Button from './Button';
@@ -85,15 +86,18 @@ export default function ImageUpload({
     return (
       <div className="relative">
         <div className="relative group">
-          <img
-            src={value}
-            alt="Uploaded image"
-            className="w-full max-w-md h-48 object-cover rounded-lg border border-gray-300"
-            onError={() => {
-              alert('Erro ao carregar a imagem. Verifique a URL.');
-              onRemove();
-            }}
-          />
+          <div className="w-full max-w-md h-48 relative rounded-lg border border-gray-300 overflow-hidden">
+            <Image
+              src={value}
+              alt="Uploaded image"
+              fill
+              className="object-cover"
+              onError={() => {
+                alert('Erro ao carregar a imagem. Verifique a URL.');
+                onRemove();
+              }}
+            />
+          </div>
           <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
             <Button
               type="button"

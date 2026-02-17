@@ -29,36 +29,36 @@ export default function TopicLevelsPageBySlug() {
   const [draggedLevel, setDraggedLevel] = useState<Level | null>(null);
 
   useEffect(() => {
+    const fetchTopicAndLevels = async () => {
+      try {
+        setLoading(true);
+        const data = await getTopicBySlug(examSlug, topicSlug);
+        setTopic({
+          id: data.id,
+          name: data.name,
+          slug: data.slug,
+          description: data.description,
+          status: data.status || 'ACTIVE',
+          examId: data.examId,
+          createdAt: data.createdAt,
+          updatedAt: data.updatedAt,
+          exam: data.exam
+        });
+        setLevels(data.levels || []);
+        setLoading(false);
+      } catch (error) {
+        console.error('Erro ao carregar tópico e níveis:', error);
+        if (error instanceof Error && error.message === 'Tópico não encontrado') {
+          router.push(`/admin/exams/${examSlug}/topics`);
+        }
+        setLoading(false);
+      }
+    };
+
     if (examSlug && topicSlug) {
       fetchTopicAndLevels();
     }
-  }, [examSlug, topicSlug]);
-
-  const fetchTopicAndLevels = async () => {
-    try {
-      setLoading(true);
-      const data = await getTopicBySlug(examSlug, topicSlug);
-      setTopic({
-        id: data.id,
-        name: data.name,
-        slug: data.slug,
-        description: data.description,
-        status: data.status || 'ACTIVE',
-        examId: data.examId,
-        createdAt: data.createdAt,
-        updatedAt: data.updatedAt,
-        exam: data.exam
-      });
-      setLevels(data.levels || []);
-      setLoading(false);
-    } catch (error) {
-      console.error('Erro ao carregar tópico e níveis:', error);
-      if (error instanceof Error && error.message === 'Tópico não encontrado') {
-        router.push(`/admin/exams/${examSlug}/topics`);
-      }
-      setLoading(false);
-    }
-  };
+  }, [examSlug, topicSlug, router]);
 
   const handleDeleteLevel = (level: Level) => {
     setLevelToDelete(level);

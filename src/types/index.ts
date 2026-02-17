@@ -53,10 +53,10 @@ export interface Exam {
   id: string;
   name: string;
   slug: string;
-  description?: string;
+  description?: string | null;
   status: 'ACTIVE' | 'INACTIVE';
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
   _count?: {
     topics: number;
   };
@@ -67,11 +67,11 @@ export interface Topic {
   id: string;
   name: string;
   slug: string;
-  description?: string;
+  description?: string | null;
   status: 'ACTIVE' | 'INACTIVE';
   examId: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
   exam?: Exam;
   _count?: {
     levels: number;
@@ -83,15 +83,13 @@ export interface Level {
   id: string;
   name: string;
   slug: string;
-  description?: string;
+  description?: string | null;
   order: number;
   topicId: string;
-  simuladoName?: string;
-  simuladoDescription?: string;
   xpReward: number;
   passingPercentage: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
   topic?: Topic;
   _count?: {
     questions: number;
@@ -105,21 +103,21 @@ export interface Option {
   isCorrect: boolean;
   order: number;
   questionId?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 }
 
 export interface Question {
   id: string;
   content: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-  explanation?: string;
-  studyLink?: string;
+  explanation?: string | null;
+  studyLink?: string | null;
   order: number;
   levelId: string;
   options: Option[];
-  createdAt: string;
-  updatedAt: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
   level?: Level;
 }

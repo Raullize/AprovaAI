@@ -1,7 +1,7 @@
 'use server'
 
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { generateSlug, generateUniqueSlug } from '@/lib/slugify';
 import { z } from 'zod';
@@ -148,13 +148,7 @@ export async function getLevelBySlug(examSlug: string, topicSlug: string, levelS
       include: {
         topic: {
           include: {
-            exam: {
-              select: {
-                id: true,
-                name: true,
-                slug: true
-              }
-            }
+            exam: true
           }
         },
         questions: {
