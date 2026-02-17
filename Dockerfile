@@ -1,22 +1,23 @@
-# Dockerfile simples para Next.js
+# Create Docker image
 FROM node:18-alpine
 
+# Set working directory
 WORKDIR /app
 
-# Copiar arquivos de dependências
+# Copy dependency files
 COPY package*.json ./
 
-# Instalar dependências
+# Install dependencies
 RUN npm ci
 
-# Copiar código fonte
+# Copy source code
 COPY . .
 
-# Build da aplicação
+# Build application
 RUN npm run build
 
-# Expor porta
+# Expose port
 EXPOSE 3000
 
-# Comando para iniciar
+# Start command
 CMD ["npm", "start"]
