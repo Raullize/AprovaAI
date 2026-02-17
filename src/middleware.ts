@@ -10,7 +10,7 @@ export default withAuth(
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl
         
-        if (pathname.startsWith('/admin')) {
+        if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
           return !!token && token.role === 'ADMIN'
         }
         
