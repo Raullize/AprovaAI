@@ -72,6 +72,37 @@
       "_type": "request"
     },
     {
+      "_id": "req_register",
+      "parentId": "fld_auth",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/auth/register",
+      "name": "Cadastrar Usuário",
+      "description": "Cria um novo usuário na plataforma.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"fullName\": \"Usuário Teste Insomnia\",\n\t\"username\": \"testuser_insomnia\",\n\t\"email\": \"teste@insomnia.com\",\n\t\"password\": \"senha123\",\n\t\"confirmPassword\": \"senha123\",\n\t\"dateOfBirth\": \"1995-05-20\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084850000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
       "_id": "req_logout",
       "parentId": "fld_auth",
       "modified": 1708084800000,

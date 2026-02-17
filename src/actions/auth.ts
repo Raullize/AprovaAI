@@ -12,7 +12,11 @@ const registerSchema = z.object({
   dateOfBirth: z.string().refine((date) => {
     const parsedDate = new Date(date)
     return !isNaN(parsedDate.getTime())
-  }, 'Data de nascimento inválida')
+  }, 'Data de nascimento inválida'),
+  confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "As senhas não coincidem",
+  path: ["confirmPassword"],
 });
 
 export async function registerUser(data: z.infer<typeof registerSchema>) {
