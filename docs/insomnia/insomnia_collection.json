@@ -72,6 +72,43 @@
       "_type": "request"
     },
     {
+      "_id": "req_upload",
+      "parentId": "wrk_aprovaai",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/upload",
+      "name": "Upload de Imagem",
+      "description": "Faz upload de uma imagem (multipart/form-data).",
+      "method": "POST",
+      "body": {
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "file",
+            "type": "file",
+            "fileName": "C:\\caminho\\para\\sua\\imagem.jpg"
+          }
+        ]
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "multipart/form-data"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084950000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
       "_id": "req_register",
       "parentId": "fld_auth",
       "modified": 1708084800000,
