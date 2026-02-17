@@ -19,6 +19,8 @@ const statusColors = {
   INACTIVE: 'bg-red-100 text-red-800'
 };
 
+import { getExams, updateExam, deleteExam } from '@/actions/exams';
+
 export default function ExamsPage() {
   const router = useRouter();
   const [exams, setExams] = useState<Exam[]>([]);
@@ -36,11 +38,8 @@ export default function ExamsPage() {
   const fetchExams = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/exams');
-      if (response.ok) {
-        const data = await response.json();
-        setExams(data);
-      }
+      const data = await getExams();
+      setExams(data as any); // Type assertion temporário até ajustar os tipos
     } catch (error) {
       console.error('Erro ao carregar exames:', error);
     } finally {
@@ -49,30 +48,18 @@ export default function ExamsPage() {
   };
 
   const handleExamSaved = (savedExam: Exam) => {
-    if (editingExam) {
-      setExams(exams.map(exam => 
-        exam.id === savedExam.id ? savedExam : exam
-      ));
-    } else {
-      setExams([savedExam, ...exams]);
-    }
+    // Como a action já faz revalidatePath, podemos apenas recarregar a lista
+    // ou atualizar o estado local para feedback imediato
+    fetchExams();
   };
 
   const handleStatusChange = async (examId: string, newStatus: 'ACTIVE' | 'INACTIVE') => {
     try {
-      const response = await fetch(`/api/admin/exams/${examId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (response.ok) {
-        setExams(exams.map(exam => 
-          exam.id === examId ? { ...exam, status: newStatus } : exam
-        ));
-      }
+      await updateExam({ id: examId, status: newStatus });
+      
+      setExams(exams.map(exam => 
+        exam.id === examId ? { ...exam, status: newStatus } : exam
+      ));
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
     }
@@ -87,20 +74,12 @@ export default function ExamsPage() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/exams/${examToDelete.id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        await fetchExams();
-        setExamToDelete(null);
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || 'Erro ao excluir exame');
-      }
+      await deleteExam(examToDelete.id);
+      await fetchExams();
+      setExamToDelete(null);
     } catch (error) {
       console.error('Erro ao excluir exame:', error);
-      alert('Erro de conexão. Tente novamente.');
+      alert('Erro ao excluir exame. Tente novamente.');
     } finally {
       setIsDeleting(false);
     }

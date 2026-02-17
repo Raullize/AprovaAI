@@ -16,6 +16,8 @@ interface TopicModalProps {
   examId: string;
 }
 
+import { createTopic, updateTopic } from '@/actions/topics';
+
 export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: TopicModalProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -72,46 +74,33 @@ export default function TopicModal({ isOpen, onClose, onSave, topic, examId }: T
     setErrors({});
 
     try {
-      const url = topic 
-        ? `/api/admin/topics/${topic.id}`
-        : '/api/admin/topics';
+      let savedTopic;
       
-      const method = topic ? 'PATCH' : 'POST';
-      
-      const payload = topic 
-        ? formData
-        : { ...formData, examId };
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        onSave(data);
-        onClose();
+      if (topic) {
+        savedTopic = await updateTopic({
+          id: topic.id,
+          name: formData.name,
+          description: formData.description,
+          status: formData.status,
+        });
       } else {
-        if (data.details) {
-          // Erros de validação do Zod
-          const fieldErrors: Record<string, string> = {};
-          data.details.forEach((error: any) => {
-            if (error.path && error.path.length > 0) {
-              fieldErrors[error.path[0]] = error.message;
-            }
-          });
-          setErrors(fieldErrors);
-        } else {
-          setErrors({ general: data.error || 'Erro ao salvar tópico' });
-        }
+        savedTopic = await createTopic({
+          name: formData.name,
+          description: formData.description,
+          examId,
+        });
       }
+
+      onSave(savedTopic);
+      onClose();
     } catch (error) {
       console.error('Erro ao salvar tópico:', error);
-      setErrors({ general: 'Erro de conexão. Tente novamente.' });
+      
+      // Tratamento simplificado de erro, idealmente poderíamos parsear erros do Zod se viessem estruturados
+      // mas como o server action lança Error genérico para validações simples
+      setErrors({ 
+        general: error instanceof Error ? error.message : 'Erro ao salvar tópico' 
+      });
     } finally {
       setLoading(false);
     }

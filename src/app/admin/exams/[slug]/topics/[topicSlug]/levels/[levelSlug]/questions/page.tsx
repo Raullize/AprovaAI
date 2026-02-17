@@ -9,6 +9,9 @@ import QuestionModal from '@/components/admin/QuestionModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import { Exam, Topic, Level, Option, Question } from '@/types';
 
+import { getLevelBySlug } from '@/actions/levels';
+import { deleteQuestion, reorderQuestions } from '@/actions/questions';
+
 export default function LevelQuestionsPageBySlug() {
   const params = useParams();
   const router = useRouter();
@@ -33,33 +36,29 @@ export default function LevelQuestionsPageBySlug() {
   const fetchLevelAndQuestions = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/levels/slug/${examSlug}/${topicSlug}/${levelSlug}`);
-      if (response.ok) {
-        const data = await response.json();
-        setLevel({
-          id: data.id,
-          name: data.name,
-          slug: data.slug,
-          description: data.description,
-          order: data.order || 0,
-          topicId: data.topicId,
-          simuladoName: data.simuladoName,
-          simuladoDescription: data.simuladoDescription,
-          xpReward: data.xpReward || 0,
-          passingPercentage: data.passingPercentage || 70,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
-          topic: data.topic
-        });
-        setQuestions(data.questions || []);
-        setLoading(false);
-      } else if (response.status === 404) {
-        router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`);
-      } else {
-        setLoading(false);
-      }
+      const data = await getLevelBySlug(examSlug, topicSlug, levelSlug);
+      setLevel({
+        id: data.id,
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        order: data.order || 0,
+        topicId: data.topicId,
+        simuladoName: data.simuladoName,
+        simuladoDescription: data.simuladoDescription,
+        xpReward: data.xpReward || 0,
+        passingPercentage: data.passingPercentage || 70,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        topic: data.topic
+      });
+      setQuestions(data.questions || []);
+      setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar nível e questões:', error);
+      if (error instanceof Error && error.message === 'Nível não encontrado') {
+        router.push(`/admin/exams/${examSlug}/topics/${topicSlug}/levels`);
+      }
       setLoading(false);
     }
   };
@@ -76,26 +75,19 @@ export default function LevelQuestionsPageBySlug() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/questions/${questionToDelete.id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setQuestions(questions.filter(question => question.id !== questionToDelete.id));
-        setQuestionToDelete(null);
-      } else {
-        const data = await response.json();
-        alert(data.error || 'Erro ao excluir questão');
-      }
+      await deleteQuestion(questionToDelete.id);
+      setQuestions(questions.filter(question => question.id !== questionToDelete.id));
+      setQuestionToDelete(null);
     } catch (error) {
       console.error('Erro ao excluir questão:', error);
-      alert('Erro de conexão. Tente novamente.');
+      alert(error instanceof Error ? error.message : 'Erro ao excluir questão');
     } finally {
       setIsDeleting(false);
     }
   };
 
   const handleQuestionSaved = (savedQuestion: Question) => {
+    // Atualização otimista/local
     if (editingQuestion) {
       setQuestions(questions.map(question => 
         question.id === savedQuestion.id ? savedQuestion : question
@@ -106,28 +98,13 @@ export default function LevelQuestionsPageBySlug() {
   };
 
   const handleReorderQuestions = async (newOrder: Question[]) => {
+    if (!level) return;
     try {
-      const response = await fetch('/api/admin/questions/reorder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          levelId: level?.id,
-          questionIds: newOrder.map(q => q.id),
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setQuestions(data.questions);
-      } else {
-        const data = await response.json();
-        alert(data.error || 'Erro ao reordenar questões');
-      }
+      await reorderQuestions(level.id, newOrder.map(q => q.id));
+      // Estado já atualizado otimisticamente no handleDrop
     } catch (error) {
       console.error('Erro ao reordenar questões:', error);
-      alert('Erro de conexão. Tente novamente.');
+      alert('Erro ao salvar nova ordem. Tente novamente.');
     }
   };
 

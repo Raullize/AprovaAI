@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+'use server'
+
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { prisma } from '@/lib/prisma';
@@ -9,31 +10,22 @@ const validateSimulationSchema = z.object({
     questionId: z.string(),
     selectedOptions: z.array(z.string())
   })),
-  timeSpent: z.number().optional() // tempo gasto em segundos
+  timeSpent: z.number().optional()
 });
 
-export async function POST(request: NextRequest, { params }: { params: { levelId: string } }) {
-  try {
+export async function submitSimulation(levelId: string, data: z.infer<typeof validateSimulationSchema>) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
+      throw new Error('Não autorizado');
     }
 
-    const { levelId } = params;
-    const body = await request.json();
-    
-    // Validar dados de entrada
-    const validationResult = validateSimulationSchema.safeParse(body);
+    const validationResult = validateSimulationSchema.safeParse(data);
     if (!validationResult.success) {
-      return NextResponse.json(
-        { error: 'Dados inválidos', errors: validationResult.error.flatten().fieldErrors },
-        { status: 400 }
-      );
+      throw new Error('Dados inválidos');
     }
 
     const { answers, timeSpent } = validationResult.data;
 
-    // Buscar o nível com suas questões e alternativas
     const level = await prisma.level.findUnique({
       where: { id: levelId },
       include: {
@@ -47,22 +39,17 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
     });
 
     if (!level) {
-      return NextResponse.json({ error: 'Nível não encontrado' }, { status: 404 });
+      throw new Error('Nível não encontrado');
     }
 
-    // Validar se todas as questões foram respondidas
     const questionIds = level.questions.map(q => q.id);
     const answeredQuestionIds = answers.map(a => a.questionId);
     
     const missingQuestions = questionIds.filter(id => !answeredQuestionIds.includes(id));
     if (missingQuestions.length > 0) {
-      return NextResponse.json(
-        { error: 'Todas as questões devem ser respondidas' },
-        { status: 400 }
-      );
+      throw new Error('Todas as questões devem ser respondidas');
     }
 
-    // Calcular pontuação
     let correctAnswers = 0;
     const questionResults = [];
 
@@ -77,15 +64,11 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
       
       const selectedOptions = userAnswer.selectedOptions.sort();
       
-      // Verificar se a resposta está correta
       let isCorrect = false;
 
-      // @ts-ignore - type property exists on question but might not be in generated client yet
       if ((question as any).type === 'SINGLE_CHOICE') {
-         // Para única escolha, deve haver apenas uma opção selecionada e ela deve ser correta
          isCorrect = selectedOptions.length === 1 && correctOptions.includes(selectedOptions[0]);
       } else {
-        // Para múltipla escolha, todas as opções corretas devem ser selecionadas e nenhuma incorreta
         isCorrect = 
           correctOptions.length === selectedOptions.length &&
           correctOptions.every(id => selectedOptions.includes(id));
@@ -110,14 +93,13 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
     const percentage = totalQuestions > 0 ? (correctAnswers / totalQuestions) * 100 : 0;
     const passed = percentage >= level.passingPercentage;
 
-    // Salvar resultado do simulado
     const examResult = await prisma.examResult.create({
       data: {
         userId: session.user.id,
         levelId: levelId,
         score: correctAnswers,
         totalQuestions,
-        percentage: Math.round(percentage * 100) / 100, // 2 casas decimais
+        percentage: Math.round(percentage * 100) / 100,
         passed,
         timeSpent: timeSpent || null,
         answers: {
@@ -132,7 +114,6 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
       }
     });
 
-    // Se passou, adicionar XP ao usuário
     if (passed) {
       await prisma.user.update({
         where: { id: session.user.id },
@@ -144,7 +125,7 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
       });
     }
 
-    return NextResponse.json({
+    return {
       resultId: examResult.id,
       score: correctAnswers,
       totalQuestions,
@@ -160,31 +141,13 @@ export async function POST(request: NextRequest, { params }: { params: { levelId
         simuladoName: level.name,
         simuladoDescription: level.description
       }
-    });
-
-  } catch (error) {
-    console.error('Erro ao validar simulado:', error);
-    return NextResponse.json(
-      { error: 'Erro interno do servidor' },
-      { status: 500 }
-    );
-  }
+    };
 }
 
-// GET - Buscar resultado de um simulado específico
-export async function GET(request: NextRequest, { params }: { params: { levelId: string } }) {
-  try {
+export async function getSimulationResult(levelId: string, resultId: string) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
-      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 });
-    }
-
-    const { levelId } = params;
-    const { searchParams } = new URL(request.url);
-    const resultId = searchParams.get('resultId');
-
-    if (!resultId) {
-      return NextResponse.json({ error: 'ID do resultado é obrigatório' }, { status: 400 });
+      throw new Error('Não autorizado');
     }
 
     const result = await prisma.examResult.findFirst({
@@ -209,10 +172,9 @@ export async function GET(request: NextRequest, { params }: { params: { levelId:
     });
 
     if (!result) {
-      return NextResponse.json({ error: 'Resultado não encontrado' }, { status: 404 });
+      throw new Error('Resultado não encontrado');
     }
 
-    // Montar detalhes das questões com as respostas do usuário
     const questionDetails = result.level.questions.map(question => {
       const userAnswer = result.answers.find(a => a.questionId === question.id);
       const correctOptions = question.options?.filter(opt => opt.isCorrect)?.map(opt => opt.id) || [];
@@ -236,7 +198,7 @@ export async function GET(request: NextRequest, { params }: { params: { levelId:
       };
     });
 
-    return NextResponse.json({
+    return {
       id: result.id,
       score: result.score,
       totalQuestions: result.totalQuestions,
@@ -253,13 +215,5 @@ export async function GET(request: NextRequest, { params }: { params: { levelId:
         simuladoDescription: result.level.description
       },
       questions: questionDetails
-    });
-
-  } catch (error) {
-    console.error('Erro ao buscar resultado do simulado:', error);
-    return NextResponse.json(
-      { error: 'Erro interno do servidor' },
-      { status: 500 }
-    );
-  }
+    };
 }

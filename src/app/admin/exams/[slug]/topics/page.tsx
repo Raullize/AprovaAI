@@ -9,6 +9,9 @@ import TopicModal from '@/components/admin/TopicModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import { Exam, Topic } from '@/types';
 
+import { getExamBySlug } from '@/actions/exams';
+import { updateTopic, deleteTopic } from '@/actions/topics';
+
 export default function ExamTopicsPageBySlug() {
   const params = useParams();
   const router = useRouter();
@@ -32,27 +35,23 @@ export default function ExamTopicsPageBySlug() {
   const fetchExamAndTopics = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/exams/slug/${examSlug}`);
-      if (response.ok) {
-        const data = await response.json();
-        setExam({
-          id: data.id,
-          name: data.name,
-          slug: data.slug,
-          description: data.description,
-          status: data.status,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt
-        });
-        setTopics(data.topics || []);
-        setLoading(false);
-      } else if (response.status === 404) {
-        router.push('/admin/exams');
-      } else {
-        setLoading(false);
-      }
+      const data = await getExamBySlug(examSlug);
+      setExam({
+        id: data.id,
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        status: data.status,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt
+      });
+      setTopics(data.topics || []);
+      setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar exame e tópicos:', error);
+      if (error instanceof Error && error.message === 'Exame não encontrado') {
+         router.push('/admin/exams');
+      }
       setLoading(false);
     }
   };
@@ -66,20 +65,12 @@ export default function ExamTopicsPageBySlug() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/topics/${topicToDelete.id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setTopics(topics.filter(topic => topic.id !== topicToDelete.id));
-        setTopicToDelete(null);
-      } else {
-        const errorData = await response.json();
-        alert(errorData.error || 'Erro ao excluir tópico');
-      }
+      await deleteTopic(topicToDelete.id);
+      setTopics(topics.filter(topic => topic.id !== topicToDelete.id));
+      setTopicToDelete(null);
     } catch (error) {
       console.error('Erro ao excluir tópico:', error);
-      alert('Erro de conexão. Tente novamente.');
+      alert(error instanceof Error ? error.message : 'Erro ao excluir tópico');
     } finally {
       setIsDeleting(false);
     }
@@ -87,19 +78,10 @@ export default function ExamTopicsPageBySlug() {
 
   const handleStatusChange = async (topicId: string, newStatus: 'ACTIVE' | 'INACTIVE') => {
     try {
-      const response = await fetch(`/api/admin/topics/${topicId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus }),
-      });
-
-      if (response.ok) {
-        setTopics(topics.map(topic => 
-          topic.id === topicId ? { ...topic, status: newStatus } : topic
-        ));
-      }
+      await updateTopic({ id: topicId, status: newStatus });
+      setTopics(topics.map(topic => 
+        topic.id === topicId ? { ...topic, status: newStatus } : topic
+      ));
     } catch (error) {
       console.error('Erro ao atualizar status:', error);
     }

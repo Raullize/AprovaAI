@@ -16,6 +16,8 @@ interface LevelModalProps {
   topicId: string;
 }
 
+import { createLevel, updateLevel } from '@/actions/levels';
+
 export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: LevelModalProps) {
   const [formData, setFormData] = useState({
     name: '',
@@ -75,46 +77,33 @@ export default function LevelModal({ isOpen, onClose, onSave, level, topicId }: 
     setErrors({});
 
     try {
-      const url = level 
-        ? `/api/admin/levels/${level.id}`
-        : '/api/admin/levels';
+      let savedLevel;
       
-      const method = level ? 'PATCH' : 'POST';
-      
-      const payload = level 
-        ? formData
-        : { ...formData, topicId };
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        onSave(data);
-        onClose();
+      if (level) {
+        savedLevel = await updateLevel({
+          id: level.id,
+          name: formData.name,
+          description: formData.description,
+          xpReward: formData.xpReward,
+          passingPercentage: formData.passingPercentage,
+        });
       } else {
-        if (data.details) {
-          // Erros de validação do Zod
-          const fieldErrors: Record<string, string> = {};
-          data.details.forEach((error: any) => {
-            if (error.path && error.path.length > 0) {
-              fieldErrors[error.path[0]] = error.message;
-            }
-          });
-          setErrors(fieldErrors);
-        } else {
-          setErrors({ general: data.error || 'Erro ao salvar nível' });
-        }
+        savedLevel = await createLevel({
+          name: formData.name,
+          description: formData.description,
+          xpReward: formData.xpReward,
+          passingPercentage: formData.passingPercentage,
+          topicId,
+        });
       }
+
+      onSave(savedLevel);
+      onClose();
     } catch (error) {
       console.error('Erro ao salvar nível:', error);
-      setErrors({ general: 'Erro de conexão. Tente novamente.' });
+      setErrors({ 
+        general: error instanceof Error ? error.message : 'Erro ao salvar nível' 
+      });
     } finally {
       setLoading(false);
     }

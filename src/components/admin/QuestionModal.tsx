@@ -16,6 +16,9 @@ interface QuestionModalProps {
   levelId: string;
 }
 
+import { createQuestion, updateQuestion } from '@/actions/questions';
+import { deleteImage } from '@/actions/upload';
+
 export default function QuestionModal({
   isOpen,
   onClose,
@@ -109,9 +112,7 @@ export default function QuestionModal({
         // Extrair o nome do arquivo da URL
         const fileName = formData.imageUrl.split('/').pop();
         if (fileName) {
-          await fetch(`/api/admin/upload?fileName=${fileName}`, {
-            method: 'DELETE',
-          });
+          await deleteImage(fileName);
         }
       } catch (error) {
         console.error('Erro ao remover arquivo:', error);
@@ -232,58 +233,51 @@ export default function QuestionModal({
         try {
           const fileName = question.imageUrl.split('/').pop();
           if (fileName) {
-            await fetch(`/api/admin/upload?fileName=${fileName}`, {
-              method: 'DELETE',
-            });
+            await deleteImage(fileName);
           }
         } catch (error) {
           console.error('Erro ao remover imagem antiga:', error);
         }
       }
 
-      const url = question 
-        ? `/api/admin/questions/${question.id}`
-        : '/api/admin/questions';
+      let savedQuestion;
       
-      const method = question ? 'PATCH' : 'POST';
-      
-      const payload = {
-        content: formData.content.trim(),
-        imageUrl: formData.imageUrl.trim() || '',
-        type: formData.type,
-        explanation: formData.explanation.trim() || undefined,
-        studyLink: formData.studyLink.trim() || undefined,
-        levelId,
-        options: formData.options.map((opt, index) => ({
+      const optionsData = formData.options.map((opt, index) => ({
           text: opt.text.trim(),
           isCorrect: opt.isCorrect,
           order: index + 1
-        }))
-      };
+      }));
 
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (response.ok) {
-        const savedQuestion = await response.json();
-        onSave(savedQuestion);
-        onClose();
+      if (question) {
+        savedQuestion = await updateQuestion({
+            id: question.id,
+            content: formData.content.trim(),
+            imageUrl: formData.imageUrl.trim() || undefined,
+            type: formData.type,
+            explanation: formData.explanation.trim() || undefined,
+            studyLink: formData.studyLink.trim() || undefined,
+            options: optionsData
+        });
       } else {
-        const data = await response.json();
-        if (data.errors) {
-          setErrors(data.errors);
-        } else {
-          alert(data.error || 'Erro ao salvar questão');
-        }
+        savedQuestion = await createQuestion({
+            content: formData.content.trim(),
+            levelId,
+            imageUrl: formData.imageUrl.trim() || undefined,
+            type: formData.type,
+            explanation: formData.explanation.trim() || undefined,
+            studyLink: formData.studyLink.trim() || undefined,
+            options: optionsData
+        });
       }
+
+      onSave(savedQuestion);
+      onClose();
     } catch (error) {
       console.error('Erro ao salvar questão:', error);
-      alert('Erro de conexão. Tente novamente.');
+      // Tratamento simplificado
+      setErrors({ 
+        general: error instanceof Error ? error.message : 'Erro ao salvar questão' 
+      });
     } finally {
       setLoading(false);
     }

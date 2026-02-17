@@ -28,6 +28,8 @@ interface FormErrors {
   general?: string;
 }
 
+import { createExam, updateExam } from '@/actions/exams';
+
 export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalProps) {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -100,27 +102,23 @@ export default function ExamModal({ isOpen, onClose, onSave, exam }: ExamModalPr
     setErrors({});
 
     try {
-      const url = exam ? `/api/admin/exams/${exam.id}` : '/api/admin/exams';
-      const method = exam ? 'PATCH' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      let savedExam;
+      
+      if (exam) {
+        savedExam = await updateExam({
+          id: exam.id,
           name: formData.name.trim(),
           description: formData.description.trim() || undefined,
           status: formData.status,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro ao salvar exame');
+        });
+      } else {
+        savedExam = await createExam({
+          name: formData.name.trim(),
+          description: formData.description.trim() || undefined,
+          status: formData.status,
+        });
       }
 
-      const savedExam = await response.json();
       onSave(savedExam);
       onClose();
     } catch (error) {

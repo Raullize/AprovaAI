@@ -14,6 +14,8 @@ import type { RegisterForm } from '@/types';
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
 
+import { registerUser } from '@/actions/auth';
+
 export default function RegisterPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<RegisterForm>({
@@ -94,59 +96,43 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      await registerUser({
           fullName: formData.fullName,
           username: formData.username,
           email: formData.email,
           password: formData.password,
           dateOfBirth: formData.dateOfBirth,
-        }),
       });
 
-      const data = await response.json();
+      toast({
+        title: "Conta criada com sucesso!",
+        description: "Redirecionando para dashboard...",
+        variant: "success"
+      });
+      
+      // Fazer login automático após cadastro
+      const loginResponse = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
 
-      if (response.ok) {
-        toast({
-          title: "Conta criada com sucesso!",
-          description: "Redirecionando para dashboard...",
-          variant: "success"
-        });
-        
-        // Fazer login automático após cadastro
-        const loginResponse = await signIn('credentials', {
-          email: formData.email,
-          password: formData.password,
-          redirect: false,
-        });
-
-        if (loginResponse?.ok) {
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 1500);
-        } else {
-          // Se o login automático falhar, redireciona para login
-          setTimeout(() => {
-            router.push('/login?message=Conta criada com sucesso! Faça login para continuar.');
-          }, 2000);
-        }
+      if (loginResponse?.ok) {
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1500);
       } else {
-        toast({
-          title: "Erro ao criar conta",
-          description: data.error || 'Erro ao criar conta. Tente novamente.',
-          variant: "destructive"
-        });
+        // Se o login automático falhar, redireciona para login
+        setTimeout(() => {
+          router.push('/login?message=Conta criada com sucesso! Faça login para continuar.');
+        }, 2000);
       }
       
     } catch (error) {
       console.error('Registration error:', error);
       toast({
-        title: "Erro interno",
-        description: "Erro interno do servidor. Tente novamente.",
+        title: "Erro ao criar conta",
+        description: error instanceof Error ? error.message : 'Erro ao criar conta. Tente novamente.',
         variant: "destructive"
       });
     } finally {

@@ -9,6 +9,9 @@ import LevelModal from '@/components/admin/LevelModal';
 import ConfirmModal from '@/components/ui/ConfirmModal';
 import { Exam, Topic, Level } from '@/types';
 
+import { getTopicBySlug } from '@/actions/topics';
+import { deleteLevel, reorderLevels } from '@/actions/levels';
+
 export default function TopicLevelsPageBySlug() {
   const params = useParams();
   const router = useRouter();
@@ -34,29 +37,25 @@ export default function TopicLevelsPageBySlug() {
   const fetchTopicAndLevels = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/admin/topics/slug/${examSlug}/${topicSlug}`);
-      if (response.ok) {
-        const data = await response.json();
-        setTopic({
-          id: data.id,
-          name: data.name,
-          slug: data.slug,
-          description: data.description,
-          status: data.status || 'ACTIVE',
-          examId: data.examId,
-          createdAt: data.createdAt,
-          updatedAt: data.updatedAt,
-          exam: data.exam
-        });
-        setLevels(data.levels || []);
-        setLoading(false);
-      } else if (response.status === 404) {
-        router.push(`/admin/exams/${examSlug}/topics`);
-      } else {
-        setLoading(false);
-      }
+      const data = await getTopicBySlug(examSlug, topicSlug);
+      setTopic({
+        id: data.id,
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        status: data.status || 'ACTIVE',
+        examId: data.examId,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+        exam: data.exam
+      });
+      setLevels(data.levels || []);
+      setLoading(false);
     } catch (error) {
       console.error('Erro ao carregar tópico e níveis:', error);
+      if (error instanceof Error && error.message === 'Tópico não encontrado') {
+        router.push(`/admin/exams/${examSlug}/topics`);
+      }
       setLoading(false);
     }
   };
@@ -70,26 +69,20 @@ export default function TopicLevelsPageBySlug() {
 
     setIsDeleting(true);
     try {
-      const response = await fetch(`/api/admin/levels/${levelToDelete.id}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setLevels(levels.filter(level => level.id !== levelToDelete.id));
-        setLevelToDelete(null);
-      } else {
-        const data = await response.json();
-        alert(data.error || 'Erro ao excluir nível');
-      }
+      await deleteLevel(levelToDelete.id);
+      setLevels(levels.filter(level => level.id !== levelToDelete.id));
+      setLevelToDelete(null);
     } catch (error) {
       console.error('Erro ao excluir nível:', error);
-      alert('Erro de conexão. Tente novamente.');
+      alert(error instanceof Error ? error.message : 'Erro ao excluir nível');
     } finally {
       setIsDeleting(false);
     }
   };
 
   const handleLevelSaved = (savedLevel: Level) => {
+    // Como a action revalida, idealmente faríamos um refetch ou atualizaríamos o estado local
+    // Aqui estamos atualizando o estado local para feedback instantâneo
     if (editingLevel) {
       setLevels(levels.map(level => 
         level.id === savedLevel.id ? savedLevel : level
@@ -100,28 +93,14 @@ export default function TopicLevelsPageBySlug() {
   };
 
   const handleReorderLevels = async (newOrder: Level[]) => {
+    if (!topic) return;
     try {
-      const response = await fetch('/api/admin/levels/reorder', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          topicId: topic?.id,
-          levelIds: newOrder.map(l => l.id),
-        }),
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setLevels(data.levels);
-      } else {
-        const data = await response.json();
-        alert(data.error || 'Erro ao reordenar níveis');
-      }
+      await reorderLevels(topic.id, newOrder.map(l => l.id));
+      // Não precisamos setLevels aqui pois já foi feito no handleDrop otimisticamente
     } catch (error) {
       console.error('Erro ao reordenar níveis:', error);
-      alert('Erro de conexão. Tente novamente.');
+      alert('Erro ao salvar nova ordem. Tente novamente.');
+      // Reverteria a ordem aqui se fosse crítico
     }
   };
 

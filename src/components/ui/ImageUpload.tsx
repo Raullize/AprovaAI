@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Image as ImageIcon } from 'lucide-react';
 import Button from './Button';
+import { uploadImage } from '@/actions/upload';
 
 interface ImageUploadProps {
   value?: string;
@@ -68,18 +69,8 @@ export default function ImageUpload({
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('/api/admin/upload', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erro no upload');
-      }
-
-      const data = await response.json();
-      onChange(data.url);
+      const result = await uploadImage(formData);
+      onChange(result.url);
     } catch (error) {
       console.error('Erro ao fazer upload da imagem:', error);
       alert(error instanceof Error ? error.message : 'Erro ao fazer upload da imagem. Tente novamente.');
