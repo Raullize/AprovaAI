@@ -1,0 +1,575 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2024-02-16T12:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "req_login",
+      "parentId": "fld_auth",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/auth/callback/credentials",
+      "name": "Login (Obter Cookie)",
+      "description": "Faça login para obter o cookie 'next-auth.session-token'. O Insomnia deve gerenciar o cookie automaticamente, mas se falhar, copie o cookie do navegador.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/x-www-form-urlencoded",
+        "params": [
+          {
+            "name": "csrfToken",
+            "value": "{{ csrf_token }}"
+          },
+          {
+            "name": "email",
+            "value": "admin@aprovaai.com"
+          },
+          {
+            "name": "password",
+            "value": "admin123"
+          }
+        ]
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/x-www-form-urlencoded"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084800000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "off",
+      "_type": "request"
+    },
+    {
+      "_id": "req_check_auth",
+      "parentId": "fld_auth",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/me",
+      "name": "Verificar Token (Me)",
+      "description": "Retorna os dados do usuário logado para confirmar que o cookie está funcionando.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708084750000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_logout",
+      "parentId": "fld_auth",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/auth/signout",
+      "name": "Logout",
+      "description": "Encerra a sessão e limpa os cookies. Requer POST com CSRF Token.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/x-www-form-urlencoded",
+        "params": [
+          {
+            "name": "csrfToken",
+            "value": "{{ csrf_token }}"
+          }
+        ]
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/x-www-form-urlencoded"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084700000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "off",
+      "_type": "request"
+    },
+    {
+      "_id": "req_health",
+      "parentId": "wrk_aprovaai",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/health",
+      "name": "Health Check",
+      "description": "Verifica se a aplicação e o banco de dados estão respondendo.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708085000000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_csrf",
+      "parentId": "fld_auth",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/auth/csrf",
+      "name": "Obter CSRF Token",
+      "description": "Necessário para fazer login via API. Copie o token retornado para a variável de ambiente 'csrf_token'.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708084900000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_list_exams",
+      "parentId": "fld_exams",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/exams",
+      "name": "Listar Exames",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708084800000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_exam",
+      "parentId": "fld_exams",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/exams",
+      "name": "Criar Exame",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"name\": \"AWS Cloud Practitioner (CLF-C02)\",\n\t\"description\": \"Certificação fundamental da AWS sobre conceitos de nuvem, segurança e serviços.\",\n\t\"status\": \"ACTIVE\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084700000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_exam",
+      "parentId": "fld_exams",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/exams/{{ exam_id }}",
+      "name": "Obter Exame",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708084600000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_update_exam",
+      "parentId": "fld_exams",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/exams/{{ exam_id }}",
+      "name": "Atualizar Exame",
+      "description": "",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"name\": \"AWS Certified Cloud Practitioner (Atualizado)\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084500000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_delete_exam",
+      "parentId": "fld_exams",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/exams/{{ exam_id }}",
+      "name": "Deletar Exame",
+      "description": "",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708084400000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_list_topics",
+      "parentId": "fld_topics",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/topics",
+      "name": "Listar Tópicos",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "examId",
+          "value": "{{ exam_id }}"
+        }
+      ],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708084800000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_topic",
+      "parentId": "fld_topics",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/topics",
+      "name": "Criar Tópico",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"name\": \"Conceitos de Nuvem (Cloud Concepts)\",\n\t\"description\": \"Entendimento básico de TI e Nuvem AWS.\",\n\t\"examId\": \"{{ exam_id }}\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084700000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_list_levels",
+      "parentId": "fld_levels",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/levels",
+      "name": "Listar Níveis",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "topicId",
+          "value": "{{ topic_id }}"
+        }
+      ],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708084800000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_level",
+      "parentId": "fld_levels",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/levels",
+      "name": "Criar Nível",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"name\": \"Introdução\",\n\t\"topicId\": \"{{ topic_id }}\",\n\t\"xpReward\": 50,\n\t\"passingPercentage\": 70\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084700000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_list_questions",
+      "parentId": "fld_questions",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/questions",
+      "name": "Listar Questões",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [
+        {
+          "name": "levelId",
+          "value": "{{ level_id }}"
+        }
+      ],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": -1708084800000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_question",
+      "parentId": "fld_questions",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/api/admin/questions",
+      "name": "Criar Questão",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"content\": \"Qual dos seguintes é um benefício da computação em nuvem AWS?\",\n\t\"levelId\": \"{{ level_id }}\",\n\t\"type\": \"SINGLE_CHOICE\",\n\t\"explanation\": \"A AWS permite trocar despesas de capital (Data Centers) por despesas variáveis (Pagamento pelo uso).\",\n\t\"options\": [\n\t\t{ \"text\": \"Aumentar as despesas de capital\", \"isCorrect\": false, \"order\": 1 },\n\t\t{ \"text\": \"Trocar despesas de capital por despesas variáveis\", \"isCorrect\": true, \"order\": 2 },\n\t\t{ \"text\": \"Ter controle físico total sobre os servidores\", \"isCorrect\": false, \"order\": 3 },\n\t\t{ \"text\": \"Manter servidores ociosos\", \"isCorrect\": false, \"order\": 4 }\n\t]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084700000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "env_local",
+      "parentId": "env_root",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Localhost",
+      "data": {
+        "base_url": "http://localhost:3000",
+        "exam_id": "SUBSTITUA_PELO_ID_GERADO",
+        "topic_id": "SUBSTITUA_PELO_ID_GERADO",
+        "level_id": "SUBSTITUA_PELO_ID_GERADO",
+        "csrf_token": "COPIE_DO_ENDPOINT_GET_CSRF"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "exam_id",
+          "topic_id",
+          "level_id",
+          "csrf_token"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1708084800000,
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_auth",
+      "parentId": "wrk_aprovaai",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Autenticação",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1708084900000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_exams",
+      "parentId": "wrk_aprovaai",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Exames",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1708084800000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_topics",
+      "parentId": "wrk_aprovaai",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Tópicos",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1708084700000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_levels",
+      "parentId": "wrk_aprovaai",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Níveis",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1708084600000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_questions",
+      "parentId": "wrk_aprovaai",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Questões",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1708084500000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_aprovaai",
+      "parentId": null,
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "AprovaAI API",
+      "description": "Coleção de endpoints para teste da aplicação AprovaAI",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_root",
+      "parentId": "wrk_aprovaai",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1708084800000,
+      "_type": "environment"
+    }
+  ]
+}
