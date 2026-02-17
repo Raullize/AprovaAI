@@ -180,8 +180,12 @@ O perfil administrador/root possui controle total sobre o conteúdo da plataform
 - `npm run db:seed` - Popula o banco com dados iniciais
 - `npm run db:seed:cleanup` - Remove dados dos seeders
 
-## Documentação
-- [Seeders](./docs/SEEDERS.md)
+## Documentação Técnica
+- [Arquitetura da Aplicação](./docs/ARCHITECTURE.md) - Visão geral, camadas e fluxo de dados.
+- [Evolução da Arquitetura](./docs/ARCHITECTURE_EVOLUTION.md) - Histórico da migração para Server Actions + API Híbrida.
+- [Guia de API e Testes](./docs/API_GUIDE.md) - Como testar os endpoints REST usando Insomnia.
+- [Seeders](./docs/SEEDERS.md) - Como popular o banco de dados.
+
 
 ## Contribuição
 
