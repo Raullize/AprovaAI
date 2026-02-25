@@ -3,9 +3,12 @@ import api from '../services/api';
 
 interface User {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
   role: string;
+  username: string;
+  xp: number;
+  subscriptionPlan: string;
 }
 
 interface AuthContextData {

@@ -208,7 +208,7 @@ export const Header: React.FC = () => {
                     {signed ? (
                       <>
                         <div className="text-center mb-4">
-                          <p className="text-sm text-gray-600">Olá, {user?.name || user?.email}</p>
+                          <p className="text-sm text-gray-600">Olá, {user?.fullName || user?.email}</p>
                         </div>
                         <Button 
                           className="w-full"

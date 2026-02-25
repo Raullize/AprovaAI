@@ -6,6 +6,11 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Toaster } from './components/ui/Toaster';
+import UnderConstruction from './components/ui/UnderConstruction';
+import CreateSimulation from './pages/dashboard/simulations/CreateSimulation';
+import Button from './components/ui/Button';
+import { Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { signed, loading } = useAuth();
@@ -34,14 +39,29 @@ function App() {
               </PrivateRoute>
             } 
           >
-            <Route index element={
-              <div className="bg-white shadow rounded-lg p-6">
-                <h2 className="text-2xl font-bold mb-4">Bem-vindo ao AprovaAI!</h2>
-                <p>Selecione uma opção no menu lateral para começar.</p>
+            <Route index element={<UnderConstruction title="Dashboard" message="Visão geral e estatísticas em breve." />} />
+            
+            <Route path="exams" element={<UnderConstruction title="Meus Exames" message="Histórico de provas realizadas em breve." />} />
+            
+            <Route path="simulations" element={
+              <div className="space-y-6">
+                <div className="flex justify-between items-center">
+                  <h1 className="text-2xl font-bold text-gray-900">Simulados</h1>
+                  <Link to="/dashboard/simulations/create">
+                    <Button>
+                      <Plus className="h-5 w-5 mr-2" />
+                      Novo Simulado
+                    </Button>
+                  </Link>
+                </div>
+                <UnderConstruction title="Listagem de Simulados" message="O histórico de simulados estará disponível aqui." />
               </div>
             } />
-            <Route path="exams" element={<div>Meus Exames (Em breve)</div>} />
-            <Route path="simulations" element={<div>Simulados (Em breve)</div>} />
+            
+            <Route path="simulations/create" element={<CreateSimulation />} />
+            
+            <Route path="profile" element={<UnderConstruction title="Meu Perfil" message="Edição de dados pessoais em breve." />} />
+            <Route path="settings" element={<UnderConstruction title="Configurações" message="Preferências do sistema em breve." />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" />} />
