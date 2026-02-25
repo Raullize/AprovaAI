@@ -137,12 +137,20 @@
       "name": "Localhost (Node API)",
       "data": {
         "base_url": "http://localhost:3001/api",
-        "token": "COLE_SEU_JWT_AQUI"
+        "token": "COLE_SEU_JWT_AQUI",
+        "exam_id": "ID_DO_EXAME_AQUI",
+        "topic_id": "ID_DO_TOPICO_AQUI",
+        "level_id": "ID_DO_NIVEL_AQUI",
+        "question_id": "ID_DA_QUESTAO_AQUI"
       },
       "dataPropertyOrder": {
         "&": [
           "base_url",
-          "token"
+          "token",
+          "exam_id",
+          "topic_id",
+          "level_id",
+          "question_id"
         ]
       },
       "color": null,
@@ -159,7 +167,7 @@
       "description": "",
       "environment": {},
       "environmentPropertyOrder": null,
-      "metaSortKey": -1708084900000,
+      "metaSortKey": 10,
       "_type": "request_group"
     },
     {
@@ -171,7 +179,7 @@
       "description": "",
       "environment": {},
       "environmentPropertyOrder": null,
-      "metaSortKey": -1708084800000,
+      "metaSortKey": 20,
       "_type": "request_group"
     },
     {
@@ -196,6 +204,625 @@
       "isPrivate": false,
       "metaSortKey": 1708084800000,
       "_type": "environment"
+    },
+    {
+      "_id": "req_1772000793084_z46srkk24",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/health",
+      "name": "Health Check",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {},
+      "metaSortKey": 0,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_0d7qerhz8",
+      "parentId": "fld_exams",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/exams/{{ exam_id }}",
+      "name": "Obter Exame",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_gio8k8dzm",
+      "parentId": "fld_exams",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/exams/{{ exam_id }}",
+      "name": "Atualizar Exame",
+      "description": "",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Nome Atualizado\",\n  \"status\": \"INACTIVE\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_oy2ziazcs",
+      "parentId": "fld_exams",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/exams/{{ exam_id }}",
+      "name": "Deletar Exame",
+      "description": "",
+      "method": "DELETE",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_1772000793084_4lomri4w9",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "name": "Tópicos",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 30,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_1772000793084_5kuhbqb7p",
+      "parentId": "fld_1772000793084_4lomri4w9",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/topics?examId={{ exam_id }}",
+      "name": "Listar Tópicos (por Exame)",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_g2313da3p",
+      "parentId": "fld_1772000793084_4lomri4w9",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/topics/{{ topic_id }}",
+      "name": "Obter Tópico",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_gw0mlb4ak",
+      "parentId": "fld_1772000793084_4lomri4w9",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/topics",
+      "name": "Criar Tópico",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Novo Tópico\",\n  \"description\": \"Desc\",\n  \"examId\": \"{{ exam_id }}\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_bguhcaes6",
+      "parentId": "fld_1772000793084_4lomri4w9",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/topics/{{ topic_id }}",
+      "name": "Atualizar Tópico",
+      "description": "",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Tópico Atualizado\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_xxbwmfohs",
+      "parentId": "fld_1772000793084_4lomri4w9",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/topics/{{ topic_id }}",
+      "name": "Deletar Tópico",
+      "description": "",
+      "method": "DELETE",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_1772000793084_t8m6q4u26",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "name": "Níveis",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 40,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_1772000793084_zux1irvz5",
+      "parentId": "fld_1772000793084_t8m6q4u26",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/levels?topicId={{ topic_id }}",
+      "name": "Listar Níveis (por Tópico)",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_sgy26tasu",
+      "parentId": "fld_1772000793084_t8m6q4u26",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/levels/{{ level_id }}",
+      "name": "Obter Nível",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_8f6ldszr8",
+      "parentId": "fld_1772000793084_t8m6q4u26",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/levels",
+      "name": "Criar Nível",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"Nível 1\",\n  \"topicId\": \"{{ topic_id }}\",\n  \"xpReward\": 10,\n  \"passingPercentage\": 70\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_qoqtlvxbo",
+      "parentId": "fld_1772000793084_t8m6q4u26",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/levels/{{ level_id }}",
+      "name": "Atualizar Nível",
+      "description": "",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"xpReward\": 20\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_8dwmgb102",
+      "parentId": "fld_1772000793084_t8m6q4u26",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/levels/{{ level_id }}",
+      "name": "Deletar Nível",
+      "description": "",
+      "method": "DELETE",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_1772000793084_jcl88jp31",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "name": "Questões",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 50,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_1772000793084_pfz4igw6g",
+      "parentId": "fld_1772000793084_jcl88jp31",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/questions?levelId={{ level_id }}",
+      "name": "Listar Questões (por Nível)",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_5ey6s9s77",
+      "parentId": "fld_1772000793084_jcl88jp31",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/questions/{{ question_id }}",
+      "name": "Obter Questão",
+      "description": "",
+      "method": "GET",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_ygkto3orr",
+      "parentId": "fld_1772000793084_jcl88jp31",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/questions",
+      "name": "Criar Questão",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"content\": \"Qual é a resposta?\",\n  \"levelId\": \"{{ level_id }}\",\n  \"type\": \"MULTIPLE_CHOICE\",\n  \"options\": [\n    {\n      \"text\": \"A\",\n      \"isCorrect\": true\n    },\n    {\n      \"text\": \"B\",\n      \"isCorrect\": false\n    }\n  ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_qmu71qv8i",
+      "parentId": "fld_1772000793084_jcl88jp31",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/questions/{{ question_id }}",
+      "name": "Atualizar Questão",
+      "description": "",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"content\": \"Pergunta editada\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_1772000793084_2dje3q3nx",
+      "parentId": "fld_1772000793084_jcl88jp31",
+      "modified": 1772000793084,
+      "created": 1772000793084,
+      "url": "{{ base_url }}/questions/{{ question_id }}",
+      "name": "Deletar Questão",
+      "description": "",
+      "method": "DELETE",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{}"
+      },
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -1772000793084,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
     }
   ]
 }
