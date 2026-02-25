@@ -1,0 +1,201 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2026-02-24T23:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2023.5.8",
+  "resources": [
+    {
+      "_id": "req_login",
+      "parentId": "fld_auth",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/auth/login",
+      "name": "Login (Obter Token)",
+      "description": "Retorna um JWT. Copie o token para a variável de ambiente 'token'.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"email\": \"admin@aprovaai.com\",\n\t\"password\": \"admin123\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084800000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_register",
+      "parentId": "fld_auth",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/auth/register",
+      "name": "Cadastrar Usuário",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"fullName\": \"Novo Admin\",\n\t\"username\": \"newadmin\",\n\t\"email\": \"admin2@aprovaai.com\",\n\t\"password\": \"123456\",\n\t\"dateOfBirth\": \"1990-01-01\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084900000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_list_exams",
+      "parentId": "fld_exams",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/exams",
+      "name": "Listar Exames",
+      "description": "",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084800000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_exam",
+      "parentId": "fld_exams",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "url": "{{ base_url }}/exams",
+      "name": "Criar Exame",
+      "description": "",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n\t\"name\": \"AWS Cloud Practitioner (Node)\",\n\t\"description\": \"Via API Node.js\",\n\t\"status\": \"ACTIVE\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        },
+        {
+          "name": "Authorization",
+          "value": "Bearer {{ token }}"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -1708084700000,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "env_local_v2",
+      "parentId": "env_root",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Localhost (Node API)",
+      "data": {
+        "base_url": "http://localhost:3001/api",
+        "token": "COLE_SEU_JWT_AQUI"
+      },
+      "dataPropertyOrder": {
+        "&": [
+          "base_url",
+          "token"
+        ]
+      },
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1708084800000,
+      "_type": "environment"
+    },
+    {
+      "_id": "fld_auth",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Autenticação",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1708084900000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "fld_exams",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Exames",
+      "description": "",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": -1708084800000,
+      "_type": "request_group"
+    },
+    {
+      "_id": "wrk_aprovaai_v2",
+      "parentId": null,
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "AprovaAI V2 (Node.js)",
+      "description": "API Refatorada",
+      "scope": "collection",
+      "_type": "workspace"
+    },
+    {
+      "_id": "env_root",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1708084800000,
+      "created": 1708084800000,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": null,
+      "color": null,
+      "isPrivate": false,
+      "metaSortKey": 1708084800000,
+      "_type": "environment"
+    }
+  ]
+}

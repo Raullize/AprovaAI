@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+
+  @@map("user_role")
+}
+
+enum SubscriptionPlan {
+  FREE
+  PREMIUM
+
+  @@map("subscription_plan")
+}
+
+model User {
+  id               String           @id @default(cuid()) @map("id")
+  fullName         String           @map("full_name")
+  username         String           @unique @map("username")
+  dateOfBirth      DateTime         @map("date_of_birth")
+  email            String           @unique @map("email")
+  passwordHash     String           @map("password_hash")
+  subscriptionPlan SubscriptionPlan @default(FREE) @map("subscription_plan")
+  role             UserRole         @default(USER) @map("role")
+  xp               Int              @default(0) @map("xp") // User experience points
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+
+  // Relationships
+  examResults ExamResult[]
+
+  @@map("users")
+}
+
+enum ExamStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("exam_status")
+}
+
+enum TopicStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("topic_status")
+}
+
+model Exam {
+  id          String     @id @default(cuid()) @map("id")
+  name        String     @map("name")
+  slug        String     @unique @map("slug")
+  description String?    @map("description")
+  status      ExamStatus @default(ACTIVE) @map("status")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  // Relationships
+  topics Topic[]
+
+  @@map("exams")
+}
+
+model Topic {
+  id          String      @id @default(cuid()) @map("id")
+  name        String      @map("name")
+  slug        String      @map("slug")
+  description String?     @map("description")
+  status      TopicStatus @default(ACTIVE) @map("status")
+  examId      String      @map("exam_id")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  // Relationships
+  exam   Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  levels Level[]
+
+  @@unique([examId, slug])
+  @@map("topics")
+}
+
+model Level {
+  id                    String   @id @default(cuid()) @map("id")
+  name                  String   @map("name")
+  slug                  String   @map("slug")
+  description           String?  @map("description")
+  order                 Int      @map("order") // For level ordering
+  topicId               String   @map("topic_id")
+  
+  // Exam fields
+  xpReward              Int      @default(0) @map("xp_reward")
+  passingPercentage     Float    @default(70.0) @map("passing_percentage") // Minimum percentage to pass
+  
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  topic       Topic        @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  questions   Question[]
+  examResults ExamResult[]
+
+  @@unique([topicId, slug])
+  @@map("levels")
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  SINGLE_CHOICE
+  
+  @@map("question_type")
+}
+
+model Question {
+  id          String       @id @default(cuid()) @map("id")
+  content     String       @map("content") // Question text
+  imageUrl    String?      @map("image_url") // Optional image attachment
+  type        QuestionType @default(MULTIPLE_CHOICE) @map("type")
+  order       Int          @map("order") // Question order in the exam
+  explanation String?      @map("explanation") // Optional answer explanation
+  studyLink   String?      @map("study_link") // Optional study link
+  levelId     String       @map("level_id")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+
+  // Relationships
+  level   Level            @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  options Option[]
+  answers ExamAnswer[]
+
+  @@map("questions")
+}
+
+model Option {
+  id         String   @id @default(cuid()) @map("id")
+  text       String   @map("text") // Option text
+  isCorrect  Boolean  @default(false) @map("is_correct") // Whether this is a correct option
+  order      Int      @map("order") // Option order (A, B, C, D, etc.)
+  questionId String   @map("question_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("options")
+}
+
+// Model to store exam results
+model ExamResult {
+  id             String   @id @default(cuid()) @map("id")
+  userId         String   @map("user_id")
+  levelId        String   @map("level_id")
+  score          Int      @map("score") // Number of correct questions
+  totalQuestions Int      @map("total_questions") // Total questions in the exam
+  percentage     Float    @map("percentage") // Percentage of correct answers
+  passed         Boolean  @map("passed") // Whether passed the exam
+  timeSpent      Int?     @map("time_spent") // Time spent in seconds
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level   Level       @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  answers ExamAnswer[]
+
+  @@map("exam_results")
+}
+
+// Model to store individual user answers
+model ExamAnswer {
+  id              String   @id @default(cuid()) @map("id")
+  examResultId    String   @map("exam_result_id")
+  questionId      String   @map("question_id")
+  selectedOptions String[] @map("selected_options") // Array of selected option IDs
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relationships
+  examResult ExamResult @relation(fields: [examResultId], references: [id], onDelete: Cascade)
+  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([examResultId, questionId])
+  @@map("exam_answers")
+}
