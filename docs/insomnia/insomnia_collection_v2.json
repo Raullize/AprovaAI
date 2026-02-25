@@ -1,147 +1,45 @@
 {
   "_type": "export",
   "__export_format": 4,
-  "__export_date": "2026-02-24T23:00:00.000Z",
+  "__export_date": "2026-02-25T18:00:00.000Z",
   "__export_source": "insomnia.desktop.app:v2023.5.8",
   "resources": [
     {
-      "_id": "req_login",
-      "parentId": "fld_auth",
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "url": "{{ base_url }}/auth/login",
-      "name": "Login (Obter Token)",
-      "description": "Retorna um JWT. Copie o token para a variável de ambiente 'token'.",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n\t\"email\": \"admin@aprovaai.com\",\n\t\"password\": \"admin123\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1708084800000,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
+      "_id": "wrk_aprovaai_v2",
+      "parentId": null,
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "name": "AprovaAI — API REST",
+      "description": "Coleção completa da API Node.js/Express do AprovaAI. Fluxo sugerido: 1) Login → 2) Criar Exame → 3) Criar Tópico → 4) Criar Nível → 5) Criar Questão.",
+      "scope": "collection",
+      "_type": "workspace"
     },
     {
-      "_id": "req_register",
-      "parentId": "fld_auth",
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "url": "{{ base_url }}/auth/register",
-      "name": "Cadastrar Usuário",
-      "description": "",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n\t\"fullName\": \"Novo Admin\",\n\t\"username\": \"newadmin\",\n\t\"email\": \"admin2@aprovaai.com\",\n\t\"password\": \"123456\",\n\t\"dateOfBirth\": \"1990-01-01\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1708084900000,
+      "_id": "env_root",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "name": "Base Environment",
+      "data": {},
+      "dataPropertyOrder": null,
+      "color": null,
       "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_list_exams",
-      "parentId": "fld_exams",
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "url": "{{ base_url }}/exams",
-      "name": "Listar Exames",
-      "description": "",
-      "method": "GET",
-      "body": {},
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1708084800000,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
-    },
-    {
-      "_id": "req_create_exam",
-      "parentId": "fld_exams",
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "url": "{{ base_url }}/exams",
-      "name": "Criar Exame",
-      "description": "",
-      "method": "POST",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{\n\t\"name\": \"AWS Cloud Practitioner (Node)\",\n\t\"description\": \"Via API Node.js\",\n\t\"status\": \"ACTIVE\"\n}"
-      },
-      "parameters": [],
-      "headers": [
-        {
-          "name": "Content-Type",
-          "value": "application/json"
-        },
-        {
-          "name": "Authorization",
-          "value": "Bearer {{ token }}"
-        }
-      ],
-      "authentication": {},
-      "metaSortKey": -1708084700000,
-      "isPrivate": false,
-      "settingStoreCookies": true,
-      "settingSendCookies": true,
-      "settingDisableRenderRequestBody": false,
-      "settingEncodeUrl": true,
-      "settingRebuildPath": true,
-      "settingFollowRedirects": "global",
-      "_type": "request"
+      "metaSortKey": 1772000000000,
+      "_type": "environment"
     },
     {
       "_id": "env_local_v2",
       "parentId": "env_root",
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "name": "Localhost (Node API)",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "name": "Localhost",
       "data": {
         "base_url": "http://localhost:3001/api",
         "token": "COLE_SEU_JWT_AQUI",
-        "exam_id": "ID_DO_EXAME_AQUI",
-        "topic_id": "ID_DO_TOPICO_AQUI",
-        "level_id": "ID_DO_NIVEL_AQUI",
-        "question_id": "ID_DA_QUESTAO_AQUI"
+        "exam_id": "ID_DO_EXAME",
+        "topic_id": "ID_DO_TOPICO",
+        "level_id": "ID_DO_NIVEL",
+        "question_id": "ID_DA_QUESTAO"
       },
       "dataPropertyOrder": {
         "&": [
@@ -155,69 +53,19 @@
       },
       "color": null,
       "isPrivate": false,
-      "metaSortKey": 1708084800000,
+      "metaSortKey": 1772000000001,
       "_type": "environment"
     },
     {
-      "_id": "fld_auth",
+      "_id": "req_health",
       "parentId": "wrk_aprovaai_v2",
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "name": "Autenticação",
-      "description": "",
-      "environment": {},
-      "environmentPropertyOrder": null,
-      "metaSortKey": 10,
-      "_type": "request_group"
-    },
-    {
-      "_id": "fld_exams",
-      "parentId": "wrk_aprovaai_v2",
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "name": "Exames",
-      "description": "",
-      "environment": {},
-      "environmentPropertyOrder": null,
-      "metaSortKey": 20,
-      "_type": "request_group"
-    },
-    {
-      "_id": "wrk_aprovaai_v2",
-      "parentId": null,
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "name": "AprovaAI V2 (Node.js)",
-      "description": "API Refatorada",
-      "scope": "collection",
-      "_type": "workspace"
-    },
-    {
-      "_id": "env_root",
-      "parentId": "wrk_aprovaai_v2",
-      "modified": 1708084800000,
-      "created": 1708084800000,
-      "name": "Base Environment",
-      "data": {},
-      "dataPropertyOrder": null,
-      "color": null,
-      "isPrivate": false,
-      "metaSortKey": 1708084800000,
-      "_type": "environment"
-    },
-    {
-      "_id": "req_1772000793084_z46srkk24",
-      "parentId": "wrk_aprovaai_v2",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/health",
       "name": "Health Check",
-      "description": "",
+      "description": "Verifica se o servidor está no ar.",
       "method": "GET",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {},
@@ -232,25 +80,39 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_0d7qerhz8",
-      "parentId": "fld_exams",
-      "modified": 1772000793084,
-      "created": 1772000793084,
-      "url": "{{ base_url }}/exams/{{ exam_id }}",
-      "name": "Obter Exame",
-      "description": "",
-      "method": "GET",
+      "_id": "fld_auth",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "name": "Autenticação",
+      "description": "Login e cadastro de usuários.",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 10,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_login",
+      "parentId": "fld_auth",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "url": "{{ base_url }}/auth/login",
+      "name": "Login",
+      "description": "Autentica um usuário e retorna um JWT. Cole o token retornado na variável de ambiente 'token'.",
+      "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{}"
+        "text": "{\n\t\"email\": \"admin@aprovaai.com\",\n\t\"password\": \"admin123\"\n}"
       },
       "parameters": [],
-      "headers": [],
-      "authentication": {
-        "type": "bearer",
-        "token": "{{ token }}"
-      },
-      "metaSortKey": -1772000793084,
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -100,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -261,17 +123,112 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_gio8k8dzm",
-      "parentId": "fld_exams",
-      "modified": 1772000793084,
-      "created": 1772000793084,
-      "url": "{{ base_url }}/exams/{{ exam_id }}",
-      "name": "Atualizar Exame",
-      "description": "",
-      "method": "PATCH",
+      "_id": "req_register",
+      "parentId": "fld_auth",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "url": "{{ base_url }}/auth/register",
+      "name": "Cadastrar Usuário",
+      "description": "Cria um novo usuário na plataforma.",
+      "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"name\": \"Nome Atualizado\",\n  \"status\": \"INACTIVE\"\n}"
+        "text": "{\n\t\"fullName\": \"Carlos Mendes\",\n\t\"username\": \"carlos.mendes\",\n\t\"email\": \"carlos@aprovaai.com\",\n\t\"password\": \"senha@2026\",\n\t\"dateOfBirth\": \"1995-06-15\"\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {},
+      "metaSortKey": -90,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_exams",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "name": "Exames",
+      "description": "CRUD de exames de certificação.",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 20,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_list_exams",
+      "parentId": "fld_exams",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "url": "{{ base_url }}/exams",
+      "name": "Listar Exames",
+      "description": "Retorna todos os exames cadastrados.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -200,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_get_exam",
+      "parentId": "fld_exams",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "url": "{{ base_url }}/exams/{{ exam_id }}",
+      "name": "Obter Exame",
+      "description": "Retorna os detalhes de um exame específico.",
+      "method": "GET",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -190,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_create_exam",
+      "parentId": "fld_exams",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "url": "{{ base_url }}/exams",
+      "name": "Criar Exame",
+      "description": "Cria um novo exame de certificação. Salve o 'id' retornado na variável 'exam_id'.",
+      "method": "POST",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"name\": \"AWS Certified Cloud Practitioner (CLF-C02)\",\n  \"description\": \"Certificação de nível fundamental da Amazon Web Services. Abrange conceitos de nuvem, serviços principais da AWS, segurança, arquitetura e modelo de preços.\",\n  \"status\": \"ACTIVE\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -284,7 +241,7 @@
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -180,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -295,25 +252,56 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_oy2ziazcs",
+      "_id": "req_update_exam",
       "parentId": "fld_exams",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/exams/{{ exam_id }}",
-      "name": "Deletar Exame",
-      "description": "",
-      "method": "DELETE",
+      "name": "Atualizar Exame",
+      "description": "Atualiza parcialmente os dados de um exame.",
+      "method": "PATCH",
       "body": {
         "mimeType": "application/json",
-        "text": "{}"
+        "text": "{\n  \"description\": \"Certificação de nível fundamental da AWS. Atualizada para o guia de exame CLF-C02 (2024).\",\n  \"status\": \"ACTIVE\"\n}"
       },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -170,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_delete_exam",
+      "parentId": "fld_exams",
+      "modified": 1772036000000,
+      "created": 1772000000000,
+      "url": "{{ base_url }}/exams/{{ exam_id }}",
+      "name": "Deletar Exame",
+      "description": "Remove um exame permanentemente.",
+      "method": "DELETE",
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -160,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -324,37 +312,34 @@
       "_type": "request"
     },
     {
-      "_id": "fld_1772000793084_4lomri4w9",
+      "_id": "fld_topics",
       "parentId": "wrk_aprovaai_v2",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "name": "Tópicos",
-      "description": "",
+      "description": "CRUD de tópicos de um exame.",
       "environment": {},
       "environmentPropertyOrder": null,
       "metaSortKey": 30,
       "_type": "request_group"
     },
     {
-      "_id": "req_1772000793084_5kuhbqb7p",
-      "parentId": "fld_1772000793084_4lomri4w9",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_list_topics",
+      "parentId": "fld_topics",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/topics?examId={{ exam_id }}",
       "name": "Listar Tópicos (por Exame)",
-      "description": "",
+      "description": "Retorna todos os tópicos de um exame.",
       "method": "GET",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -300,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -365,25 +350,22 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_g2313da3p",
-      "parentId": "fld_1772000793084_4lomri4w9",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_get_topic",
+      "parentId": "fld_topics",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/topics/{{ topic_id }}",
       "name": "Obter Tópico",
-      "description": "",
+      "description": "Retorna os detalhes de um tópico específico.",
       "method": "GET",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -290,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -394,17 +376,17 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_gw0mlb4ak",
-      "parentId": "fld_1772000793084_4lomri4w9",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_create_topic",
+      "parentId": "fld_topics",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/topics",
       "name": "Criar Tópico",
-      "description": "",
+      "description": "Cria um novo tópico dentro de um exame. Salve o 'id' retornado na variável 'topic_id'.",
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"name\": \"Novo Tópico\",\n  \"description\": \"Desc\",\n  \"examId\": \"{{ exam_id }}\"\n}"
+        "text": "{\n  \"name\": \"Computação — Amazon EC2\",\n  \"description\": \"Cobre o serviço de máquinas virtuais da AWS: tipos de instância, modelos de pricing (On-Demand, Reserved, Spot), Auto Scaling e Elastic Load Balancing.\",\n  \"examId\": \"{{ exam_id }}\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -417,7 +399,7 @@
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -280,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -428,17 +410,17 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_bguhcaes6",
-      "parentId": "fld_1772000793084_4lomri4w9",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_update_topic",
+      "parentId": "fld_topics",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/topics/{{ topic_id }}",
       "name": "Atualizar Tópico",
-      "description": "",
+      "description": "Atualiza parcialmente um tópico.",
       "method": "PATCH",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"name\": \"Tópico Atualizado\"\n}"
+        "text": "{\n  \"name\": \"Computação — Amazon EC2 e ECS\",\n  \"description\": \"Ampliado para incluir o Amazon ECS (Elastic Container Service) e comparações com Lambda.\"\n}"
       },
       "parameters": [],
       "headers": [
@@ -451,7 +433,7 @@
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -270,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -462,25 +444,22 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_xxbwmfohs",
-      "parentId": "fld_1772000793084_4lomri4w9",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_delete_topic",
+      "parentId": "fld_topics",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/topics/{{ topic_id }}",
       "name": "Deletar Tópico",
-      "description": "",
+      "description": "Remove um tópico e todos os níveis e questões associados.",
       "method": "DELETE",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -260,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -491,37 +470,34 @@
       "_type": "request"
     },
     {
-      "_id": "fld_1772000793084_t8m6q4u26",
+      "_id": "fld_levels",
       "parentId": "wrk_aprovaai_v2",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "name": "Níveis",
-      "description": "",
+      "description": "CRUD de níveis de dificuldade dentro de um tópico.",
       "environment": {},
       "environmentPropertyOrder": null,
       "metaSortKey": 40,
       "_type": "request_group"
     },
     {
-      "_id": "req_1772000793084_zux1irvz5",
-      "parentId": "fld_1772000793084_t8m6q4u26",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_list_levels",
+      "parentId": "fld_levels",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/levels?topicId={{ topic_id }}",
       "name": "Listar Níveis (por Tópico)",
-      "description": "",
+      "description": "Retorna todos os níveis de um tópico.",
       "method": "GET",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -400,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -532,25 +508,22 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_sgy26tasu",
-      "parentId": "fld_1772000793084_t8m6q4u26",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_get_level",
+      "parentId": "fld_levels",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/levels/{{ level_id }}",
       "name": "Obter Nível",
-      "description": "",
+      "description": "Retorna os detalhes de um nível específico.",
       "method": "GET",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -390,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -561,17 +534,17 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_8f6ldszr8",
-      "parentId": "fld_1772000793084_t8m6q4u26",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_create_level",
+      "parentId": "fld_levels",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/levels",
       "name": "Criar Nível",
-      "description": "",
+      "description": "Cria um nível de dificuldade dentro de um tópico. Salve o 'id' retornado na variável 'level_id'.",
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"name\": \"Nível 1\",\n  \"topicId\": \"{{ topic_id }}\",\n  \"xpReward\": 10,\n  \"passingPercentage\": 70\n}"
+        "text": "{\n  \"name\": \"Iniciante — Conceitos Fundamentais do EC2\",\n  \"topicId\": \"{{ topic_id }}\",\n  \"xpReward\": 50,\n  \"passingPercentage\": 70\n}"
       },
       "parameters": [],
       "headers": [
@@ -584,7 +557,7 @@
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -380,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -595,17 +568,17 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_qoqtlvxbo",
-      "parentId": "fld_1772000793084_t8m6q4u26",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_update_level",
+      "parentId": "fld_levels",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/levels/{{ level_id }}",
       "name": "Atualizar Nível",
-      "description": "",
+      "description": "Atualiza parcialmente um nível (ex: recompensa de XP ou porcentagem mínima de aprovação).",
       "method": "PATCH",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"xpReward\": 20\n}"
+        "text": "{\n  \"xpReward\": 75,\n  \"passingPercentage\": 80\n}"
       },
       "parameters": [],
       "headers": [
@@ -618,7 +591,7 @@
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -370,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -629,25 +602,22 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_8dwmgb102",
-      "parentId": "fld_1772000793084_t8m6q4u26",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_delete_level",
+      "parentId": "fld_levels",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/levels/{{ level_id }}",
       "name": "Deletar Nível",
-      "description": "",
+      "description": "Remove um nível e todas as questões associadas.",
       "method": "DELETE",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -360,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -658,37 +628,34 @@
       "_type": "request"
     },
     {
-      "_id": "fld_1772000793084_jcl88jp31",
+      "_id": "fld_questions",
       "parentId": "wrk_aprovaai_v2",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "name": "Questões",
-      "description": "",
+      "description": "CRUD de questões com alternativas, imagem opcional, explicação e link de aprofundamento.",
       "environment": {},
       "environmentPropertyOrder": null,
       "metaSortKey": 50,
       "_type": "request_group"
     },
     {
-      "_id": "req_1772000793084_pfz4igw6g",
-      "parentId": "fld_1772000793084_jcl88jp31",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_list_questions",
+      "parentId": "fld_questions",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/questions?levelId={{ level_id }}",
       "name": "Listar Questões (por Nível)",
-      "description": "",
+      "description": "Retorna todas as questões de um nível com suas alternativas.",
       "method": "GET",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -500,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -699,25 +666,22 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_5ey6s9s77",
-      "parentId": "fld_1772000793084_jcl88jp31",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_get_question",
+      "parentId": "fld_questions",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/questions/{{ question_id }}",
       "name": "Obter Questão",
-      "description": "",
+      "description": "Retorna uma questão com todas as suas alternativas.",
       "method": "GET",
-      "body": {
-        "mimeType": "application/json",
-        "text": "{}"
-      },
+      "body": {},
       "parameters": [],
       "headers": [],
       "authentication": {
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -490,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -728,17 +692,17 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_ygkto3orr",
-      "parentId": "fld_1772000793084_jcl88jp31",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_create_question",
+      "parentId": "fld_questions",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/questions",
       "name": "Criar Questão",
-      "description": "",
+      "description": "Cria uma questão com alternativas, imagem opcional, explicação e link de estudo. Salve o 'id' retornado na variável 'question_id'.",
       "method": "POST",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"content\": \"Qual é a resposta?\",\n  \"levelId\": \"{{ level_id }}\",\n  \"type\": \"MULTIPLE_CHOICE\",\n  \"options\": [\n    {\n      \"text\": \"A\",\n      \"isCorrect\": true\n    },\n    {\n      \"text\": \"B\",\n      \"isCorrect\": false\n    }\n  ]\n}"
+        "text": "{\n  \"content\": \"Qual serviço da AWS fornece capacidade computacional redimensionável na nuvem, permitindo que você execute servidores virtuais?\",\n  \"levelId\": \"{{ level_id }}\",\n  \"type\": \"SINGLE_CHOICE\",\n  \"explanation\": \"O Amazon EC2 (Elastic Compute Cloud) é o serviço de computação da AWS que permite lançar instâncias (servidores virtuais) com diferentes tipos de CPU, memória, armazenamento e rede, com capacidade de escalar verticalmente e horizontalmente.\",\n  \"studyLink\": \"https://aws.amazon.com/ec2/\",\n  \"options\": [\n    { \"text\": \"Amazon EC2\", \"isCorrect\": true, \"order\": 1 },\n    { \"text\": \"Amazon S3\", \"isCorrect\": false, \"order\": 2 },\n    { \"text\": \"Amazon RDS\", \"isCorrect\": false, \"order\": 3 },\n    { \"text\": \"AWS Lambda\", \"isCorrect\": false, \"order\": 4 }\n  ]\n}"
       },
       "parameters": [],
       "headers": [
@@ -751,7 +715,7 @@
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -480,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -762,17 +726,17 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_qmu71qv8i",
-      "parentId": "fld_1772000793084_jcl88jp31",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_update_question",
+      "parentId": "fld_questions",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/questions/{{ question_id }}",
       "name": "Atualizar Questão",
-      "description": "",
+      "description": "Atualiza parcialmente uma questão. Ao enviar 'options', todas as alternativas existentes são substituídas.",
       "method": "PATCH",
       "body": {
         "mimeType": "application/json",
-        "text": "{\n  \"content\": \"Pergunta editada\"\n}"
+        "text": "{\n  \"content\": \"Qual serviço da AWS fornece capacidade computacional redimensionável e permite executar servidores virtuais (instâncias) na nuvem?\",\n  \"type\": \"SINGLE_CHOICE\",\n  \"explanation\": \"O Amazon EC2 oferece instâncias com diferentes famílias otimizadas para computação, memória, armazenamento e GPU. É a base da infraestrutura de IaaS da AWS.\",\n  \"studyLink\": \"https://docs.aws.amazon.com/ec2/\",\n  \"options\": [\n    { \"text\": \"Amazon EC2 (Elastic Compute Cloud)\", \"isCorrect\": true, \"order\": 1 },\n    { \"text\": \"Amazon S3 (Simple Storage Service)\", \"isCorrect\": false, \"order\": 2 },\n    { \"text\": \"Amazon RDS (Relational Database Service)\", \"isCorrect\": false, \"order\": 3 },\n    { \"text\": \"AWS Elastic Beanstalk\", \"isCorrect\": false, \"order\": 4 }\n  ]\n}"
       },
       "parameters": [],
       "headers": [
@@ -785,7 +749,7 @@
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -470,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
@@ -796,17 +760,63 @@
       "_type": "request"
     },
     {
-      "_id": "req_1772000793084_2dje3q3nx",
-      "parentId": "fld_1772000793084_jcl88jp31",
-      "modified": 1772000793084,
-      "created": 1772000793084,
+      "_id": "req_delete_question",
+      "parentId": "fld_questions",
+      "modified": 1772036000000,
+      "created": 1772000000000,
       "url": "{{ base_url }}/questions/{{ question_id }}",
       "name": "Deletar Questão",
-      "description": "",
+      "description": "Remove uma questão e todas as suas alternativas permanentemente.",
       "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -460,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "fld_upload",
+      "parentId": "wrk_aprovaai_v2",
+      "modified": 1772036000000,
+      "created": 1772036000000,
+      "name": "Upload de Imagens",
+      "description": "Envio e remoção de imagens associadas a questões. Formatos: JPEG, PNG, GIF, WebP. Limite: 5MB por arquivo.",
+      "environment": {},
+      "environmentPropertyOrder": null,
+      "metaSortKey": 60,
+      "_type": "request_group"
+    },
+    {
+      "_id": "req_upload_post",
+      "parentId": "fld_upload",
+      "modified": 1772036000000,
+      "created": 1772036000000,
+      "url": "{{ base_url }}/upload",
+      "name": "Fazer Upload de Imagem",
+      "description": "Envia uma imagem via multipart/form-data. Retorna { url, filename } — use a 'url' no campo 'imageUrl' ao criar ou atualizar uma questão.",
+      "method": "POST",
       "body": {
-        "mimeType": "application/json",
-        "text": "{}"
+        "mimeType": "multipart/form-data",
+        "params": [
+          {
+            "name": "file",
+            "value": "",
+            "description": "Arquivo de imagem (JPEG, PNG, GIF ou WebP, máximo 5MB)",
+            "type": "file",
+            "disabled": false
+          }
+        ]
       },
       "parameters": [],
       "headers": [],
@@ -814,7 +824,33 @@
         "type": "bearer",
         "token": "{{ token }}"
       },
-      "metaSortKey": -1772000793084,
+      "metaSortKey": -600,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_upload_delete",
+      "parentId": "fld_upload",
+      "modified": 1772036000000,
+      "created": 1772036000000,
+      "url": "{{ base_url }}/upload/NOME_DO_ARQUIVO.png",
+      "name": "Remover Imagem",
+      "description": "Remove uma imagem do servidor pelo nome do arquivo. Substitua 'NOME_DO_ARQUIVO.png' pelo 'filename' retornado no upload.",
+      "method": "DELETE",
+      "body": {},
+      "parameters": [],
+      "headers": [],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -590,
       "isPrivate": false,
       "settingStoreCookies": true,
       "settingSendCookies": true,
