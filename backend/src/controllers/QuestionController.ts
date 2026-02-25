@@ -13,7 +13,7 @@ const createQuestionSchema = z.object({
   content: z.string().min(1, 'Conteúdo é obrigatório'),
   levelId: z.string().min(1, 'Level ID é obrigatório'),
   type: z.enum(['MULTIPLE_CHOICE', 'SINGLE_CHOICE']).default('SINGLE_CHOICE'),
-  imageUrl: z.string().optional().or(z.literal('')),
+  imageUrl: z.string().nullable().optional().or(z.literal('')),
   options: z.array(z.object({
     text: z.string().min(1, 'Texto da opção é obrigatório'),
     isCorrect: z.boolean(),
@@ -25,7 +25,8 @@ const updateQuestionSchema = z.object({
   content: z.string().min(1, 'Conteúdo da questão é obrigatório').optional(),
   type: z.enum(['MULTIPLE_CHOICE', 'SINGLE_CHOICE']).optional(),
   explanation: z.string().optional(),
-  imageUrl: z.string().optional().or(z.literal('')),
+  imageUrl: z.string().nullable().optional().or(z.literal('')),
+  studyLink: z.string().nullable().optional().or(z.literal('')),
   options: z.array(optionSchema).min(2, 'Deve ter pelo menos 2 alternativas').max(6, 'Máximo de 6 alternativas').optional(),
 });
 
