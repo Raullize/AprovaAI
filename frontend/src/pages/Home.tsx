@@ -1,9 +1,8 @@
-import React from 'react';
 import { Header } from '../components/layout/Header';
 import { Hero } from '../components/sections/Hero';
 import { Features } from '../components/sections/Features';
 import { Pricing } from '../components/sections/Pricing';
-import { Footer } from '../components/layout/Footer';
+import { Footer as AppFooter } from '../components/layout/AppFooter';
 
 export default function Home() {
   return (
@@ -14,7 +13,7 @@ export default function Home() {
         <Features />
         <Pricing />
       </main>
-      <Footer />
+      <AppFooter />
     </div>
   );
 }

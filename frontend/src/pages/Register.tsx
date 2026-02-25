@@ -11,6 +11,7 @@ import type { RegisterForm } from '../types';
 import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import Loading from '../components/ui/Loading';
 import api from '../services/api';
+import { AxiosError } from 'axios';
 
 export default function Register() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -28,7 +29,7 @@ export default function Register() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   
-  const { validateRegisterForm, getFieldError, clearErrors, calculatePasswordStrength } = useFormValidation();
+  const { validateRegisterForm, getFieldError, clearErrors, calculatePasswordStrength, setFieldError } = useFormValidation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { signIn } = useAuth();
@@ -81,6 +82,18 @@ export default function Register() {
     
     const validation = validateRegisterForm(formData);
     if (!validation.isValid) {
+      // Se houver erros que não são visíveis no step atual, avisar o usuário
+      const step1Fields = ['fullName', 'username', 'email', 'dateOfBirth'];
+      const hasStep1Errors = validation.errors.some(err => step1Fields.includes(err.field));
+
+      if (hasStep1Errors) {
+        setCurrentStep(1); // Voltar para a etapa 1 para mostrar os erros
+        toast({
+            title: "Verifique os dados pessoais",
+            description: "Existem campos inválidos na etapa anterior.",
+            variant: "destructive"
+        });
+      }
       return;
     }
 
@@ -112,13 +125,34 @@ export default function Register() {
         navigate('/dashboard');
       }, 1500);
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Registration error:', error);
-      toast({
-        title: "Erro ao criar conta",
-        description: error.response?.data?.error || 'Erro ao criar conta. Tente novamente.',
-        variant: "destructive"
-      });
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data?.error || 'Erro ao criar conta. Tente novamente.';
+
+      if (errorMessage.toLowerCase().includes('e-mail')) {
+        setCurrentStep(1); // Voltar para a etapa 1 para mostrar o erro no input
+        setFieldError('email', errorMessage);
+        toast({
+          title: "Erro no cadastro",
+          description: "Verifique os campos em destaque.",
+          variant: "destructive"
+        });
+      } else if (errorMessage.toLowerCase().includes('usuário')) {
+        setCurrentStep(1); // Voltar para a etapa 1 para mostrar o erro no input
+        setFieldError('username', errorMessage);
+        toast({
+          title: "Erro no cadastro",
+          description: "Verifique os campos em destaque.",
+          variant: "destructive"
+        });
+      } else {
+        toast({
+          title: "Erro ao criar conta",
+          description: errorMessage,
+          variant: "destructive"
+        });
+      }
     } finally {
       setIsLoading(false);
     }

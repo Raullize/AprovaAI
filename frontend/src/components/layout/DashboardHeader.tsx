@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Bell, User } from 'lucide-react';
+import { Menu, Bell, User as UserIcon } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 interface DashboardHeaderProps {
@@ -27,12 +27,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({ onMenuClick })
         </button>
 
         <div className="flex items-center space-x-3 border-l border-gray-200 pl-4 ml-4">
-          <div className="flex flex-col items-end hidden sm:flex">
+          <div className="hidden sm:flex flex-col items-end">
             <span className="text-sm font-medium text-gray-900">{user?.name || 'Usuário'}</span>
             <span className="text-xs text-gray-500">{user?.email}</span>
           </div>
           <div className="h-8 w-8 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">
-            {(user?.name?.charAt(0) || user?.email?.charAt(0) || 'U').toUpperCase()}
+            {user?.name ? user.name.charAt(0).toUpperCase() : <UserIcon className="h-5 w-5" />}
           </div>
         </div>
       </div>

@@ -41,10 +41,29 @@ class AuthController {
     const { fullName, username, email, password, dateOfBirth } = req.body;
 
     try {
-      const userExists = await prisma.user.findUnique({ where: { email } });
+      if (!fullName || !username || !email || !password || !dateOfBirth) {
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+      }
 
-      if (userExists) {
-        return res.status(400).json({ error: 'E-mail já cadastrado' });
+      // Validações de tamanho
+      if (fullName.length < 2 || fullName.length > 100) {
+        return res.status(400).json({ error: 'Nome deve ter entre 2 e 100 caracteres.' });
+      }
+      if (username.length < 3 || username.length > 30) {
+        return res.status(400).json({ error: 'Usuário deve ter entre 3 e 30 caracteres.' });
+      }
+      if (password.length < 6 || password.length > 50) {
+        return res.status(400).json({ error: 'Senha deve ter entre 6 e 50 caracteres.' });
+      }
+
+      const emailExists = await prisma.user.findUnique({ where: { email } });
+      if (emailExists) {
+        return res.status(400).json({ error: 'Este e-mail já está em uso.' });
+      }
+
+      const usernameExists = await prisma.user.findUnique({ where: { username } });
+      if (usernameExists) {
+        return res.status(400).json({ error: 'Este nome de usuário já está em uso.' });
       }
 
       const passwordHash = await bcrypt.hash(password, 10);
@@ -65,8 +84,18 @@ class AuthController {
       const { passwordHash: _, ...userWithoutPassword } = user;
 
       return res.status(201).json(userWithoutPassword);
-    } catch (error) {
-      return res.status(400).json({ error: 'Erro ao cadastrar usuário' });
+    } catch (error: any) {
+      console.error('Register Error:', error);
+      
+      if (error.code === 'P2002') {
+        const target = error.meta?.target;
+        if (Array.isArray(target)) {
+            if (target.includes('email')) return res.status(400).json({ error: 'Este e-mail já está em uso.' });
+            if (target.includes('username')) return res.status(400).json({ error: 'Este nome de usuário já está em uso.' });
+        }
+      }
+
+      return res.status(500).json({ error: 'Erro interno ao cadastrar usuário.' });
     }
   }
 }

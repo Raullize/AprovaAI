@@ -9,6 +9,7 @@ import { useFormValidation } from '../hooks/useFormValidation';
 import { useToast } from '../hooks/use-toast';
 import type { LoginForm } from '../types';
 import Loading from '../components/ui/Loading';
+import { AxiosError } from 'axios';
 
 export default function Login() {
   const [formData, setFormData] = useState<LoginForm>({
@@ -54,14 +55,25 @@ export default function Login() {
         password: formData.password,
       });
 
-      // Redirecionamento é automático pelo PrivateRoute ou pode ser forçado aqui
-      navigate('/dashboard');
+      toast({
+        title: "Login realizado com sucesso!",
+        description: "Bem-vindo de volta ao AprovaAI.",
+        variant: "success",
+      });
+
+      // Pequeno delay para ver o toast antes de navegar (opcional, mas bom para UX)
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage = err.response?.data?.error || 'Credenciais inválidas. Verifique e tente novamente.';
+
       toast({
         title: "Erro ao fazer login",
-        description: error.response?.data?.error || 'Credenciais inválidas. Verifique e tente novamente.',
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {

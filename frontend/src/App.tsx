@@ -1,11 +1,13 @@
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import { DashboardLayout } from './components/layout/DashboardLayout';
+import { Toaster } from './components/ui/Toaster';
 
-const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { signed, loading } = useAuth();
 
   if (loading) {
@@ -45,6 +47,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
+      <Toaster />
     </AuthProvider>
   );
 }

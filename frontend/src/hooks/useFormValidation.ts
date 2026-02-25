@@ -7,15 +7,15 @@ const validateEmail = (email: string): boolean => {
 };
 
 const validatePassword = (password: string): boolean => {
-  return password.length >= 6;
+  return password.length >= 6 && password.length <= 50;
 };
 
 const validateUsername = (username: string): boolean => {
-  return username.length >= 3 && /^[a-zA-Z0-9_]+$/.test(username);
+  return username.length >= 3 && username.length <= 30 && /^[a-zA-Z0-9_]+$/.test(username);
 };
 
 const validateFullName = (fullName: string): boolean => {
-  return fullName.trim().length >= 2;
+  return fullName.trim().length >= 2 && fullName.trim().length <= 100;
 };
 
 const validateDateOfBirth = (dateOfBirth: string): boolean => {
@@ -68,7 +68,7 @@ export const useFormValidation = () => {
     if (!form.password) {
       newErrors.push({ field: 'password', message: 'Senha é obrigatória' });
     } else if (!validatePassword(form.password)) {
-      newErrors.push({ field: 'password', message: 'Senha deve ter pelo menos 6 caracteres' });
+      newErrors.push({ field: 'password', message: 'Senha deve ter entre 6 e 50 caracteres' });
     }
 
     setErrors(newErrors);
@@ -84,13 +84,13 @@ export const useFormValidation = () => {
     if (!form.fullName) {
       newErrors.push({ field: 'fullName', message: 'Nome completo é obrigatório' });
     } else if (!validateFullName(form.fullName)) {
-      newErrors.push({ field: 'fullName', message: 'Nome deve ter pelo menos 2 caracteres' });
+      newErrors.push({ field: 'fullName', message: 'Nome deve ter entre 2 e 100 caracteres' });
     }
 
     if (!form.username) {
       newErrors.push({ field: 'username', message: 'Nome de usuário é obrigatório' });
     } else if (!validateUsername(form.username)) {
-      newErrors.push({ field: 'username', message: 'Nome de usuário deve ter pelo menos 3 caracteres e conter apenas letras, números e underscore' });
+      newErrors.push({ field: 'username', message: 'Usuário deve ter entre 3 e 30 caracteres (letras, números, _)' });
     }
 
     if (!form.email) {
@@ -136,11 +136,16 @@ export const useFormValidation = () => {
     setErrors([]);
   }, []);
 
+  const setFieldError = useCallback((field: string, message: string) => {
+    setErrors(prev => [...prev, { field, message }]);
+  }, []);
+
   return {
     errors,
     validateLoginForm,
     validateRegisterForm,
     getFieldError,
+    setFieldError,
     clearErrors,
     calculatePasswordStrength
   };
