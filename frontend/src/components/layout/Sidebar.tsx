@@ -1,0 +1,72 @@
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, BookOpen, GraduationCap, User, LogOut, Settings } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
+import { cn } from '../../lib/utils';
+
+const sidebarItems = [
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
+  { icon: BookOpen, label: 'Meus Exames', href: '/dashboard/exams' },
+  { icon: GraduationCap, label: 'Simulados', href: '/dashboard/simulations' },
+  { icon: User, label: 'Perfil', href: '/dashboard/profile' },
+  { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
+];
+
+export const Sidebar: React.FC = () => {
+  const { signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = () => {
+    signOut();
+    navigate('/login');
+  };
+
+  return (
+    <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-0 z-30">
+      <div className="flex items-center justify-center h-16 border-b border-gray-200">
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-primary-600 rounded-lg flex items-center justify-center">
+            <GraduationCap className="h-5 w-5 text-white" />
+          </div>
+          <span className="text-xl font-bold font-display text-gray-900">
+            AprovaAI
+          </span>
+        </div>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto py-4">
+        <ul className="space-y-1 px-3">
+          {sidebarItems.map((item) => (
+            <li key={item.href}>
+              <NavLink
+                to={item.href}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200",
+                    isActive
+                      ? "bg-primary-50 text-primary-700"
+                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
+                  )
+                }
+                end={item.href === '/dashboard'} // Para não ficar ativo em subrotas se for exato
+              >
+                <item.icon className={cn("mr-3 h-5 w-5 flex-shrink-0")} />
+                {item.label}
+              </NavLink>
+            </li>
+          ))}
+        </ul>
+      </nav>
+
+      <div className="p-4 border-t border-gray-200">
+        <button
+          onClick={handleSignOut}
+          className="flex items-center w-full px-3 py-2 text-sm font-medium text-red-600 rounded-md hover:bg-red-50 transition-colors duration-200"
+        >
+          <LogOut className="mr-3 h-5 w-5" />
+          Sair
+        </button>
+      </div>
+    </aside>
+  );
+};
