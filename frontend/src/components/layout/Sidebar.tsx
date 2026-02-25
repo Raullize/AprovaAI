@@ -1,10 +1,11 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, BookOpen, GraduationCap, User, LogOut, Settings } from 'lucide-react';
+import { Home, BookOpen, Users, Settings, LogOut, GraduationCap, LayoutDashboard, User } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 
-const sidebarItems = [
+// Itens para ESTUDANTES (Padrão)
+const studentItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: BookOpen, label: 'Meus Exames', href: '/dashboard/exams' },
   { icon: GraduationCap, label: 'Simulados', href: '/dashboard/simulations' },
@@ -12,9 +13,20 @@ const sidebarItems = [
   { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
 ];
 
+// Itens para ADMIN (Início, Simulados, Usuários, Configurações)
+const adminItems = [
+  { icon: Home, label: 'Início', href: '/dashboard' },
+  { icon: BookOpen, label: 'Exames', href: '/dashboard/exams' }, // Rota /exams agora é "Exames" no menu
+  { icon: Users, label: 'Usuários', href: '/dashboard/users' },
+  { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
+];
+
 export const Sidebar: React.FC = () => {
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
+
+  // Seleciona o menu baseado na role
+  const sidebarItems = user?.role === 'ADMIN' ? adminItems : studentItems;
 
   const handleSignOut = () => {
     signOut();
