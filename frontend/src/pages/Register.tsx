@@ -117,8 +117,8 @@ export default function Register() {
       
       // 2. Login Automático
       await signIn({
-        email: formData.email,
-        password: formData.password,
+        email: formData.email || '',
+        password: formData.password || '',
       });
 
       setTimeout(() => {

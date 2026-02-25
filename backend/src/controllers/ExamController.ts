@@ -42,7 +42,7 @@ class ExamController {
       return res.status(403).json({ error: 'Acesso negado' });
     }
 
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     const exam = await prisma.exam.findUnique({
       where: { id },
@@ -108,7 +108,7 @@ class ExamController {
       return res.status(201).json(exam);
     } catch (error) {
       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: error.errors });
+        return res.status(400).json({ error: (error as z.ZodError).issues });
       }
       return res.status(500).json({ error: 'Erro interno' });
     }
@@ -119,11 +119,11 @@ class ExamController {
       return res.status(403).json({ error: 'Acesso negado' });
     }
 
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     try {
       const validatedData = updateExamSchema.parse(req.body);
-      
+
       let updateData: any = { ...validatedData };
 
       if (validatedData.name) {
@@ -150,8 +150,8 @@ class ExamController {
 
       return res.json(exam);
     } catch (error) {
-       if (error instanceof z.ZodError) {
-        return res.status(400).json({ error: error.errors });
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ error: (error as z.ZodError).issues });
       }
       return res.status(500).json({ error: 'Erro interno' });
     }
@@ -162,7 +162,7 @@ class ExamController {
       return res.status(403).json({ error: 'Acesso negado' });
     }
 
-    const { id } = req.params;
+    const id = String(req.params.id);
 
     try {
       await prisma.exam.delete({

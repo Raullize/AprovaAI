@@ -17,7 +17,7 @@ const updateTopicSchema = z.object({
 class TopicController {
   async index(req: Request, res: Response) {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
-    
+
     const { examId, search } = req.query;
 
     if (!examId) return res.status(400).json({ error: 'examId é obrigatório' });
@@ -42,7 +42,7 @@ class TopicController {
 
   async show(req: Request, res: Response) {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
-    const { id } = req.params;
+    const id = String(req.params.id);
     const topic = await prisma.topic.findUnique({ where: { id }, include: { levels: true } });
     if (!topic) return res.status(404).json({ error: 'Tópico não encontrado' });
     return res.json(topic);
@@ -52,7 +52,7 @@ class TopicController {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
     try {
       const data = createTopicSchema.parse(req.body);
-      
+
       const baseSlug = generateSlug(data.name);
       const slug = await generateUniqueSlug(baseSlug, async (s) => {
         const existing = await prisma.topic.findFirst({ where: { slug: s, examId: data.examId } });
@@ -64,14 +64,14 @@ class TopicController {
       });
       return res.status(201).json(topic);
     } catch (error) {
-       if (error instanceof z.ZodError) return res.status(400).json({ error: error.errors });
-       return res.status(500).json({ error: 'Erro interno' });
+      if (error instanceof z.ZodError) return res.status(400).json({ error: (error as z.ZodError).issues });
+      return res.status(500).json({ error: 'Erro interno' });
     }
   }
 
   async update(req: Request, res: Response) {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
-    const { id } = req.params;
+    const id = String(req.params.id);
     try {
       const data = updateTopicSchema.parse(req.body);
       let updateData: any = { ...data };
@@ -79,26 +79,26 @@ class TopicController {
       if (data.name) {
         const current = await prisma.topic.findUnique({ where: { id } });
         if (current) {
-             const baseSlug = generateSlug(data.name);
-             const slug = await generateUniqueSlug(baseSlug, async (s) => {
-                const existing = await prisma.topic.findFirst({ where: { slug: s, examId: current.examId, id: { not: id } } });
-                return !!existing;
-             });
-             updateData.slug = slug;
+          const baseSlug = generateSlug(data.name);
+          const slug = await generateUniqueSlug(baseSlug, async (s) => {
+            const existing = await prisma.topic.findFirst({ where: { slug: s, examId: current.examId, id: { not: id } } });
+            return !!existing;
+          });
+          updateData.slug = slug;
         }
       }
-      
+
       const topic = await prisma.topic.update({ where: { id }, data: updateData });
       return res.json(topic);
     } catch (error) {
-       if (error instanceof z.ZodError) return res.status(400).json({ error: error.errors });
-       return res.status(500).json({ error: 'Erro interno' });
+      if (error instanceof z.ZodError) return res.status(400).json({ error: error.issues });
+      return res.status(500).json({ error: 'Erro interno' });
     }
   }
 
   async delete(req: Request, res: Response) {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
-    const { id } = req.params;
+    const id = String(req.params.id);
     try {
       await prisma.topic.delete({ where: { id } });
       return res.status(204).send();

@@ -51,8 +51,8 @@ export default function Login() {
 
     try {
       await signIn({
-        email: formData.email,
-        password: formData.password,
+        email: formData.email || '',
+        password: formData.password || '',
       });
 
       toast({

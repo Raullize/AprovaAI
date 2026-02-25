@@ -1,38 +1,170 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft, BarChart, ChevronRight, Edit2, Plus, Trash2 } from 'lucide-react';
+import { BarChart, ChevronRight, Edit2, Plus, Trash2, Search, AlertTriangle } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
+import Modal from '@/components/ui/Modal';
+import Input from '@/components/ui/Input';
 import api from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
+import { useForm } from 'react-hook-form';
 
 interface Level {
   id: string;
   name: string;
   xpReward: number;
   passingPercentage: number;
-  status: 'ACTIVE' | 'INACTIVE';
   _count?: {
     questions: number;
   };
+}
+
+interface LevelFormProps {
+  topicId?: string;
+  levelId?: string;
+  onSuccess: () => void;
+  onCancel: () => void;
+}
+
+interface LevelFormData {
+  name: string;
+  xpReward: number;
+  passingPercentage: number;
+  topicId: string;
+}
+
+function LevelFormContent({ topicId, levelId, onSuccess, onCancel }: LevelFormProps) {
+  const isEditing = !!levelId;
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<LevelFormData>({
+    defaultValues: {
+      topicId: topicId,
+      xpReward: 10,
+      passingPercentage: 70
+    }
+  });
+
+  useEffect(() => {
+    const loadLevel = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get(`/levels/${levelId}`);
+        const { name, xpReward, passingPercentage } = response.data;
+        reset({
+          name,
+          xpReward,
+          passingPercentage,
+          topicId
+        });
+      } catch (error) {
+        console.error(error);
+        toast({ title: "Erro ao carregar dados", variant: "destructive" });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (isEditing) {
+      loadLevel();
+    }
+  }, [levelId, isEditing, topicId, reset, toast]);
+
+  const onSubmit = async (data: LevelFormData) => {
+    try {
+      setIsSaving(true);
+      // Converter para número
+      const payload = {
+        ...data,
+        xpReward: Number(data.xpReward),
+        passingPercentage: Number(data.passingPercentage)
+      };
+
+      if (isEditing) {
+        await api.patch(`/levels/${levelId}`, payload);
+        toast({ title: "Nível atualizado!", variant: "success" });
+      } else {
+        await api.post('/levels', { ...payload, topicId });
+        toast({ title: "Nível criado!", variant: "success" });
+      }
+      onSuccess();
+    } catch (error) {
+      console.error(error);
+      toast({ title: "Erro ao salvar", variant: "destructive" });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isLoading) {
+    return <div className="py-8 flex justify-center"><Loading size="md" /></div>;
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <Input
+        label="Nome do Nível"
+        placeholder="Ex: Fácil, Médio, Difícil"
+        {...register('name', { required: 'Nome é obrigatório' })}
+        error={errors.name?.message}
+      />
+      
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          label="Recompensa (XP)"
+          type="number"
+          {...register('xpReward', { 
+            required: 'XP é obrigatório',
+            min: { value: 0, message: 'Deve ser maior ou igual a 0' }
+          })}
+          error={errors.xpReward?.message}
+        />
+        
+        <Input
+          label="Aprovação Mínima (%)"
+          type="number"
+          {...register('passingPercentage', { 
+            required: 'Porcentagem é obrigatória',
+            min: { value: 0, message: 'Mínimo 0%' },
+            max: { value: 100, message: 'Máximo 100%' }
+          })}
+          error={errors.passingPercentage?.message}
+        />
+      </div>
+
+      <div className="flex justify-end space-x-3 pt-4">
+        <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+        <Button type="submit" disabled={isSaving}>
+          {isSaving ? <Loading size="sm" /> : (isEditing ? 'Salvar' : 'Criar')}
+        </Button>
+      </div>
+    </form>
+  );
 }
 
 export default function LevelList() {
   const { topicId } = useParams();
   const [levels, setLevels] = useState<Level[]>([]);
   const [topicName, setTopicName] = useState('');
-  const [examName, setExamName] = useState(''); // Novo estado para o breadcrumb
+  const [examName, setExamName] = useState('');
   const [examId, setExamId] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Estados para Modais
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingLevelId, setEditingLevelId] = useState<string | undefined>(undefined);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [levelToDelete, setLevelToDelete] = useState<Level | null>(null);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  useEffect(() => {
-    loadData();
-  }, [topicId]);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
       // Carregar tópico para pegar examId
@@ -49,6 +181,7 @@ export default function LevelList() {
       const levelsRes = await api.get(`/levels?topicId=${topicId}`);
       setLevels(levelsRes.data);
     } catch (error) {
+      console.error(error);
       toast({
         title: "Erro ao carregar dados",
         variant: "destructive"
@@ -57,23 +190,57 @@ export default function LevelList() {
     } finally {
       setIsLoading(false);
     }
+  }, [topicId, toast, navigate]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const filteredLevels = useMemo(() => {
+    return levels.filter(level => 
+      level.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [levels, searchTerm]);
+
+  const handleCreate = () => {
+    setEditingLevelId(undefined);
+    setIsModalOpen(true);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Tem certeza que deseja excluir este nível?')) return;
+  const handleEdit = (id: string) => {
+    setEditingLevelId(id);
+    setIsModalOpen(true);
+  };
+
+  const confirmDelete = (level: Level) => {
+    setLevelToDelete(level);
+    setDeleteConfirmation('');
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!levelToDelete) return;
     try {
-      await api.delete(`/levels/${id}`);
+      await api.delete(`/levels/${levelToDelete.id}`);
       toast({ title: "Nível excluído", variant: "success" });
       loadData();
+      setIsDeleteModalOpen(false);
+      setLevelToDelete(null);
     } catch (error) {
+      console.error(error);
       toast({ title: "Erro ao excluir", variant: "destructive" });
     }
+  };
+
+  const handleFormSuccess = () => {
+    setIsModalOpen(false);
+    loadData();
   };
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-        <div className="space-y-4"> {/* Aumentado espaçamento vertical aqui */}
+        <div className="space-y-4">
           <Breadcrumb 
             items={[
               { label: 'Exames', href: '/dashboard/exams' },
@@ -88,80 +255,171 @@ export default function LevelList() {
             <p className="text-gray-500 mt-1">Dificuldades para o tópico {topicName}.</p>
           </div>
         </div>
-        <Button onClick={() => navigate(`/dashboard/admin/topics/${topicId}/levels/new`)}>
+        <Button onClick={handleCreate}>
           <Plus className="h-5 w-5 mr-2" />
           Novo Nível
         </Button>
+      </div>
+
+      {/* Barra de Pesquisa */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+        <input
+          type="text"
+          placeholder="Buscar níveis..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        />
       </div>
 
       {isLoading ? (
         <div className="flex justify-center py-12">
           <Loading size="lg" />
         </div>
-      ) : levels.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <BarChart className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900">Nenhum nível encontrado</h3>
-          <p className="text-gray-500 mt-2">Crie níveis de dificuldade para organizar as questões.</p>
+      ) : filteredLevels.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="bg-gray-50 p-4 rounded-full mb-4">
+            <BarChart className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-1">
+            {searchTerm ? 'Nenhum nível encontrado' : 'Nenhum nível cadastrado'}
+          </h3>
+          <p className="text-gray-500 mb-6 max-w-sm">
+            {searchTerm 
+              ? `Não encontramos nenhum nível com o termo "${searchTerm}".` 
+              : 'Crie níveis de dificuldade para organizar as questões.'}
+          </p>
+          {!searchTerm && (
+            <Button onClick={handleCreate}>
+              <Plus className="h-5 w-5 mr-2" />
+              Criar Primeiro Nível
+            </Button>
+          )}
         </div>
       ) : (
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">XP</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aprovação Min.</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Questões</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {levels.map((level) => (
-                <tr key={level.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{level.name}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {level.xpReward} XP
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {level.passingPercentage}%
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {level._count?.questions || 0}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end space-x-3">
-                      <button
-                        onClick={() => navigate(`/dashboard/admin/levels/${level.id}/questions`)}
-                        className="text-primary-600 hover:text-primary-900"
-                        title="Gerenciar Questões"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => navigate(`/dashboard/admin/topics/${topicId}/levels/${level.id}/edit`)}
-                        className="text-blue-600 hover:text-blue-900"
-                        title="Editar"
-                      >
-                        <Edit2 className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(level.id)}
-                        className="text-red-600 hover:text-red-900"
-                        title="Excluir"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredLevels.map((level) => (
+            <div key={level.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
+              <div>
+                <div className="flex justify-between items-start mb-4">
+                  <div className="px-2 py-1">
+                    {/* Status removido pois não existe no backend */}
+                  </div>
+                  <div className="flex space-x-1">
+                    <button 
+                      onClick={() => handleEdit(level.id)}
+                      className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                      title="Editar"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </button>
+                    <button 
+                      onClick={() => confirmDelete(level)}
+                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                      title="Excluir"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                
+                <h3 className="text-xl font-bold text-gray-900 mb-2">{level.name}</h3>
+                
+                <div className="space-y-2 mt-4">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">XP por questão:</span>
+                    <span className="font-medium text-gray-900">{level.xpReward} XP</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Aprovação Mínima:</span>
+                    <span className="font-medium text-gray-900">{level.passingPercentage}%</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500">Questões:</span>
+                    <span className="font-medium text-gray-900">{level._count?.questions || 0}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 pt-4 border-t border-gray-100">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => navigate(`/dashboard/admin/levels/${level.id}/questions`)}
+                  className="w-full text-primary-600 border-primary-200 hover:bg-primary-50"
+                >
+                  Gerenciar Questões <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
       )}
+
+      {/* Modal de Criação/Edição */}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={editingLevelId ? 'Editar Nível' : 'Novo Nível'}
+      >
+         <LevelFormContent 
+           topicId={topicId}
+           levelId={editingLevelId} 
+           onSuccess={handleFormSuccess} 
+           onCancel={() => setIsModalOpen(false)} 
+         />
+      </Modal>
+
+      {/* Modal de Confirmação de Exclusão */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Confirmar Exclusão"
+        size="md"
+      >
+        <div className="space-y-6">
+          <div className="flex flex-col items-center text-center space-y-4">
+            <div className="bg-red-100 p-3 rounded-full flex-shrink-0">
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+            </div>
+            <div>
+              <h3 className="text-lg font-medium text-gray-900">Você tem certeza absoluta?</h3>
+              <p className="text-sm text-gray-500 mt-2">
+                Isso excluirá permanentemente o nível 
+                <span className="font-bold text-gray-900"> {levelToDelete?.name} </span>
+                e todas as suas questões.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Digite <span className="font-mono font-bold select-all">excluir</span> para confirmar:
+            </label>
+            <input 
+              type="text" 
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+              autoFocus
+              value={deleteConfirmation}
+              onChange={(e) => setDeleteConfirmation(e.target.value)}
+            />
+          </div>
+
+          <div className="flex justify-end space-x-3 bg-gray-50 -mx-6 -mb-4 px-6 py-4 rounded-b-lg mt-6">
+            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+              Cancelar
+            </Button>
+            <button 
+              onClick={handleDelete}
+              disabled={deleteConfirmation !== 'excluir'}
+              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Excluir Nível
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

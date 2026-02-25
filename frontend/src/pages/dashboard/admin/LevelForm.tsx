@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { ArrowLeft } from 'lucide-react';
@@ -21,7 +21,7 @@ export default function LevelForm() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { register, handleSubmit, formState: { errors }, setValue } = useForm<LevelFormData>({
     defaultValues: {
       xpReward: 100,
@@ -87,7 +87,7 @@ export default function LevelForm() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center space-x-4">
-        <button 
+        <button
           onClick={() => navigate(`/dashboard/admin/topics/${topicId}/levels`)}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
         >
@@ -113,7 +113,7 @@ export default function LevelForm() {
               type="number"
               label="Recompensa de XP"
               placeholder="100"
-              {...register('xpReward', { 
+              {...register('xpReward', {
                 required: 'XP é obrigatório',
                 min: { value: 0, message: 'Deve ser maior ou igual a 0' }
               })}
@@ -125,7 +125,7 @@ export default function LevelForm() {
               type="number"
               label="Aprovação Mínima (%)"
               placeholder="70"
-              {...register('passingPercentage', { 
+              {...register('passingPercentage', {
                 required: 'Porcentagem é obrigatória',
                 min: { value: 0, message: 'Mínimo 0' },
                 max: { value: 100, message: 'Máximo 100' }

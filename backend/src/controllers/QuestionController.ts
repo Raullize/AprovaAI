@@ -32,7 +32,7 @@ const updateQuestionSchema = z.object({
 class QuestionController {
   async index(req: Request, res: Response) {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
-    
+
     const { levelId, search } = req.query;
 
     if (!levelId) return res.status(400).json({ error: 'levelId é obrigatório' });
@@ -57,7 +57,7 @@ class QuestionController {
 
   async show(req: Request, res: Response) {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
-    const { id } = req.params;
+    const id = String(req.params.id);
     const question = await prisma.question.findUnique({ where: { id }, include: { options: { orderBy: { order: 'asc' } } } });
     if (!question) return res.status(404).json({ error: 'Questão não encontrada' });
     return res.json(question);
@@ -67,7 +67,7 @@ class QuestionController {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
     try {
       const data = createQuestionSchema.parse(req.body);
-      
+
       const lastQuestion = await prisma.question.findFirst({
         where: { levelId: data.levelId },
         orderBy: { order: 'desc' }
@@ -93,17 +93,17 @@ class QuestionController {
       });
       return res.status(201).json(question);
     } catch (error) {
-       if (error instanceof z.ZodError) return res.status(400).json({ error: error.errors });
-       return res.status(500).json({ error: 'Erro interno' });
+      if (error instanceof z.ZodError) return res.status(400).json({ error: (error as z.ZodError).issues });
+      return res.status(500).json({ error: 'Erro interno' });
     }
   }
 
   async update(req: Request, res: Response) {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
-    const { id } = req.params;
+    const id = String(req.params.id);
     try {
       const data = updateQuestionSchema.parse(req.body);
-      
+
       // Se tiver options, deleta as antigas e cria as novas (transaction simplificada)
       if (data.options) {
         await prisma.$transaction([
@@ -111,7 +111,10 @@ class QuestionController {
           prisma.question.update({
             where: { id },
             data: {
-              ...data,
+              content: data.content,
+              type: data.type,
+              explanation: data.explanation,
+              imageUrl: data.imageUrl,
               options: {
                 create: data.options.map(opt => ({
                   text: opt.text,
@@ -125,19 +128,20 @@ class QuestionController {
         const updated = await prisma.question.findUnique({ where: { id }, include: { options: true } });
         return res.json(updated);
       } else {
-        const question = await prisma.question.update({ where: { id }, data });
+        const { options: _options, ...updateData } = data;
+        const question = await prisma.question.update({ where: { id }, data: updateData });
         return res.json(question);
       }
     } catch (error) {
-       if (error instanceof z.ZodError) return res.status(400).json({ error: error.errors });
-       console.error(error);
-       return res.status(500).json({ error: 'Erro interno' });
+      if (error instanceof z.ZodError) return res.status(400).json({ error: (error as z.ZodError).issues });
+      console.error(error);
+      return res.status(500).json({ error: 'Erro interno' });
     }
   }
 
   async delete(req: Request, res: Response) {
     if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
-    const { id } = req.params;
+    const id = String(req.params.id);
     try {
       await prisma.question.delete({ where: { id } });
       return res.status(204).send();

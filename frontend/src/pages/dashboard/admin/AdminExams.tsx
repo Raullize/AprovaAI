@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, ChevronRight, BookOpen, AlertTriangle, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit2, Trash2, ChevronRight, BookOpen, AlertTriangle, Eye, EyeOff, Search } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Modal from '@/components/ui/Modal';
@@ -39,30 +39,33 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false); // Estado específico para salvamento
   
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<ExamFormData>({
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<ExamFormData>({
     defaultValues: { status: 'ACTIVE' }
   });
 
   useEffect(() => {
+    const loadExam = async () => {
+      try {
+        setIsLoading(true);
+        const response = await api.get(`/exams/${examId}`);
+        const { name, description, status } = response.data;
+        reset({
+          name,
+          description: description || '',
+          status
+        });
+      } catch (error) {
+        console.error(error);
+        toast({ title: "Erro ao carregar dados", variant: "destructive" });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (isEditing) {
       loadExam();
     }
-  }, [examId]);
-
-  const loadExam = async () => {
-    try {
-      setIsLoading(true);
-      const response = await api.get(`/exams/${examId}`);
-      const { name, description, status } = response.data;
-      setValue('name', name);
-      setValue('description', description || '');
-      setValue('status', status);
-    } catch (error) {
-      toast({ title: "Erro ao carregar dados", variant: "destructive" });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  }, [examId, isEditing, reset, toast]);
 
   const onSubmit = async (data: ExamFormData) => {
     try {
@@ -76,6 +79,7 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
       }
       onSuccess();
     } catch (error) {
+      console.error(error);
       toast({ title: "Erro ao salvar", variant: "destructive" });
     } finally {
       setIsSaving(false);
@@ -128,6 +132,7 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
 export default function AdminExams() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingExamId, setEditingExamId] = useState<string | undefined>(undefined);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -137,16 +142,13 @@ export default function AdminExams() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  useEffect(() => {
-    loadExams();
-  }, []);
-
-  const loadExams = async () => {
+  const loadExams = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await api.get('/exams');
       setExams(response.data);
     } catch (error) {
+      console.error(error);
       toast({
         title: "Erro ao carregar exames",
         description: "Não foi possível buscar a lista de exames.",
@@ -155,7 +157,18 @@ export default function AdminExams() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [toast]);
+
+  useEffect(() => {
+    loadExams();
+  }, [loadExams]);
+
+  const filteredExams = useMemo(() => {
+    return exams.filter(exam => 
+      exam.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (exam.description && exam.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
+  }, [exams, searchTerm]);
 
   const handleCreate = () => {
     setEditingExamId(undefined);
@@ -177,6 +190,7 @@ export default function AdminExams() {
       });
       loadExams(); // Recarrega para atualizar a UI
     } catch (error) {
+      console.error(error);
       toast({
         title: "Erro ao atualizar status",
         variant: "destructive"
@@ -203,6 +217,7 @@ export default function AdminExams() {
       setIsDeleteModalOpen(false);
       setExamToDelete(null);
     } catch (error) {
+      console.error(error);
       toast({
         title: "Erro ao excluir",
         description: "Tente novamente.",
@@ -236,19 +251,44 @@ export default function AdminExams() {
         </Button>
       </div>
 
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Search className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+          placeholder="Buscar exames..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       {isLoading ? (
         <div className="flex justify-center py-12">
           <Loading size="lg" />
         </div>
-      ) : exams.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900">Nenhum exame encontrado</h3>
-          <p className="text-gray-500 mt-2">Comece criando o primeiro exame da plataforma.</p>
+      ) : filteredExams.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <div className="bg-gray-50 p-4 rounded-full mb-4">
+            <BookOpen className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-1">
+            {searchTerm ? 'Nenhum exame encontrado' : 'Nenhum exame cadastrado'}
+          </h3>
+          <p className="text-gray-500 mb-6 max-w-sm">
+            {searchTerm ? `Não encontramos exames com "${searchTerm}".` : 'Comece criando o primeiro exame da plataforma para organizar o conteúdo.'}
+          </p>
+          {!searchTerm && (
+            <Button onClick={handleCreate}>
+              <Plus className="h-5 w-5 mr-2" />
+              Criar Primeiro Exame
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {exams.map((exam) => (
+          {filteredExams.map((exam) => (
             <div key={exam.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
               <div>
                 <div className="flex justify-between items-start mb-4">

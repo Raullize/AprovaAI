@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { ArrowLeft } from 'lucide-react';
@@ -21,7 +21,7 @@ export default function TopicForm() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { register, handleSubmit, formState: { errors }, setValue } = useForm<TopicFormData>({
     defaultValues: {
       status: 'ACTIVE',
@@ -79,7 +79,7 @@ export default function TopicForm() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="flex items-center space-x-4">
-        <button 
+        <button
           onClick={() => navigate(`/dashboard/admin/exams/${examId}/topics`)}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
         >

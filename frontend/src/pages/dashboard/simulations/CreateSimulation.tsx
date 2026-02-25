@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import Button from '../../../components/ui/Button';
@@ -6,7 +6,6 @@ import Input from '../../../components/ui/Input';
 import { useToast } from '../../../hooks/use-toast';
 import api from '../../../services/api';
 import Loading from '../../../components/ui/Loading';
-import { BookOpen, FileText, CheckCircle } from 'lucide-react';
 
 interface SimulationFormData {
   title: string;
@@ -55,6 +54,7 @@ export default function CreateSimulation() {
   const onSubmit = async (data: SimulationFormData) => {
     setIsLoading(true);
     try {
+      console.log('Criando simulado:', data);
       // await api.post('/simulations', data);
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulação de delay
       
@@ -66,6 +66,7 @@ export default function CreateSimulation() {
       
       navigate('/dashboard/simulations');
     } catch (error) {
+      console.error(error);
       toast({
         title: "Erro ao criar simulado",
         description: "Tente novamente mais tarde.",

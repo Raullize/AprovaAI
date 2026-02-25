@@ -13,11 +13,8 @@ import { Plus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import AdminExams from './pages/dashboard/admin/AdminExams';
 import TopicList from './pages/dashboard/admin/TopicList';
-import TopicForm from './pages/dashboard/admin/TopicForm';
 import LevelList from './pages/dashboard/admin/LevelList';
-import LevelForm from './pages/dashboard/admin/LevelForm';
 import QuestionList from './pages/dashboard/admin/QuestionList';
-import QuestionForm from './pages/dashboard/admin/QuestionForm';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { signed, loading } = useAuth();
@@ -73,16 +70,10 @@ function App() {
             <Route path="exams" element={<AdminExams />} />
             
             <Route path="admin/exams/:examId/topics" element={<TopicList />} />
-            <Route path="admin/exams/:examId/topics/new" element={<TopicForm />} />
-            <Route path="admin/exams/:examId/topics/:topicId/edit" element={<TopicForm />} />
             
             <Route path="admin/topics/:topicId/levels" element={<LevelList />} />
-            <Route path="admin/topics/:topicId/levels/new" element={<LevelForm />} />
-            <Route path="admin/topics/:topicId/levels/:levelId/edit" element={<LevelForm />} />
             
             <Route path="admin/levels/:levelId/questions" element={<QuestionList />} />
-            <Route path="admin/levels/:levelId/questions/new" element={<QuestionForm />} />
-            <Route path="admin/levels/:levelId/questions/:questionId/edit" element={<QuestionForm />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" />} />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react';
@@ -52,7 +52,7 @@ export default function QuestionForm() {
 
   useEffect(() => {
     // Carregar TopicId para o botão de voltar
-    api.get(`/levels/${levelId}`).then(res => setTopicId(res.data.topicId));
+    api.get(`/levels/${levelId}`).then((res: { data: { topicId: string } }) => setTopicId(res.data.topicId));
 
     if (isEditing) {
       loadQuestion();
@@ -64,7 +64,7 @@ export default function QuestionForm() {
       setIsLoading(true);
       const response = await api.get(`/questions/${questionId}`);
       const q = response.data;
-      
+
       setValue('content', q.content);
       setValue('type', q.type);
       setValue('explanation', q.explanation || '');
@@ -116,7 +116,7 @@ export default function QuestionForm() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       <div className="flex items-center space-x-4">
-        <button 
+        <button
           onClick={() => navigate(`/dashboard/admin/levels/${levelId}/questions`)}
           className="p-2 hover:bg-gray-100 rounded-full transition-colors"
           disabled={!topicId}
@@ -130,7 +130,7 @@ export default function QuestionForm() {
 
       <div className="bg-white shadow rounded-lg p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          
+
           <div className="grid grid-cols-1 gap-6">
             <div className="space-y-2">
               <label className="block text-sm font-medium text-gray-700">Enunciado</label>

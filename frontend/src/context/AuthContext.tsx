@@ -11,10 +11,16 @@ interface User {
   subscriptionPlan: string;
 }
 
+interface LoginCredentials {
+  email?: string;
+  username?: string;
+  password: string;
+}
+
 interface AuthContextData {
   user: User | null;
   signed: boolean;
-  signIn: (data: any) => Promise<void>;
+  signIn: (data: LoginCredentials) => Promise<void>;
   signOut: () => void;
   loading: boolean;
 }
@@ -39,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadStorageData();
   }, []);
 
-  async function signIn(data: any) {
+  async function signIn(data: LoginCredentials) {
     const response = await api.post('/auth/login', data);
     const { token, user } = response.data;
 
@@ -61,6 +67,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }
