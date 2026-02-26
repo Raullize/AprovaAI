@@ -1,73 +1,132 @@
-# React + TypeScript + Vite
+<h1 align="center">AprovaAI — Frontend</h1>
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<p align="center">
+  <img src="http://img.shields.io/static/v1?label=STATUS&message=EM%20DESENVOLVIMENTO&color=GREEN&style=for-the-badge"/>
+  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB"/>
+  <img src="https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white"/>
+  <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white"/>
+  <img src="https://img.shields.io/badge/TailwindCSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white"/>
+</p>
 
-Currently, two official plugins are available:
+> Interface web do AprovaAI — plataforma de estudos gamificada para preparação de exames.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Descrição
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+O frontend do AprovaAI é uma Single Page Application construída com **React + Vite + TypeScript**, utilizando **TailwindCSS** para estilização. Consome a API REST do backend para autenticação, gerenciamento de conteúdo e realização de simulados.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tecnologias
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+| Tecnologia | Versão | Função |
+|---|---|---|
+| React | 18 | Biblioteca de UI |
+| TypeScript | 5 | Tipagem estática |
+| Vite | 5 | Bundler e dev server |
+| TailwindCSS | 3 | Estilização utilitária |
+| React Router DOM | 6 | Roteamento client-side |
+| React Hook Form | 7 | Gerenciamento de formulários |
+| Axios | 1 | Cliente HTTP |
+| Lucide React | — | Ícones |
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Pré-requisitos
+
+- Node.js 18+
+- npm 9+
+- Backend rodando em `http://localhost:3001` (veja [`/backend`](../backend/README.md))
+
+---
+
+## Instalação e Execução
+
+### 1. Clone o repositório
+
+```bash
+git clone https://github.com/Raullize/AprovaAI.git
+cd AprovaAI/frontend
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 2. Instale as dependências
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
+
+### 3. Configure as variáveis de ambiente
+
+```bash
+cp .env.example .env
+```
+
+Edite o arquivo `.env` conforme necessário.
+
+### 4. Inicie o servidor de desenvolvimento
+
+```bash
+npm run dev
+```
+
+Acesse [http://localhost:5173](http://localhost:5173) no navegador.
+
+---
+
+## Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz de `frontend/` baseado no `.env.example`:
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `VITE_API_URL` | `http://localhost:3001/api` | URL base da API REST do backend |
+| `VITE_NODE_ENV` | `development` | Ambiente de execução |
+
+---
+
+## Scripts Disponíveis
+
+```bash
+npm run dev        # Servidor de desenvolvimento com HMR
+npm run build      # Build de produção
+npm run preview    # Preview da build de produção
+npm run lint       # Linting (ESLint)
+```
+
+---
+
+## Estrutura de Pastas
+
+```
+frontend/
+├── public/             # Assets estáticos
+└── src/
+    ├── components/
+    │   └── ui/         # Componentes reutilizáveis (Button, Input, Modal…)
+    ├── hooks/          # Custom hooks (useToast, etc.)
+    ├── pages/
+    │   ├── auth/       # Login, Register
+    │   └── dashboard/
+    │       ├── admin/  # Gerenciamento: Exames, Tópicos, Níveis, Questões
+    │       └── user/   # Área do aluno: Simulados, Perfil, Conquistas
+    ├── services/
+    │   └── api.ts      # Instância Axios com interceptors JWT
+    └── App.tsx         # Roteamento principal
+```
+
+---
+
+## Autenticação
+
+Utiliza **JWT** armazenado em `localStorage`. O Axios injeta automaticamente o token em cada requisição via interceptor em `src/services/api.ts`.
+
+---
+
+## Contribuição
+
+1. Faça um fork do projeto
+2. Crie uma branch (`git checkout -b feature/MinhaFeature`)
+3. Commit suas mudanças (`git commit -m 'Add MinhaFeature'`)
+4. Push para a branch (`git push origin feature/MinhaFeature`)
+5. Abra um Pull Request
