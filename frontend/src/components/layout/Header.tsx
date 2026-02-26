@@ -161,7 +161,7 @@ export const Header: React.FC = () => {
 
                 <div className="px-6 mt-8">
                   <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">
-                    🚀 Por que AprovaAI?
+                    Por que AprovaAI?
                   </h3>
                   <div className="space-y-4">
                     <div className="flex items-center space-x-3 p-3 bg-success-50 rounded-lg">
@@ -211,12 +211,21 @@ export const Header: React.FC = () => {
                       </Button>
                     </>
                   ) : (
-                    <Button
-                      className="w-full"
-                      onClick={() => handleNavigation('#pricing')}
-                    >
-                      Comece Grátis Agora
-                    </Button>
+                    <>
+                      <Button
+                        className="w-full"
+                        variant="outline"
+                        onClick={() => handleNavigation('/login')}
+                      >
+                        Login
+                      </Button>
+                      <Button
+                        className="w-full"
+                        onClick={() => handleNavigation('#pricing')}
+                      >
+                        Comece Grátis Agora
+                      </Button>
+                    </>
                   )}
                 </div>
               </div>
