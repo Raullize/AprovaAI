@@ -572,7 +572,7 @@ export default function QuestionList() {
           </Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {questions.map((q, idx) => {
             const previewUrl = q.imageUrl?.startsWith('/uploads/')
               ? `${BACKEND_URL}${q.imageUrl}`
@@ -586,104 +586,102 @@ export default function QuestionList() {
                 onDragStart={() => handleDragStart(q.id)}
                 onDragOver={handleDragOver}
                 onDrop={() => handleDrop(q.id)}
-                className={`bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-5 ${draggedId === q.id ? 'opacity-40 scale-95' : ''
+                className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all p-6 flex flex-col justify-between group ${draggedId === q.id ? 'opacity-40 scale-95' : ''
                   }`}
               >
-                <div className="flex items-start gap-4">
-                  {/* Drag handle + Order badge */}
-                  <div className="flex flex-col items-center gap-1 shrink-0">
-                    <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing" />
-                    <div className="w-9 h-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-sm">
-                      {idx + 1}
-                    </div>
-                  </div>
-
-                  {/* Main content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${typeColor(q.type)}`}>
-                        {typeLabel(q.type)}
+                {/* Header */}
+                <div>
+                  <div className="flex justify-between items-start mb-4">
+                    {/* Left: number + status */}
+                    <div className="flex items-center gap-2">
+                      <span className="shrink-0 w-7 h-7 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xs">
+                        {idx + 1}
                       </span>
-                      <span className="text-xs text-gray-400">
-                        {q.options.length} alternativa{q.options.length !== 1 ? 's' : ''} • {correctCount} correta{correctCount !== 1 ? 's' : ''}
-                      </span>
-                      {q.imageUrl && (
-                        <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                          <ImageIcon className="h-3 w-3" /> imagem
-                        </span>
-                      )}
-                      {q.studyLink && (
-                        <span className="inline-flex items-center gap-1 text-xs text-gray-400">
-                          <Link className="h-3 w-3" /> link
-                        </span>
-                      )}
-                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-auto ${q.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${q.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'
                         }`}>
                         {q.status === 'ACTIVE' ? 'Ativa' : 'Inativa'}
                       </span>
                     </div>
 
-                    <p className="text-gray-800 text-sm leading-relaxed line-clamp-3 mb-3">
-                      {q.content}
-                    </p>
-
-                    {previewUrl && (
-                      <div className="mb-3">
-                        <img
-                          src={previewUrl}
-                          alt="Imagem"
-                          className="h-24 w-auto object-contain rounded border border-gray-200"
-                          onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                        />
-                      </div>
-                    )}
-
-                    {/* Options preview */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
-                      {q.options.map((opt, oi) => (
-                        <div
-                          key={oi}
-                          className={`flex items-start gap-1.5 text-xs px-2 py-1 rounded ${opt.isCorrect
-                            ? 'bg-green-50 text-green-800 border border-green-200'
-                            : 'bg-gray-50 text-gray-600 border border-gray-100'
-                            }`}
-                        >
-                          <span className="font-bold shrink-0 mt-0.5">{String.fromCharCode(65 + oi)}.</span>
-                          <span className="line-clamp-2">{opt.text}</span>
-                          {opt.isCorrect && <span className="ml-auto shrink-0 text-green-600">✓</span>}
-                        </div>
-                      ))}
+                    {/* Right: grip + actions */}
+                    <div className="flex items-center gap-0.5">
+                      <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing mr-1" />
+                      <button
+                        onClick={() => handleToggleStatus(q)}
+                        className={`p-1.5 rounded-md transition-colors ${q.status === 'ACTIVE'
+                            ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                            : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                          }`}
+                        title={q.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
+                      >
+                        {q.status === 'ACTIVE' ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      </button>
+                      <button
+                        onClick={() => handleEdit(q)}
+                        className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
+                        title="Editar"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => confirmDelete(q)}
+                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
+                        title="Excluir"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex gap-1 shrink-0">
-                    <button
-                      onClick={() => handleToggleStatus(q)}
-                      className={`p-2 rounded-lg transition-colors ${q.status === 'ACTIVE'
-                        ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                        : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
-                        }`}
-                      title={q.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
-                    >
-                      {q.status === 'ACTIVE' ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                    </button>
-                    <button
-                      onClick={() => handleEdit(q)}
-                      className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                      title="Editar"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => confirmDelete(q)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Excluir"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
+                  {/* Type chip */}
+                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mb-3 ${typeColor(q.type)}`}>
+                    {typeLabel(q.type)}
+                  </span>
 
+                  {/* Question text */}
+                  <p className="text-gray-800 text-sm leading-relaxed line-clamp-3 mb-4">
+                    {q.content}
+                  </p>
+
+                  {/* Image preview */}
+                  {previewUrl && (
+                    <div className="mb-4 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
+                      <img
+                        src={previewUrl}
+                        alt="Imagem da questão"
+                        className="max-h-32 w-full object-contain"
+                        onError={(e) => { e.currentTarget.parentElement!.style.display = 'none'; }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Options */}
+                  <div className="space-y-1.5">
+                    {q.options.map((opt, oi) => (
+                      <div
+                        key={oi}
+                        className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-md ${opt.isCorrect
+                            ? 'bg-green-50 text-green-800 border border-green-100'
+                            : 'bg-gray-50 text-gray-600 border border-gray-100'
+                          }`}
+                      >
+                        <span className="font-bold shrink-0 text-xs w-4">{String.fromCharCode(65 + oi)}.</span>
+                        <span className="line-clamp-1 flex-1">{opt.text}</span>
+                        {opt.isCorrect && (
+                          <span className="shrink-0 text-green-600 font-bold text-xs">✓</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+                  <span>{q.options.length} alternativa{q.options.length !== 1 ? 's' : ''} • {correctCount} correta{correctCount !== 1 ? 's' : ''}</span>
+                  <div className="flex items-center gap-2">
+                    {q.imageUrl && <ImageIcon className="h-3.5 w-3.5" />}
+                    {q.studyLink && <Link className="h-3.5 w-3.5" />}
+                  </div>
                 </div>
               </div>
             );
