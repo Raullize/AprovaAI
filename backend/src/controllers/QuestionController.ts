@@ -13,6 +13,7 @@ const createQuestionSchema = z.object({
   content: z.string().min(1, 'Conteúdo é obrigatório'),
   levelId: z.string().min(1, 'Level ID é obrigatório'),
   type: z.enum(['MULTIPLE_CHOICE', 'SINGLE_CHOICE']).default('SINGLE_CHOICE'),
+  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
   imageUrl: z.string().nullable().optional().or(z.literal('')),
   options: z.array(z.object({
     text: z.string().min(1, 'Texto da opção é obrigatório'),
@@ -24,6 +25,7 @@ const createQuestionSchema = z.object({
 const updateQuestionSchema = z.object({
   content: z.string().min(1, 'Conteúdo da questão é obrigatório').optional(),
   type: z.enum(['MULTIPLE_CHOICE', 'SINGLE_CHOICE']).optional(),
+  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   explanation: z.string().optional(),
   imageUrl: z.string().nullable().optional().or(z.literal('')),
   studyLink: z.string().nullable().optional().or(z.literal('')),
@@ -114,8 +116,10 @@ class QuestionController {
             data: {
               content: data.content,
               type: data.type,
+              status: data.status,
               explanation: data.explanation,
               imageUrl: data.imageUrl,
+              studyLink: data.studyLink,
               options: {
                 create: data.options.map(opt => ({
                   text: opt.text,

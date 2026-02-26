@@ -8,12 +8,14 @@ const createLevelSchema = z.object({
   topicId: z.string().min(1, 'Topic ID é obrigatório'),
   xpReward: z.number().int().min(0).default(10),
   passingPercentage: z.number().int().min(0).max(100).default(70),
+  status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
 });
 
 const updateLevelSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório').optional(),
   xpReward: z.number().int().min(0).optional(),
   passingPercentage: z.number().int().min(0).max(100).optional(),
+  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
 });
 
 class LevelController {

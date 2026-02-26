@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Plus, Edit2, Trash2, HelpCircle, Link, AlertTriangle, ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, HelpCircle, Link, AlertTriangle, ImageIcon, Eye, EyeOff } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
@@ -22,6 +22,7 @@ interface Question {
   content: string;
   imageUrl?: string;
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
+  status: 'ACTIVE' | 'INACTIVE';
   explanation?: string;
   studyLink?: string;
   order: number;
@@ -40,6 +41,7 @@ type FormData = {
   content: string;
   imageUrl: string;
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
+  status: 'ACTIVE' | 'INACTIVE';
   explanation: string;
   studyLink: string;
   options: Option[];
@@ -51,6 +53,7 @@ const emptyForm = (): FormData => ({
   content: '',
   imageUrl: '',
   type: 'SINGLE_CHOICE',
+  status: 'ACTIVE',
   explanation: '',
   studyLink: '',
   options: [
@@ -82,6 +85,7 @@ function QuestionFormContent({
         content: question.content,
         imageUrl: question.imageUrl || '',
         type: question.type || 'SINGLE_CHOICE',
+        status: question.status || 'ACTIVE',
         explanation: question.explanation || '',
         studyLink: question.studyLink || '',
         options: question.options.map(o => ({ text: o.text, isCorrect: o.isCorrect, order: o.order })),
@@ -173,6 +177,7 @@ function QuestionFormContent({
         // Send null (not undefined) so Prisma actually clears the column when imageUrl is removed.
         imageUrl: form.imageUrl.trim() || null,
         type: form.type,
+        status: form.status,
         explanation: form.explanation.trim() || undefined,
         studyLink: form.studyLink.trim() || undefined,
         levelId,
@@ -346,6 +351,26 @@ function QuestionFormContent({
         <p className="mt-1 text-xs text-gray-500">Link para material complementar sobre o tema da questão</p>
       </div>
 
+      {/* Status */}
+      <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
+        <div>
+          <p className="text-sm font-medium text-gray-700">Status da Questão</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {form.status === 'ACTIVE' ? 'Ativa — visível para os alunos' : 'Inativa — oculta para os alunos'}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setForm(prev => ({ ...prev, status: prev.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' }))}
+          disabled={saving}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${form.status === 'ACTIVE' ? 'bg-primary-600' : 'bg-gray-300'
+            }`}
+        >
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${form.status === 'ACTIVE' ? 'translate-x-6' : 'translate-x-1'
+            }`} />
+        </button>
+      </div>
+
       {/* Footer Buttons */}
       <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
         <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
@@ -453,6 +478,20 @@ export default function QuestionList() {
     }
   };
 
+  const handleToggleStatus = async (q: Question) => {
+    const newStatus = q.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    try {
+      await api.patch(`/questions/${q.id}`, { status: newStatus });
+      toast({
+        title: newStatus === 'ACTIVE' ? 'Questão ativada' : 'Questão desativada',
+        variant: 'success',
+      });
+      loadData();
+    } catch {
+      toast({ title: 'Erro ao alterar status', variant: 'destructive' });
+    }
+  };
+
   const typeLabel = (type: string) =>
     type === 'SINGLE_CHOICE' ? 'Única Escolha' : 'Múltipla Escolha';
 
@@ -550,6 +589,10 @@ export default function QuestionList() {
                           <Link className="h-3 w-3" /> link
                         </span>
                       )}
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ml-auto ${q.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-500'
+                        }`}>
+                        {q.status === 'ACTIVE' ? 'Ativa' : 'Inativa'}
+                      </span>
                     </div>
 
                     <p className="text-gray-800 text-sm leading-relaxed line-clamp-3 mb-3">
@@ -588,6 +631,16 @@ export default function QuestionList() {
                   {/* Actions */}
                   <div className="flex gap-1 shrink-0">
                     <button
+                      onClick={() => handleToggleStatus(q)}
+                      className={`p-2 rounded-lg transition-colors ${q.status === 'ACTIVE'
+                          ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                        }`}
+                      title={q.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
+                    >
+                      {q.status === 'ACTIVE' ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                    </button>
+                    <button
                       onClick={() => handleEdit(q)}
                       className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                       title="Editar"
@@ -602,6 +655,7 @@ export default function QuestionList() {
                       <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
+
                 </div>
               </div>
             );

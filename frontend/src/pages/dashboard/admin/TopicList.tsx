@@ -40,13 +40,15 @@ function TopicFormContent({ examId, topicId, onSuccess, onCancel }: TopicFormPro
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<TopicFormData>({
+
+  const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<TopicFormData>({
     defaultValues: {
       status: 'ACTIVE',
       examId: examId
     }
   });
+
+  const statusValue = watch('status');
 
   useEffect(() => {
     const loadTopic = async () => {
@@ -104,7 +106,7 @@ function TopicFormContent({ examId, topicId, onSuccess, onCancel }: TopicFormPro
         {...register('name', { required: 'Nome é obrigatório' })}
         error={errors.name?.message}
       />
-      
+
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">Descrição</label>
         <textarea
@@ -114,15 +116,24 @@ function TopicFormContent({ examId, topicId, onSuccess, onCancel }: TopicFormPro
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Status</label>
-        <select
-          {...register('status')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+      {/* Status toggle */}
+      <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
+        <div>
+          <p className="text-sm font-medium text-gray-700">Status do Tópico</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {statusValue === 'ACTIVE' ? 'Ativo — visível para os alunos' : 'Inativo — oculto para os alunos'}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setValue('status', statusValue === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE', { shouldDirty: true })}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${statusValue === 'ACTIVE' ? 'bg-primary-600' : 'bg-gray-300'
+            }`}
         >
-          <option value="ACTIVE">Ativo</option>
-          <option value="INACTIVE">Inativo</option>
-        </select>
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${statusValue === 'ACTIVE' ? 'translate-x-6' : 'translate-x-1'
+            }`} />
+        </button>
+        <input type="hidden" {...register('status')} />
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
@@ -141,7 +152,7 @@ export default function TopicList() {
   const [examName, setExamName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Estados para Modais
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTopicId, setEditingTopicId] = useState<string | undefined>(undefined);
@@ -178,7 +189,7 @@ export default function TopicList() {
   }, [loadData]);
 
   const filteredTopics = useMemo(() => {
-    return topics.filter(topic => 
+    return topics.filter(topic =>
       topic.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (topic.description && topic.description.toLowerCase().includes(searchTerm.toLowerCase()))
     );
@@ -235,12 +246,12 @@ export default function TopicList() {
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div className="space-y-4">
-          <Breadcrumb 
+          <Breadcrumb
             items={[
               { label: 'Exames', href: '/dashboard/exams' },
               { label: examName || 'Carregando...', href: '#' },
               { label: 'Tópicos' }
-            ]} 
+            ]}
           />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Tópicos</h1>
@@ -294,31 +305,29 @@ export default function TopicList() {
             <div key={topic.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    topic.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
+                  <div className={`px-2 py-1 rounded-full text-xs font-semibold ${topic.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
                     {topic.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                   </div>
                   <div className="flex space-x-1">
-                    <button 
+                    <button
                       onClick={() => handleToggleStatus(topic)}
-                      className={`p-1.5 rounded-md transition-colors ${
-                        topic.status === 'ACTIVE' 
-                          ? 'text-gray-400 hover:text-red-600 hover:bg-red-50' 
-                          : 'text-gray-400 hover:text-green-600 hover:bg-green-50'
-                      }`}
+                      className={`p-1.5 rounded-md transition-colors ${topic.status === 'ACTIVE'
+                          ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                        }`}
                       title={topic.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
                     >
                       {topic.status === 'ACTIVE' ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleEdit(topic.id)}
                       className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                       title="Editar"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => confirmDelete(topic)}
                       className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                       title="Excluir"
@@ -327,7 +336,7 @@ export default function TopicList() {
                     </button>
                   </div>
                 </div>
-                
+
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{topic.name}</h3>
                 <p className="text-gray-500 text-sm mb-4 line-clamp-3">
                   {topic.description || 'Sem descrição.'}
@@ -338,8 +347,8 @@ export default function TopicList() {
                 <span className="text-sm text-gray-500">
                   {topic._count?.levels || 0} Níveis
                 </span>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/admin/topics/${topic.id}/levels`)}
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
@@ -358,12 +367,12 @@ export default function TopicList() {
         onClose={() => setIsModalOpen(false)}
         title={editingTopicId ? 'Editar Tópico' : 'Novo Tópico'}
       >
-         <TopicFormContent 
-           examId={examId}
-           topicId={editingTopicId} 
-           onSuccess={handleFormSuccess} 
-           onCancel={() => setIsModalOpen(false)} 
-         />
+        <TopicFormContent
+          examId={examId}
+          topicId={editingTopicId}
+          onSuccess={handleFormSuccess}
+          onCancel={() => setIsModalOpen(false)}
+        />
       </Modal>
 
       {/* Modal de Confirmação de Exclusão */}
@@ -381,7 +390,7 @@ export default function TopicList() {
             <div>
               <h3 className="text-lg font-medium text-gray-900">Você tem certeza absoluta?</h3>
               <p className="text-sm text-gray-500 mt-2">
-                Isso excluirá permanentemente o tópico 
+                Isso excluirá permanentemente o tópico
                 <span className="font-bold text-gray-900"> {topicToDelete?.name} </span>
                 e todos os seus níveis e questões.
               </p>
@@ -392,8 +401,8 @@ export default function TopicList() {
             <label className="block text-sm font-medium text-gray-700">
               Digite <span className="font-mono font-bold select-all">excluir</span> para confirmar:
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
               autoFocus
               value={deleteConfirmation}
@@ -405,7 +414,7 @@ export default function TopicList() {
             <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
               Cancelar
             </Button>
-            <button 
+            <button
               onClick={handleDelete}
               disabled={deleteConfirmation !== 'excluir'}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"

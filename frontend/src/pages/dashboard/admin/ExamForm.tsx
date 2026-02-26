@@ -21,11 +21,13 @@ export default function ExamForm() {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, setValue } = useForm<ExamFormData>({
+  const { register, handleSubmit, formState: { errors }, setValue, watch } = useForm<ExamFormData>({
     defaultValues: {
       status: 'ACTIVE'
     }
   });
+
+  const statusValue = watch('status');
 
   useEffect(() => {
     if (isEditing) {
@@ -109,16 +111,25 @@ export default function ExamForm() {
             />
           </div>
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Status</label>
-            <select
-              {...register('status')}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+          {/* Status toggle */}
+          <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
+            <div>
+              <p className="text-sm font-medium text-gray-700">Status do Exame</p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {statusValue === 'ACTIVE' ? 'Ativo — visível para os alunos' : 'Inativo — oculto para os alunos'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setValue('status', statusValue === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE', { shouldDirty: true })}
               disabled={isLoading}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${statusValue === 'ACTIVE' ? 'bg-primary-600' : 'bg-gray-300'
+                }`}
             >
-              <option value="ACTIVE">Ativo</option>
-              <option value="INACTIVE">Inativo</option>
-            </select>
+              <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${statusValue === 'ACTIVE' ? 'translate-x-6' : 'translate-x-1'
+                }`} />
+            </button>
+            <input type="hidden" {...register('status')} />
           </div>
 
           <div className="flex justify-end pt-4 border-t border-gray-200">

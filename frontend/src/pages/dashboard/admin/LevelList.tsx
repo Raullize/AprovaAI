@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { BarChart, ChevronRight, Edit2, Plus, Trash2, Search, AlertTriangle } from 'lucide-react';
+import { BarChart, ChevronRight, Edit2, Eye, EyeOff, Plus, Trash2, Search, AlertTriangle } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
@@ -15,6 +15,7 @@ interface Level {
   name: string;
   xpReward: number;
   passingPercentage: number;
+  status: 'ACTIVE' | 'INACTIVE';
   _count?: {
     questions: number;
   };
@@ -32,6 +33,7 @@ interface LevelFormData {
   xpReward: number;
   passingPercentage: number;
   topicId: string;
+  status: 'ACTIVE' | 'INACTIVE';
 }
 
 function LevelFormContent({ topicId, levelId, onSuccess, onCancel }: LevelFormProps) {
@@ -39,25 +41,29 @@ function LevelFormContent({ topicId, levelId, onSuccess, onCancel }: LevelFormPr
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<LevelFormData>({
+
+  const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<LevelFormData>({
     defaultValues: {
       topicId: topicId,
       xpReward: 10,
-      passingPercentage: 70
+      passingPercentage: 70,
+      status: 'ACTIVE',
     }
   });
+
+  const statusValue = watch('status');
 
   useEffect(() => {
     const loadLevel = async () => {
       try {
         setIsLoading(true);
         const response = await api.get(`/levels/${levelId}`);
-        const { name, xpReward, passingPercentage } = response.data;
+        const { name, xpReward, passingPercentage, status } = response.data;
         reset({
           name,
           xpReward,
           passingPercentage,
+          status: status || 'ACTIVE',
           topicId
         });
       } catch (error) {
@@ -111,28 +117,48 @@ function LevelFormContent({ topicId, levelId, onSuccess, onCancel }: LevelFormPr
         {...register('name', { required: 'Nome é obrigatório' })}
         error={errors.name?.message}
       />
-      
+
       <div className="grid grid-cols-2 gap-4">
         <Input
           label="Recompensa (XP)"
           type="number"
-          {...register('xpReward', { 
+          {...register('xpReward', {
             required: 'XP é obrigatório',
             min: { value: 0, message: 'Deve ser maior ou igual a 0' }
           })}
           error={errors.xpReward?.message}
         />
-        
+
         <Input
           label="Aprovação Mínima (%)"
           type="number"
-          {...register('passingPercentage', { 
+          {...register('passingPercentage', {
             required: 'Porcentagem é obrigatória',
             min: { value: 0, message: 'Mínimo 0%' },
             max: { value: 100, message: 'Máximo 100%' }
           })}
           error={errors.passingPercentage?.message}
         />
+      </div>
+
+      {/* Status toggle */}
+      <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
+        <div>
+          <p className="text-sm font-medium text-gray-700">Status do Nível</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {statusValue === 'ACTIVE' ? 'Ativo — visível para os alunos' : 'Inativo — oculto para os alunos'}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setValue('status', statusValue === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE', { shouldDirty: true })}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${statusValue === 'ACTIVE' ? 'bg-primary-600' : 'bg-gray-300'
+            }`}
+        >
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${statusValue === 'ACTIVE' ? 'translate-x-6' : 'translate-x-1'
+            }`} />
+        </button>
+        <input type="hidden" {...register('status')} />
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
@@ -197,7 +223,7 @@ export default function LevelList() {
   }, [loadData]);
 
   const filteredLevels = useMemo(() => {
-    return levels.filter(level => 
+    return levels.filter(level =>
       level.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [levels, searchTerm]);
@@ -232,6 +258,22 @@ export default function LevelList() {
     }
   };
 
+  const handleToggleStatus = async (level: Level) => {
+    const newStatus = level.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    try {
+      await api.patch(`/levels/${level.id}`, { status: newStatus });
+      toast({
+        title: newStatus === 'ACTIVE' ? 'Nível ativado' : 'Nível desativado',
+        variant: 'success',
+      });
+      loadData();
+    } catch {
+      toast({ title: 'Erro ao alterar status', variant: 'destructive' });
+    }
+  };
+
+
+
   const handleFormSuccess = () => {
     setIsModalOpen(false);
     loadData();
@@ -241,14 +283,14 @@ export default function LevelList() {
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div className="space-y-4">
-          <Breadcrumb 
+          <Breadcrumb
             items={[
               { label: 'Exames', href: '/dashboard/exams' },
               { label: examName || '...', href: `/dashboard/admin/exams/${examId}/topics` },
               { label: 'Tópicos', href: `/dashboard/admin/exams/${examId}/topics` },
               { label: topicName || '...', href: '#' },
               { label: 'Níveis' }
-            ]} 
+            ]}
           />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">Níveis</h1>
@@ -286,8 +328,8 @@ export default function LevelList() {
             {searchTerm ? 'Nenhum nível encontrado' : 'Nenhum nível cadastrado'}
           </h3>
           <p className="text-gray-500 mb-6 max-w-sm">
-            {searchTerm 
-              ? `Não encontramos nenhum nível com o termo "${searchTerm}".` 
+            {searchTerm
+              ? `Não encontramos nenhum nível com o termo "${searchTerm}".`
               : 'Crie níveis de dificuldade para organizar as questões.'}
           </p>
           {!searchTerm && (
@@ -303,18 +345,33 @@ export default function LevelList() {
             <div key={level.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className="px-2 py-1">
-                    {/* Status removido pois não existe no backend */}
+                  <div>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${level.status === 'ACTIVE'
+                      ? 'bg-green-100 text-green-800'
+                      : 'bg-gray-100 text-gray-500'
+                      }`}>
+                      {level.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
+                    </span>
                   </div>
                   <div className="flex space-x-1">
-                    <button 
+                    <button
+                      onClick={() => handleToggleStatus(level)}
+                      className={`p-1.5 rounded-md transition-colors ${level.status === 'ACTIVE'
+                        ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                        : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                        }`}
+                      title={level.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
+                    >
+                      {level.status === 'ACTIVE' ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                    </button>
+                    <button
                       onClick={() => handleEdit(level.id)}
                       className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                       title="Editar"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => confirmDelete(level)}
                       className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                       title="Excluir"
@@ -323,12 +380,12 @@ export default function LevelList() {
                     </button>
                   </div>
                 </div>
-                
+
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{level.name}</h3>
-                
+
                 <div className="space-y-2 mt-4">
                   <div className="flex justify-between text-sm">
-                    <span className="text-gray-500">XP por questão:</span>
+                    <span className="text-gray-500">XP:</span>
                     <span className="font-medium text-gray-900">{level.xpReward} XP</span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -343,8 +400,8 @@ export default function LevelList() {
               </div>
 
               <div className="mt-6 pt-4 border-t border-gray-100">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/admin/levels/${level.id}/questions`)}
                   className="w-full text-primary-600 border-primary-200 hover:bg-primary-50"
@@ -363,12 +420,12 @@ export default function LevelList() {
         onClose={() => setIsModalOpen(false)}
         title={editingLevelId ? 'Editar Nível' : 'Novo Nível'}
       >
-         <LevelFormContent 
-           topicId={topicId}
-           levelId={editingLevelId} 
-           onSuccess={handleFormSuccess} 
-           onCancel={() => setIsModalOpen(false)} 
-         />
+        <LevelFormContent
+          topicId={topicId}
+          levelId={editingLevelId}
+          onSuccess={handleFormSuccess}
+          onCancel={() => setIsModalOpen(false)}
+        />
       </Modal>
 
       {/* Modal de Confirmação de Exclusão */}
@@ -386,7 +443,7 @@ export default function LevelList() {
             <div>
               <h3 className="text-lg font-medium text-gray-900">Você tem certeza absoluta?</h3>
               <p className="text-sm text-gray-500 mt-2">
-                Isso excluirá permanentemente o nível 
+                Isso excluirá permanentemente o nível
                 <span className="font-bold text-gray-900"> {levelToDelete?.name} </span>
                 e todas as suas questões.
               </p>
@@ -397,8 +454,8 @@ export default function LevelList() {
             <label className="block text-sm font-medium text-gray-700">
               Digite <span className="font-mono font-bold select-all">excluir</span> para confirmar:
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
               autoFocus
               value={deleteConfirmation}
@@ -410,7 +467,7 @@ export default function LevelList() {
             <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
               Cancelar
             </Button>
-            <button 
+            <button
               onClick={handleDelete}
               disabled={deleteConfirmation !== 'excluir'}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"

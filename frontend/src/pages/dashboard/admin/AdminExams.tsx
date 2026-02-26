@@ -38,10 +38,12 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false); // Estado específico para salvamento
-  
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<ExamFormData>({
+
+  const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<ExamFormData>({
     defaultValues: { status: 'ACTIVE' }
   });
+
+  const statusValue = watch('status');
 
   useEffect(() => {
     const loadExam = async () => {
@@ -98,7 +100,7 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
         {...register('name', { required: 'Nome é obrigatório' })}
         error={errors.name?.message}
       />
-      
+
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">Descrição</label>
         <textarea
@@ -108,15 +110,25 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
         />
       </div>
 
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Status</label>
-        <select
-          {...register('status')}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
+      {/* Status toggle */}
+      <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
+        <div>
+          <p className="text-sm font-medium text-gray-700">Status do Exame</p>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {statusValue === 'ACTIVE' ? 'Ativo — visível para os alunos' : 'Inativo — oculto para os alunos'}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setValue('status', statusValue === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE', { shouldDirty: true })}
+          disabled={isSaving}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${statusValue === 'ACTIVE' ? 'bg-primary-600' : 'bg-gray-300'
+            }`}
         >
-          <option value="ACTIVE">Ativo</option>
-          <option value="INACTIVE">Inativo</option>
-        </select>
+          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${statusValue === 'ACTIVE' ? 'translate-x-6' : 'translate-x-1'
+            }`} />
+        </button>
+        <input type="hidden" {...register('status')} />
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
@@ -138,7 +150,7 @@ export default function AdminExams() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [examToDelete, setExamToDelete] = useState<Exam | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
-  
+
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -164,7 +176,7 @@ export default function AdminExams() {
   }, [loadExams]);
 
   const filteredExams = useMemo(() => {
-    return exams.filter(exam => 
+    return exams.filter(exam =>
       exam.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (exam.description && exam.description.toLowerCase().includes(searchTerm.toLowerCase()))
     );
@@ -235,10 +247,10 @@ export default function AdminExams() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div className="space-y-4"> {/* Aumentado espaçamento vertical aqui */}
-          <Breadcrumb 
+          <Breadcrumb
             items={[
               { label: 'Exames' }
-            ]} 
+            ]}
           />
           <div> {/* Container para agrupar título e descrição */}
             <h1 className="text-2xl font-bold text-gray-900">Gerenciar Exames</h1>
@@ -292,31 +304,29 @@ export default function AdminExams() {
             <div key={exam.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    exam.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
+                  <div className={`px-2 py-1 rounded-full text-xs font-semibold ${exam.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
                     {exam.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                   </div>
                   <div className="flex space-x-1 opacity-100 transition-opacity">
-                    <button 
+                    <button
                       onClick={() => handleToggleStatus(exam)}
-                      className={`p-1.5 rounded-md transition-colors ${
-                        exam.status === 'ACTIVE' 
-                          ? 'text-gray-400 hover:text-red-600 hover:bg-red-50' 
-                          : 'text-gray-400 hover:text-green-600 hover:bg-green-50'
-                      }`}
+                      className={`p-1.5 rounded-md transition-colors ${exam.status === 'ACTIVE'
+                        ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                        : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                        }`}
                       title={exam.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
                     >
                       {exam.status === 'ACTIVE' ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                     </button>
-                    <button 
+                    <button
                       onClick={() => handleEdit(exam.id)}
                       className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
                       title="Editar"
                     >
                       <Edit2 className="h-4 w-4" />
                     </button>
-                    <button 
+                    <button
                       onClick={() => confirmDelete(exam)}
                       className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
                       title="Excluir"
@@ -325,7 +335,7 @@ export default function AdminExams() {
                     </button>
                   </div>
                 </div>
-                
+
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{exam.name}</h3>
                 <p className="text-gray-500 text-sm mb-4 line-clamp-3">
                   {exam.description || 'Sem descrição.'}
@@ -336,8 +346,8 @@ export default function AdminExams() {
                 <span className="text-sm text-gray-500">
                   {exam._count?.topics || 0} Tópicos
                 </span>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={() => navigate(`/dashboard/admin/exams/${exam.id}/topics`)}
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
@@ -356,11 +366,11 @@ export default function AdminExams() {
         onClose={() => setIsModalOpen(false)}
         title={editingExamId ? 'Editar Exame' : 'Novo Exame'}
       >
-         <ExamFormContent 
-           examId={editingExamId} 
-           onSuccess={handleFormSuccess} 
-           onCancel={() => setIsModalOpen(false)} 
-         />
+        <ExamFormContent
+          examId={editingExamId}
+          onSuccess={handleFormSuccess}
+          onCancel={() => setIsModalOpen(false)}
+        />
       </Modal>
 
       {/* Modal de Confirmação de Exclusão */}
@@ -378,7 +388,7 @@ export default function AdminExams() {
             <div>
               <h3 className="text-lg font-medium text-gray-900">Você tem certeza absoluta?</h3>
               <p className="text-sm text-gray-500 mt-2">
-                Essa ação não pode ser desfeita. Isso excluirá permanentemente o exame 
+                Essa ação não pode ser desfeita. Isso excluirá permanentemente o exame
                 <span className="font-bold text-gray-900"> {examToDelete?.name} </span>
                 e removerá todos os dados associados de nossos servidores.
               </p>
@@ -389,8 +399,8 @@ export default function AdminExams() {
             <label className="block text-sm font-medium text-gray-700">
               Digite <span className="font-mono font-bold select-all">excluir</span> para confirmar:
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
               placeholder=""
               autoFocus
@@ -403,7 +413,7 @@ export default function AdminExams() {
             <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
               Cancelar
             </Button>
-            <button 
+            <button
               onClick={handleDelete}
               disabled={deleteConfirmation !== 'excluir'}
               className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
