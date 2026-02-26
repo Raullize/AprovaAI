@@ -10,16 +10,18 @@ import { useToast } from '../hooks/use-toast';
 import type { LoginForm } from '../types';
 import Loading from '../components/ui/Loading';
 import { AxiosError } from 'axios';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Login() {
+  usePageTitle('Entrar');
   const [formData, setFormData] = useState<LoginForm>({
     email: '',
     password: ''
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { validateLoginForm, getFieldError, clearErrors } = useFormValidation();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -41,7 +43,7 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearErrors();
-    
+
     const validation = validateLoginForm(formData);
     if (!validation.isValid) {
       return;
@@ -65,7 +67,7 @@ export default function Login() {
       setTimeout(() => {
         navigate('/dashboard');
       }, 1000);
-      
+
     } catch (error: unknown) {
       console.error('Login error:', error);
       const err = error as AxiosError<{ error: string }>;
@@ -82,7 +84,7 @@ export default function Login() {
   };
 
   return (
-    <AuthLayout 
+    <AuthLayout
       title="Bem-vindo de volta!"
       subtitle="Entre na sua conta para continuar seus estudos"
     >
@@ -115,8 +117,8 @@ export default function Login() {
             required
           />
           <div className="flex justify-end">
-            <Link 
-              to="/forgot-password" 
+            <Link
+              to="/forgot-password"
               className="text-sm text-primary-600 hover:text-primary-700 font-medium"
             >
               Esqueceu a senha?
@@ -159,8 +161,8 @@ export default function Login() {
         <div className="text-center pt-4 border-t border-gray-200">
           <p className="text-gray-600">
             Não tem uma conta?{' '}
-            <Link 
-              to="/register" 
+            <Link
+              to="/register"
               className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
             >
               Cadastre-se gratuitamente

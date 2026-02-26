@@ -12,8 +12,10 @@ import { ArrowRight, ArrowLeft, Check } from 'lucide-react';
 import Loading from '../components/ui/Loading';
 import api from '../services/api';
 import { AxiosError } from 'axios';
+import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Register() {
+  usePageTitle('Criar Conta');
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<RegisterForm>({
     fullName: '',
@@ -24,11 +26,11 @@ export default function Register() {
     dateOfBirth: '',
     acceptTerms: false
   });
-  
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const { validateRegisterForm, getFieldError, clearErrors, calculatePasswordStrength, setFieldError } = useFormValidation();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -36,20 +38,20 @@ export default function Register() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
     }));
   };
 
   const validateStep1 = () => {
     const step1Errors = [];
-    
+
     if (!formData.fullName?.trim()) step1Errors.push('Nome completo é obrigatório');
     if (!formData.username?.trim()) step1Errors.push('Nome de usuário é obrigatório');
     if (!formData.email?.trim()) step1Errors.push('E-mail é obrigatório');
     if (!formData.dateOfBirth) step1Errors.push('Data de nascimento é obrigatória');
-    
+
     return step1Errors.length === 0;
   };
 
@@ -58,8 +60,8 @@ export default function Register() {
       setCurrentStep(2);
       clearErrors();
     } else {
-        // Force validation to show errors
-        validateRegisterForm(formData);
+      // Force validation to show errors
+      validateRegisterForm(formData);
     }
   };
 
@@ -79,7 +81,7 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     clearErrors();
-    
+
     const validation = validateRegisterForm(formData);
     if (!validation.isValid) {
       // Se houver erros que não são visíveis no step atual, avisar o usuário
@@ -89,9 +91,9 @@ export default function Register() {
       if (hasStep1Errors) {
         setCurrentStep(1); // Voltar para a etapa 1 para mostrar os erros
         toast({
-            title: "Verifique os dados pessoais",
-            description: "Existem campos inválidos na etapa anterior.",
-            variant: "destructive"
+          title: "Verifique os dados pessoais",
+          description: "Existem campos inválidos na etapa anterior.",
+          variant: "destructive"
         });
       }
       return;
@@ -102,11 +104,11 @@ export default function Register() {
     try {
       // 1. Registrar
       await api.post('/auth/register', {
-          fullName: formData.fullName,
-          username: formData.username,
-          email: formData.email,
-          password: formData.password,
-          dateOfBirth: formData.dateOfBirth,
+        fullName: formData.fullName,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        dateOfBirth: formData.dateOfBirth,
       });
 
       toast({
@@ -114,7 +116,7 @@ export default function Register() {
         description: "Redirecionando para dashboard...",
         variant: "success"
       });
-      
+
       // 2. Login Automático
       await signIn({
         email: formData.email || '',
@@ -124,7 +126,7 @@ export default function Register() {
       setTimeout(() => {
         navigate('/dashboard');
       }, 1500);
-      
+
     } catch (error: unknown) {
       console.error('Registration error:', error);
       const err = error as AxiosError<{ error: string }>;
@@ -161,38 +163,33 @@ export default function Register() {
   const passwordStrength = calculatePasswordStrength(formData.password || '');
 
   return (
-    <AuthLayout 
+    <AuthLayout
       title="Crie sua conta no AprovaAI"
       subtitle="Junte-se a milhares de estudantes e comece sua jornada"
     >
       <div className="flex items-center justify-center mb-8">
         <div className="flex items-center space-x-4">
           <div className="flex items-center">
-            <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
-              currentStep >= 1 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
-            }`}>
+            <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${currentStep >= 1 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
               {currentStep > 1 ? <Check className="h-5 w-5" /> : '1'}
             </div>
-            <span className={`ml-2 text-sm font-medium ${
-              currentStep >= 1 ? 'text-primary-600' : 'text-gray-500'
-            }`}>
+            <span className={`ml-2 text-sm font-medium ${currentStep >= 1 ? 'text-primary-600' : 'text-gray-500'
+              }`}>
               Dados Pessoais
             </span>
           </div>
-          
-          <div className={`w-8 h-0.5 ${
-            currentStep >= 2 ? 'bg-primary-600' : 'bg-gray-200'
-          }`} />
-          
+
+          <div className={`w-8 h-0.5 ${currentStep >= 2 ? 'bg-primary-600' : 'bg-gray-200'
+            }`} />
+
           <div className="flex items-center">
-            <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
-              currentStep >= 2 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
-            }`}>
+            <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${currentStep >= 2 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
+              }`}>
               2
             </div>
-            <span className={`ml-2 text-sm font-medium ${
-              currentStep >= 2 ? 'text-primary-600' : 'text-gray-500'
-            }`}>
+            <span className={`ml-2 text-sm font-medium ${currentStep >= 2 ? 'text-primary-600' : 'text-gray-500'
+              }`}>
               Segurança
             </span>
           </div>
@@ -276,26 +273,24 @@ export default function Register() {
                 disabled={isLoading}
                 required
               />
-              
+
               {formData.password && (
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Força da senha:</span>
-                    <span className={`font-medium ${
-                      passwordStrength.label === 'Fraca' ? 'text-red-600' :
-                      passwordStrength.label === 'Média' ? 'text-yellow-600' :
-                      'text-green-600'
-                    }`}>
+                    <span className={`font-medium ${passwordStrength.label === 'Fraca' ? 'text-red-600' :
+                        passwordStrength.label === 'Média' ? 'text-yellow-600' :
+                          'text-green-600'
+                      }`}>
                       {passwordStrength.label}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        passwordStrength.label === 'Fraca' ? 'bg-red-500' :
-                        passwordStrength.label === 'Média' ? 'bg-yellow-500' :
-                        'bg-green-500'
-                      }`}
+                    <div
+                      className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.label === 'Fraca' ? 'bg-red-500' :
+                          passwordStrength.label === 'Média' ? 'bg-yellow-500' :
+                            'bg-green-500'
+                        }`}
                       style={{ width: `${Math.min((passwordStrength.score / 8) * 100, 100)}%` }}
                     />
                   </div>
@@ -357,7 +352,7 @@ export default function Register() {
                 <ArrowLeft className="mr-2 h-5 w-5" />
                 Voltar
               </Button>
-              
+
               <Button
                 type="submit"
                 size="lg"
@@ -390,8 +385,8 @@ export default function Register() {
         <div className="text-center pt-4 border-t border-gray-200">
           <p className="text-gray-600">
             Já tem uma conta?{' '}
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
             >
               Faça login aqui
