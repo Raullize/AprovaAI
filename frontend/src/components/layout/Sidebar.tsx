@@ -7,7 +7,6 @@ import { cn } from '../../lib/utils';
 // Itens para ESTUDANTES (Padrão)
 const studentItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-  { icon: BookOpen, label: 'Meus Exames', href: '/dashboard/exams' },
   { icon: GraduationCap, label: 'Simulados', href: '/dashboard/simulations' },
   { icon: User, label: 'Perfil', href: '/dashboard/profile' },
   { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
@@ -62,7 +61,7 @@ export const Sidebar: React.FC = () => {
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     )
                   }
-                  end={item.href === '/dashboard'} 
+                  end={item.href === '/dashboard'}
                 >
                   <item.icon className={cn("mr-3 h-5 w-5 flex-shrink-0", ({ isActive }: { isActive: boolean }) => isActive ? "text-primary-600" : "text-gray-400")} />
                   {item.label}
