@@ -60,6 +60,7 @@ model Exam {
   slug        String     @unique @map("slug")
   description String?    @map("description")
   status      ExamStatus @default(ACTIVE) @map("status")
+  order       Int        @default(0) @map("order")
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
@@ -75,6 +76,7 @@ model Topic {
   slug        String      @map("slug")
   description String?     @map("description")
   status      TopicStatus @default(ACTIVE) @map("status")
+  order       Int         @default(0) @map("order")
   examId      String      @map("exam_id")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
