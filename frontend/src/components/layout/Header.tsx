@@ -87,9 +87,17 @@ export const Header: React.FC = () => {
                   </Button>
                 </>
               ) : (
-                <Button onClick={() => handleNavigation('#pricing')}>
-                  Comece Grátis
-                </Button>
+                <>
+                  <button
+                    onClick={() => handleNavigation('/login')}
+                    className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
+                  >
+                    Login
+                  </button>
+                  <Button onClick={() => handleNavigation('#pricing')}>
+                    Comece Grátis
+                  </Button>
+                </>
               )}
             </div>
 
