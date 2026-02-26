@@ -87,13 +87,21 @@ model Topic {
   @@map("topics")
 }
 
+enum LevelStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("level_status")
+}
+
 model Level {
-  id                    String   @id @default(cuid()) @map("id")
-  name                  String   @map("name")
-  slug                  String   @map("slug")
-  description           String?  @map("description")
-  order                 Int      @map("order") // For level ordering
-  topicId               String   @map("topic_id")
+  id                    String      @id @default(cuid()) @map("id")
+  name                  String      @map("name")
+  slug                  String      @map("slug")
+  description           String?     @map("description")
+  order                 Int         @map("order") // For level ordering
+  topicId               String      @map("topic_id")
+  status                LevelStatus @default(ACTIVE) @map("status")
   
   // Exam fields
   xpReward              Int      @default(0) @map("xp_reward")
@@ -118,17 +126,25 @@ enum QuestionType {
   @@map("question_type")
 }
 
+enum QuestionStatus {
+  ACTIVE
+  INACTIVE
+
+  @@map("question_status")
+}
+
 model Question {
-  id          String       @id @default(cuid()) @map("id")
-  content     String       @map("content") // Question text
-  imageUrl    String?      @map("image_url") // Optional image attachment
-  type        QuestionType @default(MULTIPLE_CHOICE) @map("type")
-  order       Int          @map("order") // Question order in the exam
-  explanation String?      @map("explanation") // Optional answer explanation
-  studyLink   String?      @map("study_link") // Optional study link
-  levelId     String       @map("level_id")
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
+  id          String         @id @default(cuid()) @map("id")
+  content     String         @map("content") // Question text
+  imageUrl    String?        @map("image_url") // Optional image attachment
+  type        QuestionType   @default(MULTIPLE_CHOICE) @map("type")
+  status      QuestionStatus @default(ACTIVE) @map("status")
+  order       Int            @map("order") // Question order in the exam
+  explanation String?        @map("explanation") // Optional answer explanation
+  studyLink   String?        @map("study_link") // Optional study link
+  levelId     String         @map("level_id")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
 
   // Relationships
   level   Level            @relation(fields: [levelId], references: [id], onDelete: Cascade)
