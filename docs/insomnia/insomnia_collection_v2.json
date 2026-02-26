@@ -859,6 +859,142 @@
       "settingRebuildPath": true,
       "settingFollowRedirects": "global",
       "_type": "request"
+    },
+    {
+      "_id": "req_exams_reorder",
+      "parentId": "fld_exams",
+      "modified": 1772040000000,
+      "created": 1772040000000,
+      "url": "{{ base_url }}/exams/reorder",
+      "name": "Reordenar Exames",
+      "description": "Atualiza a ordem de exibição dos exames. Envie o array 'ids' com os IDs na nova ordem desejada (do primeiro ao último).",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"ids\": [\n    \"ID_EXAME_1\",\n    \"ID_EXAME_2\",\n    \"ID_EXAME_3\"\n  ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -580,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_topics_reorder",
+      "parentId": "fld_topics",
+      "modified": 1772040000000,
+      "created": 1772040000000,
+      "url": "{{ base_url }}/topics/reorder",
+      "name": "Reordenar Tópicos",
+      "description": "Atualiza a ordem de exibição dos tópicos de um exame. Envie o array 'ids' com os IDs dos tópicos na nova ordem.",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"ids\": [\n    \"ID_TOPICO_1\",\n    \"ID_TOPICO_2\",\n    \"ID_TOPICO_3\"\n  ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -570,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_levels_reorder",
+      "parentId": "fld_levels",
+      "modified": 1772040000000,
+      "created": 1772040000000,
+      "url": "{{ base_url }}/levels/reorder",
+      "name": "Reordenar Níveis",
+      "description": "Atualiza a ordem de exibição dos níveis de um tópico. Envie o array 'ids' com os IDs dos níveis na nova ordem.",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"ids\": [\n    \"ID_NIVEL_1\",\n    \"ID_NIVEL_2\",\n    \"ID_NIVEL_3\"\n  ]\n}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -560,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
+    },
+    {
+      "_id": "req_questions_reorder",
+      "parentId": "fld_questions",
+      "modified": 1772040000000,
+      "created": 1772040000000,
+      "url": "{{ base_url }}/questions/reorder",
+      "name": "Reordenar Questões",
+      "description": "Atualiza a ordem de exibição das questões de um nível. Envie o array 'ids' com os IDs das questões na nova ordem.",
+      "method": "PATCH",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\"ids\": [\"ID_QUESTAO_1\",\"ID_QUESTAO_2\",\"ID_QUESTAO_3\"]}"
+      },
+      "parameters": [],
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "authentication": {
+        "type": "bearer",
+        "token": "{{ token }}"
+      },
+      "metaSortKey": -550,
+      "isPrivate": false,
+      "settingStoreCookies": true,
+      "settingSendCookies": true,
+      "settingDisableRenderRequestBody": false,
+      "settingEncodeUrl": true,
+      "settingRebuildPath": true,
+      "settingFollowRedirects": "global",
+      "_type": "request"
     }
   ]
 }
