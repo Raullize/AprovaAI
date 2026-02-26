@@ -8,9 +8,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Toaster } from './components/ui/Toaster';
 import UnderConstruction from './components/ui/UnderConstruction';
 import CreateSimulation from './pages/dashboard/simulations/CreateSimulation';
-import Button from './components/ui/Button';
-import { Plus } from 'lucide-react';
-import { Link } from 'react-router-dom';
+
 import AdminExams from './pages/dashboard/admin/AdminExams';
 import TopicList from './pages/dashboard/admin/TopicList';
 import LevelList from './pages/dashboard/admin/LevelList';
@@ -57,15 +55,6 @@ function App() {
 
             <Route path="simulations" element={
               <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <h1 className="text-2xl font-bold text-gray-900">Simulados</h1>
-                  <Link to="/dashboard/simulations/create">
-                    <Button>
-                      <Plus className="h-5 w-5 mr-2" />
-                      Novo Simulado
-                    </Button>
-                  </Link>
-                </div>
                 <UnderConstruction title="Listagem de Simulados" message="O histórico de simulados estará disponível aqui." />
               </div>
             } />
