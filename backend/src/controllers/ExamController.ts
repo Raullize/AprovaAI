@@ -30,7 +30,7 @@ class ExamController {
         },
       },
       orderBy: {
-        createdAt: 'desc',
+        order: 'asc',
       },
     });
 
@@ -171,6 +171,22 @@ class ExamController {
       return res.status(204).send();
     } catch (error) {
       return res.status(500).json({ error: 'Erro ao deletar' });
+    }
+  }
+
+  async reorder(req: Request, res: Response) {
+    if (req.userRole !== 'ADMIN') return res.status(403).json({ error: 'Acesso negado' });
+    const { ids } = req.body as { ids: string[] };
+    if (!Array.isArray(ids)) return res.status(400).json({ error: 'ids deve ser um array' });
+    try {
+      await prisma.$transaction(
+        ids.map((id, index) =>
+          prisma.exam.update({ where: { id }, data: { order: index } })
+        )
+      );
+      return res.status(204).send();
+    } catch {
+      return res.status(500).json({ error: 'Erro ao reordenar' });
     }
   }
 }

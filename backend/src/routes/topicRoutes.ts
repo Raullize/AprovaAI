@@ -9,6 +9,7 @@ router.use(authMiddleware);
 router.get('/', TopicController.index);
 router.get('/:id', TopicController.show);
 router.post('/', TopicController.store);
+router.patch('/reorder', TopicController.reorder);
 router.patch('/:id', TopicController.update);
 router.delete('/:id', TopicController.delete);
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { BarChart, ChevronRight, Edit2, Eye, EyeOff, Plus, Trash2, Search, AlertTriangle } from 'lucide-react';
+import { BarChart, ChevronRight, Edit2, Eye, EyeOff, Plus, Trash2, Search, AlertTriangle, GripVertical } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
@@ -186,6 +186,7 @@ export default function LevelList() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [levelToDelete, setLevelToDelete] = useState<Level | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [draggedId, setDraggedId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -279,6 +280,25 @@ export default function LevelList() {
     loadData();
   };
 
+  const handleDragStart = (id: string) => setDraggedId(id);
+  const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+  const handleDrop = async (targetId: string) => {
+    if (!draggedId || draggedId === targetId) { setDraggedId(null); return; }
+    const newOrder = [...levels];
+    const fromIdx = newOrder.findIndex(l => l.id === draggedId);
+    const toIdx = newOrder.findIndex(l => l.id === targetId);
+    const [removed] = newOrder.splice(fromIdx, 1);
+    newOrder.splice(toIdx, 0, removed);
+    setLevels(newOrder);
+    setDraggedId(null);
+    try {
+      await api.patch('/levels/reorder', { ids: newOrder.map(l => l.id) });
+    } catch {
+      toast({ title: 'Erro ao reordenar', variant: 'destructive' });
+      loadData();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
@@ -342,7 +362,15 @@ export default function LevelList() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredLevels.map((level) => (
-            <div key={level.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
+            <div
+              key={level.id}
+              draggable
+              onDragStart={() => handleDragStart(level.id)}
+              onDragOver={handleDragOver}
+              onDrop={() => handleDrop(level.id)}
+              className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group ${draggedId === level.id ? 'opacity-40 scale-95' : ''
+                }`}
+            >
               <div>
                 <div className="flex justify-between items-start mb-4">
                   <div>
@@ -353,7 +381,8 @@ export default function LevelList() {
                       {level.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                     </span>
                   </div>
-                  <div className="flex space-x-1">
+                  <div className="flex items-center space-x-1">
+                    <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing mr-1" />
                     <button
                       onClick={() => handleToggleStatus(level)}
                       className={`p-1.5 rounded-md transition-colors ${level.status === 'ACTIVE'

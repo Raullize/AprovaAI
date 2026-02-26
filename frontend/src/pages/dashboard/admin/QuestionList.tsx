@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Plus, Edit2, Trash2, HelpCircle, Link, AlertTriangle, ImageIcon, Eye, EyeOff } from 'lucide-react';
+import { Plus, Edit2, Trash2, HelpCircle, Link, AlertTriangle, ImageIcon, Eye, EyeOff, GripVertical } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
@@ -403,6 +403,7 @@ export default function QuestionList() {
   const [questionToDelete, setQuestionToDelete] = useState<Question | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+  const [draggedId, setDraggedId] = useState<string | null>(null);
 
   const loadData = useCallback(async () => {
     try {
@@ -492,6 +493,25 @@ export default function QuestionList() {
     }
   };
 
+  const handleDragStart = (id: string) => setDraggedId(id);
+  const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+  const handleDrop = async (targetId: string) => {
+    if (!draggedId || draggedId === targetId) { setDraggedId(null); return; }
+    const newOrder = [...questions];
+    const fromIdx = newOrder.findIndex(q => q.id === draggedId);
+    const toIdx = newOrder.findIndex(q => q.id === targetId);
+    const [removed] = newOrder.splice(fromIdx, 1);
+    newOrder.splice(toIdx, 0, removed);
+    setQuestions(newOrder);
+    setDraggedId(null);
+    try {
+      await api.patch('/questions/reorder', { ids: newOrder.map(q => q.id) });
+    } catch {
+      toast({ title: 'Erro ao reordenar', variant: 'destructive' });
+      loadData();
+    }
+  };
+
   const typeLabel = (type: string) =>
     type === 'SINGLE_CHOICE' ? 'Única Escolha' : 'Múltipla Escolha';
 
@@ -562,12 +582,20 @@ export default function QuestionList() {
             return (
               <div
                 key={q.id}
-                className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-5"
+                draggable
+                onDragStart={() => handleDragStart(q.id)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(q.id)}
+                className={`bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow p-5 ${draggedId === q.id ? 'opacity-40 scale-95' : ''
+                  }`}
               >
                 <div className="flex items-start gap-4">
-                  {/* Order badge */}
-                  <div className="shrink-0 w-9 h-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-sm">
-                    {idx + 1}
+                  {/* Drag handle + Order badge */}
+                  <div className="flex flex-col items-center gap-1 shrink-0">
+                    <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing" />
+                    <div className="w-9 h-9 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-sm">
+                      {idx + 1}
+                    </div>
                   </div>
 
                   {/* Main content */}
@@ -633,8 +661,8 @@ export default function QuestionList() {
                     <button
                       onClick={() => handleToggleStatus(q)}
                       className={`p-2 rounded-lg transition-colors ${q.status === 'ACTIVE'
-                          ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                        ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                        : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
                         }`}
                       title={q.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
                     >

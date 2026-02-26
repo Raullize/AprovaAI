@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, ChevronRight, BookOpen, AlertTriangle, Eye, EyeOff, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, ChevronRight, BookOpen, AlertTriangle, Eye, EyeOff, Search, GripVertical } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Modal from '@/components/ui/Modal';
@@ -150,6 +150,7 @@ export default function AdminExams() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [examToDelete, setExamToDelete] = useState<Exam | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
+  const [draggedId, setDraggedId] = useState<string | null>(null);
 
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -243,6 +244,25 @@ export default function AdminExams() {
     loadExams();
   };
 
+  const handleDragStart = (id: string) => setDraggedId(id);
+  const handleDragOver = (e: React.DragEvent) => e.preventDefault();
+  const handleDrop = async (targetId: string) => {
+    if (!draggedId || draggedId === targetId) { setDraggedId(null); return; }
+    const newOrder = [...exams];
+    const fromIdx = newOrder.findIndex(e => e.id === draggedId);
+    const toIdx = newOrder.findIndex(e => e.id === targetId);
+    const [removed] = newOrder.splice(fromIdx, 1);
+    newOrder.splice(toIdx, 0, removed);
+    setExams(newOrder);
+    setDraggedId(null);
+    try {
+      await api.patch('/exams/reorder', { ids: newOrder.map(e => e.id) });
+    } catch {
+      toast({ title: 'Erro ao reordenar', variant: 'destructive' });
+      loadExams();
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -301,14 +321,23 @@ export default function AdminExams() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredExams.map((exam) => (
-            <div key={exam.id} className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group">
+            <div
+              key={exam.id}
+              draggable
+              onDragStart={() => handleDragStart(exam.id)}
+              onDragOver={handleDragOver}
+              onDrop={() => handleDrop(exam.id)}
+              className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group ${draggedId === exam.id ? 'opacity-40 scale-95' : ''
+                }`}
+            >
               <div>
                 <div className="flex justify-between items-start mb-4">
                   <div className={`px-2 py-1 rounded-full text-xs font-semibold ${exam.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                     }`}>
                     {exam.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                   </div>
-                  <div className="flex space-x-1 opacity-100 transition-opacity">
+                  <div className="flex items-center space-x-1">
+                    <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing mr-1" />
                     <button
                       onClick={() => handleToggleStatus(exam)}
                       className={`p-1.5 rounded-md transition-colors ${exam.status === 'ACTIVE'
