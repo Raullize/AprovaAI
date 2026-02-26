@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Plus, Edit2, Trash2, HelpCircle, Link, AlertTriangle, ImageIcon, Eye, EyeOff, GripVertical } from 'lucide-react';
+import { Plus, Edit2, Trash2, HelpCircle, Link, AlertTriangle, ImageIcon, Eye, EyeOff, GripVertical, Search } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
@@ -404,6 +404,7 @@ export default function QuestionList() {
   const [deleteConfirm, setDeleteConfirm] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [draggedId, setDraggedId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const loadData = useCallback(async () => {
     try {
@@ -436,6 +437,13 @@ export default function QuestionList() {
   }, [levelId, toast, navigate]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  const filteredQuestions = useMemo(() =>
+    questions.filter(q =>
+      q.content.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      q.options.some(o => o.text.toLowerCase().includes(searchTerm.toLowerCase()))
+    ), [questions, searchTerm]
+  );
 
   const handleCreate = () => {
     setEditingQuestion(null);
@@ -552,28 +560,51 @@ export default function QuestionList() {
         </Button>
       </div>
 
+      {/* Search */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Search className="h-5 w-5 text-gray-400" />
+        </div>
+        <input
+          type="text"
+          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg bg-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+          placeholder="Buscar questões por conteúdo ou alternativa..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       {/* Content */}
       {isLoading ? (
         <div className="flex justify-center py-16">
           <Loading size="lg" />
         </div>
-      ) : questions.length === 0 ? (
+      ) : filteredQuestions.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="bg-gray-50 p-4 rounded-full mb-4">
             <HelpCircle className="h-8 w-8 text-gray-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">Nenhuma questão cadastrada</h3>
-          <p className="text-gray-500 mb-6 max-w-sm">
-            Crie questões para este nível e comece a avaliar o conhecimento dos alunos.
-          </p>
-          <Button onClick={handleCreate}>
-            <Plus className="h-5 w-5 mr-2" />
-            Criar Primeira Questão
-          </Button>
+          {searchTerm ? (
+            <>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">Nenhuma questão encontrada</h3>
+              <p className="text-gray-500 mb-6 max-w-sm">Não encontramos questões com "{searchTerm}".</p>
+            </>
+          ) : (
+            <>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">Nenhuma questão cadastrada</h3>
+              <p className="text-gray-500 mb-6 max-w-sm">
+                Crie questões para este nível e comece a avaliar o conhecimento dos alunos.
+              </p>
+              <Button onClick={handleCreate}>
+                <Plus className="h-5 w-5 mr-2" />
+                Criar Primeira Questão
+              </Button>
+            </>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {questions.map((q, idx) => {
+          {filteredQuestions.map((q, idx) => {
             const previewUrl = q.imageUrl?.startsWith('/uploads/')
               ? `${BACKEND_URL}${q.imageUrl}`
               : q.imageUrl;
@@ -609,8 +640,8 @@ export default function QuestionList() {
                       <button
                         onClick={() => handleToggleStatus(q)}
                         className={`p-1.5 rounded-md transition-colors ${q.status === 'ACTIVE'
-                            ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                            : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                          ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
                           }`}
                         title={q.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
                       >
@@ -661,8 +692,8 @@ export default function QuestionList() {
                       <div
                         key={oi}
                         className={`flex items-center gap-2 text-xs px-3 py-1.5 rounded-md ${opt.isCorrect
-                            ? 'bg-green-50 text-green-800 border border-green-100'
-                            : 'bg-gray-50 text-gray-600 border border-gray-100'
+                          ? 'bg-green-50 text-green-800 border border-green-100'
+                          : 'bg-gray-50 text-gray-600 border border-gray-100'
                           }`}
                       >
                         <span className="font-bold shrink-0 text-xs w-4">{String.fromCharCode(65 + oi)}.</span>
