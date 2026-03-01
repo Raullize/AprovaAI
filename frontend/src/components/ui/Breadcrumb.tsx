@@ -24,6 +24,17 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
     navigate(-1);
   };
 
+  const getBackLabel = () => {
+    for (let i = items.length - 2; i >= 0; i--) {
+      if (items[i].href && items[i].href !== '#') {
+        return items[i].label.replace('...', '').trim();
+      }
+    }
+    return '';
+  };
+
+  const backLabel = getBackLabel();
+
   return (
     <nav aria-label="Breadcrumb">
       {/* Mobile view: Voltar */}
@@ -31,13 +42,17 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
         {items.length > 1 ? (
           <button
             onClick={goBack}
-            className="flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 bg-gray-50 px-3 py-1.5 rounded-md border border-gray-200"
+            className="flex items-center text-sm font-medium text-primary-600 hover:text-primary-700 bg-primary-50 px-3 py-1.5 rounded-md border border-primary-100 transition-colors"
           >
-            <ArrowLeft className="h-5 w-5 mr-2 text-gray-400" />
-            Voltar
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar {backLabel ? `para ${backLabel}` : ''}
           </button>
         ) : (
-          <span className="text-sm font-medium text-gray-900">{items[0]?.label}</span>
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-semibold text-gray-900 bg-gray-100 px-3 py-1.5 rounded-md">
+              {items[0]?.label}
+            </span>
+          </div>
         )}
       </div>
 
