@@ -25,9 +25,11 @@ Na versão inicial (agora movida para a pasta `legacy_nextjs/`), a aplicação f
 
 A equipe decidiu realizar uma refatoração arquitetural, dividindo a aplicação em dois projetos distintos, adotando o modelo Client-Server clássico com uma **Single Page Application (SPA)** acoplada a uma **API REST Isolada**:
 
-### 1. Backend (Node.js + Express)
+### 1. Backend (Node.js + NestJS)
+*Nota Histórica: Na transição original saindo do Next.js para o React + Node, foi pensado em fazer a API primariamente em Express. Construímos o backend inicial em Express, mas logo em seguida decidimos refatorá-lo completamente para o framework NestJS visando escalabilidade.*
+
 - **Papel:** Fornecer e centralizar as regras de negócio de dados de testes, usuários e reordenação.
-- **Stack:** Node.js, Express, TypeScript, JWT autônomo (jsonwebtoken), Prisma ORM e Zod para validação.
+- **Stack:** Node.js, NestJS, TypeScript, JWT Autônomo (`@nestjs/jwt`), Prisma ORM e Zod para validação fluída na camada de Pipes.
 - **Benefícios:** Total controle sobre as rotas, middlewares, e a lógica do banco (PostgreSQL), facilitando testes unitários, upload de arquivos locais (Multer) e manutenção exclusiva do servidor.
 
 ### 2. Frontend (React + Vite)

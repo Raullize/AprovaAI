@@ -94,7 +94,7 @@ O perfil administrador possui controle total sobre o conteúdo da plataforma:
 AprovaAI/
 ├── frontend/           # React + Vite + TypeScript (SPA)
 │   └── README.md       # Documentação do frontend
-├── backend/            # Node.js + Express + Prisma (API REST)
+├── backend/            # Node.js + NestJS + Prisma (API REST)
 │   └── README.md       # Documentação do backend
 └── docs/
     └── insomnia/       # Coleção Insomnia para testes da API

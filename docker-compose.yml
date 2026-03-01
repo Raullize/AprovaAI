@@ -18,7 +18,7 @@ services:
       - "3001:3001"
     environment:
       DATABASE_URL: postgres://user:password@postgres:5432/aprovaai
-      NEXTAUTH_SECRET: secret
+      JWT_SECRET: secret
       PORT: 3001
     depends_on:
       - postgres
