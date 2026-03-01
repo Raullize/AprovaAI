@@ -328,19 +328,19 @@ export default function TopicList() {
               ]}
             />
           </div>
-          <div className="flex items-center">
-            <button
-              onClick={() => navigate('/dashboard/exams')}
-              className="mr-3 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full md:hidden transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <div>
+          <div>
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/dashboard/exams')}
+                className="mr-3 p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full md:hidden transition-colors"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </button>
               <h1 className="text-2xl font-bold text-gray-900">Tópicos</h1>
-              <p className="text-gray-500 mt-1">
-                Gerencie os assuntos de {examName}.
-              </p>
             </div>
+            <p className="text-gray-500 mt-1">
+              Gerencie os assuntos de {examName}.
+            </p>
           </div>
         </div>
         <Button onClick={handleCreate}>

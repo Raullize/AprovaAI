@@ -679,32 +679,31 @@ export default function QuestionList() {
               ]}
             />
           </div>
-          <div className="flex items-center">
-            <button
-              onClick={() =>
-                navigate(
-                  breadcrumb.topicId
-                    ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
-                    : '/dashboard/exams',
-                )
-              }
-              className="mr-3 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full md:hidden transition-colors"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-            <div>
+          <div>
+            <div className="flex items-center">
+              <button
+                onClick={() =>
+                  navigate(
+                    breadcrumb.topicId
+                      ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
+                      : '/dashboard/exams',
+                  )
+                }
+                className="mr-3 p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full md:hidden transition-colors"
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </button>
               <h1 className="text-2xl font-bold text-gray-900">Questões</h1>
-              <p className="text-gray-500 mt-1">
-                Nível:{' '}
-                <span className="font-medium">{breadcrumb.levelName}</span>
-                {!isLoading && (
-                  <span className="ml-2 text-sm text-gray-400">
-                    ({questions.length} questão
-                    {questions.length !== 1 ? 'ões' : ''})
-                  </span>
-                )}
-              </p>
             </div>
+            <p className="text-gray-500 mt-1">
+              Nível: <span className="font-medium">{breadcrumb.levelName}</span>
+              {!isLoading && (
+                <span className="ml-2 text-sm text-gray-400">
+                  ({questions.length} questão
+                  {questions.length !== 1 ? 'ões' : ''})
+                </span>
+              )}
+            </p>
           </div>
         </div>
         <Button onClick={handleCreate}>
