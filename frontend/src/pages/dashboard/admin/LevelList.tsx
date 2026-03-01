@@ -11,6 +11,7 @@ import {
   Search,
   AlertTriangle,
   GripVertical,
+  ArrowLeft,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
@@ -342,27 +343,47 @@ export default function LevelList() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-        <div className="space-y-4">
-          <Breadcrumb
-            items={[
-              { label: 'Exames', href: '/dashboard/exams' },
-              {
-                label: examName || '...',
-                href: examId ? `/dashboard/admin/exams/${examId}/topics` : '#',
-              },
-              {
-                label: 'Tópicos',
-                href: examId ? `/dashboard/admin/exams/${examId}/topics` : '#',
-              },
-              { label: topicName || '...', href: '#' },
-              { label: 'Níveis' },
-            ]}
-          />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Níveis</h1>
-            <p className="text-gray-500 mt-1">
-              Dificuldades para o tópico {topicName}.
-            </p>
+        <div className="flex flex-col gap-4">
+          <div className="hidden md:block">
+            <Breadcrumb
+              items={[
+                { label: 'Exames', href: '/dashboard/exams' },
+                {
+                  label: examName || '...',
+                  href: examId
+                    ? `/dashboard/admin/exams/${examId}/topics`
+                    : '#',
+                },
+                {
+                  label: 'Tópicos',
+                  href: examId
+                    ? `/dashboard/admin/exams/${examId}/topics`
+                    : '#',
+                },
+                { label: topicName || '...', href: '#' },
+                { label: 'Níveis' },
+              ]}
+            />
+          </div>
+          <div className="flex items-center">
+            <button
+              onClick={() =>
+                navigate(
+                  examId
+                    ? `/dashboard/admin/exams/${examId}/topics`
+                    : '/dashboard/exams',
+                )
+              }
+              className="mr-3 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full md:hidden transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Níveis</h1>
+              <p className="text-gray-500 mt-1">
+                Dificuldades para o tópico {topicName}.
+              </p>
+            </div>
           </div>
         </div>
         <Button onClick={handleCreate}>

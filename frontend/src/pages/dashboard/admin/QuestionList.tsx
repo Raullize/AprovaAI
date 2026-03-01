@@ -12,6 +12,7 @@ import {
   EyeOff,
   GripVertical,
   Search,
+  ArrowLeft,
 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
@@ -644,49 +645,66 @@ export default function QuestionList() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col space-y-4 md:flex-row md:items-end md:justify-between md:space-y-0">
-        <div className="space-y-4">
-          <Breadcrumb
-            items={[
-              { label: 'Exames', href: '/dashboard/exams' },
-              {
-                label: breadcrumb.examName || '...',
-                href: breadcrumb.examId
-                  ? `/dashboard/admin/exams/${breadcrumb.examId}/topics`
-                  : '#',
-              },
-              {
-                label: 'Tópicos',
-                href: breadcrumb.examId
-                  ? `/dashboard/admin/exams/${breadcrumb.examId}/topics`
-                  : '#',
-              },
-              {
-                label: breadcrumb.topicName || '...',
-                href: breadcrumb.topicId
-                  ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
-                  : '#',
-              },
-              {
-                label: 'Níveis',
-                href: breadcrumb.topicId
-                  ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
-                  : '#',
-              },
-              { label: breadcrumb.levelName || '...', href: '#' },
-              { label: 'Questões' },
-            ]}
-          />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Questões</h1>
-            <p className="text-gray-500 mt-1">
-              Nível: <span className="font-medium">{breadcrumb.levelName}</span>
-              {!isLoading && (
-                <span className="ml-2 text-sm text-gray-400">
-                  ({questions.length} questão
-                  {questions.length !== 1 ? 'ões' : ''})
-                </span>
-              )}
-            </p>
+        <div className="flex flex-col gap-4">
+          <div className="hidden md:block">
+            <Breadcrumb
+              items={[
+                { label: 'Exames', href: '/dashboard/exams' },
+                {
+                  label: breadcrumb.examName || '...',
+                  href: breadcrumb.examId
+                    ? `/dashboard/admin/exams/${breadcrumb.examId}/topics`
+                    : '#',
+                },
+                {
+                  label: 'Tópicos',
+                  href: breadcrumb.examId
+                    ? `/dashboard/admin/exams/${breadcrumb.examId}/topics`
+                    : '#',
+                },
+                {
+                  label: breadcrumb.topicName || '...',
+                  href: breadcrumb.topicId
+                    ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
+                    : '#',
+                },
+                {
+                  label: 'Níveis',
+                  href: breadcrumb.topicId
+                    ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
+                    : '#',
+                },
+                { label: breadcrumb.levelName || '...', href: '#' },
+                { label: 'Questões' },
+              ]}
+            />
+          </div>
+          <div className="flex items-center">
+            <button
+              onClick={() =>
+                navigate(
+                  breadcrumb.topicId
+                    ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
+                    : '/dashboard/exams',
+                )
+              }
+              className="mr-3 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full md:hidden transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Questões</h1>
+              <p className="text-gray-500 mt-1">
+                Nível:{' '}
+                <span className="font-medium">{breadcrumb.levelName}</span>
+                {!isLoading && (
+                  <span className="ml-2 text-sm text-gray-400">
+                    ({questions.length} questão
+                    {questions.length !== 1 ? 'ões' : ''})
+                  </span>
+                )}
+              </p>
+            </div>
           </div>
         </div>
         <Button onClick={handleCreate}>

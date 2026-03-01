@@ -15,7 +15,6 @@ import {
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Modal from '@/components/ui/Modal';
-import Breadcrumb from '@/components/ui/Breadcrumb';
 import api from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
@@ -309,16 +308,11 @@ export default function AdminExams() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-        <div className="space-y-4">
-          <Breadcrumb items={[{ label: 'Exames' }]} />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Gerenciar Exames
-            </h1>
-            <p className="text-gray-500 mt-1">
-              Gerencie os exames disponíveis na plataforma.
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Gerenciar Exames</h1>
+          <p className="text-gray-500 mt-1">
+            Gerencie os exames disponíveis na plataforma.
+          </p>
         </div>
         <Button onClick={handleCreate}>
           <Plus className="h-5 w-5 mr-2" />
