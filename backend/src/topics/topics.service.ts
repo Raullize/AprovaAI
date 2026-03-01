@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTopicDto, UpdateTopicDto } from './dto/topic.dto';
-import { ReorderDto } from '../exams/dto/exam.dto'; // Shared Reorder DTO
+import { ReorderDto } from '../exams/dto/exam.dto';
 import { generateSlug, generateUniqueSlug } from '../utils/slugify';
 
 @Injectable()

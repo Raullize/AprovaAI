@@ -73,8 +73,6 @@ export class ExamsService {
             updateData.slug = slug;
         }
 
-        // Prisma update throws if not found technically, but let's just let it bubble up
-        // or handle carefully.
         try {
             return await this.prisma.exam.update({
                 where: { id },
