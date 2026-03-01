@@ -378,7 +378,7 @@ export default function AdminExams() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate(`/dashboard/admin/exams/${exam.id}/topics`)}
+                  onClick={() => navigate(exam.id ? `/dashboard/admin/exams/${exam.id}/topics` : '#')}
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
                 >
                   Ver Tópicos <ChevronRight className="h-4 w-4 ml-1" />

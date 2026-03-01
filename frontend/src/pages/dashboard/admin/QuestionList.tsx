@@ -169,7 +169,7 @@ function QuestionFormContent({
       // If editing and image changed, delete old image
       if (question?.imageUrl && question.imageUrl !== form.imageUrl && question.imageUrl.startsWith('/uploads/')) {
         const filename = question.imageUrl.split('/').pop();
-        if (filename) try { await api.delete(`/upload/${filename}`); } catch { }
+        if (filename) try { await api.delete(`/upload/${filename}`); } catch (e) { console.error('Error deleting file', e); }
       }
 
       const payload = {
@@ -473,7 +473,7 @@ export default function QuestionList() {
       // Delete associated image if any
       if (questionToDelete.imageUrl?.startsWith('/uploads/')) {
         const filename = questionToDelete.imageUrl.split('/').pop();
-        if (filename) try { await api.delete(`/upload/${filename}`); } catch { }
+        if (filename) try { await api.delete(`/upload/${filename}`); } catch (e) { console.error('Error deleting file', e); }
       }
       await api.delete(`/questions/${questionToDelete.id}`);
       toast({ title: 'Questão excluída', variant: 'success' });
@@ -536,10 +536,10 @@ export default function QuestionList() {
           <Breadcrumb
             items={[
               { label: 'Exames', href: '/dashboard/exams' },
-              { label: breadcrumb.examName || '...', href: `/dashboard/admin/exams/${breadcrumb.examId}/topics` },
-              { label: 'Tópicos', href: `/dashboard/admin/exams/${breadcrumb.examId}/topics` },
-              { label: breadcrumb.topicName || '...', href: `/dashboard/admin/topics/${breadcrumb.topicId}/levels` },
-              { label: 'Níveis', href: `/dashboard/admin/topics/${breadcrumb.topicId}/levels` },
+              { label: breadcrumb.examName || '...', href: breadcrumb.examId ? `/dashboard/admin/exams/${breadcrumb.examId}/topics` : '#' },
+              { label: 'Tópicos', href: breadcrumb.examId ? `/dashboard/admin/exams/${breadcrumb.examId}/topics` : '#' },
+              { label: breadcrumb.topicName || '...', href: breadcrumb.topicId ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels` : '#' },
+              { label: 'Níveis', href: breadcrumb.topicId ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels` : '#' },
               { label: breadcrumb.levelName || '...', href: '#' },
               { label: 'Questões' },
             ]}

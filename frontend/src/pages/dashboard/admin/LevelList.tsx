@@ -306,8 +306,8 @@ export default function LevelList() {
           <Breadcrumb
             items={[
               { label: 'Exames', href: '/dashboard/exams' },
-              { label: examName || '...', href: `/dashboard/admin/exams/${examId}/topics` },
-              { label: 'Tópicos', href: `/dashboard/admin/exams/${examId}/topics` },
+              { label: examName || '...', href: examId ? `/dashboard/admin/exams/${examId}/topics` : '#' },
+              { label: 'Tópicos', href: examId ? `/dashboard/admin/exams/${examId}/topics` : '#' },
               { label: topicName || '...', href: '#' },
               { label: 'Níveis' }
             ]}
