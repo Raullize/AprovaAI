@@ -70,17 +70,17 @@ Edite o arquivo `.env` com suas credenciais (veja [Variáveis de Ambiente](#vari
 
 ### 4. Suba o banco de dados PostgreSQL via Docker
 
-A partir da raiz do projeto (`cd ..`), inicie o container:
+A partir da raiz do projeto (`cd ..`), inicie o ambiente com o container do banco de dados em background:
 
 ```bash
 docker-compose up -d postgres
 ```
 
-> Se não tiver Docker, crie manualmente um banco PostgreSQL e ajuste a `DATABASE_URL` no `.env`.
+> **Nota:** Não utilize apenas `docker-compose up -d` neste momento, pois a intenção é subir apenas o banco de dados e rodar a API localmente na sua máquina para receber os comandos do Prisma.
 
 ### 5. Aplique o schema ao banco de dados
 
-De volta à pasta `backend`, execute:
+O Docker apenas criou o banco de dados vazio. Precisamos criar as tabelas com o Prisma. De volta à pasta `backend`, sincronize o banco e gere os tipos para o TypeScript:
 
 ```bash
 npx prisma db push
@@ -98,6 +98,7 @@ Isso criará:
 - Usuário demo: `demo@aprovaai.com` / `demo123`
 
 ### 7. Inicie o servidor de desenvolvimento
+
 
 Usando o CLI do NestJS nativo para iniciar o servidor com recarregamento a quente:
 
