@@ -265,14 +265,14 @@ export default function AdminExams() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div className="space-y-4"> {/* Aumentado espaçamento vertical aqui */}
+      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+        <div className="space-y-4">
           <Breadcrumb
             items={[
               { label: 'Exames' }
             ]}
           />
-          <div> {/* Container para agrupar título e descrição */}
+          <div>
             <h1 className="text-2xl font-bold text-gray-900">Gerenciar Exames</h1>
             <p className="text-gray-500 mt-1">Gerencie os exames disponíveis na plataforma.</p>
           </div>
