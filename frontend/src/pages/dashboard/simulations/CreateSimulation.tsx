@@ -51,7 +51,7 @@ export default function CreateSimulation() {
       }
     };
     fetchExams();
-  }, []);
+  }, [toast]);
 
   const onSubmit = async (data: SimulationFormData) => {
     setIsLoading(true);
