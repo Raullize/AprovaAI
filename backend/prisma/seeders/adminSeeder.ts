@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -27,7 +27,7 @@ export async function seedAdmin() {
       xp: 0
     },
   });
-  
+
   console.log('Admin criado: admin@aprovaai.com / admin123');
   return admin;
 }

@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
@@ -27,7 +27,7 @@ export async function seedUsers() {
       xp: 0
     },
   });
-  
+
   console.log('Usuário Demo criado: demo@aprovaai.com / demo123');
   return demoUser;
 }

@@ -197,11 +197,11 @@ export default function AdminExams() {
     try {
       const newStatus = exam.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
       await api.patch(`/exams/${exam.id}`, { status: newStatus });
-      setExams(prev => prev.map(e => e.id === exam.id ? { ...e, status: newStatus } : e));
       toast({
         title: `Exame ${newStatus === 'ACTIVE' ? 'ativado' : 'desativado'}`,
         variant: "success"
       });
+      loadExams(); // Recarrega para atualizar a UI
     } catch (error) {
       console.error(error);
       toast({
@@ -265,7 +265,7 @@ export default function AdminExams() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
+      <div className="flex justify-between items-center">
         <div className="space-y-4"> {/* Aumentado espaçamento vertical aqui */}
           <Breadcrumb
             items={[
@@ -378,7 +378,7 @@ export default function AdminExams() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate(exam.id ? `/dashboard/admin/exams/${exam.id}/topics` : '#')}
+                  onClick={() => navigate(`/dashboard/admin/exams/${exam.id}/topics`)}
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
                 >
                   Ver Tópicos <ChevronRight className="h-4 w-4 ml-1" />
