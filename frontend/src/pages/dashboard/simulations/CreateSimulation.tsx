@@ -41,11 +41,11 @@ export default function CreateSimulation() {
         setExams(response.data);
       } catch (error) {
         console.error('Erro ao buscar exames', error);
-        setExams([
-          { id: '1', title: 'ENEM 2023', year: 2023 },
-          { id: '2', title: 'ENEM 2022', year: 2022 },
-          { id: '3', title: 'FUVEST 2023', year: 2023 },
-        ]);
+        toast({
+          title: 'Erro ao carregar exames',
+          description: 'Não foi possível carregar a lista de exames.',
+          variant: 'destructive',
+        });
       } finally {
         setLoadingExams(false);
       }
