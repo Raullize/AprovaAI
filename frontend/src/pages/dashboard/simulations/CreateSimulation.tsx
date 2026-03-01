@@ -13,7 +13,7 @@ interface SimulationFormData {
   examId: string;
   topics: string[];
   questionCount: number;
-  timeLimit: number; // em minutos
+  timeLimit: number;
 }
 
 interface Exam {

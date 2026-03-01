@@ -59,7 +59,7 @@ function TopicFormContent({ examId, topicId, onSuccess, onCancel }: TopicFormPro
           name,
           description: description || '',
           status,
-          examId // Keep examId in the form data
+          examId
         });
       } catch (error) {
         console.error(error);
@@ -387,7 +387,6 @@ export default function TopicList() {
         </div>
       )}
 
-      {/* Modal de Criação/Edição */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -401,7 +400,6 @@ export default function TopicList() {
         />
       </Modal>
 
-      {/* Modal de Confirmação de Exclusão */}
       <Modal
         isOpen={isDeleteModalOpen}
         onClose={() => setIsDeleteModalOpen(false)}

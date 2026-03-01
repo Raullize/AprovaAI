@@ -140,7 +140,6 @@ function LevelFormContent({ topicId, levelId, onSuccess, onCancel }: LevelFormPr
         />
       </div>
 
-      {/* Status toggle */}
       <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
         <div>
           <p className="text-sm font-medium text-gray-700">Status do Nível</p>
@@ -318,7 +317,6 @@ export default function LevelList() {
         </Button>
       </div>
 
-      {/* Barra de Pesquisa */}
       <div className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
         <input
@@ -438,7 +436,6 @@ export default function LevelList() {
         </div>
       )}
 
-      {/* Modal de Criação/Edição */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

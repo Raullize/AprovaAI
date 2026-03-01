@@ -218,7 +218,6 @@ function QuestionFormContent({
         />
       </div>
 
-      {/* Type */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">Tipo da Questão</label>
         <select
@@ -237,7 +236,6 @@ function QuestionFormContent({
         </p>
       </div>
 
-      {/* Content */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Conteúdo da Questão <span className="text-red-500">*</span>
@@ -310,7 +308,6 @@ function QuestionFormContent({
         </div>
       </div>
 
-      {/* Explanation */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
           <HelpCircle className="inline h-4 w-4 mr-1 text-gray-400" />
@@ -365,7 +362,6 @@ function QuestionFormContent({
         </button>
       </div>
 
-      {/* Footer Buttons */}
       <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
         <Button type="button" variant="outline" onClick={onCancel} disabled={saving}>
           Cancelar
@@ -551,7 +547,6 @@ export default function QuestionList() {
         </Button>
       </div>
 
-      {/* Search */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <Search className="h-5 w-5 text-gray-400" />
@@ -565,7 +560,6 @@ export default function QuestionList() {
         />
       </div>
 
-      {/* Content */}
       {isLoading ? (
         <div className="flex justify-center py-16">
           <Loading size="lg" />
@@ -726,7 +720,6 @@ export default function QuestionList() {
         />
       </Modal>
 
-      {/* Delete Confirm Modal */}
       <Modal
         isOpen={isDeleteOpen}
         onClose={() => setIsDeleteOpen(false)}

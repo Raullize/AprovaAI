@@ -36,7 +36,7 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
   const isEditing = !!examId;
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false); // Estado específico para salvamento
+  const [isSaving, setIsSaving] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<ExamFormData>({
     defaultValues: { status: 'ACTIVE' }
@@ -52,8 +52,8 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
         const { name, description, status } = response.data;
         reset({
           name,
-          description: description || '',
-          status
+          status,
+          description: description || ''
         });
       } catch (error) {
         console.error(error);
