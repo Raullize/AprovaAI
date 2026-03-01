@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UsePipes, HttpCode, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UsePipes,
+  HttpCode,
+  Query,
+} from '@nestjs/common';
 import { TopicsService } from './topics.service';
 import { createTopicSchema, updateTopicSchema } from './dto/topic.dto';
 import type { CreateTopicDto, UpdateTopicDto } from './dto/topic.dto';
@@ -12,43 +24,50 @@ import { ZodValidationPipe } from '../utils/zod-validation.pipe';
 @Controller('topics')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class TopicsController {
-    constructor(private readonly topicsService: TopicsService) { }
+  constructor(private readonly topicsService: TopicsService) {}
 
-    @Get()
-    @Roles(UserRole.ADMIN)
-    findAll(@Query('examId') examId?: string) {
-        return this.topicsService.findAll(examId);
-    }
+  @Get()
+  @Roles(UserRole.ADMIN)
+  findAll(@Query('examId') examId?: string) {
+    return this.topicsService.findAll(examId);
+  }
 
-    @Get(':id')
-    @Roles(UserRole.ADMIN)
-    findOne(@Param('id') id: string) {
-        return this.topicsService.findOne(id);
-    }
+  @Get(':id')
+  @Roles(UserRole.ADMIN)
+  findOne(@Param('id') id: string) {
+    return this.topicsService.findOne(id);
+  }
 
-    @Post()
-    @Roles(UserRole.ADMIN)
-    create(@Body(new ZodValidationPipe(createTopicSchema)) createTopicDto: CreateTopicDto) {
-        return this.topicsService.create(createTopicDto);
-    }
+  @Post()
+  @Roles(UserRole.ADMIN)
+  create(
+    @Body(new ZodValidationPipe(createTopicSchema))
+    createTopicDto: CreateTopicDto,
+  ) {
+    return this.topicsService.create(createTopicDto);
+  }
 
-    @Patch('reorder')
-    @Roles(UserRole.ADMIN)
-    @HttpCode(204)
-    reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
-        return this.topicsService.reorder(reorderDto);
-    }
+  @Patch('reorder')
+  @Roles(UserRole.ADMIN)
+  @HttpCode(204)
+  reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
+    return this.topicsService.reorder(reorderDto);
+  }
 
-    @Patch(':id')
-    @Roles(UserRole.ADMIN)
-    update(@Param('id') id: string, @Body(new ZodValidationPipe(updateTopicSchema)) updateTopicDto: UpdateTopicDto) {
-        return this.topicsService.update(id, updateTopicDto);
-    }
+  @Patch(':id')
+  @Roles(UserRole.ADMIN)
+  update(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updateTopicSchema))
+    updateTopicDto: UpdateTopicDto,
+  ) {
+    return this.topicsService.update(id, updateTopicDto);
+  }
 
-    @Delete(':id')
-    @Roles(UserRole.ADMIN)
-    @HttpCode(204)
-    remove(@Param('id') id: string) {
-        return this.topicsService.remove(id);
-    }
+  @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  @HttpCode(204)
+  remove(@Param('id') id: string) {
+    return this.topicsService.remove(id);
+  }
 }

@@ -9,9 +9,12 @@ async function bootstrap() {
   app.enableCors();
   app.setGlobalPrefix('api');
 
-  app.useStaticAssets(path.join(process.cwd(), process.env.UPLOAD_DIR || 'uploads'), {
-    prefix: '/uploads/',
-  });
+  app.useStaticAssets(
+    path.join(process.cwd(), process.env.UPLOAD_DIR || 'uploads'),
+    {
+      prefix: '/uploads/',
+    },
+  );
 
   await app.listen(process.env.PORT ?? 3001);
 }

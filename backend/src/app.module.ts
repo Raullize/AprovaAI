@@ -10,8 +10,16 @@ import { QuestionsModule } from './questions/questions.module';
 import { UploadModule } from './upload/upload.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, ExamsModule, TopicsModule, LevelsModule, QuestionsModule, UploadModule],
+  imports: [
+    PrismaModule,
+    AuthModule,
+    ExamsModule,
+    TopicsModule,
+    LevelsModule,
+    QuestionsModule,
+    UploadModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

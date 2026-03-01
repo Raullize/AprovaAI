@@ -13,7 +13,7 @@ export function generateSlug(text: string): string {
 
 export async function generateUniqueSlug(
   slug: string,
-  checkExists: (slug: string) => Promise<boolean>
+  checkExists: (slug: string) => Promise<boolean>,
 ): Promise<string> {
   let uniqueSlug = slug;
   let counter = 1;

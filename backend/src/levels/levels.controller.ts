@@ -1,4 +1,16 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, UsePipes, HttpCode, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+  UsePipes,
+  HttpCode,
+  Query,
+} from '@nestjs/common';
 import { LevelsService } from './levels.service';
 import { createLevelSchema, updateLevelSchema } from './dto/level.dto';
 import type { CreateLevelDto, UpdateLevelDto } from './dto/level.dto';
@@ -12,43 +24,50 @@ import { ZodValidationPipe } from '../utils/zod-validation.pipe';
 @Controller('levels')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class LevelsController {
-    constructor(private readonly levelsService: LevelsService) { }
+  constructor(private readonly levelsService: LevelsService) {}
 
-    @Get()
-    @Roles(UserRole.ADMIN)
-    findAll(@Query('topicId') topicId?: string) {
-        return this.levelsService.findAll(topicId);
-    }
+  @Get()
+  @Roles(UserRole.ADMIN)
+  findAll(@Query('topicId') topicId?: string) {
+    return this.levelsService.findAll(topicId);
+  }
 
-    @Get(':id')
-    @Roles(UserRole.ADMIN)
-    findOne(@Param('id') id: string) {
-        return this.levelsService.findOne(id);
-    }
+  @Get(':id')
+  @Roles(UserRole.ADMIN)
+  findOne(@Param('id') id: string) {
+    return this.levelsService.findOne(id);
+  }
 
-    @Post()
-    @Roles(UserRole.ADMIN)
-    create(@Body(new ZodValidationPipe(createLevelSchema)) createLevelDto: CreateLevelDto) {
-        return this.levelsService.create(createLevelDto);
-    }
+  @Post()
+  @Roles(UserRole.ADMIN)
+  create(
+    @Body(new ZodValidationPipe(createLevelSchema))
+    createLevelDto: CreateLevelDto,
+  ) {
+    return this.levelsService.create(createLevelDto);
+  }
 
-    @Patch('reorder')
-    @Roles(UserRole.ADMIN)
-    @HttpCode(204)
-    reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
-        return this.levelsService.reorder(reorderDto);
-    }
+  @Patch('reorder')
+  @Roles(UserRole.ADMIN)
+  @HttpCode(204)
+  reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
+    return this.levelsService.reorder(reorderDto);
+  }
 
-    @Patch(':id')
-    @Roles(UserRole.ADMIN)
-    update(@Param('id') id: string, @Body(new ZodValidationPipe(updateLevelSchema)) updateLevelDto: UpdateLevelDto) {
-        return this.levelsService.update(id, updateLevelDto);
-    }
+  @Patch(':id')
+  @Roles(UserRole.ADMIN)
+  update(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updateLevelSchema))
+    updateLevelDto: UpdateLevelDto,
+  ) {
+    return this.levelsService.update(id, updateLevelDto);
+  }
 
-    @Delete(':id')
-    @Roles(UserRole.ADMIN)
-    @HttpCode(204)
-    remove(@Param('id') id: string) {
-        return this.levelsService.remove(id);
-    }
+  @Delete(':id')
+  @Roles(UserRole.ADMIN)
+  @HttpCode(204)
+  remove(@Param('id') id: string) {
+    return this.levelsService.remove(id);
+  }
 }
