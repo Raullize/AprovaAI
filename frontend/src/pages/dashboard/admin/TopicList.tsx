@@ -230,8 +230,8 @@ export default function TopicList() {
     try {
       const newStatus = topic.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
       await api.patch(`/topics/${topic.id}`, { status: newStatus });
+      setTopics(prev => prev.map(t => t.id === topic.id ? { ...t, status: newStatus } : t));
       toast({ title: `Tópico ${newStatus === 'ACTIVE' ? 'ativado' : 'desativado'}`, variant: "success" });
-      loadData();
     } catch (error) {
       console.error(error);
       toast({ title: "Erro ao atualizar status", variant: "destructive" });

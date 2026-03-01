@@ -197,11 +197,11 @@ export default function AdminExams() {
     try {
       const newStatus = exam.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
       await api.patch(`/exams/${exam.id}`, { status: newStatus });
+      setExams(prev => prev.map(e => e.id === exam.id ? { ...e, status: newStatus } : e));
       toast({
         title: `Exame ${newStatus === 'ACTIVE' ? 'ativado' : 'desativado'}`,
         variant: "success"
       });
-      loadExams(); // Recarrega para atualizar a UI
     } catch (error) {
       console.error(error);
       toast({

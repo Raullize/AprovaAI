@@ -491,11 +491,11 @@ export default function QuestionList() {
     const newStatus = q.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
       await api.patch(`/questions/${q.id}`, { status: newStatus });
+      setQuestions(prev => prev.map(item => item.id === q.id ? { ...item, status: newStatus } : item));
       toast({
         title: newStatus === 'ACTIVE' ? 'Questão ativada' : 'Questão desativada',
         variant: 'success',
       });
-      loadData();
     } catch {
       toast({ title: 'Erro ao alterar status', variant: 'destructive' });
     }

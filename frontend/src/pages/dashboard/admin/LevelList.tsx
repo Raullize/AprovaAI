@@ -263,11 +263,11 @@ export default function LevelList() {
     const newStatus = level.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
       await api.patch(`/levels/${level.id}`, { status: newStatus });
+      setLevels(prev => prev.map(l => l.id === level.id ? { ...l, status: newStatus } : l));
       toast({
         title: newStatus === 'ACTIVE' ? 'Nível ativado' : 'Nível desativado',
         variant: 'success',
       });
-      loadData();
     } catch {
       toast({ title: 'Erro ao alterar status', variant: 'destructive' });
     }
