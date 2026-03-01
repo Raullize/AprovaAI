@@ -30,7 +30,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
     const { id, role } = decoded as TokenPayload;
 
     req.userId = id;
-    req.userRole = role; // TypeScript pode reclamar aqui se não reconhecer o .d.ts
+    req.userRole = role;
 
     return next();
   } catch (error) {
