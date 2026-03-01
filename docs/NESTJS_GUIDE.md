@@ -72,13 +72,31 @@ Vamos imaginar que um admin submeteu um formulário no React para criar um novo 
 
 ---
 
-## 5. Dicionário (Glossário Rápido de Decorators)
+## 5. DTOs (Data Transfer Objects)
+
+**O que são?** O "Contrato" ou "Molde" dos dados.
+- **Express Antigo:** Você pegava o `req.body` e torcia para que o frontend tivesse enviado os campos `name` e `email` corretamente. Se não, seu código quebrava em tempo de execução.
+- **No NestJS:** Antes de qualquer coisa, você cria uma classe DTO (ex: `CreateExamDto.ts`). Essa classe define **exatamente** quais campos são esperados, seus tipos (`string`, `number`) e regras de validação (usando decorators de bibliotecas como `class-validator` ou schemas do Zod). O DTO serve como um contrato claro entre o frontend e o backend.
+- **Vantagem:** Quando um DTO é usado em um Controller junto com um `ValidationPipe`, o NestJS automaticamente valida a requisição. Se o frontend enviar um campo a mais, a menos, ou com o tipo errado, a requisição é rejeitada com um erro `400 Bad Request` antes mesmo de chegar na sua lógica de negócio. Isso torna o código mais seguro, previsível e auto-documentado.
+
+---
+
+## 6. Módulos Dinâmicos (Tópico Avançado)
+**O que são?** Módulos "Configuráveis".
+- **Cenário:** Imagine que você está criando um módulo para se conectar a um serviço externo (ex: um gateway de e-mail). Em desenvolvimento, você quer usar uma API key de teste, e em produção, uma chave real. Você não pode "chumbar" (hardcode) essa chave dentro do módulo.
+- **No NestJS:** Módulos Dinâmicos permitem que você crie um módulo que aceita opções na hora de ser importado. Em vez de apenas `imports: [MailModule]`, você faria algo como `imports: [MailModule.register({ apiKey: 'SUA_CHAVE_AQUI' })]`.
+- **Como funciona:** Em vez de exportar a classe do módulo diretamente, você cria um método estático (geralmente `register()` ou `forRoot()`) que retorna um objeto de módulo dinâmico. Esse método pode receber configurações e usá-las para configurar os providers (serviços) internos do módulo.
+- **Uso Comum:** É muito usado em bibliotecas de código aberto para NestJS (como `@nestjs/config`, `@nestjs/jwt`) para permitir que os desenvolvedores configurem o módulo de acordo com suas necessidades.
+
+---
+
+## 7. Dicionário (Glossário Rápido de Decorators)
 
 - `@Controller('user')`: Diz que a classe mapeará todas as rotas de `/user...`.
 - `@Injectable()`: Colocado sobre Serviços, diz que ele deve ser rastreado no container global de injeção de dependências do Nest.
 - `@Get() / @Post() / @Patch()`: Rotas HTTP de acesso.
 - `@Req()` ou `@Request()`: Te dá acesso manual rápido ao objeto sujo `request` clássico do Express.
-- `@Body()`: Equivalente ao `req.body`.
+- `@Body() createExamDto: CreateExamDto`: Em vez de pegar o `req.body` genérico, você o tipa com uma classe **DTO**. Isso ativa a validação automática se um `ValidationPipe` estiver configurado.
 - `@Param('id')`: Equivalente a extrair algo do `req.params.id`.
 - `@Query()`: Equivalente a ler `?page=2` em `req.query`.
 
