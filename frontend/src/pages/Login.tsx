@@ -16,7 +16,7 @@ export default function Login() {
   usePageTitle('Entrar');
   const [formData, setFormData] = useState<LoginForm>({
     email: '',
-    password: ''
+    password: '',
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -29,14 +29,14 @@ export default function Login() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleGoogleLogin = async () => {
     toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "Em breve você poderá fazer login com Google!",
-      variant: "default"
+      title: 'Funcionalidade em desenvolvimento',
+      description: 'Em breve você poderá fazer login com Google!',
+      variant: 'default',
     });
   };
 
@@ -58,24 +58,25 @@ export default function Login() {
       });
 
       toast({
-        title: "Login realizado com sucesso!",
-        description: "Bem-vindo de volta ao AprovaAI.",
-        variant: "success",
+        title: 'Login realizado com sucesso!',
+        description: 'Bem-vindo de volta ao AprovaAI.',
+        variant: 'success',
       });
 
       setTimeout(() => {
         navigate('/dashboard');
       }, 1000);
-
     } catch (error: unknown) {
       console.error('Login error:', error);
       const err = error as AxiosError<{ error: string }>;
-      const errorMessage = err.response?.data?.error || 'Credenciais inválidas. Verifique e tente novamente.';
+      const errorMessage =
+        err.response?.data?.error ||
+        'Credenciais inválidas. Verifique e tente novamente.';
 
       toast({
-        title: "Erro ao fazer login",
+        title: 'Erro ao fazer login',
         description: errorMessage,
-        variant: "destructive"
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -125,12 +126,7 @@ export default function Login() {
           </div>
         </div>
 
-        <Button
-          type="submit"
-          size="lg"
-          className="w-full"
-          disabled={isLoading}
-        >
+        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
           {isLoading ? (
             <>
               <Loading size="xs" className="mr-2" />
@@ -150,10 +146,7 @@ export default function Login() {
           </div>
         </div>
 
-        <GoogleButton
-          onClick={handleGoogleLogin}
-          disabled={isLoading}
-        >
+        <GoogleButton onClick={handleGoogleLogin} disabled={isLoading}>
           Continuar com Google
         </GoogleButton>
 

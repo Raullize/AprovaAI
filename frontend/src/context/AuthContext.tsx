@@ -27,7 +27,9 @@ interface AuthContextData {
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -61,7 +63,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }
 
   return (
-    <AuthContext.Provider value={{ signed: !!user, user, signIn, signOut, loading }}>
+    <AuthContext.Provider
+      value={{ signed: !!user, user, signIn, signOut, loading }}
+    >
       {children}
     </AuthContext.Provider>
   );

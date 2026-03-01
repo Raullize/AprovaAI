@@ -26,11 +26,11 @@ const plans: Plan[] = [
       'Feedback básico das questões',
       'Progresso por níveis',
       'Acesso limitado ao Prof. Sabichão*',
-      'Anúncios discretos'
+      'Anúncios discretos',
     ],
     ctaText: 'Comece Grátis',
     ctaVariant: 'outline',
-    isPopular: false
+    isPopular: false,
   },
   {
     id: 'premium',
@@ -45,12 +45,12 @@ const plans: Plan[] = [
       'Questões exclusivas premium',
       'Sem anúncios',
       'Suporte prioritário',
-      'Análise de pontos fortes/fracos'
+      'Análise de pontos fortes/fracos',
     ],
     ctaText: 'Assine Agora',
     ctaVariant: 'primary',
-    isPopular: true
-  }
+    isPopular: true,
+  },
 ];
 
 export const Pricing: React.FC = () => {
@@ -59,26 +59,26 @@ export const Pricing: React.FC = () => {
   return (
     <section id="pricing" className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold font-display text-gray-900 mb-4">
             Escolha Seu Caminho para a Aprovação
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Oferecemos planos flexíveis para atender suas necessidades de estudo.
-            Comece grátis e evolua quando estiver pronto.
+            Oferecemos planos flexíveis para atender suas necessidades de
+            estudo. Comece grátis e evolua quando estiver pronto.
           </p>
         </div>
-
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.id}
-              className={`relative bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl ${plan.isPopular ? 'ring-2 ring-primary-600 transform scale-105' : ''
-                }`}
+              className={`relative bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl ${
+                plan.isPopular
+                  ? 'ring-2 ring-primary-600 transform scale-105'
+                  : ''
+              }`}
             >
-
               {plan.isPopular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                   <div className="bg-primary-600 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
@@ -87,7 +87,6 @@ export const Pricing: React.FC = () => {
                   </div>
                 </div>
               )}
-
 
               <div className="text-center mb-8">
                 <h3 className="text-2xl font-bold font-display text-gray-900 mb-2">
@@ -98,11 +97,8 @@ export const Pricing: React.FC = () => {
                     {plan.price}
                   </span>
                 </div>
-                <p className="text-gray-600">
-                  {plan.description}
-                </p>
+                <p className="text-gray-600">{plan.description}</p>
               </div>
-
 
               <div className="space-y-4 mb-8">
                 {plan.features.map((feature, index) => (
@@ -110,13 +106,10 @@ export const Pricing: React.FC = () => {
                     <div className="flex-shrink-0 mr-3 mt-0.5">
                       <Check className="h-5 w-5 text-success-600" />
                     </div>
-                    <span className="text-gray-700">
-                      {feature}
-                    </span>
+                    <span className="text-gray-700">{feature}</span>
                   </div>
                 ))}
               </div>
-
 
               <Button
                 variant={plan.ctaVariant}
@@ -128,7 +121,6 @@ export const Pricing: React.FC = () => {
                 {plan.ctaText}
               </Button>
 
-
               {plan.isPopular && (
                 <div className="mt-4 text-center">
                   <p className="text-sm text-gray-500">
@@ -139,7 +131,6 @@ export const Pricing: React.FC = () => {
             </div>
           ))}
         </div>
-
 
         <div className="text-center mt-12">
           <div className="mt-6 p-6 bg-blue-50 rounded-xl max-w-2xl mx-auto">

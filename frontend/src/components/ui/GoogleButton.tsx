@@ -7,7 +7,11 @@ interface GoogleButtonProps {
   children?: React.ReactNode;
 }
 
-const GoogleButton: React.FC<GoogleButtonProps> = ({ onClick, disabled, children }) => {
+const GoogleButton: React.FC<GoogleButtonProps> = ({
+  onClick,
+  disabled,
+  children,
+}) => {
   return (
     <Button
       type="button"

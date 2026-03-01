@@ -1,5 +1,10 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -18,7 +23,11 @@ const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { signed, loading } = useAuth();
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen text-primary-600">Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen text-primary-600">
+        Carregando...
+      </div>
+    );
   }
 
   return signed ? children : <Navigate to="/login" />;
@@ -28,7 +37,11 @@ const AdminRoute = ({ children }: { children: React.ReactNode }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen text-primary-600">Carregando...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen text-primary-600">
+        Carregando...
+      </div>
+    );
   }
 
   return user?.role === 'ADMIN' ? children : <Navigate to="/dashboard" />;
@@ -51,28 +64,96 @@ function App() {
               </PrivateRoute>
             }
           >
-            <Route index element={<UnderConstruction title="Dashboard" message="Visão geral e estatísticas em breve." />} />
+            <Route
+              index
+              element={
+                <UnderConstruction
+                  title="Dashboard"
+                  message="Visão geral e estatísticas em breve."
+                />
+              }
+            />
 
-            <Route path="simulations" element={
-              <div className="space-y-6">
-                <UnderConstruction title="Listagem de Simulados" message="O histórico de simulados estará disponível aqui." />
-              </div>
-            } />
+            <Route
+              path="simulations"
+              element={
+                <div className="space-y-6">
+                  <UnderConstruction
+                    title="Listagem de Simulados"
+                    message="O histórico de simulados estará disponível aqui."
+                  />
+                </div>
+              }
+            />
 
             <Route path="simulations/create" element={<CreateSimulation />} />
 
-            <Route path="profile" element={<UnderConstruction title="Meu Perfil" message="Edição de dados pessoais em breve." />} />
-            <Route path="settings" element={<UnderConstruction title="Configurações" message="Preferências do sistema em breve." />} />
-            <Route path="users" element={<AdminRoute><UnderConstruction title="Gestão de Usuários" message="Controle de acesso e usuários em breve." /></AdminRoute>} />
+            <Route
+              path="profile"
+              element={
+                <UnderConstruction
+                  title="Meu Perfil"
+                  message="Edição de dados pessoais em breve."
+                />
+              }
+            />
+            <Route
+              path="settings"
+              element={
+                <UnderConstruction
+                  title="Configurações"
+                  message="Preferências do sistema em breve."
+                />
+              }
+            />
+            <Route
+              path="users"
+              element={
+                <AdminRoute>
+                  <UnderConstruction
+                    title="Gestão de Usuários"
+                    message="Controle de acesso e usuários em breve."
+                  />
+                </AdminRoute>
+              }
+            />
 
             {/* Admin Routes - Agora integrados em "Meus Exames" e afins */}
-            <Route path="exams" element={<AdminRoute><AdminExams /></AdminRoute>} />
+            <Route
+              path="exams"
+              element={
+                <AdminRoute>
+                  <AdminExams />
+                </AdminRoute>
+              }
+            />
 
-            <Route path="admin/exams/:examId/topics" element={<AdminRoute><TopicList /></AdminRoute>} />
+            <Route
+              path="admin/exams/:examId/topics"
+              element={
+                <AdminRoute>
+                  <TopicList />
+                </AdminRoute>
+              }
+            />
 
-            <Route path="admin/topics/:topicId/levels" element={<AdminRoute><LevelList /></AdminRoute>} />
+            <Route
+              path="admin/topics/:topicId/levels"
+              element={
+                <AdminRoute>
+                  <LevelList />
+                </AdminRoute>
+              }
+            />
 
-            <Route path="admin/levels/:levelId/questions" element={<AdminRoute><QuestionList /></AdminRoute>} />
+            <Route
+              path="admin/levels/:levelId/questions"
+              element={
+                <AdminRoute>
+                  <QuestionList />
+                </AdminRoute>
+              }
+            />
           </Route>
 
           <Route path="*" element={<Navigate to="/" />} />

@@ -1,6 +1,17 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, Edit2, Trash2, ChevronRight, BookOpen, AlertTriangle, Eye, EyeOff, Search, GripVertical } from 'lucide-react';
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  ChevronRight,
+  BookOpen,
+  AlertTriangle,
+  Eye,
+  EyeOff,
+  Search,
+  GripVertical,
+} from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Modal from '@/components/ui/Modal';
@@ -38,8 +49,15 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { register, handleSubmit, formState: { errors }, reset, watch, setValue } = useForm<ExamFormData>({
-    defaultValues: { status: 'ACTIVE' }
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+    watch,
+    setValue,
+  } = useForm<ExamFormData>({
+    defaultValues: { status: 'ACTIVE' },
   });
 
   const statusValue = watch('status');
@@ -53,11 +71,11 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
         reset({
           name,
           status,
-          description: description || ''
+          description: description || '',
         });
       } catch (error) {
         console.error(error);
-        toast({ title: "Erro ao carregar dados", variant: "destructive" });
+        toast({ title: 'Erro ao carregar dados', variant: 'destructive' });
       } finally {
         setIsLoading(false);
       }
@@ -73,22 +91,26 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
       setIsSaving(true);
       if (isEditing) {
         await api.patch(`/exams/${examId}`, data);
-        toast({ title: "Exame atualizado!", variant: "success" });
+        toast({ title: 'Exame atualizado!', variant: 'success' });
       } else {
         await api.post('/exams', data);
-        toast({ title: "Exame criado!", variant: "success" });
+        toast({ title: 'Exame criado!', variant: 'success' });
       }
       onSuccess();
     } catch (error) {
       console.error(error);
-      toast({ title: "Erro ao salvar", variant: "destructive" });
+      toast({ title: 'Erro ao salvar', variant: 'destructive' });
     } finally {
       setIsSaving(false);
     }
   };
 
   if (isLoading) {
-    return <div className="py-8 flex justify-center"><Loading size="md" /></div>;
+    return (
+      <div className="py-8 flex justify-center">
+        <Loading size="md" />
+      </div>
+    );
   }
 
   return (
@@ -101,7 +123,9 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
       />
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">Descrição</label>
+        <label className="block text-sm font-medium text-gray-700">
+          Descrição
+        </label>
         <textarea
           {...register('description')}
           rows={3}
@@ -113,26 +137,40 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
         <div>
           <p className="text-sm font-medium text-gray-700">Status do Exame</p>
           <p className="text-xs text-gray-500 mt-0.5">
-            {statusValue === 'ACTIVE' ? 'Ativo — visível para os alunos' : 'Inativo — oculto para os alunos'}
+            {statusValue === 'ACTIVE'
+              ? 'Ativo — visível para os alunos'
+              : 'Inativo — oculto para os alunos'}
           </p>
         </div>
         <button
           type="button"
-          onClick={() => setValue('status', statusValue === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE', { shouldDirty: true })}
+          onClick={() =>
+            setValue(
+              'status',
+              statusValue === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE',
+              { shouldDirty: true },
+            )
+          }
           disabled={isSaving}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${statusValue === 'ACTIVE' ? 'bg-primary-600' : 'bg-gray-300'
-            }`}
+          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
+            statusValue === 'ACTIVE' ? 'bg-primary-600' : 'bg-gray-300'
+          }`}
         >
-          <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${statusValue === 'ACTIVE' ? 'translate-x-6' : 'translate-x-1'
-            }`} />
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+              statusValue === 'ACTIVE' ? 'translate-x-6' : 'translate-x-1'
+            }`}
+          />
         </button>
         <input type="hidden" {...register('status')} />
       </div>
 
       <div className="flex justify-end space-x-3 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>Cancelar</Button>
+        <Button type="button" variant="outline" onClick={onCancel}>
+          Cancelar
+        </Button>
         <Button type="submit" disabled={isSaving}>
-          {isSaving ? <Loading size="sm" /> : (isEditing ? 'Salvar' : 'Criar')}
+          {isSaving ? <Loading size="sm" /> : isEditing ? 'Salvar' : 'Criar'}
         </Button>
       </div>
     </form>
@@ -144,7 +182,9 @@ export default function AdminExams() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingExamId, setEditingExamId] = useState<string | undefined>(undefined);
+  const [editingExamId, setEditingExamId] = useState<string | undefined>(
+    undefined,
+  );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [examToDelete, setExamToDelete] = useState<Exam | null>(null);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
@@ -161,9 +201,9 @@ export default function AdminExams() {
     } catch (error) {
       console.error(error);
       toast({
-        title: "Erro ao carregar exames",
-        description: "Não foi possível buscar a lista de exames.",
-        variant: "destructive"
+        title: 'Erro ao carregar exames',
+        description: 'Não foi possível buscar a lista de exames.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -175,9 +215,11 @@ export default function AdminExams() {
   }, [loadExams]);
 
   const filteredExams = useMemo(() => {
-    return exams.filter(exam =>
-      exam.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (exam.description && exam.description.toLowerCase().includes(searchTerm.toLowerCase()))
+    return exams.filter(
+      (exam) =>
+        exam.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (exam.description &&
+          exam.description.toLowerCase().includes(searchTerm.toLowerCase())),
     );
   }, [exams, searchTerm]);
 
@@ -197,14 +239,14 @@ export default function AdminExams() {
       await api.patch(`/exams/${exam.id}`, { status: newStatus });
       toast({
         title: `Exame ${newStatus === 'ACTIVE' ? 'ativado' : 'desativado'}`,
-        variant: "success"
+        variant: 'success',
       });
       loadExams(); // Recarrega para atualizar a UI
     } catch (error) {
       console.error(error);
       toast({
-        title: "Erro ao atualizar status",
-        variant: "destructive"
+        title: 'Erro ao atualizar status',
+        variant: 'destructive',
       });
     }
   };
@@ -221,8 +263,8 @@ export default function AdminExams() {
     try {
       await api.delete(`/exams/${examToDelete.id}`);
       toast({
-        title: "Exame excluído",
-        variant: "success"
+        title: 'Exame excluído',
+        variant: 'success',
       });
       loadExams();
       setIsDeleteModalOpen(false);
@@ -230,9 +272,9 @@ export default function AdminExams() {
     } catch (error) {
       console.error(error);
       toast({
-        title: "Erro ao excluir",
-        description: "Tente novamente.",
-        variant: "destructive"
+        title: 'Erro ao excluir',
+        description: 'Tente novamente.',
+        variant: 'destructive',
       });
     }
   };
@@ -245,16 +287,19 @@ export default function AdminExams() {
   const handleDragStart = (id: string) => setDraggedId(id);
   const handleDragOver = (e: React.DragEvent) => e.preventDefault();
   const handleDrop = async (targetId: string) => {
-    if (!draggedId || draggedId === targetId) { setDraggedId(null); return; }
+    if (!draggedId || draggedId === targetId) {
+      setDraggedId(null);
+      return;
+    }
     const newOrder = [...exams];
-    const fromIdx = newOrder.findIndex(e => e.id === draggedId);
-    const toIdx = newOrder.findIndex(e => e.id === targetId);
+    const fromIdx = newOrder.findIndex((e) => e.id === draggedId);
+    const toIdx = newOrder.findIndex((e) => e.id === targetId);
     const [removed] = newOrder.splice(fromIdx, 1);
     newOrder.splice(toIdx, 0, removed);
     setExams(newOrder);
     setDraggedId(null);
     try {
-      await api.patch('/exams/reorder', { ids: newOrder.map(e => e.id) });
+      await api.patch('/exams/reorder', { ids: newOrder.map((e) => e.id) });
     } catch {
       toast({ title: 'Erro ao reordenar', variant: 'destructive' });
       loadExams();
@@ -265,14 +310,14 @@ export default function AdminExams() {
     <div className="space-y-6">
       <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
         <div className="space-y-4">
-          <Breadcrumb
-            items={[
-              { label: 'Exames' }
-            ]}
-          />
+          <Breadcrumb items={[{ label: 'Exames' }]} />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Gerenciar Exames</h1>
-            <p className="text-gray-500 mt-1">Gerencie os exames disponíveis na plataforma.</p>
+            <h1 className="text-2xl font-bold text-gray-900">
+              Gerenciar Exames
+            </h1>
+            <p className="text-gray-500 mt-1">
+              Gerencie os exames disponíveis na plataforma.
+            </p>
           </div>
         </div>
         <Button onClick={handleCreate}>
@@ -307,7 +352,9 @@ export default function AdminExams() {
             {searchTerm ? 'Nenhum exame encontrado' : 'Nenhum exame cadastrado'}
           </h3>
           <p className="text-gray-500 mb-6 max-w-sm">
-            {searchTerm ? `Não encontramos exames com "${searchTerm}".` : 'Comece criando o primeiro exame da plataforma para organizar o conteúdo.'}
+            {searchTerm
+              ? `Não encontramos exames com "${searchTerm}".`
+              : 'Comece criando o primeiro exame da plataforma para organizar o conteúdo.'}
           </p>
           {!searchTerm && (
             <Button onClick={handleCreate}>
@@ -325,26 +372,37 @@ export default function AdminExams() {
               onDragStart={() => handleDragStart(exam.id)}
               onDragOver={handleDragOver}
               onDrop={() => handleDrop(exam.id)}
-              className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group ${draggedId === exam.id ? 'opacity-40 scale-95' : ''
-                }`}
+              className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group ${
+                draggedId === exam.id ? 'opacity-40 scale-95' : ''
+              }`}
             >
               <div>
                 <div className="flex justify-between items-start mb-4">
-                  <div className={`px-2 py-1 rounded-full text-xs font-semibold ${exam.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
+                  <div
+                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                      exam.status === 'ACTIVE'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-red-100 text-red-800'
+                    }`}
+                  >
                     {exam.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
                   </div>
                   <div className="flex items-center space-x-1">
                     <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing mr-1" />
                     <button
                       onClick={() => handleToggleStatus(exam)}
-                      className={`p-1.5 rounded-md transition-colors ${exam.status === 'ACTIVE'
-                        ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                        : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
-                        }`}
+                      className={`p-1.5 rounded-md transition-colors ${
+                        exam.status === 'ACTIVE'
+                          ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
+                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                      }`}
                       title={exam.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
                     >
-                      {exam.status === 'ACTIVE' ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                      {exam.status === 'ACTIVE' ? (
+                        <Eye className="h-4 w-4" />
+                      ) : (
+                        <EyeOff className="h-4 w-4" />
+                      )}
                     </button>
                     <button
                       onClick={() => handleEdit(exam.id)}
@@ -363,7 +421,9 @@ export default function AdminExams() {
                   </div>
                 </div>
 
-                <h3 className="text-xl font-bold text-gray-900 mb-2">{exam.name}</h3>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  {exam.name}
+                </h3>
                 <p className="text-gray-500 text-sm mb-4 line-clamp-3">
                   {exam.description || 'Sem descrição.'}
                 </p>
@@ -376,7 +436,9 @@ export default function AdminExams() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => navigate(`/dashboard/admin/exams/${exam.id}/topics`)}
+                  onClick={() =>
+                    navigate(`/dashboard/admin/exams/${exam.id}/topics`)
+                  }
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
                 >
                   Ver Tópicos <ChevronRight className="h-4 w-4 ml-1" />
@@ -413,10 +475,16 @@ export default function AdminExams() {
               <AlertTriangle className="h-8 w-8 text-red-600" />
             </div>
             <div>
-              <h3 className="text-lg font-medium text-gray-900">Você tem certeza absoluta?</h3>
+              <h3 className="text-lg font-medium text-gray-900">
+                Você tem certeza absoluta?
+              </h3>
               <p className="text-sm text-gray-500 mt-2">
-                Essa ação não pode ser desfeita. Isso excluirá permanentemente o exame
-                <span className="font-bold text-gray-900"> {examToDelete?.name} </span>
+                Essa ação não pode ser desfeita. Isso excluirá permanentemente o
+                exame
+                <span className="font-bold text-gray-900">
+                  {' '}
+                  {examToDelete?.name}{' '}
+                </span>
                 e removerá todos os dados associados de nossos servidores.
               </p>
             </div>
@@ -424,7 +492,9 @@ export default function AdminExams() {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Digite <span className="font-mono font-bold select-all">excluir</span> para confirmar:
+              Digite{' '}
+              <span className="font-mono font-bold select-all">excluir</span>{' '}
+              para confirmar:
             </label>
             <input
               type="text"
@@ -437,7 +507,10 @@ export default function AdminExams() {
           </div>
 
           <div className="flex justify-end space-x-3 bg-gray-50 -mx-6 -mb-4 px-6 py-4 rounded-b-lg mt-6">
-            <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsDeleteModalOpen(false)}
+            >
               Cancelar
             </Button>
             <button

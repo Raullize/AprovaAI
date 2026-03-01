@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, GraduationCap, Star, Users, BookOpen, User } from 'lucide-react';
+import {
+  Menu,
+  X,
+  GraduationCap,
+  Star,
+  Users,
+  BookOpen,
+  User,
+} from 'lucide-react';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -45,7 +53,9 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50 transition-all duration-300 ${isMenuOpen ? 'blur-md' : ''}`}>
+      <header
+        className={`fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50 transition-all duration-300 ${isMenuOpen ? 'blur-md' : ''}`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-2">
@@ -79,10 +89,7 @@ export const Header: React.FC = () => {
                     <User className="h-4 w-4" />
                     <span>Dashboard</span>
                   </button>
-                  <Button
-                    variant="outline"
-                    onClick={signOut}
-                  >
+                  <Button variant="outline" onClick={signOut}>
                     Sair
                   </Button>
                 </>
@@ -106,12 +113,16 @@ export const Header: React.FC = () => {
                 onClick={toggleMenu}
                 className="text-gray-700 hover:text-primary-600 focus:outline-none focus:text-primary-600"
               >
-                {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                {isMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
               </button>
             </div>
           </div>
         </div>
-      </header >
+      </header>
 
       {isMenuOpen && (
         <>
@@ -169,8 +180,12 @@ export const Header: React.FC = () => {
                         <Users className="h-4 w-4 text-success-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">+10.000 estudantes</p>
-                        <p className="text-xs text-gray-500">Confiaram no AprovaAI</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          +10.000 estudantes
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Confiaram no AprovaAI
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3 p-3 bg-primary-50 rounded-lg">
@@ -178,8 +193,12 @@ export const Header: React.FC = () => {
                         <BookOpen className="h-4 w-4 text-primary-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">500+ questões</p>
-                        <p className="text-xs text-gray-500">Simulados completos</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          500+ questões
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Simulados completos
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-3 p-3 bg-accent-50 rounded-lg">
@@ -187,7 +206,9 @@ export const Header: React.FC = () => {
                         <Star className="h-4 w-4 text-accent-600" />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-gray-900">98% aprovação</p>
+                        <p className="text-sm font-medium text-gray-900">
+                          98% aprovação
+                        </p>
                         <p className="text-xs text-gray-500">Taxa de sucesso</p>
                       </div>
                     </div>
@@ -200,7 +221,9 @@ export const Header: React.FC = () => {
                   {signed ? (
                     <>
                       <div className="text-center mb-4">
-                        <p className="text-sm text-gray-600">Olá, {user?.fullName || user?.email}</p>
+                        <p className="text-sm text-gray-600">
+                          Olá, {user?.fullName || user?.email}
+                        </p>
                       </div>
                       <Button
                         className="w-full"

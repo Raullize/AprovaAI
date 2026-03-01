@@ -11,24 +11,26 @@ export const Hero: React.FC = () => {
   };
 
   return (
-    <section id="home" className="pt-16 bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen flex items-center">
+    <section
+      id="home"
+      className="pt-16 bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen flex items-center"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-24">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-  
           <div className="text-center lg:text-left animate-fade-in">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display text-gray-900 leading-tight mb-6">
               Sua Jornada para a{' '}
-              <span className="text-gradient">Aprovação</span>{' '}
-              Começa Aqui
+              <span className="text-gradient">Aprovação</span> Começa Aqui
             </h1>
-            
+
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Plataforma inovadora de estudos com simulados por níveis, gamificação e feedback detalhado. 
-              Prepare-se para vestibulares, ENEM e certificações profissionais com inteligência artificial.
+              Plataforma inovadora de estudos com simulados por níveis,
+              gamificação e feedback detalhado. Prepare-se para vestibulares,
+              ENEM e certificações profissionais com inteligência artificial.
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
-              <Button 
+              <Button
                 size="lg"
                 onClick={() => scrollToSection('#pricing')}
                 className="group"
@@ -36,8 +38,8 @@ export const Hero: React.FC = () => {
                 <span>Comece Grátis</span>
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform flex-shrink-0" />
               </Button>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="lg"
                 onClick={() => scrollToSection('#features')}
               >
@@ -76,10 +78,14 @@ export const Hero: React.FC = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="mt-6 text-center">
-                <p className="text-lg font-semibold text-gray-800 mb-1">Prof. Sabichão</p>
-                <p className="text-sm text-gray-600">Seu assistente inteligente</p>
+                <p className="text-lg font-semibold text-gray-800 mb-1">
+                  Prof. Sabichão
+                </p>
+                <p className="text-sm text-gray-600">
+                  Seu assistente inteligente
+                </p>
               </div>
             </div>
           </div>

@@ -1,9 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    './index.html',
-    './src/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -42,7 +39,7 @@ export default {
           700: '#a21caf',
           800: '#86198f',
           900: '#701a75',
-        }
+        },
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
@@ -69,33 +66,39 @@ export default {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         float1: {
-          '0%, 100%': { 
+          '0%, 100%': {
             transform: 'translateY(0px) rotate(0deg)',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+            boxShadow:
+              '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
           },
-          '50%': { 
+          '50%': {
             transform: 'translateY(-20px) rotate(5deg)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+            boxShadow:
+              '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1)',
           },
         },
         float2: {
-          '0%, 100%': { 
+          '0%, 100%': {
             transform: 'translateY(0px) rotate(0deg) scale(1)',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+            boxShadow:
+              '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
           },
-          '50%': { 
+          '50%': {
             transform: 'translateY(-15px) rotate(-3deg) scale(1.05)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+            boxShadow:
+              '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 10px 15px -3px rgba(0, 0, 0, 0.1)',
           },
         },
         float3: {
-          '0%, 100%': { 
+          '0%, 100%': {
             transform: 'translateY(0px) translateX(0px) scale(1)',
-            boxShadow: '0 4px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+            boxShadow:
+              '0 4px 15px -3px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
           },
-          '50%': { 
+          '50%': {
             transform: 'translateY(-10px) translateX(5px) scale(1.1)',
-            boxShadow: '0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -4px rgba(0, 0, 0, 0.1)'
+            boxShadow:
+              '0 20px 40px -12px rgba(0, 0, 0, 0.25), 0 8px 16px -4px rgba(0, 0, 0, 0.1)',
           },
         },
         slideInRight: {
@@ -114,4 +117,4 @@ export default {
     },
   },
   plugins: [],
-}
+};

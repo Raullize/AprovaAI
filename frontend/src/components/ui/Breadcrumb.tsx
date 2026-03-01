@@ -60,7 +60,9 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
       <ol className="hidden md:flex items-center space-x-2">
         {items.map((item, index) => (
           <li key={index} className="flex items-center">
-            {index > 0 && <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 mr-2" />}
+            {index > 0 && (
+              <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 mr-2" />
+            )}
             {item.href ? (
               <Link
                 to={item.href}

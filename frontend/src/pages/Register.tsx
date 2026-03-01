@@ -24,33 +24,42 @@ export default function Register() {
     password: '',
     confirmPassword: '',
     dateOfBirth: '',
-    acceptTerms: false
+    acceptTerms: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { validateRegisterForm, getFieldError, clearErrors, calculatePasswordStrength, setFieldError } = useFormValidation();
+  const {
+    validateRegisterForm,
+    getFieldError,
+    clearErrors,
+    calculatePasswordStrength,
+    setFieldError,
+  } = useFormValidation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const { signIn } = useAuth();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
     }));
   };
 
   const validateStep1 = () => {
     const step1Errors = [];
 
-    if (!formData.fullName?.trim()) step1Errors.push('Nome completo é obrigatório');
-    if (!formData.username?.trim()) step1Errors.push('Nome de usuário é obrigatório');
+    if (!formData.fullName?.trim())
+      step1Errors.push('Nome completo é obrigatório');
+    if (!formData.username?.trim())
+      step1Errors.push('Nome de usuário é obrigatório');
     if (!formData.email?.trim()) step1Errors.push('E-mail é obrigatório');
-    if (!formData.dateOfBirth) step1Errors.push('Data de nascimento é obrigatória');
+    if (!formData.dateOfBirth)
+      step1Errors.push('Data de nascimento é obrigatória');
 
     return step1Errors.length === 0;
   };
@@ -71,9 +80,9 @@ export default function Register() {
 
   const handleGoogleSignup = async () => {
     toast({
-      title: "Funcionalidade em desenvolvimento",
-      description: "Em breve você poderá se cadastrar com Google!",
-      variant: "default"
+      title: 'Funcionalidade em desenvolvimento',
+      description: 'Em breve você poderá se cadastrar com Google!',
+      variant: 'default',
     });
   };
 
@@ -84,14 +93,16 @@ export default function Register() {
     const validation = validateRegisterForm(formData);
     if (!validation.isValid) {
       const step1Fields = ['fullName', 'username', 'email', 'dateOfBirth'];
-      const hasStep1Errors = validation.errors.some(err => step1Fields.includes(err.field));
+      const hasStep1Errors = validation.errors.some((err) =>
+        step1Fields.includes(err.field),
+      );
 
       if (hasStep1Errors) {
         setCurrentStep(1);
         toast({
-          title: "Verifique os dados pessoais",
-          description: "Existem campos inválidos na etapa anterior.",
-          variant: "destructive"
+          title: 'Verifique os dados pessoais',
+          description: 'Existem campos inválidos na etapa anterior.',
+          variant: 'destructive',
         });
       }
       return;
@@ -109,9 +120,9 @@ export default function Register() {
       });
 
       toast({
-        title: "Conta criada com sucesso!",
-        description: "Redirecionando para dashboard...",
-        variant: "success"
+        title: 'Conta criada com sucesso!',
+        description: 'Redirecionando para dashboard...',
+        variant: 'success',
       });
 
       await signIn({
@@ -122,33 +133,33 @@ export default function Register() {
       setTimeout(() => {
         navigate('/dashboard');
       }, 1500);
-
     } catch (error: unknown) {
       console.error('Registration error:', error);
       const err = error as AxiosError<{ error: string }>;
-      const errorMessage = err.response?.data?.error || 'Erro ao criar conta. Tente novamente.';
+      const errorMessage =
+        err.response?.data?.error || 'Erro ao criar conta. Tente novamente.';
 
       if (errorMessage.toLowerCase().includes('e-mail')) {
         setCurrentStep(1);
         setFieldError('email', errorMessage);
         toast({
-          title: "Erro no cadastro",
-          description: "Verifique os campos em destaque.",
-          variant: "destructive"
+          title: 'Erro no cadastro',
+          description: 'Verifique os campos em destaque.',
+          variant: 'destructive',
         });
       } else if (errorMessage.toLowerCase().includes('usuário')) {
         setCurrentStep(1);
         setFieldError('username', errorMessage);
         toast({
-          title: "Erro no cadastro",
-          description: "Verifique os campos em destaque.",
-          variant: "destructive"
+          title: 'Erro no cadastro',
+          description: 'Verifique os campos em destaque.',
+          variant: 'destructive',
         });
       } else {
         toast({
-          title: "Erro ao criar conta",
+          title: 'Erro ao criar conta',
           description: errorMessage,
-          variant: "destructive"
+          variant: 'destructive',
         });
       }
     } finally {
@@ -166,33 +177,62 @@ export default function Register() {
       <div className="flex items-center justify-center mb-8">
         <div className="flex items-center space-x-4">
           <div className="flex items-center">
-            <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${currentStep >= 1 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
-              }`}>
+            <div
+              className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
+                currentStep >= 1
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-200 text-gray-500'
+              }`}
+            >
               {currentStep > 1 ? <Check className="h-5 w-5" /> : '1'}
             </div>
-            <span className={`ml-2 text-sm font-medium ${currentStep >= 1 ? 'text-primary-600' : 'text-gray-500'
-              }`}>
+            <span
+              className={`ml-2 text-sm font-medium ${
+                currentStep >= 1 ? 'text-primary-600' : 'text-gray-500'
+              }`}
+            >
               Dados Pessoais
             </span>
           </div>
 
-          <div className={`w-8 h-0.5 ${currentStep >= 2 ? 'bg-primary-600' : 'bg-gray-200'
-            }`} />
+          <div
+            className={`w-8 h-0.5 ${
+              currentStep >= 2 ? 'bg-primary-600' : 'bg-gray-200'
+            }`}
+          />
 
           <div className="flex items-center">
-            <div className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${currentStep >= 2 ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'
-              }`}>
+            <div
+              className={`w-10 h-10 min-w-[2.5rem] min-h-[2.5rem] rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0 ${
+                currentStep >= 2
+                  ? 'bg-primary-600 text-white'
+                  : 'bg-gray-200 text-gray-500'
+              }`}
+            >
               2
             </div>
-            <span className={`ml-2 text-sm font-medium ${currentStep >= 2 ? 'text-primary-600' : 'text-gray-500'
-              }`}>
+            <span
+              className={`ml-2 text-sm font-medium ${
+                currentStep >= 2 ? 'text-primary-600' : 'text-gray-500'
+              }`}
+            >
               Segurança
             </span>
           </div>
         </div>
       </div>
 
-      <form onSubmit={currentStep === 1 ? (e) => { e.preventDefault(); handleNextStep(); } : handleSubmit} className="space-y-4">
+      <form
+        onSubmit={
+          currentStep === 1
+            ? (e) => {
+                e.preventDefault();
+                handleNextStep();
+              }
+            : handleSubmit
+        }
+        className="space-y-4"
+      >
         {currentStep === 1 ? (
           <>
             <Input
@@ -274,20 +314,30 @@ export default function Register() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Força da senha:</span>
-                    <span className={`font-medium ${passwordStrength.label === 'Fraca' ? 'text-red-600' :
-                      passwordStrength.label === 'Média' ? 'text-yellow-600' :
-                        'text-green-600'
-                      }`}>
+                    <span
+                      className={`font-medium ${
+                        passwordStrength.label === 'Fraca'
+                          ? 'text-red-600'
+                          : passwordStrength.label === 'Média'
+                            ? 'text-yellow-600'
+                            : 'text-green-600'
+                      }`}
+                    >
                       {passwordStrength.label}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
-                      className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.label === 'Fraca' ? 'bg-red-500' :
-                        passwordStrength.label === 'Média' ? 'bg-yellow-500' :
-                          'bg-green-500'
-                        }`}
-                      style={{ width: `${Math.min((passwordStrength.score / 8) * 100, 100)}%` }}
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        passwordStrength.label === 'Fraca'
+                          ? 'bg-red-500'
+                          : passwordStrength.label === 'Média'
+                            ? 'bg-yellow-500'
+                            : 'bg-green-500'
+                      }`}
+                      style={{
+                        width: `${Math.min((passwordStrength.score / 8) * 100, 100)}%`,
+                      }}
                     />
                   </div>
                 </div>
@@ -304,7 +354,9 @@ export default function Register() {
               error={getFieldError('confirmPassword')}
               showPasswordToggle
               showPassword={showConfirmPassword}
-              onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
+              onTogglePassword={() =>
+                setShowConfirmPassword(!showConfirmPassword)
+              }
               disabled={isLoading}
               required
             />
@@ -322,17 +374,25 @@ export default function Register() {
                 />
                 <span className="text-sm text-gray-600">
                   Eu aceito os{' '}
-                  <Link to="#" className="text-primary-600 hover:text-primary-700 font-medium">
+                  <Link
+                    to="#"
+                    className="text-primary-600 hover:text-primary-700 font-medium"
+                  >
                     Termos de Uso
-                  </Link>
-                  {' '}e{' '}
-                  <Link to="#" className="text-primary-600 hover:text-primary-700 font-medium">
+                  </Link>{' '}
+                  e{' '}
+                  <Link
+                    to="#"
+                    className="text-primary-600 hover:text-primary-700 font-medium"
+                  >
                     Política de Privacidade
                   </Link>
                 </span>
               </label>
               {getFieldError('acceptTerms') && (
-                <p className="text-sm text-red-600">{getFieldError('acceptTerms')}</p>
+                <p className="text-sm text-red-600">
+                  {getFieldError('acceptTerms')}
+                </p>
               )}
             </div>
 
@@ -371,10 +431,7 @@ export default function Register() {
           </div>
         </div>
 
-        <GoogleButton
-          onClick={handleGoogleSignup}
-          disabled={isLoading}
-        >
+        <GoogleButton onClick={handleGoogleSignup} disabled={isLoading}>
           Continuar com Google
         </GoogleButton>
 

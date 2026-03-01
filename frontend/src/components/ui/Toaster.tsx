@@ -5,11 +5,11 @@ import {
   ToastProvider,
   ToastTitle,
   ToastViewport,
-} from "./Toast"
-import { useToast } from "../../hooks/use-toast"
+} from './Toast';
+import { useToast } from '../../hooks/use-toast';
 
 export function Toaster() {
-  const { toasts } = useToast()
+  const { toasts } = useToast();
 
   return (
     <ToastProvider>
@@ -25,9 +25,9 @@ export function Toaster() {
             {action}
             <ToastClose />
           </Toast>
-        )
+        );
       })}
       <ToastViewport />
     </ToastProvider>
-  )
+  );
 }

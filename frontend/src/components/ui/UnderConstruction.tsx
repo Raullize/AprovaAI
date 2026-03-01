@@ -8,9 +8,9 @@ interface UnderConstructionProps {
   message?: string;
 }
 
-const UnderConstruction: React.FC<UnderConstructionProps> = ({ 
-  title = "Em Desenvolvimento", 
-  message = "Esta funcionalidade está sendo implementada e estará disponível em breve." 
+const UnderConstruction: React.FC<UnderConstructionProps> = ({
+  title = 'Em Desenvolvimento',
+  message = 'Esta funcionalidade está sendo implementada e estará disponível em breve.',
 }) => {
   const navigate = useNavigate();
 

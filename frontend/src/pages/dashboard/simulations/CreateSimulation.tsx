@@ -26,7 +26,11 @@ export default function CreateSimulation() {
   const [exams, setExams] = useState<Exam[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingExams, setLoadingExams] = useState(true);
-  const { register, handleSubmit, formState: { errors } } = useForm<SimulationFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SimulationFormData>();
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -53,21 +57,21 @@ export default function CreateSimulation() {
     setIsLoading(true);
     try {
       console.log('Criando simulado:', data);
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       toast({
-        title: "Simulado criado com sucesso!",
-        description: "Você será redirecionado para iniciar a prova.",
-        variant: "success"
+        title: 'Simulado criado com sucesso!',
+        description: 'Você será redirecionado para iniciar a prova.',
+        variant: 'success',
       });
 
       navigate('/dashboard/simulations');
     } catch (error) {
       console.error(error);
       toast({
-        title: "Erro ao criar simulado",
-        description: "Tente novamente mais tarde.",
-        variant: "destructive"
+        title: 'Erro ao criar simulado',
+        description: 'Tente novamente mais tarde.',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -78,7 +82,9 @@ export default function CreateSimulation() {
     <div className="max-w-3xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Novo Simulado</h1>
-        <p className="text-gray-500 mt-1">Configure seu simulado personalizado para treinar.</p>
+        <p className="text-gray-500 mt-1">
+          Configure seu simulado personalizado para treinar.
+        </p>
       </div>
 
       <div className="bg-white shadow rounded-lg p-6">
@@ -103,14 +109,16 @@ export default function CreateSimulation() {
                 disabled={loadingExams}
               >
                 <option value="">Selecione um exame...</option>
-                {exams.map(exam => (
+                {exams.map((exam) => (
                   <option key={exam.id} value={exam.id}>
                     {exam.title} ({exam.year})
                   </option>
                 ))}
               </select>
               {errors.examId && (
-                <p className="text-sm text-red-600 mt-1">{errors.examId.message}</p>
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.examId.message}
+                </p>
               )}
             </div>
 
@@ -124,7 +132,7 @@ export default function CreateSimulation() {
                 {...register('questionCount', {
                   required: 'Defina a quantidade',
                   min: { value: 5, message: 'Mínimo de 5 questões' },
-                  max: { value: 90, message: 'Máximo de 90 questões' }
+                  max: { value: 90, message: 'Máximo de 90 questões' },
                 })}
                 error={errors.questionCount?.message}
               />
@@ -135,7 +143,9 @@ export default function CreateSimulation() {
                 type="number"
                 label="Tempo Limite (minutos)"
                 placeholder="Ex: 120"
-                {...register('timeLimit', { required: 'Defina o tempo limite' })}
+                {...register('timeLimit', {
+                  required: 'Defina o tempo limite',
+                })}
                 error={errors.timeLimit?.message}
               />
             </div>

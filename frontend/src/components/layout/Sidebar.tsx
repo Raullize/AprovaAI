@@ -1,6 +1,15 @@
 import React from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Users, Settings, LogOut, GraduationCap, LayoutDashboard, User } from 'lucide-react';
+import {
+  Home,
+  BookOpen,
+  Users,
+  Settings,
+  LogOut,
+  GraduationCap,
+  LayoutDashboard,
+  User,
+} from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 
@@ -41,7 +50,10 @@ export const Sidebar: React.FC = () => {
 
     // Tratativa especial para Exames:
     // O botão aponta para /dashboard/exams, mas as sub-rotas de admin ficam em /dashboard/admin/exams/... ou /dashboard/admin/topics/...
-    if (href === '/dashboard/exams' && currentPath.startsWith('/dashboard/admin/')) {
+    if (
+      href === '/dashboard/exams' &&
+      currentPath.startsWith('/dashboard/admin/')
+    ) {
       return true;
     }
 
@@ -73,13 +85,18 @@ export const Sidebar: React.FC = () => {
                   <NavLink
                     to={item.href}
                     className={cn(
-                      "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200",
+                      'flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors duration-200',
                       active
-                        ? "bg-primary-50 text-primary-700 font-semibold"
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        ? 'bg-primary-50 text-primary-700 font-semibold'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900',
                     )}
                   >
-                    <item.icon className={cn("mr-3 h-5 w-5 flex-shrink-0", active ? "text-primary-600" : "text-gray-400")} />
+                    <item.icon
+                      className={cn(
+                        'mr-3 h-5 w-5 flex-shrink-0',
+                        active ? 'text-primary-600' : 'text-gray-400',
+                      )}
+                    />
                     {item.label}
                   </NavLink>
                 </li>
@@ -109,10 +126,10 @@ export const Sidebar: React.FC = () => {
               key={item.href}
               to={item.href}
               className={cn(
-                "flex flex-col items-center justify-center p-2 rounded-lg transition-colors duration-200",
+                'flex flex-col items-center justify-center p-2 rounded-lg transition-colors duration-200',
                 active
-                  ? "text-primary-600"
-                  : "text-gray-400 hover:text-gray-600"
+                  ? 'text-primary-600'
+                  : 'text-gray-400 hover:text-gray-600',
               )}
             >
               <item.icon className="h-6 w-6" />
