@@ -106,8 +106,8 @@ AprovaAI/
 
 Consulte os READMEs individuais para instruções detalhadas:
 
-- 📦 **[Backend — Configuração e API](./backend/README.md)**
-- 🖥️ **[Frontend — Configuração e Interface](./frontend/README.md)**
+- **[Backend — Configuração e API](./backend/README.md)**
+- **[Frontend — Configuração e Interface](./frontend/README.md)**
 
 ---
 

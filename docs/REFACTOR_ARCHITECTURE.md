@@ -4,7 +4,7 @@ Este documento registra a mudança estrutural pela qual a aplicação **AprovaAI
 
 ---
 
-## 🏗️ Como era antes (Legado)
+## Como era antes (Legado)
 
 Na versão inicial (agora movida para a pasta `legacy_nextjs/`), a aplicação foi construída utilizando **Next.js** em um modelo mais unificado (Fullstack):
 
@@ -21,7 +21,7 @@ Na versão inicial (agora movida para a pasta `legacy_nextjs/`), a aplicação f
 
 ---
 
-## 🚀 Como ficou (Nova Arquitetura)
+## Como ficou (Nova Arquitetura)
 
 A equipe decidiu realizar uma refatoração arquitetural, dividindo a aplicação em dois projetos distintos, adotando o modelo Client-Server clássico com uma **Single Page Application (SPA)** acoplada a uma **API REST Isolada**:
 
@@ -40,7 +40,7 @@ A equipe decidiu realizar uma refatoração arquitetural, dividindo a aplicaçã
 
 ---
 
-## 🔄 Consequências da Mudança
+## Consequências da Mudança
 
 A separação nos trouxe as seguintes melhorias:
 1. **Separação de Preocupações (Separation of Concerns):** Se houver um bug de banco de dados, sabemos exatamente que o problema está no `backend/`. Se for um problema visual, está no `frontend/`.
