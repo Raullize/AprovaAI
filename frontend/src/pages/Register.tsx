@@ -60,7 +60,6 @@ export default function Register() {
       setCurrentStep(2);
       clearErrors();
     } else {
-      // Force validation to show errors
       validateRegisterForm(formData);
     }
   };
@@ -84,12 +83,11 @@ export default function Register() {
 
     const validation = validateRegisterForm(formData);
     if (!validation.isValid) {
-      // Se houver erros que não são visíveis no step atual, avisar o usuário
       const step1Fields = ['fullName', 'username', 'email', 'dateOfBirth'];
       const hasStep1Errors = validation.errors.some(err => step1Fields.includes(err.field));
 
       if (hasStep1Errors) {
-        setCurrentStep(1); // Voltar para a etapa 1 para mostrar os erros
+        setCurrentStep(1);
         toast({
           title: "Verifique os dados pessoais",
           description: "Existem campos inválidos na etapa anterior.",
@@ -102,7 +100,6 @@ export default function Register() {
     setIsLoading(true);
 
     try {
-      // 1. Registrar
       await api.post('/auth/register', {
         fullName: formData.fullName,
         username: formData.username,
@@ -117,7 +114,6 @@ export default function Register() {
         variant: "success"
       });
 
-      // 2. Login Automático
       await signIn({
         email: formData.email || '',
         password: formData.password || '',
@@ -133,7 +129,7 @@ export default function Register() {
       const errorMessage = err.response?.data?.error || 'Erro ao criar conta. Tente novamente.';
 
       if (errorMessage.toLowerCase().includes('e-mail')) {
-        setCurrentStep(1); // Voltar para a etapa 1 para mostrar o erro no input
+        setCurrentStep(1);
         setFieldError('email', errorMessage);
         toast({
           title: "Erro no cadastro",
@@ -141,7 +137,7 @@ export default function Register() {
           variant: "destructive"
         });
       } else if (errorMessage.toLowerCase().includes('usuário')) {
-        setCurrentStep(1); // Voltar para a etapa 1 para mostrar o erro no input
+        setCurrentStep(1);
         setFieldError('username', errorMessage);
         toast({
           title: "Erro no cadastro",
@@ -279,8 +275,8 @@ export default function Register() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600">Força da senha:</span>
                     <span className={`font-medium ${passwordStrength.label === 'Fraca' ? 'text-red-600' :
-                        passwordStrength.label === 'Média' ? 'text-yellow-600' :
-                          'text-green-600'
+                      passwordStrength.label === 'Média' ? 'text-yellow-600' :
+                        'text-green-600'
                       }`}>
                       {passwordStrength.label}
                     </span>
@@ -288,8 +284,8 @@ export default function Register() {
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
                       className={`h-2 rounded-full transition-all duration-300 ${passwordStrength.label === 'Fraca' ? 'bg-red-500' :
-                          passwordStrength.label === 'Média' ? 'bg-yellow-500' :
-                            'bg-green-500'
+                        passwordStrength.label === 'Média' ? 'bg-yellow-500' :
+                          'bg-green-500'
                         }`}
                       style={{ width: `${Math.min((passwordStrength.score / 8) * 100, 100)}%` }}
                     />

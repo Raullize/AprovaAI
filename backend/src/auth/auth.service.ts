@@ -27,7 +27,6 @@ export class AuthService {
 
         const payload = { id: user.id, role: user.role };
 
-        // We can use the ConfigService, but since we are doing a quick port:
         const token = this.jwtService.sign(payload);
 
         const { passwordHash: _, ...userWithoutPassword } = user;

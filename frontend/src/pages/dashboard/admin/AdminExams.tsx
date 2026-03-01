@@ -20,7 +20,6 @@ interface Exam {
   };
 }
 
-// Componente Wrapper para adaptar o ExamForm ao Modal
 interface ExamFormProps {
   examId?: string;
   onSuccess: () => void;
@@ -110,7 +109,6 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
         />
       </div>
 
-      {/* Status toggle */}
       <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
         <div>
           <p className="text-sm font-medium text-gray-700">Status do Exame</p>

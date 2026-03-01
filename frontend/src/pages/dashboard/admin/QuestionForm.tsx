@@ -46,12 +46,9 @@ export default function QuestionForm() {
     name: "options"
   });
 
-  // Monitorar qual opção é a correta para garantir apenas uma (visual check)
-  // Na verdade, vamos usar um radio button separado visualmente que seta o isCorrect
   const [correctOptionIndex, setCorrectOptionIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    // Carregar TopicId para o botão de voltar
     api.get(`/levels/${levelId}`).then((res: { data: { topicId: string } }) => setTopicId(res.data.topicId));
 
     if (isEditing) {
@@ -70,7 +67,6 @@ export default function QuestionForm() {
       setValue('explanation', q.explanation || '');
       setValue('options', q.options);
 
-      // Achar o índice da correta
       const correctIndex = q.options.findIndex((opt: Option) => opt.isCorrect);
       setCorrectOptionIndex(correctIndex >= 0 ? correctIndex : null);
 
@@ -88,7 +84,6 @@ export default function QuestionForm() {
       return;
     }
 
-    // Atualizar isCorrect baseado no índice selecionado
     const optionsWithCorrect = data.options.map((opt, index) => ({
       ...opt,
       isCorrect: index === correctOptionIndex

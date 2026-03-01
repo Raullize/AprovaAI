@@ -82,7 +82,6 @@ function LevelFormContent({ topicId, levelId, onSuccess, onCancel }: LevelFormPr
   const onSubmit = async (data: LevelFormData) => {
     try {
       setIsSaving(true);
-      // Converter para número
       const payload = {
         ...data,
         xpReward: Number(data.xpReward),
@@ -180,7 +179,6 @@ export default function LevelList() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Estados para Modais
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingLevelId, setEditingLevelId] = useState<string | undefined>(undefined);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -194,17 +192,14 @@ export default function LevelList() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      // Carregar tópico para pegar examId
       const topicRes = await api.get(`/topics/${topicId}`);
       const topic = topicRes.data;
       setTopicName(topic.name);
       setExamId(topic.examId);
 
-      // Carregar exame para o breadcrumb
       const examRes = await api.get(`/exams/${topic.examId}`);
       setExamName(examRes.data.name);
 
-      // Carregar níveis
       const levelsRes = await api.get(`/levels?topicId=${topicId}`);
       setLevels(levelsRes.data);
     } catch (error) {

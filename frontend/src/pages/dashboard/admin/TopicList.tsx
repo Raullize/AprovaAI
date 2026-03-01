@@ -20,7 +20,6 @@ interface Topic {
   };
 }
 
-// Componente de Formulário dentro do Modal
 interface TopicFormProps {
   examId?: string;
   topicId?: string;
@@ -116,7 +115,6 @@ function TopicFormContent({ examId, topicId, onSuccess, onCancel }: TopicFormPro
         />
       </div>
 
-      {/* Status toggle */}
       <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
         <div>
           <p className="text-sm font-medium text-gray-700">Status do Tópico</p>
@@ -153,7 +151,6 @@ export default function TopicList() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Estados para Modais
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTopicId, setEditingTopicId] = useState<string | undefined>(undefined);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);

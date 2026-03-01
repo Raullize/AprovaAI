@@ -1,5 +1,3 @@
-// We'll use straight NestJS class-validator or just vanilla if we haven't set up pipes yet.
-// Wait, we installed zod. So let's create a Zod schema.
 
 import { z } from 'zod';
 

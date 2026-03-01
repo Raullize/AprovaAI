@@ -63,7 +63,6 @@ export default function Login() {
         variant: "success",
       });
 
-      // Pequeno delay para ver o toast antes de navegar (opcional, mas bom para UX)
       setTimeout(() => {
         navigate('/dashboard');
       }, 1000);

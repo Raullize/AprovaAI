@@ -9,7 +9,6 @@ import ImageUpload from '@/components/ui/ImageUpload';
 import api from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 
-// ─────────────────── Types ───────────────────
 interface Option {
   id?: string;
   text: string;
@@ -62,7 +61,6 @@ const emptyForm = (): FormData => ({
   ],
 });
 
-// ─────────────────── Question Form Modal Content ───────────────────
 function QuestionFormContent({
   question,
   onSuccess,
@@ -134,8 +132,6 @@ function QuestionFormContent({
     }));
   };
 
-  // ImageUpload already deletes the physical file when the user clicks remove.
-  // Here we only clear the form state — no double API call.
   const handleImageRemove = () => {
     setField('imageUrl', '');
   };
@@ -166,7 +162,6 @@ function QuestionFormContent({
 
     setSaving(true);
     try {
-      // If editing and image changed, delete old image
       if (question?.imageUrl && question.imageUrl !== form.imageUrl && question.imageUrl.startsWith('/uploads/')) {
         const filename = question.imageUrl.split('/').pop();
         if (filename) try { await api.delete(`/upload/${filename}`); } catch (e) { console.error('Error deleting file', e); }
@@ -174,7 +169,6 @@ function QuestionFormContent({
 
       const payload = {
         content: form.content.trim(),
-        // Send null (not undefined) so Prisma actually clears the column when imageUrl is removed.
         imageUrl: form.imageUrl.trim() || null,
         type: form.type,
         status: form.status,
@@ -384,7 +378,6 @@ function QuestionFormContent({
   );
 }
 
-// ─────────────────── Main QuestionList Page ───────────────────
 export default function QuestionList() {
   const { levelId } = useParams();
   const navigate = useNavigate();
@@ -396,7 +389,6 @@ export default function QuestionList() {
   });
   const [isLoading, setIsLoading] = useState(true);
 
-  // Modal state
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
@@ -470,7 +462,6 @@ export default function QuestionList() {
     if (!questionToDelete) return;
     setIsDeleting(true);
     try {
-      // Delete associated image if any
       if (questionToDelete.imageUrl?.startsWith('/uploads/')) {
         const filename = questionToDelete.imageUrl.split('/').pop();
         if (filename) try { await api.delete(`/upload/${filename}`); } catch (e) { console.error('Error deleting file', e); }

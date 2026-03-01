@@ -31,14 +31,12 @@ export default function CreateSimulation() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Buscar exames disponíveis (mock ou real se backend estiver pronto)
     const fetchExams = async () => {
       try {
         const response = await api.get('/exams');
         setExams(response.data);
       } catch (error) {
         console.error('Erro ao buscar exames', error);
-        // Fallback mock para visualização
         setExams([
           { id: '1', title: 'ENEM 2023', year: 2023 },
           { id: '2', title: 'ENEM 2022', year: 2022 },
@@ -55,15 +53,14 @@ export default function CreateSimulation() {
     setIsLoading(true);
     try {
       console.log('Criando simulado:', data);
-      // await api.post('/simulations', data);
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulação de delay
-      
+      await new Promise(resolve => setTimeout(resolve, 1500));
+
       toast({
         title: "Simulado criado com sucesso!",
         description: "Você será redirecionado para iniciar a prova.",
         variant: "success"
       });
-      
+
       navigate('/dashboard/simulations');
     } catch (error) {
       console.error(error);
@@ -124,7 +121,7 @@ export default function CreateSimulation() {
                 placeholder="Ex: 30"
                 min={5}
                 max={90}
-                {...register('questionCount', { 
+                {...register('questionCount', {
                   required: 'Defina a quantidade',
                   min: { value: 5, message: 'Mínimo de 5 questões' },
                   max: { value: 90, message: 'Máximo de 90 questões' }
