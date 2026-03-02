@@ -9,9 +9,10 @@ export interface BreadcrumbItem {
 
 interface BreadcrumbProps {
   items: BreadcrumbItem[];
+  maxLength?: number;
 }
 
-const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
+const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, maxLength = 25 }) => {
   const navigate = useNavigate();
 
   const goBack = () => {
@@ -58,25 +59,36 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items }) => {
 
       {/* Desktop view: Breadcrumb completo */}
       <ol className="hidden md:flex items-center space-x-2">
-        {items.map((item, index) => (
-          <li key={index} className="flex items-center">
-            {index > 0 && (
-              <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 mr-2" />
-            )}
-            {item.href ? (
-              <Link
-                to={item.href}
-                className="text-sm font-medium text-gray-500 hover:text-gray-700 truncate max-w-none"
-              >
-                {item.label}
-              </Link>
-            ) : (
-              <span className="text-sm font-medium text-gray-900 truncate max-w-none">
-                {item.label}
-              </span>
-            )}
-          </li>
-        ))}
+        {items.map((item, index) => {
+          const truncatedLabel =
+            item.label.length > maxLength
+              ? item.label.slice(0, maxLength) + '...'
+              : item.label;
+
+          return (
+            <li key={index} className="flex items-center">
+              {index > 0 && (
+                <ChevronRight className="h-5 w-5 text-gray-400 flex-shrink-0 mr-2" />
+              )}
+              {item.href ? (
+                <Link
+                  to={item.href}
+                  className="text-sm font-medium text-gray-500 hover:text-gray-700 truncate max-w-none"
+                  title={item.label}
+                >
+                  {truncatedLabel}
+                </Link>
+              ) : (
+                <span
+                  className="text-sm font-medium text-gray-900 truncate max-w-[200px]"
+                  title={item.label}
+                >
+                  {truncatedLabel}
+                </span>
+              )}
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
