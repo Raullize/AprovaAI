@@ -4,6 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { CreateTopicDto, UpdateTopicDto } from './dto/topic.dto';
 import { ReorderDto } from '../exams/dto/exam.dto';
 import { generateSlug, generateUniqueSlug } from '../utils/slugify';
@@ -83,7 +84,7 @@ export class TopicsService {
     const topic = await this.prisma.topic.findUnique({ where: { id } });
     if (!topic) throw new NotFoundException('Tópico não encontrado');
 
-    const updateData: any = { ...updateTopicDto };
+    const updateData: Prisma.TopicUpdateInput = { ...updateTopicDto };
 
     if (updateTopicDto.examId && updateTopicDto.examId !== topic.examId) {
       const examExists = await this.prisma.exam.findUnique({

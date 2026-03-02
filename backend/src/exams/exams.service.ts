@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { CreateExamDto, UpdateExamDto, ReorderDto } from './dto/exam.dto';
 import { generateSlug, generateUniqueSlug } from '../utils/slugify';
 
@@ -62,7 +63,7 @@ export class ExamsService {
   }
 
   async update(id: string, updateExamDto: UpdateExamDto) {
-    const updateData: any = { ...updateExamDto };
+    const updateData: Prisma.ExamUpdateInput = { ...updateExamDto };
 
     if (updateExamDto.name) {
       const baseSlug = generateSlug(updateExamDto.name);
