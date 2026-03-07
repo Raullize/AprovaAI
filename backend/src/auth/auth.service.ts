@@ -5,6 +5,7 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
@@ -39,6 +40,7 @@ export class AuthService {
 
     const token = this.jwtService.sign(payload);
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash: _, ...userWithoutPassword } = user;
 
     return {
@@ -78,14 +80,18 @@ export class AuthService {
         },
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { passwordHash: _, ...userWithoutPassword } = user;
       return userWithoutPassword;
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
       }
 
-      if (error.code === 'P2002') {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
         const target = error.meta?.target;
         if (Array.isArray(target)) {
           if (target.includes('email'))

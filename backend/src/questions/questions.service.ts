@@ -4,6 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { CreateQuestionDto, UpdateQuestionDto } from './dto/question.dto';
 import { ReorderDto } from '../exams/dto/exam.dto';
 
@@ -92,30 +93,34 @@ export class QuestionsService {
 
     try {
       if (options) {
-        return await this.prisma.$transaction(async (tx: any) => {
-          const updatedQuestion = await tx.question.update({
-            where: { id },
-            data: questionData,
-          });
+        return await this.prisma.$transaction(
+          async (tx: Prisma.TransactionClient) => {
+            await tx.question.update({
+              where: { id },
+              data: questionData,
+            });
 
-          await tx.option.deleteMany({
-            where: { questionId: id },
-          });
+            await tx.option.deleteMany({
+              where: { questionId: id },
+            });
 
-          await tx.option.createMany({
-            data: options.map((opt, index) => ({
-              text: opt.text!,
-              isCorrect: opt.isCorrect ?? false,
-              order: index,
-              questionId: id,
-            })),
-          });
+            if (options.length > 0) {
+              await tx.option.createMany({
+                data: options.map((opt, index) => ({
+                  text: opt.text || '',
+                  isCorrect: opt.isCorrect ?? false,
+                  order: index,
+                  questionId: id,
+                })),
+              });
+            }
 
-          return tx.question.findUnique({
-            where: { id },
-            include: { options: { orderBy: { order: 'asc' } } },
-          });
-        });
+            return tx.question.findUnique({
+              where: { id },
+              include: { options: { orderBy: { order: 'asc' } } },
+            });
+          },
+        );
       } else {
         return await this.prisma.question.update({
           where: { id },

@@ -4,6 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma } from '@prisma/client';
 import { CreateLevelDto, UpdateLevelDto } from './dto/level.dto';
 import { ReorderDto } from '../exams/dto/exam.dto';
 import { generateSlug, generateUniqueSlug } from '../utils/slugify';
@@ -83,7 +84,7 @@ export class LevelsService {
     const level = await this.prisma.level.findUnique({ where: { id } });
     if (!level) throw new NotFoundException('Nível não encontrado');
 
-    const updateData: any = { ...updateLevelDto };
+    const updateData: Prisma.LevelUpdateInput = { ...updateLevelDto };
 
     if (updateLevelDto.topicId && updateLevelDto.topicId !== level.topicId) {
       const topicExists = await this.prisma.topic.findUnique({
@@ -119,8 +120,16 @@ export class LevelsService {
           _count: { select: { questions: true } },
         },
       });
-    } catch {
-      throw new NotFoundException('Erro ao atualizar nível');
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === 'P2002'
+      ) {
+        throw new BadRequestException(
+          'Já existe um nível com este nome neste tópico.',
+        );
+      }
+      throw error;
     }
   }
 

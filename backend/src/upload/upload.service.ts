@@ -4,7 +4,7 @@ import * as path from 'path';
 
 @Injectable()
 export class UploadService {
-  async removeFile(filename: string) {
+  removeFile(filename: string) {
     const uploadDir = process.env.UPLOAD_DIR || './uploads';
     const filePath = path.join(process.cwd(), uploadDir, filename);
     const legacyFilePath = path.join(
@@ -24,7 +24,7 @@ export class UploadService {
       try {
         fs.unlinkSync(fileToDelete);
         return { message: 'Arquivo deletado com sucesso' };
-      } catch (error) {
+      } catch {
         throw new Error('Erro ao deletar arquivo');
       }
     } else {
