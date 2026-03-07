@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  UsePipes,
   HttpCode,
 } from '@nestjs/common';
 import { ExamsService } from './exams.service';
