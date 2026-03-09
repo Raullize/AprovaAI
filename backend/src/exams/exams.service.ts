@@ -19,9 +19,11 @@ export class ExamsService {
     });
   }
 
-  async findOne(id: string) {
-    const exam = await this.prisma.exam.findUnique({
-      where: { id },
+  async findOne(slugOrId: string) {
+    const exam = await this.prisma.exam.findFirst({
+      where: {
+        OR: [{ slug: slugOrId }, { id: slugOrId }],
+      },
       include: {
         topics: {
           include: {

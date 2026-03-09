@@ -12,9 +12,15 @@ import { ReorderDto } from '../exams/dto/exam.dto';
 export class QuestionsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(levelId?: string) {
+  async findAll(levelSlugOrId?: string) {
     return this.prisma.question.findMany({
-      where: levelId ? { levelId } : undefined,
+      where: levelSlugOrId
+        ? {
+            level: {
+              OR: [{ slug: levelSlugOrId }, { id: levelSlugOrId }],
+            },
+          }
+        : undefined,
       include: {
         level: {
           select: { name: true, topicId: true },

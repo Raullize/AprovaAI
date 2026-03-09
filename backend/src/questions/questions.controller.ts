@@ -27,8 +27,8 @@ export class QuestionsController {
 
   @Get()
   @Roles(UserRole.ADMIN)
-  findAll(@Query('levelId') levelId?: string) {
-    return this.questionsService.findAll(levelId);
+  findAll(@Query('levelSlug') levelSlug?: string) {
+    return this.questionsService.findAll(levelSlug);
   }
 
   @Get(':id')

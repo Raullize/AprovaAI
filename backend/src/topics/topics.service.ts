@@ -13,9 +13,15 @@ import { generateSlug, generateUniqueSlug } from '../utils/slugify';
 export class TopicsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(examId?: string) {
+  async findAll(examSlugOrId?: string) {
     return this.prisma.topic.findMany({
-      where: examId ? { examId } : undefined,
+      where: examSlugOrId
+        ? {
+            exam: {
+              OR: [{ slug: examSlugOrId }, { id: examSlugOrId }],
+            },
+          }
+        : undefined,
       include: {
         exam: {
           select: { name: true },
@@ -28,9 +34,11 @@ export class TopicsService {
     });
   }
 
-  async findOne(id: string) {
-    const topic = await this.prisma.topic.findUnique({
-      where: { id },
+  async findOne(slugOrId: string) {
+    const topic = await this.prisma.topic.findFirst({
+      where: {
+        OR: [{ slug: slugOrId }, { id: slugOrId }],
+      },
       include: {
         exam: { select: { name: true } },
         levels: {

@@ -27,14 +27,14 @@ export class TopicsController {
 
   @Get()
   @Roles(UserRole.ADMIN)
-  findAll(@Query('examId') examId?: string) {
-    return this.topicsService.findAll(examId);
+  findAll(@Query('examSlug') examSlug?: string) {
+    return this.topicsService.findAll(examSlug);
   }
 
-  @Get(':id')
+  @Get(':slug')
   @Roles(UserRole.ADMIN)
-  findOne(@Param('id') id: string) {
-    return this.topicsService.findOne(id);
+  findOne(@Param('slug') slug: string) {
+    return this.topicsService.findOne(slug);
   }
 
   @Post()

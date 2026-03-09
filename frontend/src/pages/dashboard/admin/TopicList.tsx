@@ -25,6 +25,7 @@ import Input from '@/components/ui/Input';
 interface Topic {
   id: string;
   name: string;
+  slug: string;
   description: string | null;
   status: 'ACTIVE' | 'INACTIVE';
   _count?: {
@@ -189,7 +190,8 @@ function TopicFormContent({
 }
 
 export default function TopicList() {
-  const { examId } = useParams();
+  const { examSlug } = useParams();
+  const [examId, setExamId] = useState<string | undefined>(undefined);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [examName, setExamName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -210,11 +212,11 @@ export default function TopicList() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const [examRes, topicsRes] = await Promise.all([
-        api.get(`/exams/${examId}`),
-        api.get(`/topics?examId=${examId}`),
-      ]);
+      const examRes = await api.get(`/exams/${examSlug}`);
+      setExamId(examRes.data.id);
       setExamName(examRes.data.name);
+
+      const topicsRes = await api.get(`/topics?examSlug=${examSlug}`);
       setTopics(topicsRes.data);
     } catch (error) {
       console.error(error);
@@ -226,7 +228,7 @@ export default function TopicList() {
     } finally {
       setIsLoading(false);
     }
-  }, [examId, toast, navigate]);
+  }, [examSlug, toast, navigate]);
 
   useEffect(() => {
     loadData();
@@ -462,7 +464,7 @@ export default function TopicList() {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    navigate(`/dashboard/admin/topics/${topic.id}/levels`)
+                    navigate(`/dashboard/admin/topics/${topic.slug}/levels`)
                   }
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
                 >
@@ -479,12 +481,14 @@ export default function TopicList() {
         onClose={() => setIsModalOpen(false)}
         title={editingTopicId ? 'Editar Tópico' : 'Novo Tópico'}
       >
-        <TopicFormContent
-          examId={examId}
-          topicId={editingTopicId}
-          onSuccess={handleFormSuccess}
-          onCancel={() => setIsModalOpen(false)}
-        />
+        {examId && (
+          <TopicFormContent
+            examId={examId}
+            topicId={editingTopicId}
+            onSuccess={handleFormSuccess}
+            onCancel={() => setIsModalOpen(false)}
+          />
+        )}
       </Modal>
 
       <Modal

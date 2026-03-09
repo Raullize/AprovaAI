@@ -25,6 +25,7 @@ import { useForm } from 'react-hook-form';
 interface Level {
   id: string;
   name: string;
+  slug: string;
   xpReward: number;
   passingPercentage: number;
   status: 'ACTIVE' | 'INACTIVE';
@@ -68,10 +69,8 @@ function LevelFormContent({
     setValue,
   } = useForm<LevelFormData>({
     defaultValues: {
-      topicId: topicId,
-      xpReward: 10,
-      passingPercentage: 70,
       status: 'ACTIVE',
+      topicId: topicId,
     },
   });
 
@@ -212,11 +211,12 @@ function LevelFormContent({
 }
 
 export default function LevelList() {
-  const { topicId } = useParams();
+  const { topicSlug } = useParams();
+  const [topicId, setTopicId] = useState<string | undefined>(undefined);
   const [levels, setLevels] = useState<Level[]>([]);
   const [topicName, setTopicName] = useState('');
   const [examName, setExamName] = useState('');
-  const [examId, setExamId] = useState('');
+  const [examSlug, setExamSlug] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -235,15 +235,18 @@ export default function LevelList() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const topicRes = await api.get(`/topics/${topicId}`);
+
+      const topicRes = await api.get(`/topics/${topicSlug}`);
       const topic = topicRes.data;
       setTopicName(topic.name);
-      setExamId(topic.examId);
+      setTopicId(topic.id);
+      // setExamId(topic.examId); // Removed unused setExamId
 
-      const examRes = await api.get(`/exams/${topic.examId}`);
+      const examRes = await api.get(`/exams/${topic.examId}`); // examId is still ID in topic relation, unless we include exam in topic response
       setExamName(examRes.data.name);
+      setExamSlug(examRes.data.slug);
 
-      const levelsRes = await api.get(`/levels?topicId=${topicId}`);
+      const levelsRes = await api.get(`/levels?topicSlug=${topicSlug}`);
       setLevels(levelsRes.data);
     } catch (error) {
       console.error(error);
@@ -350,14 +353,14 @@ export default function LevelList() {
                 { label: 'Exames', href: '/dashboard/exams' },
                 {
                   label: examName || '...',
-                  href: examId
-                    ? `/dashboard/admin/exams/${examId}/topics`
+                  href: examSlug
+                    ? `/dashboard/admin/exams/${examSlug}/topics`
                     : '#',
                 },
                 {
                   label: 'Tópicos',
-                  href: examId
-                    ? `/dashboard/admin/exams/${examId}/topics`
+                  href: examSlug
+                    ? `/dashboard/admin/exams/${examSlug}/topics`
                     : '#',
                 },
                 { label: topicName || '...', href: '#' },
@@ -370,8 +373,8 @@ export default function LevelList() {
               <button
                 onClick={() =>
                   navigate(
-                    examId
-                      ? `/dashboard/admin/exams/${examId}/topics`
+                    examSlug
+                      ? `/dashboard/admin/exams/${examSlug}/topics`
                       : '/dashboard/exams',
                   )
                 }
@@ -518,7 +521,7 @@ export default function LevelList() {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    navigate(`/dashboard/admin/levels/${level.id}/questions`)
+                    navigate(`/dashboard/admin/levels/${level.slug}/questions`)
                   }
                   className="w-full text-primary-600 border-primary-200 hover:bg-primary-50"
                 >

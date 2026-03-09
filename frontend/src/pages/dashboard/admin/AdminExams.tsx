@@ -23,6 +23,7 @@ import Input from '@/components/ui/Input';
 interface Exam {
   id: string;
   name: string;
+  slug: string;
   description: string | null;
   status: 'ACTIVE' | 'INACTIVE';
   _count?: {
@@ -431,7 +432,7 @@ export default function AdminExams() {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    navigate(`/dashboard/admin/exams/${exam.id}/topics`)
+                    navigate(`/dashboard/admin/exams/${exam.slug}/topics`)
                   }
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
                 >

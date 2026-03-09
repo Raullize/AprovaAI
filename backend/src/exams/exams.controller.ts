@@ -32,10 +32,10 @@ export class ExamsController {
     return this.examsService.findAll();
   }
 
-  @Get(':id')
+  @Get(':slug')
   @Roles(UserRole.ADMIN)
-  findOne(@Param('id') id: string) {
-    return this.examsService.findOne(id);
+  findOne(@Param('slug') slug: string) {
+    return this.examsService.findOne(slug);
   }
 
   @Post()

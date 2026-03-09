@@ -27,14 +27,14 @@ export class LevelsController {
 
   @Get()
   @Roles(UserRole.ADMIN)
-  findAll(@Query('topicId') topicId?: string) {
-    return this.levelsService.findAll(topicId);
+  findAll(@Query('topicSlug') topicSlug?: string) {
+    return this.levelsService.findAll(topicSlug);
   }
 
-  @Get(':id')
+  @Get(':slug')
   @Roles(UserRole.ADMIN)
-  findOne(@Param('id') id: string) {
-    return this.levelsService.findOne(id);
+  findOne(@Param('slug') slug: string) {
+    return this.levelsService.findOne(slug);
   }
 
   @Post()

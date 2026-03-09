@@ -47,6 +47,8 @@ interface BreadcrumbData {
   topicId: string;
   topicName: string;
   levelName: string;
+  examSlug?: string;
+  topicSlug?: string;
 }
 
 type FormData = {
@@ -475,7 +477,8 @@ function QuestionFormContent({
 }
 
 export default function QuestionList() {
-  const { levelId } = useParams();
+  const { levelSlug } = useParams();
+  const [levelId, setLevelId] = useState<string | undefined>(undefined);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -503,8 +506,9 @@ export default function QuestionList() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const levelRes = await api.get(`/levels/${levelId}`);
+      const levelRes = await api.get(`/levels/${levelSlug}`);
       const level = levelRes.data;
+      setLevelId(level.id);
 
       const topicRes = await api.get(`/topics/${level.topicId}`);
       const topic = topicRes.data;
@@ -512,13 +516,15 @@ export default function QuestionList() {
       const examRes = await api.get(`/exams/${topic.examId}`);
       const exam = examRes.data;
 
-      const questionsRes = await api.get(`/questions?levelId=${levelId}`);
+      const questionsRes = await api.get(`/questions?levelSlug=${levelSlug}`);
 
       setBreadcrumb({
         examId: exam.id,
         examName: exam.name,
+        examSlug: exam.slug,
         topicId: topic.id,
         topicName: topic.name,
+        topicSlug: topic.slug,
         levelName: level.name,
       });
       setQuestions(questionsRes.data);
@@ -528,7 +534,7 @@ export default function QuestionList() {
     } finally {
       setIsLoading(false);
     }
-  }, [levelId, toast, navigate]);
+  }, [levelSlug, toast, navigate]);
 
   useEffect(() => {
     loadData();
@@ -651,30 +657,18 @@ export default function QuestionList() {
               items={[
                 { label: 'Exames', href: '/dashboard/exams' },
                 {
-                  label: breadcrumb.examName || '...',
-                  href: breadcrumb.examId
-                    ? `/dashboard/admin/exams/${breadcrumb.examId}/topics`
+                  label: breadcrumb.examName || 'Carregando...',
+                  href: breadcrumb.examSlug
+                    ? `/dashboard/admin/exams/${breadcrumb.examSlug}/topics`
                     : '#',
                 },
                 {
-                  label: 'Tópicos',
-                  href: breadcrumb.examId
-                    ? `/dashboard/admin/exams/${breadcrumb.examId}/topics`
+                  label: breadcrumb.topicName || 'Carregando...',
+                  href: breadcrumb.topicSlug
+                    ? `/dashboard/admin/topics/${breadcrumb.topicSlug}/levels`
                     : '#',
                 },
-                {
-                  label: breadcrumb.topicName || '...',
-                  href: breadcrumb.topicId
-                    ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
-                    : '#',
-                },
-                {
-                  label: 'Níveis',
-                  href: breadcrumb.topicId
-                    ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
-                    : '#',
-                },
-                { label: breadcrumb.levelName || '...', href: '#' },
+                { label: breadcrumb.levelName || 'Carregando...', href: '#' },
                 { label: 'Questões' },
               ]}
             />
@@ -684,8 +678,8 @@ export default function QuestionList() {
               <button
                 onClick={() =>
                   navigate(
-                    breadcrumb.topicId
-                      ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
+                    breadcrumb.topicSlug
+                      ? `/dashboard/admin/topics/${breadcrumb.topicSlug}/levels`
                       : '/dashboard/exams',
                   )
                 }
