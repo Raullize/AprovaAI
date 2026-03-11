@@ -38,6 +38,8 @@ A equipe decidiu realizar uma refatoração arquitetural, dividindo a aplicaçã
 - **Autenticação:** O cliente consome um token JWT gerado pelo Node e o anexa fisicamente às requisições do Axios (uso de interceptors).
 - **Benefícios:** Aplicação estática e rápida, rodando puramente no lado do cliente. Componentização isolada (React UI) permitindo que o time de Frontend foque somente em usabilidade (UX/UI) e experiência (Drag & Drop, Modais, Toasts).
 
+> **Para mais detalhes sobre a arquitetura do Frontend (Services, Routes, etc.), consulte o documento dedicado: [Frontend Architecture](./FRONTEND_ARCHITECTURE.md).**
+
 ---
 
 ## Consequências da Mudança
