@@ -80,32 +80,19 @@ export const Header: React.FC = () => {
             </nav>
 
             <div className="hidden md:flex items-center space-x-4">
-              {signed ? (
-                <>
-                  <button
-                    onClick={() => handleNavigation('/dashboard')}
-                    className="flex items-center space-x-2 text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
-                  >
-                    <User className="h-4 w-4" />
-                    <span>Dashboard</span>
-                  </button>
-                  <Button variant="outline" onClick={signOut}>
-                    Sair
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <button
-                    onClick={() => handleNavigation('/login')}
-                    className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
-                  >
-                    Login
-                  </button>
-                  <Button onClick={() => handleNavigation('#pricing')}>
-                    Comece Grátis
-                  </Button>
-                </>
-              )}
+              <button
+                onClick={() => handleNavigation(signed ? '/dashboard' : '/login')}
+                className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
+              >
+                Entrar
+              </button>
+              <Button
+                onClick={() =>
+                  handleNavigation(signed ? '/dashboard' : '#pricing')
+                }
+              >
+                Comece Grátis
+              </Button>
             </div>
 
             <div className="md:hidden">
@@ -150,15 +137,6 @@ export const Header: React.FC = () => {
 
               <div className="flex-1 py-6">
                 <nav className="px-6 space-y-2">
-                  {signed && (
-                    <button
-                      onClick={() => handleNavigation('/dashboard')}
-                      className="flex items-center space-x-3 w-full text-left px-4 py-3 text-gray-700 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all duration-200 font-medium"
-                    >
-                      <User className="h-4 w-4" />
-                      <span>Dashboard</span>
-                    </button>
-                  )}
                   {navItems.map((item) => (
                     <button
                       key={item.label}
@@ -218,38 +196,23 @@ export const Header: React.FC = () => {
 
               <div className="p-6 border-t border-gray-200 bg-gray-50">
                 <div className="space-y-4">
-                  {signed ? (
-                    <>
-                      <div className="text-center mb-4">
-                        <p className="text-sm text-gray-600">
-                          Olá, {user?.fullName || user?.email}
-                        </p>
-                      </div>
-                      <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={signOut}
-                      >
-                        Sair
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={() => handleNavigation('/login')}
-                      >
-                        Login
-                      </Button>
-                      <Button
-                        className="w-full"
-                        onClick={() => handleNavigation('#pricing')}
-                      >
-                        Comece Grátis Agora
-                      </Button>
-                    </>
-                  )}
+                  <Button
+                    className="w-full"
+                    variant="outline"
+                    onClick={() =>
+                      handleNavigation(signed ? '/dashboard' : '/login')
+                    }
+                  >
+                    Entrar
+                  </Button>
+                  <Button
+                    className="w-full"
+                    onClick={() =>
+                      handleNavigation(signed ? '/dashboard' : '#pricing')
+                    }
+                  >
+                    Comece Grátis Agora
+                  </Button>
                 </div>
               </div>
             </div>
