@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Menu,
-  X,
-  GraduationCap,
-  Star,
-  Users,
-  BookOpen,
-  User,
-} from 'lucide-react';
+import { Menu, X, GraduationCap, Star, Users, BookOpen } from 'lucide-react';
 import Button from '../ui/Button';
 import { useAuth } from '../../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -20,7 +12,7 @@ const navItems = [
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, signed, signOut } = useAuth();
+  const { signed } = useAuth();
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -81,7 +73,9 @@ export const Header: React.FC = () => {
 
             <div className="hidden md:flex items-center space-x-4">
               <button
-                onClick={() => handleNavigation(signed ? '/dashboard' : '/login')}
+                onClick={() =>
+                  handleNavigation(signed ? '/dashboard' : '/login')
+                }
                 className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
               >
                 Entrar
