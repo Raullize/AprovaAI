@@ -15,21 +15,10 @@ import {
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Modal from '@/components/ui/Modal';
-import api from '@/services/api';
+import { examsService, type Exam } from '@/services/exams.service';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import Input from '@/components/ui/Input';
-
-interface Exam {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  status: 'ACTIVE' | 'INACTIVE';
-  _count?: {
-    topics: number;
-  };
-}
 
 interface ExamFormProps {
   examId?: string;
@@ -66,13 +55,14 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
     const loadExam = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get(`/exams/${examId}`);
-        const { name, description, status } = response.data;
-        reset({
-          name,
-          status,
-          description: description || '',
-        });
+        if (examId) {
+          const exam = await examsService.findOne(examId);
+          reset({
+            name: exam.name,
+            status: exam.status,
+            description: exam.description || '',
+          });
+        }
       } catch (error) {
         console.error(error);
         toast({ title: 'Erro ao carregar dados', variant: 'destructive' });
@@ -89,11 +79,11 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
   const onSubmit = async (data: ExamFormData) => {
     try {
       setIsSaving(true);
-      if (isEditing) {
-        await api.patch(`/exams/${examId}`, data);
+      if (isEditing && examId) {
+        await examsService.update(examId, data);
         toast({ title: 'Exame atualizado!', variant: 'success' });
       } else {
-        await api.post('/exams', data);
+        await examsService.create(data);
         toast({ title: 'Exame criado!', variant: 'success' });
       }
       onSuccess();
@@ -196,8 +186,8 @@ export default function AdminExams() {
   const loadExams = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await api.get('/exams');
-      setExams(response.data);
+      const data = await examsService.findAll();
+      setExams(data);
     } catch (error) {
       console.error(error);
       toast({
@@ -236,12 +226,12 @@ export default function AdminExams() {
   const handleToggleStatus = async (exam: Exam) => {
     try {
       const newStatus = exam.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-      await api.patch(`/exams/${exam.id}`, { status: newStatus });
+      await examsService.update(exam.id, { status: newStatus });
       toast({
         title: `Exame ${newStatus === 'ACTIVE' ? 'ativado' : 'desativado'}`,
         variant: 'success',
       });
-      loadExams(); // Recarrega para atualizar a UI
+      loadExams();
     } catch (error) {
       console.error(error);
       toast({
@@ -253,7 +243,7 @@ export default function AdminExams() {
 
   const confirmDelete = (exam: Exam) => {
     setExamToDelete(exam);
-    setDeleteConfirmation(''); // Resetar input
+    setDeleteConfirmation('');
     setIsDeleteModalOpen(true);
   };
 
@@ -261,7 +251,7 @@ export default function AdminExams() {
     if (!examToDelete) return;
 
     try {
-      await api.delete(`/exams/${examToDelete.id}`);
+      await examsService.delete(examToDelete.id);
       toast({
         title: 'Exame excluído',
         variant: 'success',
@@ -299,7 +289,7 @@ export default function AdminExams() {
     setExams(newOrder);
     setDraggedId(null);
     try {
-      await api.patch('/exams/reorder', { ids: newOrder.map((e) => e.id) });
+      await examsService.reorder(newOrder.map((e) => e.id));
     } catch {
       toast({ title: 'Erro ao reordenar', variant: 'destructive' });
       loadExams();

@@ -17,21 +17,11 @@ import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import Modal from '@/components/ui/Modal';
-import api from '@/services/api';
+import { topicsService, type Topic } from '@/services/topics.service';
+import { examsService } from '@/services/exams.service';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
 import Input from '@/components/ui/Input';
-
-interface Topic {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  status: 'ACTIVE' | 'INACTIVE';
-  _count?: {
-    levels: number;
-  };
-}
 
 interface TopicFormProps {
   examId?: string;
@@ -78,14 +68,15 @@ function TopicFormContent({
     const loadTopic = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get(`/topics/${topicId}`);
-        const { name, description, status } = response.data;
-        reset({
-          name,
-          description: description || '',
-          status,
-          examId,
-        });
+        if (topicId) {
+          const topic = await topicsService.findOne(topicId);
+          reset({
+            name: topic.name,
+            description: topic.description || '',
+            status: topic.status,
+            examId,
+          });
+        }
       } catch (error) {
         console.error(error);
         toast({ title: 'Erro ao carregar dados', variant: 'destructive' });
@@ -102,11 +93,12 @@ function TopicFormContent({
   const onSubmit = async (data: TopicFormData) => {
     try {
       setIsSaving(true);
-      if (isEditing) {
-        await api.patch(`/topics/${topicId}`, data);
+      if (isEditing && topicId) {
+        await topicsService.update(topicId, data);
         toast({ title: 'Tópico atualizado!', variant: 'success' });
       } else {
-        await api.post('/topics', { ...data, examId });
+        if (!examId) throw new Error('Exam ID is required');
+        await topicsService.create({ ...data, examId });
         toast({ title: 'Tópico criado!', variant: 'success' });
       }
       onSuccess();
@@ -212,12 +204,14 @@ export default function TopicList() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const examRes = await api.get(`/exams/${examSlug}`);
-      setExamId(examRes.data.id);
-      setExamName(examRes.data.name);
+      if (examSlug) {
+        const exam = await examsService.findOne(examSlug);
+        setExamId(exam.id);
+        setExamName(exam.name);
 
-      const topicsRes = await api.get(`/topics?examSlug=${examSlug}`);
-      setTopics(topicsRes.data);
+        const data = await topicsService.findAll(examSlug);
+        setTopics(data);
+      }
     } catch (error) {
       console.error(error);
       toast({
@@ -262,7 +256,7 @@ export default function TopicList() {
   const handleDelete = async () => {
     if (!topicToDelete) return;
     try {
-      await api.delete(`/topics/${topicToDelete.id}`);
+      await topicsService.delete(topicToDelete.id);
       toast({ title: 'Tópico excluído', variant: 'success' });
       loadData();
       setIsDeleteModalOpen(false);
@@ -276,7 +270,7 @@ export default function TopicList() {
   const handleToggleStatus = async (topic: Topic) => {
     try {
       const newStatus = topic.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-      await api.patch(`/topics/${topic.id}`, { status: newStatus });
+      await topicsService.update(topic.id, { status: newStatus });
       setTopics((prev) =>
         prev.map((t) => (t.id === topic.id ? { ...t, status: newStatus } : t)),
       );
@@ -310,7 +304,7 @@ export default function TopicList() {
     setTopics(newOrder);
     setDraggedId(null);
     try {
-      await api.patch('/topics/reorder', { ids: newOrder.map((t) => t.id) });
+      await topicsService.reorder(newOrder.map((t) => t.id));
     } catch {
       toast({ title: 'Erro ao reordenar', variant: 'destructive' });
       loadData();

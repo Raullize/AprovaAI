@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   BarChart,
@@ -18,21 +18,11 @@ import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
-import api from '@/services/api';
+import { levelsService, type Level } from '@/services/levels.service';
+import { topicsService } from '@/services/topics.service';
+import { examsService } from '@/services/exams.service';
 import { useToast } from '@/hooks/use-toast';
 import { useForm } from 'react-hook-form';
-
-interface Level {
-  id: string;
-  name: string;
-  slug: string;
-  xpReward: number;
-  passingPercentage: number;
-  status: 'ACTIVE' | 'INACTIVE';
-  _count?: {
-    questions: number;
-  };
-}
 
 interface LevelFormProps {
   topicId?: string;
@@ -80,15 +70,16 @@ function LevelFormContent({
     const loadLevel = async () => {
       try {
         setIsLoading(true);
-        const response = await api.get(`/levels/${levelId}`);
-        const { name, xpReward, passingPercentage, status } = response.data;
-        reset({
-          name,
-          xpReward,
-          passingPercentage,
-          status: status || 'ACTIVE',
-          topicId,
-        });
+        if (levelId) {
+          const level = await levelsService.findOne(levelId);
+          reset({
+            name: level.name,
+            xpReward: level.xpReward,
+            passingPercentage: level.passingPercentage,
+            status: level.status,
+            topicId,
+          });
+        }
       } catch (error) {
         console.error(error);
         toast({ title: 'Erro ao carregar dados', variant: 'destructive' });
@@ -111,11 +102,11 @@ function LevelFormContent({
         passingPercentage: Number(data.passingPercentage),
       };
 
-      if (isEditing) {
-        await api.patch(`/levels/${levelId}`, payload);
+      if (isEditing && levelId) {
+        await levelsService.update(levelId, payload);
         toast({ title: 'Nível atualizado!', variant: 'success' });
       } else {
-        await api.post('/levels', { ...payload, topicId });
+        await levelsService.create({ ...payload, topicId: topicId! });
         toast({ title: 'Nível criado!', variant: 'success' });
       }
       onSuccess();
@@ -236,18 +227,18 @@ export default function LevelList() {
     try {
       setIsLoading(true);
 
-      const topicRes = await api.get(`/topics/${topicSlug}`);
-      const topic = topicRes.data;
-      setTopicName(topic.name);
-      setTopicId(topic.id);
-      // setExamId(topic.examId); // Removed unused setExamId
+      if (topicSlug) {
+        const topic = await topicsService.findOne(topicSlug);
+        setTopicName(topic.name);
+        setTopicId(topic.id);
 
-      const examRes = await api.get(`/exams/${topic.examId}`); // examId is still ID in topic relation, unless we include exam in topic response
-      setExamName(examRes.data.name);
-      setExamSlug(examRes.data.slug);
+        const exam = await examsService.findOne(topic.examId);
+        setExamName(exam.name);
+        setExamSlug(exam.slug);
 
-      const levelsRes = await api.get(`/levels?topicSlug=${topicSlug}`);
-      setLevels(levelsRes.data);
+        const data = await levelsService.findAll(topicSlug);
+        setLevels(data);
+      }
     } catch (error) {
       console.error(error);
       toast({
@@ -258,7 +249,7 @@ export default function LevelList() {
     } finally {
       setIsLoading(false);
     }
-  }, [topicId, toast, navigate]);
+  }, [topicSlug, toast, navigate]);
 
   useEffect(() => {
     loadData();
@@ -289,7 +280,7 @@ export default function LevelList() {
   const handleDelete = async () => {
     if (!levelToDelete) return;
     try {
-      await api.delete(`/levels/${levelToDelete.id}`);
+      await levelsService.delete(levelToDelete.id);
       toast({ title: 'Nível excluído', variant: 'success' });
       loadData();
       setIsDeleteModalOpen(false);
@@ -303,7 +294,7 @@ export default function LevelList() {
   const handleToggleStatus = async (level: Level) => {
     const newStatus = level.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
-      await api.patch(`/levels/${level.id}`, { status: newStatus });
+      await levelsService.update(level.id, { status: newStatus });
       setLevels((prev) =>
         prev.map((l) => (l.id === level.id ? { ...l, status: newStatus } : l)),
       );
@@ -336,7 +327,7 @@ export default function LevelList() {
     setLevels(newOrder);
     setDraggedId(null);
     try {
-      await api.patch('/levels/reorder', { ids: newOrder.map((l) => l.id) });
+      await levelsService.reorder(newOrder.map((l) => l.id));
     } catch {
       toast({ title: 'Erro ao reordenar', variant: 'destructive' });
       loadData();

@@ -19,27 +19,16 @@ import Loading from '@/components/ui/Loading';
 import Breadcrumb from '@/components/ui/Breadcrumb';
 import Modal from '@/components/ui/Modal';
 import ImageUpload from '@/components/ui/ImageUpload';
-import api from '@/services/api';
+import {
+  questionsService,
+  type Question,
+  type Option,
+} from '@/services/questions.service';
+import { levelsService } from '@/services/levels.service';
+import { topicsService } from '@/services/topics.service';
+import { examsService } from '@/services/exams.service';
+import { uploadService } from '@/services/upload.service';
 import { useToast } from '@/hooks/use-toast';
-
-interface Option {
-  id?: string;
-  text: string;
-  isCorrect: boolean;
-  order: number;
-}
-
-interface Question {
-  id: string;
-  content: string;
-  imageUrl?: string;
-  type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-  status: 'ACTIVE' | 'INACTIVE';
-  explanation?: string;
-  studyLink?: string;
-  order: number;
-  options: Option[];
-}
 
 interface BreadcrumbData {
   examId: string;
@@ -102,6 +91,7 @@ function QuestionFormContent({
         explanation: question.explanation || '',
         studyLink: question.studyLink || '',
         options: question.options.map((o) => ({
+          id: o.id,
           text: o.text,
           isCorrect: o.isCorrect,
           order: o.order,
@@ -209,7 +199,7 @@ function QuestionFormContent({
         const filename = question.imageUrl.split('/').pop();
         if (filename)
           try {
-            await api.delete(`/upload/${filename}`);
+            await uploadService.deleteFile(filename);
           } catch (e) {
             console.error('Error deleting file', e);
           }
@@ -231,10 +221,10 @@ function QuestionFormContent({
       };
 
       if (question) {
-        await api.patch(`/questions/${question.id}`, payload);
+        await questionsService.update(question.id, payload);
         toast({ title: 'Questão atualizada!', variant: 'success' });
       } else {
-        await api.post('/questions', payload);
+        await questionsService.create(payload);
         toast({ title: 'Questão criada!', variant: 'success' });
       }
       onSuccess();
@@ -506,28 +496,26 @@ export default function QuestionList() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      const levelRes = await api.get(`/levels/${levelSlug}`);
-      const level = levelRes.data;
-      setLevelId(level.id);
 
-      const topicRes = await api.get(`/topics/${level.topicId}`);
-      const topic = topicRes.data;
+      if (levelSlug) {
+        const level = await levelsService.findOne(levelSlug);
+        setLevelId(level.id);
 
-      const examRes = await api.get(`/exams/${topic.examId}`);
-      const exam = examRes.data;
+        const topic = await topicsService.findOne(level.topicId);
+        const exam = await examsService.findOne(topic.examId);
+        const data = await questionsService.findAll(levelSlug);
 
-      const questionsRes = await api.get(`/questions?levelSlug=${levelSlug}`);
-
-      setBreadcrumb({
-        examId: exam.id,
-        examName: exam.name,
-        examSlug: exam.slug,
-        topicId: topic.id,
-        topicName: topic.name,
-        topicSlug: topic.slug,
-        levelName: level.name,
-      });
-      setQuestions(questionsRes.data);
+        setBreadcrumb({
+          examId: exam.id,
+          examName: exam.name,
+          examSlug: exam.slug,
+          topicId: topic.id,
+          topicName: topic.name,
+          topicSlug: topic.slug,
+          levelName: level.name,
+        });
+        setQuestions(data);
+      }
     } catch {
       toast({ title: 'Erro ao carregar questões', variant: 'destructive' });
       navigate('/dashboard/exams');
@@ -581,12 +569,12 @@ export default function QuestionList() {
         const filename = questionToDelete.imageUrl.split('/').pop();
         if (filename)
           try {
-            await api.delete(`/upload/${filename}`);
+            await uploadService.deleteFile(filename);
           } catch (e) {
             console.error('Error deleting file', e);
           }
       }
-      await api.delete(`/questions/${questionToDelete.id}`);
+      await questionsService.delete(questionToDelete.id);
       toast({ title: 'Questão excluída', variant: 'success' });
       setIsDeleteOpen(false);
       setQuestionToDelete(null);
@@ -601,7 +589,7 @@ export default function QuestionList() {
   const handleToggleStatus = async (q: Question) => {
     const newStatus = q.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
-      await api.patch(`/questions/${q.id}`, { status: newStatus });
+      await questionsService.update(q.id, { status: newStatus });
       setQuestions((prev) =>
         prev.map((item) =>
           item.id === q.id ? { ...item, status: newStatus } : item,
@@ -632,7 +620,7 @@ export default function QuestionList() {
     setQuestions(newOrder);
     setDraggedId(null);
     try {
-      await api.patch('/questions/reorder', { ids: newOrder.map((q) => q.id) });
+      await questionsService.reorder(newOrder.map((q) => q.id));
     } catch {
       toast({ title: 'Erro ao reordenar', variant: 'destructive' });
       loadData();
