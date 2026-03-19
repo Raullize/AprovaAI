@@ -36,7 +36,7 @@ O frontend do AprovaAI é uma Single Page Application construída com **React + 
 ## Pré-requisitos
 
 - Node.js 18+
-- npm 9+
+- pnpm 10+
 - Backend rodando em `http://localhost:3001` (veja [`/backend`](../backend/README.md))
 
 ---
@@ -53,7 +53,7 @@ cd AprovaAI/frontend
 ### 2. Instale as dependências
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 3. Configure as variáveis de ambiente
@@ -67,7 +67,7 @@ Edite o arquivo `.env` conforme necessário.
 ### 4. Inicie o servidor de desenvolvimento
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Acesse [http://localhost:5173](http://localhost:5173) no navegador.
@@ -88,10 +88,10 @@ Crie um arquivo `.env` na raiz de `frontend/` baseado no `.env.example`:
 ## Scripts Disponíveis
 
 ```bash
-npm run dev        # Servidor de desenvolvimento com HMR
-npm run build      # Build de produção
-npm run preview    # Preview da build de produção
-npm run lint       # Linting (ESLint)
+pnpm run dev        # Servidor de desenvolvimento com HMR
+pnpm run build      # Build de produção
+pnpm run preview    # Preview da build de produção
+pnpm run lint       # Linting (ESLint)
 ```
 
 ---

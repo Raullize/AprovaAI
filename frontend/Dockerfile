@@ -1,10 +1,15 @@
 # Build Stage
 FROM node:18-alpine as build
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+
+# Instalar pnpm globalmente
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
+
 COPY . .
-RUN npm run build
+RUN pnpm run build
 
 # Production Stage
 FROM nginx:alpine

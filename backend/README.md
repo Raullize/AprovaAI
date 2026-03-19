@@ -39,7 +39,7 @@ O backend do AprovaAI é uma API REST construída com **Node.js + NestJS + TypeS
 ## Pré-requisitos
 
 - Node.js 18+
-- npm 9+
+- pnpm 10+
 - Docker e Docker Compose (para subir o PostgreSQL)
 - Git
 
@@ -57,7 +57,7 @@ cd AprovaAI/backend
 ### 2. Instale as dependências
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### 3. Configure as variáveis de ambiente
@@ -90,7 +90,7 @@ npx prisma generate
 ### 6. (Opcional) Popule o banco com dados iniciais
 
 ```bash
-npm run db:seed
+pnpm run db:seed
 ```
 
 Isso criará:
@@ -103,7 +103,7 @@ Isso criará:
 Usando o CLI do NestJS nativo para iniciar o servidor com recarregamento a quente:
 
 ```bash
-npm run start:dev
+pnpm run start:dev
 ```
 
 O servidor estará disponível em [http://localhost:3001](http://localhost:3001).
@@ -127,11 +127,11 @@ Crie um arquivo `.env` na raiz de `backend/` baseado no `.env.example`:
 ## Scripts Disponíveis
 
 ```bash
-npm run start:dev   # Servidor de desenvolvimento interativo com SWC
-npm run build       # Compilação TypeScript para a pasta /dist
-npm run start:prod  # Inicia o servidor compilado otimizado para produção
-npm run format      # Executa o Prettier formatando o código
-npm run lint        # Analisador sintático ESLint
+pnpm run start:dev   # Servidor de desenvolvimento interativo com SWC
+pnpm run build       # Compilação TypeScript para a pasta /dist
+pnpm run start:prod  # Inicia o servidor compilado otimizado para produção
+pnpm run format      # Executa o Prettier formatando o código
+pnpm run lint        # Analisador sintático ESLint
 ```
 
 Comandos do Prisma auxiliam no dia a dia:
