@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { CreateExamDto, UpdateExamDto, ReorderDto } from './dto/exam.dto';
-import { generateSlug, generateUniqueSlug } from '../utils/slugify';
+import { generateSlug, generateUniqueSlug } from '../common/utils/slugify';
 
 @Injectable()
 export class ExamsService {

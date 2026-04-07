@@ -7,7 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import { CreateTopicDto, UpdateTopicDto } from './dto/topic.dto';
 import { ReorderDto } from '../exams/dto/exam.dto';
-import { generateSlug, generateUniqueSlug } from '../utils/slugify';
+import { generateSlug, generateUniqueSlug } from '../common/utils/slugify';
 
 @Injectable()
 export class TopicsService {

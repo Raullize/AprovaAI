@@ -19,7 +19,7 @@ import type { CreateExamDto, UpdateExamDto, ReorderDto } from './dto/exam.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles, UserRole } from '../auth/roles.decorator';
-import { ZodValidationPipe } from '../utils/zod-validation.pipe';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
 @Controller('exams')
 @UseGuards(JwtAuthGuard, RolesGuard)

@@ -4,7 +4,7 @@ import { loginSchema } from './dto/login.dto';
 import type { LoginDto } from './dto/login.dto';
 import { registerSchema } from './dto/register.dto';
 import type { RegisterDto } from './dto/register.dto';
-import { ZodValidationPipe } from '../utils/zod-validation.pipe';
+import { ZodValidationPipe } from '../common/pipes/zod-validation.pipe';
 
 @Controller('auth')
 export class AuthController {
