@@ -7,8 +7,8 @@ import {
   ChevronRight,
   BookOpen,
   AlertTriangle,
-  Eye,
-  EyeOff,
+  Lock,
+  Unlock,
   Search,
   GripVertical,
 } from 'lucide-react';
@@ -65,7 +65,11 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
         }
       } catch (error) {
         console.error(error);
-        toast({ title: 'Erro ao carregar dados', variant: 'destructive' });
+        toast({ 
+          title: 'Erro ao carregar dados', 
+          description: 'Não foi possível recuperar as informações deste exame.',
+          variant: 'destructive' 
+        });
       } finally {
         setIsLoading(false);
       }
@@ -81,15 +85,27 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
       setIsSaving(true);
       if (isEditing && examId) {
         await examsService.update(examId, data);
-        toast({ title: 'Exame atualizado!', variant: 'success' });
+        toast({ 
+          title: 'Exame atualizado!', 
+          description: 'As informações do exame foram salvas com sucesso.',
+          variant: 'success' 
+        });
       } else {
         await examsService.create(data);
-        toast({ title: 'Exame criado!', variant: 'success' });
+        toast({ 
+          title: 'Exame criado com sucesso!', 
+          description: 'O exame foi adicionado à plataforma e já pode ser gerenciado.',
+          variant: 'success' 
+        });
       }
       onSuccess();
     } catch (error) {
       console.error(error);
-      toast({ title: 'Erro ao salvar', variant: 'destructive' });
+      toast({ 
+        title: 'Erro ao salvar', 
+        description: 'Ocorreu um erro inesperado ao processar os dados. Tente novamente.',
+        variant: 'destructive' 
+      });
     } finally {
       setIsSaving(false);
     }
@@ -125,11 +141,11 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
 
       <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
         <div>
-          <p className="text-sm font-medium text-gray-700">Status do Exame</p>
+          <p className="text-sm font-medium text-gray-700">Visibilidade do Exame</p>
           <p className="text-xs text-gray-500 mt-0.5">
             {statusValue === 'ACTIVE'
-              ? 'Ativo — visível para os alunos'
-              : 'Inativo — oculto para os alunos'}
+              ? 'Público — acessível para os alunos'
+              : 'Privado — bloqueado/oculto para os alunos'}
           </p>
         </div>
         <button
@@ -228,14 +244,16 @@ export default function AdminExams() {
       const newStatus = exam.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
       await examsService.update(exam.id, { status: newStatus });
       toast({
-        title: `Exame ${newStatus === 'ACTIVE' ? 'ativado' : 'desativado'}`,
+        title: `Visibilidade alterada!`,
+        description: `O exame agora está ${newStatus === 'ACTIVE' ? 'público' : 'privado'}.`,
         variant: 'success',
       });
       loadExams();
     } catch (error) {
       console.error(error);
       toast({
-        title: 'Erro ao atualizar status',
+        title: 'Erro ao atualizar',
+        description: 'Não foi possível alterar a visibilidade do exame.',
         variant: 'destructive',
       });
     }
@@ -253,7 +271,8 @@ export default function AdminExams() {
     try {
       await examsService.delete(examToDelete.id);
       toast({
-        title: 'Exame excluído',
+        title: 'Exame excluído com sucesso!',
+        description: 'O exame e todos os seus dados foram removidos.',
         variant: 'success',
       });
       loadExams();
@@ -263,7 +282,7 @@ export default function AdminExams() {
       console.error(error);
       toast({
         title: 'Erro ao excluir',
-        description: 'Tente novamente.',
+        description: 'Não foi possível excluir o exame. Tente novamente.',
         variant: 'destructive',
       });
     }
@@ -291,7 +310,11 @@ export default function AdminExams() {
     try {
       await examsService.reorder(newOrder.map((e) => e.id));
     } catch {
-      toast({ title: 'Erro ao reordenar', variant: 'destructive' });
+      toast({ 
+        title: 'Erro ao reordenar', 
+        description: 'Não foi possível salvar a nova ordem dos exames.',
+        variant: 'destructive' 
+      });
       loadExams();
     }
   };
@@ -367,10 +390,10 @@ export default function AdminExams() {
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       exam.status === 'ACTIVE'
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-red-100 text-red-800'
+                        : 'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    {exam.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
+                    {exam.status === 'ACTIVE' ? 'Público' : 'Privado'}
                   </div>
                   <div className="flex items-center space-x-1">
                     <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing mr-1" />
@@ -378,15 +401,15 @@ export default function AdminExams() {
                       onClick={() => handleToggleStatus(exam)}
                       className={`p-1.5 rounded-md transition-colors ${
                         exam.status === 'ACTIVE'
-                          ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                          ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                          : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
                       }`}
-                      title={exam.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
+                      title={exam.status === 'ACTIVE' ? 'Tornar Privado' : 'Tornar Público'}
                     >
                       {exam.status === 'ACTIVE' ? (
-                        <Eye className="h-4 w-4" />
+                        <Unlock className="h-4 w-4" />
                       ) : (
-                        <EyeOff className="h-4 w-4" />
+                        <Lock className="h-4 w-4" />
                       )}
                     </button>
                     <button
