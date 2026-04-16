@@ -25,12 +25,14 @@ Na versão inicial (agora movida para a pasta `legacy_nextjs/`), a aplicação f
 
 A equipe decidiu realizar uma refatoração arquitetural, dividindo a aplicação em dois projetos distintos, adotando o modelo Client-Server clássico com uma **Single Page Application (SPA)** acoplada a uma **API REST Isolada**:
 
-### 1. Backend (Node.js + NestJS)
-*Nota Histórica: Na transição original saindo do Next.js para o React + Node, foi pensado em fazer a API primariamente em Express. Construímos o backend inicial em Express, mas logo em seguida decidimos refatorá-lo completamente para o framework NestJS visando escalabilidade.*
+### 1. Backend (Node.js + NestJS + Clean Architecture)
+*Nota Histórica: Na transição original saindo do Next.js para o React + Node, construímos o backend inicial em Express, mas logo em seguida decidimos refatorá-lo completamente para o framework NestJS visando escalabilidade. Mais recentemente, o backend foi novamente refatorado para adotar **Clean Architecture** e **Domain-Driven Design (DDD)**.*
 
 - **Papel:** Fornecer e centralizar as regras de negócio de dados de testes, usuários e reordenação.
 - **Stack:** Node.js, NestJS, TypeScript, JWT Autônomo (`@nestjs/jwt`), Prisma ORM e Zod para validação fluída na camada de Pipes.
-- **Benefícios:** Total controle sobre as rotas, middlewares, e a lógica do banco (PostgreSQL), facilitando testes unitários, upload de arquivos locais (Multer) e manutenção exclusiva do servidor.
+- **Benefícios:** Total controle sobre as rotas, middlewares, e a lógica do banco (PostgreSQL), facilitando testes unitários, upload de arquivos locais (Multer) e manutenção exclusiva do servidor. As regras de negócio agora estão isoladas na camada de Domínio, independentes do framework NestJS ou do ORM Prisma.
+
+> **Para entender a estrutura atual em camadas do backend (Domain, Application, Infrastructure, API), consulte o documento: [Arquitetura do Backend: Clean Architecture & DDD](./CLEAN_ARCHITECTURE_DDD.md).**
 
 ### 2. Frontend (React + Vite)
 - **Papel:** Renderizar a interface rica para o aluno e o administrador.
