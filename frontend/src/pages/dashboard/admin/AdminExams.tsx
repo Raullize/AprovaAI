@@ -207,8 +207,8 @@ export default function AdminExams() {
   const filteredExams = useMemo(() => {
     return exams.filter(
       (exam) =>
-        exam.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (exam.description &&
+        exam?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (exam?.description &&
           exam.description.toLowerCase().includes(searchTerm.toLowerCase())),
     );
   }, [exams, searchTerm]);

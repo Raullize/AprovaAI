@@ -209,7 +209,7 @@ export default function TopicList() {
         setExamId(exam.id);
         setExamName(exam.name);
 
-        const data = await topicsService.findAll(examSlug);
+        const data = await topicsService.findAll(exam.id);
         setTopics(data);
       }
     } catch (error) {

@@ -236,7 +236,7 @@ export default function LevelList() {
         setExamName(exam.name);
         setExamSlug(exam.slug);
 
-        const data = await levelsService.findAll(topicSlug);
+        const data = await levelsService.findAll(topic.id);
         setLevels(data);
       }
     } catch (error) {

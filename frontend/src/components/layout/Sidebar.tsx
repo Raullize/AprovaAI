@@ -13,7 +13,6 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 
-// Itens para ESTUDANTES (Padrão)
 const studentItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
   { icon: GraduationCap, label: 'Simulados', href: '/dashboard/simulations' },
@@ -21,12 +20,11 @@ const studentItems = [
   { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
 ];
 
-// Itens para ADMIN (Início, Simulados, Usuários, Configurações)
 const adminItems = [
-  { icon: Home, label: 'Início', href: '/dashboard' },
-  { icon: BookOpen, label: 'Exames', href: '/dashboard/exams' }, // Rota /exams agora é "Exames" no menu
-  { icon: Users, label: 'Usuários', href: '/dashboard/users' },
-  { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
+  { icon: Home, label: 'Início', href: '/dashboard/admin' },
+  { icon: BookOpen, label: 'Exames', href: '/dashboard/exams' },
+  { icon: Users, label: 'Usuários', href: '/dashboard/admin/users' },
+  { icon: Settings, label: 'Configurações', href: '/dashboard/admin/settings' },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -34,7 +32,6 @@ export const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Seleciona o menu baseado na role
   const sidebarItems = user?.role === 'ADMIN' ? adminItems : studentItems;
 
   const handleSignOut = () => {
@@ -42,22 +39,21 @@ export const Sidebar: React.FC = () => {
     navigate('/login');
   };
 
-  // Função auxiliar para verificar se a rota está ativa (inclusive sub-rotas)
   const isRouteActive = (href: string, currentPath: string) => {
-    if (href === '/dashboard') {
-      return currentPath === '/dashboard'; // Match exato apenas para a Home do Dashboard
+    if (href === '/dashboard' || href === '/dashboard/admin') {
+      return currentPath === href;
     }
 
-    // Tratativa especial para Exames:
-    // O botão aponta para /dashboard/exams, mas as sub-rotas de admin ficam em /dashboard/admin/exams/... ou /dashboard/admin/topics/...
-    if (
-      href === '/dashboard/exams' &&
-      currentPath.startsWith('/dashboard/admin/')
-    ) {
-      return true;
+    if (href === '/dashboard/exams') {
+      return (
+        currentPath === href ||
+        currentPath.startsWith('/dashboard/admin/exams') ||
+        currentPath.startsWith('/dashboard/admin/topics') ||
+        currentPath.startsWith('/dashboard/admin/levels')
+      );
     }
 
-    return currentPath.startsWith(href); // Match padrão
+    return currentPath.startsWith(href);
   };
 
   return (

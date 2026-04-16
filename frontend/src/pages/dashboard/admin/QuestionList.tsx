@@ -503,7 +503,7 @@ export default function QuestionList() {
 
         const topic = await topicsService.findOne(level.topicId);
         const exam = await examsService.findOne(topic.examId);
-        const data = await questionsService.findAll(levelSlug);
+        const data = await questionsService.findAll(level.id);
 
         setBreadcrumb({
           examId: exam.id,
@@ -744,8 +744,11 @@ export default function QuestionList() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
           {filteredQuestions.map((q, idx) => {
-            const previewUrl = q.imageUrl?.startsWith('/uploads/')
-              ? `${BACKEND_URL}${q.imageUrl}`
+            const normalizedImageUrl = q.imageUrl?.startsWith('/')
+              ? q.imageUrl
+              : `/${q.imageUrl}`;
+            const previewUrl = q.imageUrl?.includes('uploads/')
+              ? `${BACKEND_URL}${normalizedImageUrl}`
               : q.imageUrl;
             const correctCount = q.options.filter((o) => o.isCorrect).length;
 

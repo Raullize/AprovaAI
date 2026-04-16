@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Image as ImageIcon } from 'lucide-react';
 import api from '@/services/api';
 
@@ -87,21 +87,36 @@ export default function ImageUpload({
     onRemove();
   };
 
-  // Resolve full URL for preview
-  const previewUrl = value?.startsWith('/uploads/')
-    ? `${BACKEND_URL}${value}`
+  const normalizedValue = value?.startsWith('/') ? value : `/${value}`;
+  const previewUrl = value?.includes('uploads/')
+    ? `${BACKEND_URL}${normalizedValue}`
     : value;
+
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    if (value) {
+      setHasError(false);
+    }
+  }, [value]);
 
   if (value) {
     return (
       <div className="relative group w-full max-w-md">
-        <div className="relative w-full h-48 rounded-lg border border-gray-300 overflow-hidden bg-gray-50">
-          <img
-            src={previewUrl}
-            alt="Imagem da questão"
-            className="w-full h-full object-contain"
-            onError={() => onRemove()}
-          />
+        <div className="relative w-full h-48 rounded-lg border border-gray-300 overflow-hidden bg-gray-50 flex items-center justify-center">
+          {!hasError ? (
+            <img
+              src={previewUrl}
+              alt="Imagem da questão"
+              className="w-full h-full object-contain"
+              onError={() => setHasError(true)}
+            />
+          ) : (
+            <div className="flex flex-col items-center text-gray-400">
+              <ImageIcon className="h-10 w-10 mb-2" />
+              <span className="text-sm">Erro ao carregar a imagem</span>
+            </div>
+          )}
         </div>
         <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
           <button

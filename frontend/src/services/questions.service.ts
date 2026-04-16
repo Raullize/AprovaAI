@@ -34,10 +34,12 @@ export interface CreateQuestionDTO {
 export type UpdateQuestionDTO = Partial<Omit<CreateQuestionDTO, 'levelId'>>;
 
 export const questionsService = {
-  findAll: async (levelSlug?: string) => {
-    const response = await api.get<Question[]>('/questions', {
-      params: { levelSlug },
-    });
+  findAll: async (levelId?: string) => {
+    if (levelId) {
+      const response = await api.get<Question[]>(`/questions/level/${levelId}`);
+      return response.data;
+    }
+    const response = await api.get<Question[]>('/questions');
     return response.data;
   },
 

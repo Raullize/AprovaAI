@@ -22,10 +22,12 @@ export interface CreateTopicDTO {
 export type UpdateTopicDTO = Partial<Omit<CreateTopicDTO, 'examId'>>;
 
 export const topicsService = {
-  findAll: async (examSlug?: string) => {
-    const response = await api.get<Topic[]>('/topics', {
-      params: { examSlug },
-    });
+  findAll: async (examId?: string) => {
+    if (examId) {
+      const response = await api.get<Topic[]>(`/topics/exam/${examId}`);
+      return response.data;
+    }
+    const response = await api.get<Topic[]>('/topics');
     return response.data;
   },
 

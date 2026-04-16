@@ -24,10 +24,12 @@ export interface CreateLevelDTO {
 export type UpdateLevelDTO = Partial<Omit<CreateLevelDTO, 'topicId'>>;
 
 export const levelsService = {
-  findAll: async (topicSlug?: string) => {
-    const response = await api.get<Level[]>('/levels', {
-      params: { topicSlug },
-    });
+  findAll: async (topicId?: string) => {
+    if (topicId) {
+      const response = await api.get<Level[]>(`/levels/topic/${topicId}`);
+      return response.data;
+    }
+    const response = await api.get<Level[]>('/levels');
     return response.data;
   },
 
