@@ -4,8 +4,8 @@ import {
   BarChart,
   ChevronRight,
   Edit2,
-  Eye,
-  EyeOff,
+  Lock,
+  Unlock,
   Plus,
   Trash2,
   Search,
@@ -160,11 +160,13 @@ function LevelFormContent({
 
       <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
         <div>
-          <p className="text-sm font-medium text-gray-700">Status do Nível</p>
+          <p className="text-sm font-medium text-gray-700">
+            Visibilidade do Nível
+          </p>
           <p className="text-xs text-gray-500 mt-0.5">
             {statusValue === 'ACTIVE'
-              ? 'Ativo — visível para os alunos'
-              : 'Inativo — oculto para os alunos'}
+              ? 'Público — acessível para os alunos'
+              : 'Privado — bloqueado/oculto para os alunos'}
           </p>
         </div>
         <button
@@ -441,10 +443,10 @@ export default function LevelList() {
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                         level.status === 'ACTIVE'
                           ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-500'
+                          : 'bg-gray-100 text-gray-800'
                       }`}
                     >
-                      {level.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
+                      {level.status === 'ACTIVE' ? 'Público' : 'Privado'}
                     </span>
                   </div>
                   <div className="flex items-center space-x-1">
@@ -453,15 +455,19 @@ export default function LevelList() {
                       onClick={() => handleToggleStatus(level)}
                       className={`p-1.5 rounded-md transition-colors ${
                         level.status === 'ACTIVE'
-                          ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                          ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                          : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
                       }`}
-                      title={level.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
+                      title={
+                        level.status === 'ACTIVE'
+                          ? 'Tornar Privado'
+                          : 'Tornar Público'
+                      }
                     >
                       {level.status === 'ACTIVE' ? (
-                        <Eye className="h-4 w-4" />
+                        <Unlock className="h-4 w-4" />
                       ) : (
-                        <EyeOff className="h-4 w-4" />
+                        <Lock className="h-4 w-4" />
                       )}
                     </button>
                     <button

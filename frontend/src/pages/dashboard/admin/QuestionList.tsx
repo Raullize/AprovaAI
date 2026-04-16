@@ -8,8 +8,8 @@ import {
   Link,
   AlertTriangle,
   ImageIcon,
-  Eye,
-  EyeOff,
+  Lock,
+  Unlock,
   GripVertical,
   Search,
   ArrowLeft,
@@ -415,11 +415,13 @@ function QuestionFormContent({
       {/* Status */}
       <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
         <div>
-          <p className="text-sm font-medium text-gray-700">Status da Questão</p>
+          <p className="text-sm font-medium text-gray-700">
+            Visibilidade da Questão
+          </p>
           <p className="text-xs text-gray-500 mt-0.5">
             {form.status === 'ACTIVE'
-              ? 'Ativa — visível para os alunos'
-              : 'Inativa — oculta para os alunos'}
+              ? 'Pública — acessível para os alunos'
+              : 'Privada — bloqueada/oculta para os alunos'}
           </p>
         </div>
         <button
@@ -775,10 +777,10 @@ export default function QuestionList() {
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                           q.status === 'ACTIVE'
                             ? 'bg-green-100 text-green-800'
-                            : 'bg-gray-100 text-gray-500'
+                            : 'bg-gray-100 text-gray-800'
                         }`}
                       >
-                        {q.status === 'ACTIVE' ? 'Ativa' : 'Inativa'}
+                        {q.status === 'ACTIVE' ? 'Pública' : 'Privada'}
                       </span>
                     </div>
 
@@ -789,15 +791,19 @@ export default function QuestionList() {
                         onClick={() => handleToggleStatus(q)}
                         className={`p-1.5 rounded-md transition-colors ${
                           q.status === 'ACTIVE'
-                            ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                            : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                            ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                            : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
                         }`}
-                        title={q.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
+                        title={
+                          q.status === 'ACTIVE'
+                            ? 'Tornar Privada'
+                            : 'Tornar Pública'
+                        }
                       >
                         {q.status === 'ACTIVE' ? (
-                          <Eye className="h-4 w-4" />
+                          <Unlock className="h-4 w-4" />
                         ) : (
-                          <EyeOff className="h-4 w-4" />
+                          <Lock className="h-4 w-4" />
                         )}
                       </button>
                       <button

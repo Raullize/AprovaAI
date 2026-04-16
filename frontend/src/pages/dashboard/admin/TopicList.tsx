@@ -7,8 +7,8 @@ import {
   ChevronRight,
   Layers,
   AlertTriangle,
-  Eye,
-  EyeOff,
+  Lock,
+  Unlock,
   Search,
   GripVertical,
   ArrowLeft,
@@ -140,11 +140,13 @@ function TopicFormContent({
 
       <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
         <div>
-          <p className="text-sm font-medium text-gray-700">Status do Tópico</p>
+          <p className="text-sm font-medium text-gray-700">
+            Visibilidade do Tópico
+          </p>
           <p className="text-xs text-gray-500 mt-0.5">
             {statusValue === 'ACTIVE'
-              ? 'Ativo — visível para os alunos'
-              : 'Inativo — oculto para os alunos'}
+              ? 'Público — acessível para os alunos'
+              : 'Privado — bloqueado/oculto para os alunos'}
           </p>
         </div>
         <button
@@ -403,10 +405,10 @@ export default function TopicList() {
                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
                       topic.status === 'ACTIVE'
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-500'
+                        : 'bg-gray-100 text-gray-800'
                     }`}
                   >
-                    {topic.status === 'ACTIVE' ? 'Ativo' : 'Inativo'}
+                    {topic.status === 'ACTIVE' ? 'Público' : 'Privado'}
                   </div>
                   <div className="flex items-center space-x-1">
                     <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing mr-1" />
@@ -414,15 +416,19 @@ export default function TopicList() {
                       onClick={() => handleToggleStatus(topic)}
                       className={`p-1.5 rounded-md transition-colors ${
                         topic.status === 'ACTIVE'
-                          ? 'text-gray-400 hover:text-amber-600 hover:bg-amber-50'
-                          : 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                          ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                          : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
                       }`}
-                      title={topic.status === 'ACTIVE' ? 'Desativar' : 'Ativar'}
+                      title={
+                        topic.status === 'ACTIVE'
+                          ? 'Tornar Privado'
+                          : 'Tornar Público'
+                      }
                     >
                       {topic.status === 'ACTIVE' ? (
-                        <Eye className="h-4 w-4" />
+                        <Unlock className="h-4 w-4" />
                       ) : (
-                        <EyeOff className="h-4 w-4" />
+                        <Lock className="h-4 w-4" />
                       )}
                     </button>
                     <button

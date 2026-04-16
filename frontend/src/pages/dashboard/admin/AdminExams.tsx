@@ -65,10 +65,10 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
         }
       } catch (error) {
         console.error(error);
-        toast({ 
-          title: 'Erro ao carregar dados', 
+        toast({
+          title: 'Erro ao carregar dados',
           description: 'Não foi possível recuperar as informações deste exame.',
-          variant: 'destructive' 
+          variant: 'destructive',
         });
       } finally {
         setIsLoading(false);
@@ -85,26 +85,28 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
       setIsSaving(true);
       if (isEditing && examId) {
         await examsService.update(examId, data);
-        toast({ 
-          title: 'Exame atualizado!', 
+        toast({
+          title: 'Exame atualizado!',
           description: 'As informações do exame foram salvas com sucesso.',
-          variant: 'success' 
+          variant: 'success',
         });
       } else {
         await examsService.create(data);
-        toast({ 
-          title: 'Exame criado com sucesso!', 
-          description: 'O exame foi adicionado à plataforma e já pode ser gerenciado.',
-          variant: 'success' 
+        toast({
+          title: 'Exame criado com sucesso!',
+          description:
+            'O exame foi adicionado à plataforma e já pode ser gerenciado.',
+          variant: 'success',
         });
       }
       onSuccess();
     } catch (error) {
       console.error(error);
-      toast({ 
-        title: 'Erro ao salvar', 
-        description: 'Ocorreu um erro inesperado ao processar os dados. Tente novamente.',
-        variant: 'destructive' 
+      toast({
+        title: 'Erro ao salvar',
+        description:
+          'Ocorreu um erro inesperado ao processar os dados. Tente novamente.',
+        variant: 'destructive',
       });
     } finally {
       setIsSaving(false);
@@ -141,7 +143,9 @@ function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
 
       <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
         <div>
-          <p className="text-sm font-medium text-gray-700">Visibilidade do Exame</p>
+          <p className="text-sm font-medium text-gray-700">
+            Visibilidade do Exame
+          </p>
           <p className="text-xs text-gray-500 mt-0.5">
             {statusValue === 'ACTIVE'
               ? 'Público — acessível para os alunos'
@@ -310,10 +314,10 @@ export default function AdminExams() {
     try {
       await examsService.reorder(newOrder.map((e) => e.id));
     } catch {
-      toast({ 
-        title: 'Erro ao reordenar', 
+      toast({
+        title: 'Erro ao reordenar',
         description: 'Não foi possível salvar a nova ordem dos exames.',
-        variant: 'destructive' 
+        variant: 'destructive',
       });
       loadExams();
     }
@@ -404,7 +408,11 @@ export default function AdminExams() {
                           ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
                           : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
                       }`}
-                      title={exam.status === 'ACTIVE' ? 'Tornar Privado' : 'Tornar Público'}
+                      title={
+                        exam.status === 'ACTIVE'
+                          ? 'Tornar Privado'
+                          : 'Tornar Público'
+                      }
                     >
                       {exam.status === 'ACTIVE' ? (
                         <Unlock className="h-4 w-4" />
