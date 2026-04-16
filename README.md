@@ -90,15 +90,21 @@ O perfil administrador possui controle total sobre o conteúdo da plataforma:
 
 ## Arquitetura
 
-```
+O projeto é dividido em duas partes principais, com o backend seguindo rigorosamente os princípios de **Clean Architecture** e **Domain-Driven Design (DDD)**.
+
+```text
 AprovaAI/
 ├── frontend/           # React + Vite + TypeScript (SPA)
 │   └── README.md       # Documentação do frontend
-├── backend/            # Node.js + NestJS + Prisma (API REST)
+├── backend/            # Node.js + NestJS + Prisma (API REST - Clean Architecture)
 │   └── README.md       # Documentação do backend
 └── docs/
-    └── insomnia/       # Coleção Insomnia para testes da API
+    ├── CLEAN_ARCHITECTURE_DDD.md # Documentação detalhada da nova arquitetura
+    └── insomnia/                 # Coleção Insomnia para testes da API
 ```
+
+Para entender em detalhes como o backend está estruturado em camadas (Domain, Application, Infrastructure, API) e o fluxo de dados, consulte o documento:
+**[Arquitetura do Backend: Clean Architecture & DDD](./docs/CLEAN_ARCHITECTURE_DDD.md)**
 
 ---
 

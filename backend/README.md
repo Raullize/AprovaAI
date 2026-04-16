@@ -145,24 +145,23 @@ npx prisma studio      # Interface gráfica localhost para gerenciar tabelas e r
 
 ## Estrutura de Pastas
 
-Diferente do Express comum, o NestJS divide tudo verticalmente por Feature (Módulos):
+O projeto adota a **Clean Architecture (Arquitetura Limpa)** orientada a **Domain-Driven Design (DDD)**. A estrutura de diretórios em `src/` respeita a Regra de Dependência:
 
-```
+```text
 backend/
 ├── prisma/
 │   ├── schema.prisma   # Modelos do banco de dados (Tabelas)
 │   └── seed.ts         # Script de população inicial (seed db)
 ├── uploads/            # Imagens salvas isoladas via filesystem
 └── src/
-    ├── app.module.ts   # Ponto de inicialização global do ecossistema Nest
-    ├── auth/           # Módulo, Serviços e Rotas (JWT/Decorators de Admin)
-    ├── exams/          # CRUD do Exame + PATCH (Drag n Drop)
-    ├── topics/         # CRUD de Tópicos
-    ├── levels/         # CRUD de Níveis
-    ├── questions/      # CRUD de Questões e Alternativas
-    ├── upload/         # Controller de Upload via Interceptor local
-    └── utils/          # Helpers (Zod validation pipes, Utils)
+    ├── api/            # Camada de Interface (Controllers, DTOs, Rotas)
+    ├── application/    # Camada de Aplicação (Use Cases, Ports)
+    ├── domain/         # Camada de Domínio (Entidades, Interfaces de Repositório)
+    ├── infrastructure/ # Camada de Infraestrutura (Prisma, Jwt, Mappers)
+    └── shared/         # Core e Utils compartilhados (Filtros, Exceções)
 ```
+
+> **Para um aprofundamento na arquitetura e fluxo de dados, consulte a documentação detalhada: [Arquitetura do Backend: Clean Architecture & DDD](../docs/CLEAN_ARCHITECTURE_DDD.md)**
 
 ---
 
