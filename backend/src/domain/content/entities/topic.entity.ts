@@ -1,4 +1,4 @@
-import { Entity } from '../../../shared/core/entity';
+import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Slug } from '../value-objects/slug';
 
 export interface TopicProps {
@@ -12,7 +12,7 @@ export interface TopicProps {
   updatedAt?: Date;
 }
 
-export class Topic extends Entity<TopicProps> {
+export class Topic extends AggregateRoot<TopicProps> {
   get name(): string {
     return this.props.name;
   }

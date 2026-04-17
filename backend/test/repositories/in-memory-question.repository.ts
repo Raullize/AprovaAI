@@ -1,5 +1,6 @@
 import { Question } from '../../src/domain/content/entities/question.entity';
 import { QuestionRepository } from '../../src/domain/content/repositories/question.repository';
+import { DomainEvents } from '../../src/shared/core/events/domain-events';
 
 export class InMemoryQuestionRepository implements QuestionRepository {
   public items: Question[] = [];
@@ -20,6 +21,7 @@ export class InMemoryQuestionRepository implements QuestionRepository {
 
   create(question: Question): Promise<Question> {
     this.items.push(question);
+    DomainEvents.dispatchEventsForAggregate(question.id);
     return Promise.resolve(question);
   }
 
@@ -28,6 +30,7 @@ export class InMemoryQuestionRepository implements QuestionRepository {
 
     if (itemIndex >= 0) {
       this.items[itemIndex] = question;
+      DomainEvents.dispatchEventsForAggregate(question.id);
     }
 
     return Promise.resolve(question);

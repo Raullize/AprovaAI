@@ -1,4 +1,4 @@
-import { Entity } from '../../../shared/core/entity';
+import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Email } from '../value-objects/email';
 
 export interface UserProps {
@@ -14,7 +14,7 @@ export interface UserProps {
   updatedAt?: Date;
 }
 
-export class User extends Entity<UserProps> {
+export class User extends AggregateRoot<UserProps> {
   get fullName(): string {
     return this.props.fullName;
   }

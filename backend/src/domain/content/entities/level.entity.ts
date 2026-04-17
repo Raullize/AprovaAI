@@ -1,5 +1,6 @@
-import { Entity } from '../../../shared/core/entity';
+import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Slug } from '../value-objects/slug';
+import { LevelCreatedEvent } from '../events/level-created.event';
 
 export interface LevelProps {
   name: string;
@@ -14,7 +15,7 @@ export interface LevelProps {
   updatedAt?: Date;
 }
 
-export class Level extends Entity<LevelProps> {
+export class Level extends AggregateRoot<LevelProps> {
   get name(): string {
     return this.props.name;
   }
@@ -47,7 +48,7 @@ export class Level extends Entity<LevelProps> {
   }
 
   static create(props: LevelProps, id?: string): Level {
-    return new Level(
+    const level = new Level(
       {
         ...props,
         status: props.status ?? 'ACTIVE',
@@ -58,6 +59,13 @@ export class Level extends Entity<LevelProps> {
       },
       id,
     );
+
+    const isNewLevel = !id;
+    if (isNewLevel) {
+      level.addDomainEvent(new LevelCreatedEvent(level));
+    }
+
+    return level;
   }
 
   public activate(): void {

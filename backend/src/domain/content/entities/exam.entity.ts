@@ -1,4 +1,4 @@
-import { Entity } from '../../../shared/core/entity';
+import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Slug } from '../value-objects/slug';
 
 export interface ExamProps {
@@ -11,7 +11,7 @@ export interface ExamProps {
   updatedAt?: Date;
 }
 
-export class Exam extends Entity<ExamProps> {
+export class Exam extends AggregateRoot<ExamProps> {
   get name(): string {
     return this.props.name;
   }

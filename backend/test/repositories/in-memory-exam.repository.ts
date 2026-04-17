@@ -1,5 +1,6 @@
 import { Exam } from '../../src/domain/content/entities/exam.entity';
 import { ExamRepository } from '../../src/domain/content/repositories/exam.repository';
+import { DomainEvents } from '../../src/shared/core/events/domain-events';
 
 export class InMemoryExamRepository implements ExamRepository {
   public items: Exam[] = [];
@@ -20,16 +21,18 @@ export class InMemoryExamRepository implements ExamRepository {
 
   async create(exam: Exam): Promise<Exam> {
     this.items.push(exam);
+    DomainEvents.dispatchEventsForAggregate(exam.id);
     return Promise.resolve(exam);
   }
 
-  async save(exam: Exam): Promise<Exam> {
+  save(exam: Exam): Promise<Exam> {
     const itemIndex = this.items.findIndex((item) => item.id === exam.id);
+
     if (itemIndex >= 0) {
       this.items[itemIndex] = exam;
-    } else {
-      this.items.push(exam);
+      DomainEvents.dispatchEventsForAggregate(exam.id);
     }
+
     return Promise.resolve(exam);
   }
 

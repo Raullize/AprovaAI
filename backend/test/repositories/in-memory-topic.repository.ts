@@ -1,5 +1,6 @@
 import { Topic } from '../../src/domain/content/entities/topic.entity';
 import { TopicRepository } from '../../src/domain/content/repositories/topic.repository';
+import { DomainEvents } from '../../src/shared/core/events/domain-events';
 
 export class InMemoryTopicRepository implements TopicRepository {
   public items: Topic[] = [];
@@ -32,6 +33,7 @@ export class InMemoryTopicRepository implements TopicRepository {
 
   create(topic: Topic): Promise<Topic> {
     this.items.push(topic);
+    DomainEvents.dispatchEventsForAggregate(topic.id);
     return Promise.resolve(topic);
   }
 
@@ -40,6 +42,7 @@ export class InMemoryTopicRepository implements TopicRepository {
 
     if (itemIndex >= 0) {
       this.items[itemIndex] = topic;
+      DomainEvents.dispatchEventsForAggregate(topic.id);
     }
 
     return Promise.resolve(topic);

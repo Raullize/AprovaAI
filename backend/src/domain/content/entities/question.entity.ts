@@ -1,4 +1,4 @@
-import { Entity } from '../../../shared/core/entity';
+import { AggregateRoot } from '../../../shared/core/aggregate-root';
 
 export interface OptionProps {
   id?: string;
@@ -21,7 +21,7 @@ export interface QuestionProps {
   updatedAt?: Date;
 }
 
-export class Question extends Entity<QuestionProps> {
+export class Question extends AggregateRoot<QuestionProps> {
   get content(): string {
     return this.props.content;
   }

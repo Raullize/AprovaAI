@@ -1,5 +1,6 @@
 import { Level } from '../../src/domain/content/entities/level.entity';
 import { LevelRepository } from '../../src/domain/content/repositories/level.repository';
+import { DomainEvents } from '../../src/shared/core/events/domain-events';
 
 export class InMemoryLevelRepository implements LevelRepository {
   public items: Level[] = [];
@@ -32,6 +33,7 @@ export class InMemoryLevelRepository implements LevelRepository {
 
   create(level: Level): Promise<Level> {
     this.items.push(level);
+    DomainEvents.dispatchEventsForAggregate(level.id);
     return Promise.resolve(level);
   }
 
@@ -40,6 +42,7 @@ export class InMemoryLevelRepository implements LevelRepository {
 
     if (itemIndex >= 0) {
       this.items[itemIndex] = level;
+      DomainEvents.dispatchEventsForAggregate(level.id);
     }
 
     return Promise.resolve(level);
