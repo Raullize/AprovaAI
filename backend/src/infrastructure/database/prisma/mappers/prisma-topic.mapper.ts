@@ -1,12 +1,13 @@
 import { Topic as PrismaTopic } from '@prisma/client';
 import { Topic } from '../../../../domain/content/entities/topic.entity';
+import { Slug } from '../../../../domain/content/value-objects/slug';
 
 export class PrismaTopicMapper {
   static toDomain(raw: PrismaTopic & { _count?: { levels: number } }): Topic {
     return Topic.create(
       {
         name: raw.name,
-        slug: raw.slug,
+        slug: Slug.create(raw.slug),
         description: raw.description,
         status: raw.status,
         order: raw.order,
@@ -23,7 +24,7 @@ export class PrismaTopicMapper {
     return {
       id: topic.id,
       name: topic.name,
-      slug: topic.slug,
+      slug: topic.slug.value,
       description: topic.description ?? null,
       status: topic.status,
       order: topic.order,

@@ -1,9 +1,10 @@
 import { Entity } from '../../../shared/core/entity';
+import { Email } from '../value-objects/email';
 
 export interface UserProps {
   fullName: string;
   username: string;
-  email: string;
+  email: Email;
   passwordHash: string;
   dateOfBirth: Date;
   subscriptionPlan?: 'FREE' | 'PREMIUM';
@@ -14,34 +15,34 @@ export interface UserProps {
 }
 
 export class User extends Entity<UserProps> {
-  get fullName() {
+  get fullName(): string {
     return this.props.fullName;
   }
-  get username() {
+  get username(): string {
     return this.props.username;
   }
-  get email() {
+  get email(): Email {
     return this.props.email;
   }
-  get passwordHash() {
+  get passwordHash(): string {
     return this.props.passwordHash;
   }
-  get dateOfBirth() {
+  get dateOfBirth(): Date {
     return this.props.dateOfBirth;
   }
-  get subscriptionPlan() {
+  get subscriptionPlan(): 'FREE' | 'PREMIUM' {
     return this.props.subscriptionPlan ?? 'FREE';
   }
-  get role() {
+  get role(): 'USER' | 'ADMIN' {
     return this.props.role ?? 'USER';
   }
-  get xp() {
+  get xp(): number {
     return this.props.xp ?? 0;
   }
-  get createdAt() {
+  get createdAt(): Date | undefined {
     return this.props.createdAt;
   }
-  get updatedAt() {
+  get updatedAt(): Date | undefined {
     return this.props.updatedAt;
   }
 

@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { Level } from '../../../domain/content/entities/level.entity';
+import { Slug } from '../../../domain/content/value-objects/slug';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
@@ -44,7 +45,7 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
         },
       );
 
-      updateData['slug'] = slug;
+      updateData['slug'] = Slug.create(slug);
     }
 
     if (request.data.description !== undefined) {

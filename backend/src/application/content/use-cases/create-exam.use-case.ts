@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { ExamRepository } from '../../../domain/content/repositories/exam.repository';
 import { Exam } from '../../../domain/content/entities/exam.entity';
+import { Slug } from '../../../domain/content/value-objects/slug';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 
 export interface CreateExamRequest {
@@ -27,7 +28,7 @@ export class CreateExamUseCase implements UseCase<CreateExamRequest, Exam> {
 
     const exam = Exam.create({
       name: request.name,
-      slug,
+      slug: Slug.create(slug),
       description: request.description,
       status: request.status,
       order: count,

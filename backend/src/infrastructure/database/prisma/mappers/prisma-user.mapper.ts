@@ -1,5 +1,6 @@
 import { User as PrismaUser } from '@prisma/client';
 import { User } from '../../../../domain/users/entities/user.entity';
+import { Email } from '../../../../domain/users/value-objects/email';
 
 export class PrismaUserMapper {
   static toDomain(raw: PrismaUser): User {
@@ -7,7 +8,7 @@ export class PrismaUserMapper {
       {
         fullName: raw.fullName,
         username: raw.username,
-        email: raw.email,
+        email: Email.create(raw.email),
         passwordHash: raw.passwordHash,
         dateOfBirth: raw.dateOfBirth,
         subscriptionPlan: raw.subscriptionPlan,
@@ -25,7 +26,7 @@ export class PrismaUserMapper {
       id: user.id,
       fullName: user.fullName,
       username: user.username,
-      email: user.email,
+      email: user.email.value,
       passwordHash: user.passwordHash,
       dateOfBirth: user.dateOfBirth,
       subscriptionPlan: user.subscriptionPlan,

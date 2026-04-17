@@ -58,7 +58,7 @@ export class LoginUseCase implements UseCase<LoginRequest, LoginResponse> {
         id: user.id,
         fullName: user.fullName,
         username: user.username,
-        email: user.email,
+        email: user.email.value,
         dateOfBirth: user.dateOfBirth,
         role: user.role,
         subscriptionPlan: user.subscriptionPlan,

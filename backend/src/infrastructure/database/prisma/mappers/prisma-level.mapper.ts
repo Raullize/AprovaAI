@@ -1,5 +1,6 @@
 import { Level as PrismaLevel } from '@prisma/client';
 import { Level } from '../../../../domain/content/entities/level.entity';
+import { Slug } from '../../../../domain/content/value-objects/slug';
 
 export class PrismaLevelMapper {
   static toDomain(
@@ -8,7 +9,7 @@ export class PrismaLevelMapper {
     return Level.create(
       {
         name: raw.name,
-        slug: raw.slug,
+        slug: Slug.create(raw.slug),
         description: raw.description,
         order: raw.order,
         topicId: raw.topicId,
@@ -27,7 +28,7 @@ export class PrismaLevelMapper {
     return {
       id: level.id,
       name: level.name,
-      slug: level.slug,
+      slug: level.slug.value,
       description: level.description ?? null,
       order: level.order,
       topicId: level.topicId,

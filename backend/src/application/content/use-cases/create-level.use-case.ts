@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { Level } from '../../../domain/content/entities/level.entity';
+import { Slug } from '../../../domain/content/value-objects/slug';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 
 export interface CreateLevelRequest {
@@ -33,7 +34,7 @@ export class CreateLevelUseCase implements UseCase<CreateLevelRequest, Level> {
 
     const level = Level.create({
       name: request.name,
-      slug,
+      slug: Slug.create(slug),
       description: request.description,
       status: request.status,
       topicId: request.topicId,

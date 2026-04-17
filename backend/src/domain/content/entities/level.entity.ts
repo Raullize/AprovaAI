@@ -1,8 +1,9 @@
 import { Entity } from '../../../shared/core/entity';
+import { Slug } from '../value-objects/slug';
 
 export interface LevelProps {
   name: string;
-  slug: string;
+  slug: Slug;
   description?: string | null;
   order: number;
   topicId: string;

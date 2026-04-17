@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { TopicRepository } from '../../../domain/content/repositories/topic.repository';
 import { Topic } from '../../../domain/content/entities/topic.entity';
+import { Slug } from '../../../domain/content/value-objects/slug';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 
 export interface CreateTopicRequest {
@@ -31,7 +32,7 @@ export class CreateTopicUseCase implements UseCase<CreateTopicRequest, Topic> {
 
     const topic = Topic.create({
       name: request.name,
-      slug,
+      slug: Slug.create(slug),
       description: request.description,
       status: request.status,
       examId: request.examId,

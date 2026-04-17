@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { ExamRepository } from '../../../domain/content/repositories/exam.repository';
 import { Exam } from '../../../domain/content/entities/exam.entity';
+import { Slug } from '../../../domain/content/value-objects/slug';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
@@ -38,7 +39,7 @@ export class UpdateExamUseCase implements UseCase<UpdateExamRequest, Exam> {
         },
       );
 
-      updateData['slug'] = slug;
+      updateData['slug'] = Slug.create(slug);
     }
 
     if (request.data.description !== undefined) {

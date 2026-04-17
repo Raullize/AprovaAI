@@ -4,6 +4,7 @@ import { UserRepository } from '../../../domain/users/repositories/user.reposito
 import { HashProvider } from '../ports/hash-provider';
 import { UserAlreadyExistsError } from '../../../domain/users/errors/user-already-exists.error';
 import { User } from '../../../domain/users/entities/user.entity';
+import { Email } from '../../../domain/users/value-objects/email';
 
 export interface RegisterRequest {
   fullName: string;
@@ -54,7 +55,7 @@ export class RegisterUseCase implements UseCase<
     const user = User.create({
       fullName: request.fullName,
       username: request.username,
-      email: request.email,
+      email: Email.create(request.email),
       passwordHash,
       dateOfBirth: new Date(request.dateOfBirth),
     });
@@ -65,7 +66,7 @@ export class RegisterUseCase implements UseCase<
       id: savedUser.id,
       fullName: savedUser.fullName,
       username: savedUser.username,
-      email: savedUser.email,
+      email: savedUser.email.value,
       dateOfBirth: savedUser.dateOfBirth,
       role: savedUser.role,
       subscriptionPlan: savedUser.subscriptionPlan,
