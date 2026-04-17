@@ -8,6 +8,7 @@ export interface TopicProps {
   status?: 'ACTIVE' | 'INACTIVE';
   examId: string;
   order?: number;
+  levelsCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -36,6 +37,9 @@ export class Topic extends AggregateRoot<TopicProps> {
   }
   get updatedAt(): Date | undefined {
     return this.props.updatedAt;
+  }
+  get levelsCount(): number {
+    return this.props.levelsCount ?? 0;
   }
 
   static create(props: TopicProps, id?: string): Topic {

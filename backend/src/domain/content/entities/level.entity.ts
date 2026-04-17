@@ -12,6 +12,7 @@ export interface LevelProps {
   status?: 'ACTIVE' | 'INACTIVE';
   xpReward?: number;
   passingPercentage?: number;
+  questionsCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -46,6 +47,9 @@ export class Level extends AggregateRoot<LevelProps> {
   }
   get updatedAt(): Date | undefined {
     return this.props.updatedAt;
+  }
+  get questionsCount(): number {
+    return this.props.questionsCount ?? 0;
   }
 
   static create(props: LevelProps, id?: string): Level {

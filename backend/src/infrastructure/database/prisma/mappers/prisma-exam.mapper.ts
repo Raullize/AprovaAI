@@ -11,6 +11,7 @@ export class PrismaExamMapper {
         description: raw.description,
         status: raw.status,
         order: raw.order,
+        topicsCount: raw._count?.topics,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },

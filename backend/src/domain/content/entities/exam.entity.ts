@@ -7,6 +7,7 @@ export interface ExamProps {
   description?: string | null;
   status?: 'ACTIVE' | 'INACTIVE';
   order?: number;
+  topicsCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -32,6 +33,9 @@ export class Exam extends AggregateRoot<ExamProps> {
   }
   get updatedAt(): Date | undefined {
     return this.props.updatedAt;
+  }
+  get topicsCount(): number {
+    return this.props.topicsCount ?? 0;
   }
 
   static create(props: ExamProps, id?: string): Exam {

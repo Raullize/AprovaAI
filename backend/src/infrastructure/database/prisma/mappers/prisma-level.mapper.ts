@@ -16,6 +16,7 @@ export class PrismaLevelMapper {
         status: raw.status,
         xpReward: raw.xpReward,
         passingPercentage: raw.passingPercentage,
+        questionsCount: raw._count?.questions,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },

@@ -12,6 +12,7 @@ export class PrismaTopicMapper {
         status: raw.status,
         order: raw.order,
         examId: raw.examId,
+        levelsCount: raw._count?.levels,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
