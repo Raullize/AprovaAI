@@ -1,4 +1,5 @@
 import { AggregateRoot } from '../../../shared/core/aggregate-root';
+import { ValidationError } from '../../../shared/core/errors/validation.error';
 
 export interface OptionProps {
   id?: string;
@@ -80,20 +81,20 @@ export class Question extends AggregateRoot<QuestionProps> {
     this.props.updatedAt = new Date();
   }
 
-  public updateDetails(
-    content: string,
-    imageUrl: string | null | undefined,
-    type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE',
-    explanation: string | null | undefined,
-    studyLink: string | null | undefined,
-    levelId: string,
-  ): void {
-    this.props.content = content;
-    this.props.imageUrl = imageUrl;
-    this.props.type = type;
-    this.props.explanation = explanation;
-    this.props.studyLink = studyLink;
-    this.props.levelId = levelId;
+  public updateDetails(details: {
+    content: string;
+    imageUrl: string | null | undefined;
+    type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
+    explanation: string | null | undefined;
+    studyLink: string | null | undefined;
+    levelId: string;
+  }): void {
+    this.props.content = details.content;
+    this.props.imageUrl = details.imageUrl;
+    this.props.type = details.type;
+    this.props.explanation = details.explanation;
+    this.props.studyLink = details.studyLink;
+    this.props.levelId = details.levelId;
     this.props.updatedAt = new Date();
   }
 
@@ -104,7 +105,7 @@ export class Question extends AggregateRoot<QuestionProps> {
 
   public updateOptions(options: OptionProps[]): void {
     if (options.length === 0) {
-      throw new Error('A question must have at least one option.');
+      throw new ValidationError('A question must have at least one option.');
     }
     this.props.options = options;
     this.props.updatedAt = new Date();

@@ -41,28 +41,30 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
         },
       );
 
-      level.updateDetails(
-        request.data.name,
-        request.data.description ?? level.description,
-        Slug.create(slug),
-        request.data.topicId ?? level.topicId,
-        request.data.xpReward ?? level.xpReward,
-        request.data.passingPercentage ?? level.passingPercentage,
-      );
+      level.updateDetails({
+        name: request.data.name,
+        description: request.data.description ?? level.description,
+        slug: Slug.create(slug),
+        topicId: request.data.topicId ?? level.topicId,
+        xpReward: request.data.xpReward ?? level.xpReward,
+        passingPercentage:
+          request.data.passingPercentage ?? level.passingPercentage,
+      });
     } else if (
       request.data.description !== undefined ||
       request.data.topicId !== undefined ||
       request.data.xpReward !== undefined ||
       request.data.passingPercentage !== undefined
     ) {
-      level.updateDetails(
-        level.name,
-        request.data.description ?? level.description,
-        level.slug,
-        request.data.topicId ?? level.topicId,
-        request.data.xpReward ?? level.xpReward,
-        request.data.passingPercentage ?? level.passingPercentage,
-      );
+      level.updateDetails({
+        name: level.name,
+        description: request.data.description ?? level.description,
+        slug: level.slug,
+        topicId: request.data.topicId ?? level.topicId,
+        xpReward: request.data.xpReward ?? level.xpReward,
+        passingPercentage:
+          request.data.passingPercentage ?? level.passingPercentage,
+      });
     }
 
     if (request.data.status !== undefined) {

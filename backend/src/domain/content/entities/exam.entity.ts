@@ -57,14 +57,14 @@ export class Exam extends AggregateRoot<ExamProps> {
     this.props.updatedAt = new Date();
   }
 
-  public updateDetails(
-    name: string,
-    description: string | null | undefined,
-    slug: Slug,
-  ): void {
-    this.props.name = name;
-    this.props.description = description;
-    this.props.slug = slug;
+  public updateDetails(details: {
+    name: string;
+    description: string | null | undefined;
+    slug: Slug;
+  }): void {
+    this.props.name = details.name;
+    this.props.description = details.description;
+    this.props.slug = details.slug;
     this.props.updatedAt = new Date();
   }
 

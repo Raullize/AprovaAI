@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
-import { TopicRepository } from '../../../../../src/domain/content/repositories/topic.repository';
-import { Topic } from '../../../../../src/domain/content/entities/topic.entity';
+import { TopicRepository } from '../../../../domain/content/repositories/topic.repository';
+import { Topic } from '../../../../domain/content/entities/topic.entity';
 import { PrismaTopicMapper } from '../mappers/prisma-topic.mapper';
 
 @Injectable()

@@ -46,20 +46,23 @@ export class UpdateQuestionUseCase implements UseCase<
       request.data.studyLink !== undefined ||
       request.data.levelId !== undefined
     ) {
-      question.updateDetails(
-        request.data.content ?? question.content,
-        request.data.imageUrl !== undefined
-          ? request.data.imageUrl
-          : question.imageUrl,
-        request.data.type ?? question.type,
-        request.data.explanation !== undefined
-          ? request.data.explanation
-          : question.explanation,
-        request.data.studyLink !== undefined
-          ? request.data.studyLink
-          : question.studyLink,
-        request.data.levelId ?? question.levelId,
-      );
+      question.updateDetails({
+        content: request.data.content ?? question.content,
+        imageUrl:
+          request.data.imageUrl !== undefined
+            ? request.data.imageUrl
+            : question.imageUrl,
+        type: request.data.type ?? question.type,
+        explanation:
+          request.data.explanation !== undefined
+            ? request.data.explanation
+            : question.explanation,
+        studyLink:
+          request.data.studyLink !== undefined
+            ? request.data.studyLink
+            : question.studyLink,
+        levelId: request.data.levelId ?? question.levelId,
+      });
     }
 
     if (request.data.options !== undefined) {

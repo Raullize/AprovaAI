@@ -1,5 +1,6 @@
 import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Email } from '../value-objects/email';
+import { ValidationError } from '../../../shared/core/errors/validation.error';
 
 export interface UserProps {
   fullName: string;
@@ -58,5 +59,23 @@ export class User extends AggregateRoot<UserProps> {
       },
       id,
     );
+  }
+
+  public grantXp(amount: number): void {
+    if (amount < 0) {
+      throw new ValidationError('XP amount must be positive.');
+    }
+    this.props.xp = (this.props.xp ?? 0) + amount;
+    this.props.updatedAt = new Date();
+  }
+
+  public changePassword(newPasswordHash: string): void {
+    this.props.passwordHash = newPasswordHash;
+    this.props.updatedAt = new Date();
+  }
+
+  public upgradeToPremium(): void {
+    this.props.subscriptionPlan = 'PREMIUM';
+    this.props.updatedAt = new Date();
   }
 }

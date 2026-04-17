@@ -1,6 +1,7 @@
 import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Slug } from '../value-objects/slug';
 import { LevelCreatedEvent } from '../events/level-created.event';
+import { ValidationError } from '../../../shared/core/errors/validation.error';
 
 export interface LevelProps {
   name: string;
@@ -78,23 +79,25 @@ export class Level extends AggregateRoot<LevelProps> {
     this.props.updatedAt = new Date();
   }
 
-  public updateDetails(
-    name: string,
-    description: string | null | undefined,
-    slug: Slug,
-    topicId: string,
-    xpReward: number,
-    passingPercentage: number,
-  ): void {
-    if (passingPercentage < 0 || passingPercentage > 100) {
-      throw new Error('Passing percentage must be between 0 and 100.');
+  public updateDetails(details: {
+    name: string;
+    description: string | null | undefined;
+    slug: Slug;
+    topicId: string;
+    xpReward: number;
+    passingPercentage: number;
+  }): void {
+    if (details.passingPercentage < 0 || details.passingPercentage > 100) {
+      throw new ValidationError(
+        'Passing percentage must be between 0 and 100.',
+      );
     }
-    this.props.name = name;
-    this.props.description = description;
-    this.props.slug = slug;
-    this.props.topicId = topicId;
-    this.props.xpReward = xpReward;
-    this.props.passingPercentage = passingPercentage;
+    this.props.name = details.name;
+    this.props.description = details.description;
+    this.props.slug = details.slug;
+    this.props.topicId = details.topicId;
+    this.props.xpReward = details.xpReward;
+    this.props.passingPercentage = details.passingPercentage;
     this.props.updatedAt = new Date();
   }
 

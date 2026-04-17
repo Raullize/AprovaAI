@@ -34,13 +34,17 @@ export class UpdateExamUseCase implements UseCase<UpdateExamRequest, Exam> {
           return existing ? existing.id !== request.id : false;
         },
       );
-      exam.updateDetails(
-        request.data.name,
-        request.data.description ?? exam.description,
-        Slug.create(slug),
-      );
+      exam.updateDetails({
+        name: request.data.name,
+        description: request.data.description ?? exam.description,
+        slug: Slug.create(slug),
+      });
     } else if (request.data.description !== undefined) {
-      exam.updateDetails(exam.name, request.data.description, exam.slug);
+      exam.updateDetails({
+        name: exam.name,
+        description: request.data.description,
+        slug: exam.slug,
+      });
     }
 
     if (request.data.status !== undefined) {

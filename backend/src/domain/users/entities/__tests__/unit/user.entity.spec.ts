@@ -38,4 +38,67 @@ describe('User Entity', () => {
     expect(user.role).toBe('ADMIN');
     expect(user.xp).toBe(100);
   });
+
+  it('should grant xp to a user', () => {
+    const email = Email.create('john.doe@example.com');
+    const user = User.create({
+      fullName: 'John Doe',
+      username: 'johndoe',
+      email: email,
+      passwordHash: 'hashed-password',
+      dateOfBirth: new Date('1990-01-01'),
+      xp: 10,
+    });
+
+    user.grantXp(20);
+
+    expect(user.xp).toBe(30);
+    expect(user.updatedAt).toBeDefined();
+  });
+
+  it('should not allow negative xp grant', () => {
+    const email = Email.create('john.doe@example.com');
+    const user = User.create({
+      fullName: 'John Doe',
+      username: 'johndoe',
+      email: email,
+      passwordHash: 'hashed-password',
+      dateOfBirth: new Date('1990-01-01'),
+    });
+
+    expect(() => {
+      user.grantXp(-10);
+    }).toThrow('XP amount must be positive.');
+  });
+
+  it('should change password', () => {
+    const email = Email.create('john.doe@example.com');
+    const user = User.create({
+      fullName: 'John Doe',
+      username: 'johndoe',
+      email: email,
+      passwordHash: 'old-password',
+      dateOfBirth: new Date('1990-01-01'),
+    });
+
+    user.changePassword('new-password');
+
+    expect(user.passwordHash).toBe('new-password');
+  });
+
+  it('should upgrade to premium', () => {
+    const email = Email.create('john.doe@example.com');
+    const user = User.create({
+      fullName: 'John Doe',
+      username: 'johndoe',
+      email: email,
+      passwordHash: 'hashed-password',
+      dateOfBirth: new Date('1990-01-01'),
+      subscriptionPlan: 'FREE',
+    });
+
+    user.upgradeToPremium();
+
+    expect(user.subscriptionPlan).toBe('PREMIUM');
+  });
 });

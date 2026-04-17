@@ -38,22 +38,22 @@ export class UpdateTopicUseCase implements UseCase<UpdateTopicRequest, Topic> {
           return existing ? existing.id !== request.id : false;
         },
       );
-      topic.updateDetails(
-        request.data.name,
-        request.data.description ?? topic.description,
-        Slug.create(slug),
-        request.data.examId ?? topic.examId,
-      );
+      topic.updateDetails({
+        name: request.data.name,
+        description: request.data.description ?? topic.description,
+        slug: Slug.create(slug),
+        examId: request.data.examId ?? topic.examId,
+      });
     } else if (
       request.data.description !== undefined ||
       request.data.examId !== undefined
     ) {
-      topic.updateDetails(
-        topic.name,
-        request.data.description ?? topic.description,
-        topic.slug,
-        request.data.examId ?? topic.examId,
-      );
+      topic.updateDetails({
+        name: topic.name,
+        description: request.data.description ?? topic.description,
+        slug: topic.slug,
+        examId: request.data.examId ?? topic.examId,
+      });
     }
 
     if (request.data.status !== undefined) {

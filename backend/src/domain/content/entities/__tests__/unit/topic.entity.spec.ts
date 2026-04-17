@@ -49,12 +49,12 @@ describe('Topic Entity', () => {
       examId: 'exam-1',
     });
 
-    topic.updateDetails(
-      'Updated Topic',
-      'New Description',
-      Slug.createFromText('updated-topic'),
-      'exam-2',
-    );
+    topic.updateDetails({
+      name: 'Updated Topic',
+      description: 'New Description',
+      slug: Slug.createFromText('updated-topic'),
+      examId: 'exam-2',
+    });
 
     expect(topic.name).toBe('Updated Topic');
     expect(topic.description).toBe('New Description');

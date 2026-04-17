@@ -49,14 +49,14 @@ describe('Question Entity', () => {
       order: 1,
     });
 
-    question.updateDetails(
-      'Updated Question',
-      'image.png',
-      'SINGLE_CHOICE',
-      'Explanation',
-      'link.com',
-      'level-2',
-    );
+    question.updateDetails({
+      content: 'Updated Question',
+      imageUrl: 'image.png',
+      type: 'SINGLE_CHOICE',
+      explanation: 'Explanation',
+      studyLink: 'link.com',
+      levelId: 'level-2',
+    });
 
     expect(question.content).toBe('Updated Question');
     expect(question.imageUrl).toBe('image.png');

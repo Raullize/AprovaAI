@@ -54,14 +54,14 @@ describe('Level Entity', () => {
       order: 1,
     });
 
-    level.updateDetails(
-      'Updated Level',
-      'New Description',
-      Slug.createFromText('updated-level'),
-      'topic-2',
-      50,
-      80.0,
-    );
+    level.updateDetails({
+      name: 'Updated Level',
+      description: 'New Description',
+      slug: Slug.createFromText('updated-level'),
+      topicId: 'topic-2',
+      xpReward: 50,
+      passingPercentage: 80.0,
+    });
 
     expect(level.name).toBe('Updated Level');
     expect(level.description).toBe('New Description');
@@ -80,14 +80,14 @@ describe('Level Entity', () => {
     });
 
     expect(() => {
-      level.updateDetails(
-        'Updated Level',
-        'New Description',
-        Slug.createFromText('updated-level'),
-        'topic-2',
-        50,
-        150.0, // Invalid percentage
-      );
+      level.updateDetails({
+        name: 'Updated Level',
+        description: 'New Description',
+        slug: Slug.createFromText('updated-level'),
+        topicId: 'topic-2',
+        xpReward: 50,
+        passingPercentage: 150.0, // Invalid percentage
+      });
     }).toThrow('Passing percentage must be between 0 and 100.');
   });
 

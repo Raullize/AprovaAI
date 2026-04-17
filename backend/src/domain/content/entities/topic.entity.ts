@@ -61,16 +61,16 @@ export class Topic extends AggregateRoot<TopicProps> {
     this.props.updatedAt = new Date();
   }
 
-  public updateDetails(
-    name: string,
-    description: string | null | undefined,
-    slug: Slug,
-    examId: string,
-  ): void {
-    this.props.name = name;
-    this.props.description = description;
-    this.props.slug = slug;
-    this.props.examId = examId;
+  public updateDetails(details: {
+    name: string;
+    description: string | null | undefined;
+    slug: Slug;
+    examId: string;
+  }): void {
+    this.props.name = details.name;
+    this.props.description = details.description;
+    this.props.slug = details.slug;
+    this.props.examId = details.examId;
     this.props.updatedAt = new Date();
   }
 

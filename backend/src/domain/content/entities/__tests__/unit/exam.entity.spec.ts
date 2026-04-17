@@ -53,7 +53,11 @@ describe('Exam Entity', () => {
     });
 
     const newSlug = Slug.create('new-slug');
-    exam.updateDetails('New Name', 'New Description', newSlug);
+    exam.updateDetails({
+      name: 'New Name',
+      description: 'New Description',
+      slug: newSlug,
+    });
 
     expect(exam.name).toBe('New Name');
     expect(exam.description).toBe('New Description');
