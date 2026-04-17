@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../src/prisma/prisma.service';
+import { PrismaService } from '../prisma.service';
 import { ExamRepository } from '../../../../../src/domain/content/repositories/exam.repository';
 import { Exam } from '../../../../../src/domain/content/entities/exam.entity';
 import { PrismaExamMapper } from '../mappers/prisma-exam.mapper';

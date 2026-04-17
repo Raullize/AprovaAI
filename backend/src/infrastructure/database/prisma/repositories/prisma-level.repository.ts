@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../../src/prisma/prisma.service';
+import { PrismaService } from '../prisma.service';
 import { LevelRepository } from '../../../../../src/domain/content/repositories/level.repository';
 import { Level } from '../../../../../src/domain/content/entities/level.entity';
 import { PrismaLevelMapper } from '../mappers/prisma-level.mapper';

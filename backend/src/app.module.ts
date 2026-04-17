@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from './prisma/prisma.module';
+import { PrismaModule } from './infrastructure/database/prisma/prisma.module';
 import { AuthModule } from './api/auth/auth.module';
 import { ExamsModule } from './api/exams/exams.module';
 import { TopicsModule } from './api/topics/topics.module';
