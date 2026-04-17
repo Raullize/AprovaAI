@@ -19,11 +19,9 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
-import {
-  FindAllExamsUseCase,
-  FindExamByIdUseCase,
-  FindExamBySlugUseCase,
-} from '../../application/content/use-cases/find-exams.use-case';
+import { FindAllExamsUseCase } from '../../application/content/use-cases/find-all-exams.use-case';
+import { FindExamByIdUseCase } from '../../application/content/use-cases/find-exam-by-id.use-case';
+import { FindExamBySlugUseCase } from '../../application/content/use-cases/find-exam-by-slug.use-case';
 import { CreateExamUseCase } from '../../application/content/use-cases/create-exam.use-case';
 import { UpdateExamUseCase } from '../../application/content/use-cases/update-exam.use-case';
 import { DeleteExamUseCase } from '../../application/content/use-cases/delete-exam.use-case';

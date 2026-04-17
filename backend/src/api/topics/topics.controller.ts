@@ -17,18 +17,14 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
-import {
-  FindAllTopicsUseCase,
-  FindTopicsByExamIdUseCase,
-  FindTopicByIdUseCase,
-  FindTopicBySlugUseCase,
-} from '../../application/content/use-cases/find-topics.use-case';
+import { FindAllTopicsUseCase } from '../../application/content/use-cases/find-all-topics.use-case';
+import { FindTopicsByExamIdUseCase } from '../../application/content/use-cases/find-topics-by-exam-id.use-case';
+import { FindTopicByIdUseCase } from '../../application/content/use-cases/find-topic-by-id.use-case';
+import { FindTopicBySlugUseCase } from '../../application/content/use-cases/find-topic-by-slug.use-case';
 import { CreateTopicUseCase } from '../../application/content/use-cases/create-topic.use-case';
 import { UpdateTopicUseCase } from '../../application/content/use-cases/update-topic.use-case';
-import {
-  DeleteTopicUseCase,
-  ReorderTopicsUseCase,
-} from '../../application/content/use-cases/reorder-delete-topics.use-case';
+import { DeleteTopicUseCase } from '../../application/content/use-cases/delete-topic.use-case';
+import { ReorderTopicsUseCase } from '../../application/content/use-cases/reorder-topics.use-case';
 
 @Controller('topics')
 export class TopicsController {

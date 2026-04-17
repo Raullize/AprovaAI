@@ -17,18 +17,14 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
-import {
-  FindAllLevelsUseCase,
-  FindLevelsByTopicIdUseCase,
-  FindLevelByIdUseCase,
-  FindLevelBySlugUseCase,
-} from '../../application/content/use-cases/find-levels.use-case';
+import { FindAllLevelsUseCase } from '../../application/content/use-cases/find-all-levels.use-case';
+import { FindLevelsByTopicIdUseCase } from '../../application/content/use-cases/find-levels-by-topic-id.use-case';
+import { FindLevelByIdUseCase } from '../../application/content/use-cases/find-level-by-id.use-case';
+import { FindLevelBySlugUseCase } from '../../application/content/use-cases/find-level-by-slug.use-case';
 import { CreateLevelUseCase } from '../../application/content/use-cases/create-level.use-case';
 import { UpdateLevelUseCase } from '../../application/content/use-cases/update-level.use-case';
-import {
-  DeleteLevelUseCase,
-  ReorderLevelsUseCase,
-} from '../../application/content/use-cases/reorder-delete-levels.use-case';
+import { DeleteLevelUseCase } from '../../application/content/use-cases/delete-level.use-case';
+import { ReorderLevelsUseCase } from '../../application/content/use-cases/reorder-levels.use-case';
 
 @Controller('levels')
 export class LevelsController {

@@ -17,17 +17,13 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
-import {
-  FindAllQuestionsUseCase,
-  FindQuestionsByLevelIdUseCase,
-  FindQuestionByIdUseCase,
-} from '../../application/content/use-cases/find-questions.use-case';
+import { FindAllQuestionsUseCase } from '../../application/content/use-cases/find-all-questions.use-case';
+import { FindQuestionsByLevelIdUseCase } from '../../application/content/use-cases/find-questions-by-level-id.use-case';
+import { FindQuestionByIdUseCase } from '../../application/content/use-cases/find-question-by-id.use-case';
 import { CreateQuestionUseCase } from '../../application/content/use-cases/create-question.use-case';
 import { UpdateQuestionUseCase } from '../../application/content/use-cases/update-question.use-case';
-import {
-  DeleteQuestionUseCase,
-  ReorderQuestionsUseCase,
-} from '../../application/content/use-cases/reorder-delete-questions.use-case';
+import { DeleteQuestionUseCase } from '../../application/content/use-cases/delete-question.use-case';
+import { ReorderQuestionsUseCase } from '../../application/content/use-cases/reorder-questions.use-case';
 
 @Controller('questions')
 export class QuestionsController {

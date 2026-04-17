@@ -5,27 +5,6 @@ import { Question } from '../../../domain/content/entities/question.entity';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
 @Injectable()
-export class FindAllQuestionsUseCase implements UseCase<void, Question[]> {
-  constructor(private readonly questionRepository: QuestionRepository) {}
-
-  async execute(): Promise<Question[]> {
-    return this.questionRepository.findAll();
-  }
-}
-
-@Injectable()
-export class FindQuestionsByLevelIdUseCase implements UseCase<
-  string,
-  Question[]
-> {
-  constructor(private readonly questionRepository: QuestionRepository) {}
-
-  async execute(levelId: string): Promise<Question[]> {
-    return this.questionRepository.findByLevelId(levelId);
-  }
-}
-
-@Injectable()
 export class FindQuestionByIdUseCase implements UseCase<string, Question> {
   constructor(private readonly questionRepository: QuestionRepository) {}
 

@@ -17,12 +17,3 @@ export class ReorderLevelsUseCase implements UseCase<
     await this.levelRepository.reorder(request.ids);
   }
 }
-
-@Injectable()
-export class DeleteLevelUseCase implements UseCase<string, void> {
-  constructor(private readonly levelRepository: LevelRepository) {}
-
-  async execute(id: string): Promise<void> {
-    await this.levelRepository.delete(id);
-  }
-}
