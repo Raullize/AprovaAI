@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-export const createOptionSchema = z.object({
+const createOptionSchema = z.object({
   text: z.string().min(1, 'Texto da opção é obrigatório'),
   isCorrect: z.boolean(),
 });
 
-export const updateOptionSchema = z.object({
+const updateOptionSchema = z.object({
   id: z.string().optional(),
   text: z.string().min(1, 'Texto da opção é obrigatório'),
   isCorrect: z.boolean(),
