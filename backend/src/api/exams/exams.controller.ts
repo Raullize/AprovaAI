@@ -22,6 +22,7 @@ import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 import {
   FindAllExamsUseCase,
   FindExamByIdUseCase,
+  FindExamBySlugUseCase,
 } from '../../application/content/use-cases/find-exams.use-case';
 import { CreateExamUseCase } from '../../application/content/use-cases/create-exam.use-case';
 import { UpdateExamUseCase } from '../../application/content/use-cases/update-exam.use-case';
@@ -33,6 +34,7 @@ export class ExamsController {
   constructor(
     private readonly findAllExamsUseCase: FindAllExamsUseCase,
     private readonly findExamByIdUseCase: FindExamByIdUseCase,
+    private readonly findExamBySlugUseCase: FindExamBySlugUseCase,
     private readonly createExamUseCase: CreateExamUseCase,
     private readonly updateExamUseCase: UpdateExamUseCase,
     private readonly deleteExamUseCase: DeleteExamUseCase,
@@ -53,9 +55,16 @@ export class ExamsController {
     return this.findAllExamsUseCase.execute();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.findExamByIdUseCase.execute(id);
+  @Get(':idOrSlug')
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    const isUUID =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        idOrSlug,
+      );
+    if (isUUID) {
+      return this.findExamByIdUseCase.execute(idOrSlug);
+    }
+    return this.findExamBySlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')

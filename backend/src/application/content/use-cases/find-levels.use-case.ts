@@ -25,15 +25,23 @@ export class FindLevelsByTopicIdUseCase implements UseCase<string, Level[]> {
 export class FindLevelByIdUseCase implements UseCase<string, Level> {
   constructor(private readonly levelRepository: LevelRepository) {}
 
-  async execute(idOrSlug: string): Promise<Level> {
-    let level = await this.levelRepository.findById(idOrSlug);
+  async execute(id: string): Promise<Level> {
+    const level = await this.levelRepository.findById(id);
     if (!level) {
-      level = await this.levelRepository.findBySlug(idOrSlug);
+      throw new NotFoundException(`Level with ID ${id} not found`);
     }
+    return level;
+  }
+}
+
+@Injectable()
+export class FindLevelBySlugUseCase implements UseCase<string, Level> {
+  constructor(private readonly levelRepository: LevelRepository) {}
+
+  async execute(slug: string): Promise<Level> {
+    const level = await this.levelRepository.findBySlug(slug);
     if (!level) {
-      throw new NotFoundException(
-        `Level with ID or slug ${idOrSlug} not found`,
-      );
+      throw new NotFoundException(`Level with slug ${slug} not found`);
     }
     return level;
   }

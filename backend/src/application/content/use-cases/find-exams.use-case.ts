@@ -16,13 +16,23 @@ export class FindAllExamsUseCase implements UseCase<void, Exam[]> {
 export class FindExamByIdUseCase implements UseCase<string, Exam> {
   constructor(private readonly examRepository: ExamRepository) {}
 
-  async execute(idOrSlug: string): Promise<Exam> {
-    let exam = await this.examRepository.findById(idOrSlug);
+  async execute(id: string): Promise<Exam> {
+    const exam = await this.examRepository.findById(id);
     if (!exam) {
-      exam = await this.examRepository.findBySlug(idOrSlug);
+      throw new NotFoundException(`Exam with ID ${id} not found`);
     }
+    return exam;
+  }
+}
+
+@Injectable()
+export class FindExamBySlugUseCase implements UseCase<string, Exam> {
+  constructor(private readonly examRepository: ExamRepository) {}
+
+  async execute(slug: string): Promise<Exam> {
+    const exam = await this.examRepository.findBySlug(slug);
     if (!exam) {
-      throw new NotFoundException(`Exam with ID or slug ${idOrSlug} not found`);
+      throw new NotFoundException(`Exam with slug ${slug} not found`);
     }
     return exam;
   }

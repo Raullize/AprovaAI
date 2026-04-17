@@ -21,6 +21,7 @@ import {
   FindAllLevelsUseCase,
   FindLevelsByTopicIdUseCase,
   FindLevelByIdUseCase,
+  FindLevelBySlugUseCase,
 } from '../../application/content/use-cases/find-levels.use-case';
 import { CreateLevelUseCase } from '../../application/content/use-cases/create-level.use-case';
 import { UpdateLevelUseCase } from '../../application/content/use-cases/update-level.use-case';
@@ -35,6 +36,7 @@ export class LevelsController {
     private readonly findAllLevelsUseCase: FindAllLevelsUseCase,
     private readonly findLevelsByTopicIdUseCase: FindLevelsByTopicIdUseCase,
     private readonly findLevelByIdUseCase: FindLevelByIdUseCase,
+    private readonly findLevelBySlugUseCase: FindLevelBySlugUseCase,
     private readonly createLevelUseCase: CreateLevelUseCase,
     private readonly updateLevelUseCase: UpdateLevelUseCase,
     private readonly deleteLevelUseCase: DeleteLevelUseCase,
@@ -61,9 +63,16 @@ export class LevelsController {
     return this.findLevelsByTopicIdUseCase.execute(topicId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.findLevelByIdUseCase.execute(id);
+  @Get(':idOrSlug')
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    const isUUID =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        idOrSlug,
+      );
+    if (isUUID) {
+      return this.findLevelByIdUseCase.execute(idOrSlug);
+    }
+    return this.findLevelBySlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')

@@ -4,6 +4,7 @@ import {
   FindAllTopicsUseCase,
   FindTopicsByExamIdUseCase,
   FindTopicByIdUseCase,
+  FindTopicBySlugUseCase,
 } from '../../application/content/use-cases/find-topics.use-case';
 import { CreateTopicUseCase } from '../../application/content/use-cases/create-topic.use-case';
 import { UpdateTopicUseCase } from '../../application/content/use-cases/update-topic.use-case';
@@ -20,6 +21,7 @@ import { PrismaTopicRepository } from '../../infrastructure/database/prisma/repo
     FindAllTopicsUseCase,
     FindTopicsByExamIdUseCase,
     FindTopicByIdUseCase,
+    FindTopicBySlugUseCase,
     CreateTopicUseCase,
     UpdateTopicUseCase,
     DeleteTopicUseCase,

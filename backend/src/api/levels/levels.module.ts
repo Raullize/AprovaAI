@@ -4,6 +4,7 @@ import {
   FindAllLevelsUseCase,
   FindLevelsByTopicIdUseCase,
   FindLevelByIdUseCase,
+  FindLevelBySlugUseCase,
 } from '../../application/content/use-cases/find-levels.use-case';
 import { CreateLevelUseCase } from '../../application/content/use-cases/create-level.use-case';
 import { UpdateLevelUseCase } from '../../application/content/use-cases/update-level.use-case';
@@ -20,6 +21,7 @@ import { PrismaLevelRepository } from '../../infrastructure/database/prisma/repo
     FindAllLevelsUseCase,
     FindLevelsByTopicIdUseCase,
     FindLevelByIdUseCase,
+    FindLevelBySlugUseCase,
     CreateLevelUseCase,
     UpdateLevelUseCase,
     DeleteLevelUseCase,

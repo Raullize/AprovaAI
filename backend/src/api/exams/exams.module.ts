@@ -3,6 +3,7 @@ import { ExamsController } from './exams.controller';
 import {
   FindAllExamsUseCase,
   FindExamByIdUseCase,
+  FindExamBySlugUseCase,
 } from '../../application/content/use-cases/find-exams.use-case';
 import { CreateExamUseCase } from '../../application/content/use-cases/create-exam.use-case';
 import { UpdateExamUseCase } from '../../application/content/use-cases/update-exam.use-case';
@@ -16,6 +17,7 @@ import { PrismaExamRepository } from '../../infrastructure/database/prisma/repos
   providers: [
     FindAllExamsUseCase,
     FindExamByIdUseCase,
+    FindExamBySlugUseCase,
     CreateExamUseCase,
     UpdateExamUseCase,
     DeleteExamUseCase,

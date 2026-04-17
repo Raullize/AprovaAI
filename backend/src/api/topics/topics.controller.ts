@@ -21,6 +21,7 @@ import {
   FindAllTopicsUseCase,
   FindTopicsByExamIdUseCase,
   FindTopicByIdUseCase,
+  FindTopicBySlugUseCase,
 } from '../../application/content/use-cases/find-topics.use-case';
 import { CreateTopicUseCase } from '../../application/content/use-cases/create-topic.use-case';
 import { UpdateTopicUseCase } from '../../application/content/use-cases/update-topic.use-case';
@@ -35,6 +36,7 @@ export class TopicsController {
     private readonly findAllTopicsUseCase: FindAllTopicsUseCase,
     private readonly findTopicsByExamIdUseCase: FindTopicsByExamIdUseCase,
     private readonly findTopicByIdUseCase: FindTopicByIdUseCase,
+    private readonly findTopicBySlugUseCase: FindTopicBySlugUseCase,
     private readonly createTopicUseCase: CreateTopicUseCase,
     private readonly updateTopicUseCase: UpdateTopicUseCase,
     private readonly deleteTopicUseCase: DeleteTopicUseCase,
@@ -61,9 +63,16 @@ export class TopicsController {
     return this.findTopicsByExamIdUseCase.execute(examId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.findTopicByIdUseCase.execute(id);
+  @Get(':idOrSlug')
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    const isUUID =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+        idOrSlug,
+      );
+    if (isUUID) {
+      return this.findTopicByIdUseCase.execute(idOrSlug);
+    }
+    return this.findTopicBySlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')

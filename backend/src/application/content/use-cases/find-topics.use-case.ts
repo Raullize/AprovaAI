@@ -25,15 +25,23 @@ export class FindTopicsByExamIdUseCase implements UseCase<string, Topic[]> {
 export class FindTopicByIdUseCase implements UseCase<string, Topic> {
   constructor(private readonly topicRepository: TopicRepository) {}
 
-  async execute(idOrSlug: string): Promise<Topic> {
-    let topic = await this.topicRepository.findById(idOrSlug);
+  async execute(id: string): Promise<Topic> {
+    const topic = await this.topicRepository.findById(id);
     if (!topic) {
-      topic = await this.topicRepository.findBySlug(idOrSlug);
+      throw new NotFoundException(`Topic with ID ${id} not found`);
     }
+    return topic;
+  }
+}
+
+@Injectable()
+export class FindTopicBySlugUseCase implements UseCase<string, Topic> {
+  constructor(private readonly topicRepository: TopicRepository) {}
+
+  async execute(slug: string): Promise<Topic> {
+    const topic = await this.topicRepository.findBySlug(slug);
     if (!topic) {
-      throw new NotFoundException(
-        `Topic with ID or slug ${idOrSlug} not found`,
-      );
+      throw new NotFoundException(`Topic with slug ${slug} not found`);
     }
     return topic;
   }
