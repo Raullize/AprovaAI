@@ -7,9 +7,7 @@ export interface Topic {
   description: string | null;
   status: 'ACTIVE' | 'INACTIVE';
   examId: string;
-  _count?: {
-    levels: number;
-  };
+  levelsCount?: number;
 }
 
 export interface CreateTopicDTO {

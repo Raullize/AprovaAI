@@ -6,9 +6,7 @@ export interface Exam {
   slug: string;
   description: string | null;
   status: 'ACTIVE' | 'INACTIVE';
-  _count?: {
-    topics: number;
-  };
+  topicsCount: number;
 }
 
 export interface CreateExamDTO {

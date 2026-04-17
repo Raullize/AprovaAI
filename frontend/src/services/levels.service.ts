@@ -8,9 +8,7 @@ export interface Level {
   passingPercentage: number;
   status: 'ACTIVE' | 'INACTIVE';
   topicId: string;
-  _count?: {
-    questions: number;
-  };
+  questionsCount?: number;
 }
 
 export interface CreateLevelDTO {

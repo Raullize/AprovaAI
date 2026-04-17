@@ -1,191 +1,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  Plus,
-  Edit2,
-  Trash2,
-  ChevronRight,
-  BookOpen,
-  AlertTriangle,
-  Lock,
-  Unlock,
-  Search,
-  GripVertical,
-} from 'lucide-react';
+import { Plus, BookOpen } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
-import Modal from '@/components/ui/Modal';
 import { examsService, type Exam } from '@/services/exams.service';
 import { useToast } from '@/hooks/use-toast';
-import { useForm } from 'react-hook-form';
-import Input from '@/components/ui/Input';
-
-interface ExamFormProps {
-  examId?: string;
-  onSuccess: () => void;
-  onCancel: () => void;
-}
-
-interface ExamFormData {
-  name: string;
-  description: string;
-  status: 'ACTIVE' | 'INACTIVE';
-}
-
-function ExamFormContent({ examId, onSuccess, onCancel }: ExamFormProps) {
-  const isEditing = !!examId;
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-    watch,
-    setValue,
-  } = useForm<ExamFormData>({
-    defaultValues: { status: 'ACTIVE' },
-  });
-
-  const statusValue = watch('status');
-
-  useEffect(() => {
-    const loadExam = async () => {
-      try {
-        setIsLoading(true);
-        if (examId) {
-          const exam = await examsService.findOne(examId);
-          reset({
-            name: exam.name,
-            status: exam.status,
-            description: exam.description || '',
-          });
-        }
-      } catch (error) {
-        console.error(error);
-        toast({
-          title: 'Erro ao carregar dados',
-          description: 'Não foi possível recuperar as informações deste exame.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (isEditing) {
-      loadExam();
-    }
-  }, [examId, isEditing, reset, toast]);
-
-  const onSubmit = async (data: ExamFormData) => {
-    try {
-      setIsSaving(true);
-      if (isEditing && examId) {
-        await examsService.update(examId, data);
-        toast({
-          title: 'Exame atualizado!',
-          description: 'As informações do exame foram salvas com sucesso.',
-          variant: 'success',
-        });
-      } else {
-        await examsService.create(data);
-        toast({
-          title: 'Exame criado com sucesso!',
-          description:
-            'O exame foi adicionado à plataforma e já pode ser gerenciado.',
-          variant: 'success',
-        });
-      }
-      onSuccess();
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Erro ao salvar',
-        description:
-          'Ocorreu um erro inesperado ao processar os dados. Tente novamente.',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  if (isLoading) {
-    return (
-      <div className="py-8 flex justify-center">
-        <Loading size="md" />
-      </div>
-    );
-  }
-
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      <Input
-        label="Nome do Exame"
-        placeholder="Ex: ENEM"
-        {...register('name', { required: 'Nome é obrigatório' })}
-        error={errors.name?.message}
-      />
-
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700">
-          Descrição
-        </label>
-        <textarea
-          {...register('description')}
-          rows={3}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-        />
-      </div>
-
-      <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
-        <div>
-          <p className="text-sm font-medium text-gray-700">
-            Visibilidade do Exame
-          </p>
-          <p className="text-xs text-gray-500 mt-0.5">
-            {statusValue === 'ACTIVE'
-              ? 'Público — acessível para os alunos'
-              : 'Privado — bloqueado/oculto para os alunos'}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={() =>
-            setValue(
-              'status',
-              statusValue === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE',
-              { shouldDirty: true },
-            )
-          }
-          disabled={isSaving}
-          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
-            statusValue === 'ACTIVE' ? 'bg-primary-600' : 'bg-gray-300'
-          }`}
-        >
-          <span
-            className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
-              statusValue === 'ACTIVE' ? 'translate-x-6' : 'translate-x-1'
-            }`}
-          />
-        </button>
-        <input type="hidden" {...register('status')} />
-      </div>
-
-      <div className="flex justify-end space-x-3 pt-4">
-        <Button type="button" variant="outline" onClick={onCancel}>
-          Cancelar
-        </Button>
-        <Button type="submit" disabled={isSaving}>
-          {isSaving ? <Loading size="sm" /> : isEditing ? 'Salvar' : 'Criar'}
-        </Button>
-      </div>
-    </form>
-  );
-}
+import { SearchInput } from '@/components/admin/shared/SearchInput';
+import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
+import { ExamCard } from '@/components/admin/exams/ExamCard';
+import { ExamFormModal } from '@/components/admin/exams/ExamFormModal';
 
 export default function AdminExams() {
   const [exams, setExams] = useState<Exam[]>([]);
@@ -195,9 +18,7 @@ export default function AdminExams() {
   const [editingExamId, setEditingExamId] = useState<string | undefined>(
     undefined,
   );
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [examToDelete, setExamToDelete] = useState<Exam | null>(null);
-  const [deleteConfirmation, setDeleteConfirmation] = useState('');
   const [draggedId, setDraggedId] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -206,15 +27,9 @@ export default function AdminExams() {
   const loadExams = useCallback(async () => {
     try {
       setIsLoading(true);
-      const data = await examsService.findAll();
-      setExams(data);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Erro ao carregar exames',
-        description: 'Não foi possível buscar a lista de exames.',
-        variant: 'destructive',
-      });
+      setExams(await examsService.findAll());
+    } catch {
+      toast({ title: 'Erro ao carregar exames', variant: 'destructive' });
     } finally {
       setIsLoading(false);
     }
@@ -224,80 +39,40 @@ export default function AdminExams() {
     loadExams();
   }, [loadExams]);
 
-  const filteredExams = useMemo(() => {
-    return exams.filter(
-      (exam) =>
-        exam?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (exam?.description &&
-          exam.description.toLowerCase().includes(searchTerm.toLowerCase())),
-    );
-  }, [exams, searchTerm]);
-
-  const handleCreate = () => {
-    setEditingExamId(undefined);
-    setIsModalOpen(true);
-  };
-
-  const handleEdit = (id: string) => {
-    setEditingExamId(id);
-    setIsModalOpen(true);
-  };
+  const filteredExams = useMemo(
+    () =>
+      exams.filter(
+        (e) =>
+          e?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (e?.description &&
+            e.description.toLowerCase().includes(searchTerm.toLowerCase())),
+      ),
+    [exams, searchTerm],
+  );
 
   const handleToggleStatus = async (exam: Exam) => {
+    const newStatus = exam.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
     try {
-      const newStatus = exam.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
       await examsService.update(exam.id, { status: newStatus });
       toast({
-        title: `Visibilidade alterada!`,
+        title: 'Visibilidade alterada!',
         description: `O exame agora está ${newStatus === 'ACTIVE' ? 'público' : 'privado'}.`,
         variant: 'success',
       });
       loadExams();
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Erro ao atualizar',
-        description: 'Não foi possível alterar a visibilidade do exame.',
-        variant: 'destructive',
-      });
+    } catch {
+      toast({ title: 'Erro ao atualizar', variant: 'destructive' });
     }
-  };
-
-  const confirmDelete = (exam: Exam) => {
-    setExamToDelete(exam);
-    setDeleteConfirmation('');
-    setIsDeleteModalOpen(true);
   };
 
   const handleDelete = async () => {
     if (!examToDelete) return;
-
-    try {
-      await examsService.delete(examToDelete.id);
-      toast({
-        title: 'Exame excluído com sucesso!',
-        description: 'O exame e todos os seus dados foram removidos.',
-        variant: 'success',
-      });
-      loadExams();
-      setIsDeleteModalOpen(false);
-      setExamToDelete(null);
-    } catch (error) {
-      console.error(error);
-      toast({
-        title: 'Erro ao excluir',
-        description: 'Não foi possível excluir o exame. Tente novamente.',
-        variant: 'destructive',
-      });
-    }
-  };
-
-  const handleFormSuccess = () => {
-    setIsModalOpen(false);
+    await examsService.delete(examToDelete.id);
+    toast({ title: 'Exame excluído com sucesso!', variant: 'success' });
     loadExams();
+    setExamToDelete(null);
   };
 
-  const handleDragStart = (id: string) => setDraggedId(id);
   const handleDragOver = (e: React.DragEvent) => e.preventDefault();
   const handleDrop = async (targetId: string) => {
     if (!draggedId || draggedId === targetId) {
@@ -314,11 +89,7 @@ export default function AdminExams() {
     try {
       await examsService.reorder(newOrder.map((e) => e.id));
     } catch {
-      toast({
-        title: 'Erro ao reordenar',
-        description: 'Não foi possível salvar a nova ordem dos exames.',
-        variant: 'destructive',
-      });
+      toast({ title: 'Erro ao reordenar', variant: 'destructive' });
       loadExams();
     }
   };
@@ -332,24 +103,21 @@ export default function AdminExams() {
             Gerencie os exames disponíveis na plataforma.
           </p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-5 w-5 mr-2" />
-          Novo Exame
+        <Button
+          onClick={() => {
+            setEditingExamId(undefined);
+            setIsModalOpen(true);
+          }}
+        >
+          <Plus className="h-5 w-5 mr-2" /> Novo Exame
         </Button>
       </div>
 
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-5 w-5 text-gray-400" />
-        </div>
-        <input
-          type="text"
-          className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-          placeholder="Buscar exames..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+      <SearchInput
+        value={searchTerm}
+        onChange={setSearchTerm}
+        placeholder="Buscar exames..."
+      />
 
       {isLoading ? (
         <div className="flex justify-center py-12">
@@ -366,179 +134,62 @@ export default function AdminExams() {
           <p className="text-gray-500 mb-6 max-w-sm">
             {searchTerm
               ? `Não encontramos exames com "${searchTerm}".`
-              : 'Comece criando o primeiro exame da plataforma para organizar o conteúdo.'}
+              : 'Comece criando o primeiro exame da plataforma.'}
           </p>
           {!searchTerm && (
-            <Button onClick={handleCreate}>
-              <Plus className="h-5 w-5 mr-2" />
-              Criar Primeiro Exame
+            <Button
+              onClick={() => {
+                setEditingExamId(undefined);
+                setIsModalOpen(true);
+              }}
+            >
+              <Plus className="h-5 w-5 mr-2" /> Criar Primeiro Exame
             </Button>
           )}
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredExams.map((exam) => (
-            <div
+            <ExamCard
               key={exam.id}
-              draggable
-              onDragStart={() => handleDragStart(exam.id)}
+              exam={exam}
+              isDragging={draggedId === exam.id}
+              onDragStart={() => setDraggedId(exam.id)}
               onDragOver={handleDragOver}
               onDrop={() => handleDrop(exam.id)}
-              className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow p-6 flex flex-col justify-between group ${
-                draggedId === exam.id ? 'opacity-40 scale-95' : ''
-              }`}
-            >
-              <div>
-                <div className="flex justify-between items-start mb-4">
-                  <div
-                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                      exam.status === 'ACTIVE'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800'
-                    }`}
-                  >
-                    {exam.status === 'ACTIVE' ? 'Público' : 'Privado'}
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <GripVertical className="h-4 w-4 text-gray-300 cursor-grab active:cursor-grabbing mr-1" />
-                    <button
-                      onClick={() => handleToggleStatus(exam)}
-                      className={`p-1.5 rounded-md transition-colors ${
-                        exam.status === 'ACTIVE'
-                          ? 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
-                          : 'text-gray-500 hover:text-green-600 hover:bg-green-50'
-                      }`}
-                      title={
-                        exam.status === 'ACTIVE'
-                          ? 'Tornar Privado'
-                          : 'Tornar Público'
-                      }
-                    >
-                      {exam.status === 'ACTIVE' ? (
-                        <Unlock className="h-4 w-4" />
-                      ) : (
-                        <Lock className="h-4 w-4" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => handleEdit(exam.id)}
-                      className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors"
-                      title="Editar"
-                    >
-                      <Edit2 className="h-4 w-4" />
-                    </button>
-                    <button
-                      onClick={() => confirmDelete(exam)}
-                      className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors"
-                      title="Excluir"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {exam.name}
-                </h3>
-                <p className="text-gray-500 text-sm mb-4 line-clamp-3">
-                  {exam.description || 'Sem descrição.'}
-                </p>
-              </div>
-
-              <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
-                <span className="text-sm text-gray-500">
-                  {exam._count?.topics || 0} Tópicos
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() =>
-                    navigate(`/dashboard/admin/exams/${exam.id}/topics`)
-                  }
-                  className="text-primary-600 border-primary-200 hover:bg-primary-50"
-                >
-                  Ver Tópicos <ChevronRight className="h-4 w-4 ml-1" />
-                </Button>
-              </div>
-            </div>
+              onEdit={(id) => {
+                setEditingExamId(id);
+                setIsModalOpen(true);
+              }}
+              onDelete={setExamToDelete}
+              onToggleStatus={handleToggleStatus}
+              onNavigate={(id) =>
+                navigate(`/dashboard/admin/exams/${id}/topics`)
+              }
+            />
           ))}
         </div>
       )}
 
-      {/* Modal de Criação/Edição */}
-      <Modal
+      <ExamFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingExamId ? 'Editar Exame' : 'Novo Exame'}
-      >
-        <ExamFormContent
-          examId={editingExamId}
-          onSuccess={handleFormSuccess}
-          onCancel={() => setIsModalOpen(false)}
+        onSuccess={() => {
+          setIsModalOpen(false);
+          loadExams();
+        }}
+        examId={editingExamId}
+      />
+
+      {examToDelete && (
+        <DeleteConfirmModal
+          isOpen={!!examToDelete}
+          onClose={() => setExamToDelete(null)}
+          onConfirm={handleDelete}
+          entityName={examToDelete.name}
+          entityLabel="o exame"
         />
-      </Modal>
-
-      {/* Modal de Confirmação de Exclusão */}
-      <Modal
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-        title="Confirmar Exclusão"
-        size="md"
-      >
-        <div className="space-y-6">
-          <div className="flex flex-col items-center text-center space-y-4">
-            <div className="bg-red-100 p-3 rounded-full flex-shrink-0">
-              <AlertTriangle className="h-8 w-8 text-red-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-medium text-gray-900">
-                Você tem certeza absoluta?
-              </h3>
-              <p className="text-sm text-gray-500 mt-2">
-                Essa ação não pode ser desfeita. Isso excluirá permanentemente o
-                exame
-                <span className="font-bold text-gray-900">
-                  {' '}
-                  {examToDelete?.name}{' '}
-                </span>
-                e removerá todos os dados associados de nossos servidores.
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Digite{' '}
-              <span className="font-mono font-bold select-all">excluir</span>{' '}
-              para confirmar:
-            </label>
-            <input
-              type="text"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
-              placeholder=""
-              autoFocus
-              value={deleteConfirmation}
-              onChange={(e) => setDeleteConfirmation(e.target.value)}
-            />
-          </div>
-
-          <div className="flex justify-end space-x-3 bg-gray-50 -mx-6 -mb-4 px-6 py-4 rounded-b-lg mt-6">
-            <Button
-              variant="outline"
-              onClick={() => setIsDeleteModalOpen(false)}
-            >
-              Cancelar
-            </Button>
-            <button
-              onClick={handleDelete}
-              disabled={deleteConfirmation !== 'excluir'}
-              className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Excluir Exame
-            </button>
-          </div>
-        </div>
-      </Modal>
+      )}
     </div>
   );
 }
