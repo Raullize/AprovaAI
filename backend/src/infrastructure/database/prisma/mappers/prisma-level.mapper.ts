@@ -18,7 +18,6 @@ export class PrismaLevelMapper {
         passingPercentage: raw.passingPercentage,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
-        ...(raw._count ? { _count: raw._count } : {}),
       },
       raw.id,
     );

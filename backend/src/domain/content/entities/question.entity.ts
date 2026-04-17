@@ -22,37 +22,37 @@ export interface QuestionProps {
 }
 
 export class Question extends Entity<QuestionProps> {
-  get content() {
+  get content(): string {
     return this.props.content;
   }
-  get imageUrl() {
+  get imageUrl(): string | null | undefined {
     return this.props.imageUrl;
   }
-  get type() {
+  get type(): 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE' {
     return this.props.type ?? 'MULTIPLE_CHOICE';
   }
-  get status() {
+  get status(): 'ACTIVE' | 'INACTIVE' {
     return this.props.status ?? 'ACTIVE';
   }
-  get order() {
+  get order(): number {
     return this.props.order;
   }
-  get explanation() {
+  get explanation(): string | null | undefined {
     return this.props.explanation;
   }
-  get studyLink() {
+  get studyLink(): string | null | undefined {
     return this.props.studyLink;
   }
-  get levelId() {
+  get levelId(): string {
     return this.props.levelId;
   }
-  get options() {
+  get options(): OptionProps[] {
     return this.props.options ?? [];
   }
-  get createdAt() {
+  get createdAt(): Date | undefined {
     return this.props.createdAt;
   }
-  get updatedAt() {
+  get updatedAt(): Date | undefined {
     return this.props.updatedAt;
   }
 
@@ -68,5 +68,45 @@ export class Question extends Entity<QuestionProps> {
       },
       id,
     );
+  }
+
+  public activate(): void {
+    this.props.status = 'ACTIVE';
+    this.props.updatedAt = new Date();
+  }
+
+  public deactivate(): void {
+    this.props.status = 'INACTIVE';
+    this.props.updatedAt = new Date();
+  }
+
+  public updateDetails(
+    content: string,
+    imageUrl: string | null | undefined,
+    type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE',
+    explanation: string | null | undefined,
+    studyLink: string | null | undefined,
+    levelId: string,
+  ): void {
+    this.props.content = content;
+    this.props.imageUrl = imageUrl;
+    this.props.type = type;
+    this.props.explanation = explanation;
+    this.props.studyLink = studyLink;
+    this.props.levelId = levelId;
+    this.props.updatedAt = new Date();
+  }
+
+  public updateOrder(order: number): void {
+    this.props.order = order;
+    this.props.updatedAt = new Date();
+  }
+
+  public updateOptions(options: OptionProps[]): void {
+    if (options.length === 0) {
+      throw new Error('A question must have at least one option.');
+    }
+    this.props.options = options;
+    this.props.updatedAt = new Date();
   }
 }

@@ -12,40 +12,37 @@ export interface LevelProps {
   passingPercentage?: number;
   createdAt?: Date;
   updatedAt?: Date;
-  _count?: {
-    questions?: number;
-  };
 }
 
 export class Level extends Entity<LevelProps> {
-  get name() {
+  get name(): string {
     return this.props.name;
   }
-  get slug() {
+  get slug(): Slug {
     return this.props.slug;
   }
-  get description() {
+  get description(): string | null | undefined {
     return this.props.description;
   }
-  get order() {
+  get order(): number {
     return this.props.order;
   }
-  get topicId() {
+  get topicId(): string {
     return this.props.topicId;
   }
-  get status() {
+  get status(): 'ACTIVE' | 'INACTIVE' {
     return this.props.status ?? 'ACTIVE';
   }
-  get xpReward() {
+  get xpReward(): number {
     return this.props.xpReward ?? 0;
   }
-  get passingPercentage() {
+  get passingPercentage(): number {
     return this.props.passingPercentage ?? 70.0;
   }
-  get createdAt() {
+  get createdAt(): Date | undefined {
     return this.props.createdAt;
   }
-  get updatedAt() {
+  get updatedAt(): Date | undefined {
     return this.props.updatedAt;
   }
 
@@ -61,5 +58,40 @@ export class Level extends Entity<LevelProps> {
       },
       id,
     );
+  }
+
+  public activate(): void {
+    this.props.status = 'ACTIVE';
+    this.props.updatedAt = new Date();
+  }
+
+  public deactivate(): void {
+    this.props.status = 'INACTIVE';
+    this.props.updatedAt = new Date();
+  }
+
+  public updateDetails(
+    name: string,
+    description: string | null | undefined,
+    slug: Slug,
+    topicId: string,
+    xpReward: number,
+    passingPercentage: number,
+  ): void {
+    if (passingPercentage < 0 || passingPercentage > 100) {
+      throw new Error('Passing percentage must be between 0 and 100.');
+    }
+    this.props.name = name;
+    this.props.description = description;
+    this.props.slug = slug;
+    this.props.topicId = topicId;
+    this.props.xpReward = xpReward;
+    this.props.passingPercentage = passingPercentage;
+    this.props.updatedAt = new Date();
+  }
+
+  public updateOrder(order: number): void {
+    this.props.order = order;
+    this.props.updatedAt = new Date();
   }
 }

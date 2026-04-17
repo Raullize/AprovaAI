@@ -9,31 +9,28 @@ export interface ExamProps {
   order?: number;
   createdAt?: Date;
   updatedAt?: Date;
-  _count?: {
-    topics?: number;
-  };
 }
 
 export class Exam extends Entity<ExamProps> {
-  get name() {
+  get name(): string {
     return this.props.name;
   }
-  get slug() {
+  get slug(): Slug {
     return this.props.slug;
   }
-  get description() {
+  get description(): string | null | undefined {
     return this.props.description;
   }
-  get status() {
+  get status(): 'ACTIVE' | 'INACTIVE' {
     return this.props.status ?? 'ACTIVE';
   }
-  get order() {
+  get order(): number {
     return this.props.order ?? 0;
   }
-  get createdAt() {
+  get createdAt(): Date | undefined {
     return this.props.createdAt;
   }
-  get updatedAt() {
+  get updatedAt(): Date | undefined {
     return this.props.updatedAt;
   }
 
@@ -48,5 +45,31 @@ export class Exam extends Entity<ExamProps> {
       },
       id,
     );
+  }
+
+  public activate(): void {
+    this.props.status = 'ACTIVE';
+    this.props.updatedAt = new Date();
+  }
+
+  public deactivate(): void {
+    this.props.status = 'INACTIVE';
+    this.props.updatedAt = new Date();
+  }
+
+  public updateDetails(
+    name: string,
+    description: string | null | undefined,
+    slug: Slug,
+  ): void {
+    this.props.name = name;
+    this.props.description = description;
+    this.props.slug = slug;
+    this.props.updatedAt = new Date();
+  }
+
+  public updateOrder(order: number): void {
+    this.props.order = order;
+    this.props.updatedAt = new Date();
   }
 }

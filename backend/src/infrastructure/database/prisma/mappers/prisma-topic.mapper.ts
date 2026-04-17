@@ -14,7 +14,6 @@ export class PrismaTopicMapper {
         examId: raw.examId,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
-        ...(raw._count ? { _count: raw._count } : {}),
       },
       raw.id,
     );

@@ -23,17 +23,13 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
   constructor(private readonly levelRepository: LevelRepository) {}
 
   async execute(request: UpdateLevelRequest): Promise<Level> {
-    const level = await this.levelRepository.findById(request.id);
+    const level: Level | null = await this.levelRepository.findById(request.id);
 
     if (!level) {
       throw new ResourceNotFoundError('Level', request.id);
     }
 
-    const updateData: Record<string, any> = {};
-
     if (request.data.name && request.data.name !== level.name) {
-      updateData['name'] = request.data.name;
-
       const slug = await generateUniqueSlug(
         request.data.name,
         async (testSlug: string) => {
@@ -45,29 +41,38 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
         },
       );
 
-      updateData['slug'] = Slug.create(slug);
-    }
-
-    if (request.data.description !== undefined) {
-      updateData['description'] = request.data.description;
+      level.updateDetails(
+        request.data.name,
+        request.data.description ?? level.description,
+        Slug.create(slug),
+        request.data.topicId ?? level.topicId,
+        request.data.xpReward ?? level.xpReward,
+        request.data.passingPercentage ?? level.passingPercentage,
+      );
+    } else if (
+      request.data.description !== undefined ||
+      request.data.topicId !== undefined ||
+      request.data.xpReward !== undefined ||
+      request.data.passingPercentage !== undefined
+    ) {
+      level.updateDetails(
+        level.name,
+        request.data.description ?? level.description,
+        level.slug,
+        request.data.topicId ?? level.topicId,
+        request.data.xpReward ?? level.xpReward,
+        request.data.passingPercentage ?? level.passingPercentage,
+      );
     }
 
     if (request.data.status !== undefined) {
-      updateData['status'] = request.data.status;
+      if (request.data.status === 'ACTIVE') {
+        level.activate();
+      } else {
+        level.deactivate();
+      }
     }
 
-    if (request.data.topicId !== undefined) {
-      updateData['topicId'] = request.data.topicId;
-    }
-
-    if (request.data.xpReward !== undefined) {
-      updateData['xpReward'] = request.data.xpReward;
-    }
-
-    if (request.data.passingPercentage !== undefined) {
-      updateData['passingPercentage'] = request.data.passingPercentage;
-    }
-
-    return this.levelRepository.update(request.id, updateData);
+    return this.levelRepository.save(level);
   }
 }

@@ -72,14 +72,11 @@ export class PrismaTopicRepository implements TopicRepository {
     return PrismaTopicMapper.toDomain(created);
   }
 
-  async update(id: string, data: Partial<Topic>): Promise<Topic> {
-    const updateData = { ...data } as Record<string, any>;
-    if ('props' in updateData) {
-      delete updateData['props'];
-    }
+  async save(topic: Topic): Promise<Topic> {
+    const data = PrismaTopicMapper.toPrisma(topic);
     const updated = await this.prisma.topic.update({
-      where: { id },
-      data: updateData,
+      where: { id: topic.id },
+      data,
     });
     return PrismaTopicMapper.toDomain(updated);
   }

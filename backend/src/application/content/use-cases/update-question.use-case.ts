@@ -30,35 +30,55 @@ export class UpdateQuestionUseCase implements UseCase<
   constructor(private readonly questionRepository: QuestionRepository) {}
 
   async execute(request: UpdateQuestionRequest): Promise<Question> {
-    const question = await this.questionRepository.findById(request.id);
+    const question: Question | null = await this.questionRepository.findById(
+      request.id,
+    );
 
     if (!question) {
       throw new ResourceNotFoundError('Question', request.id);
     }
 
-    const updateData: Record<string, any> = {};
-
-    if (request.data.content !== undefined)
-      updateData['content'] = request.data.content;
-    if (request.data.imageUrl !== undefined)
-      updateData['imageUrl'] = request.data.imageUrl;
-    if (request.data.type !== undefined) updateData['type'] = request.data.type;
-    if (request.data.status !== undefined)
-      updateData['status'] = request.data.status;
-    if (request.data.levelId !== undefined)
-      updateData['levelId'] = request.data.levelId;
-    if (request.data.explanation !== undefined)
-      updateData['explanation'] = request.data.explanation;
-    if (request.data.studyLink !== undefined)
-      updateData['studyLink'] = request.data.studyLink;
-
-    if (request.data.options !== undefined) {
-      updateData['options'] = request.data.options.map((opt, index) => ({
-        ...opt,
-        order: index,
-      }));
+    if (
+      request.data.content !== undefined ||
+      request.data.imageUrl !== undefined ||
+      request.data.type !== undefined ||
+      request.data.explanation !== undefined ||
+      request.data.studyLink !== undefined ||
+      request.data.levelId !== undefined
+    ) {
+      question.updateDetails(
+        request.data.content ?? question.content,
+        request.data.imageUrl !== undefined
+          ? request.data.imageUrl
+          : question.imageUrl,
+        request.data.type ?? question.type,
+        request.data.explanation !== undefined
+          ? request.data.explanation
+          : question.explanation,
+        request.data.studyLink !== undefined
+          ? request.data.studyLink
+          : question.studyLink,
+        request.data.levelId ?? question.levelId,
+      );
     }
 
-    return this.questionRepository.update(request.id, updateData);
+    if (request.data.options !== undefined) {
+      question.updateOptions(
+        request.data.options.map((opt, index) => ({
+          ...opt,
+          order: index,
+        })),
+      );
+    }
+
+    if (request.data.status !== undefined) {
+      if (request.data.status === 'ACTIVE') {
+        question.activate();
+      } else {
+        question.deactivate();
+      }
+    }
+
+    return this.questionRepository.save(question);
   }
 }

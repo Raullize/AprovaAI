@@ -4,7 +4,10 @@ import { QuestionRepository } from '../../../domain/content/repositories/questio
 import { Question } from '../../../domain/content/entities/question.entity';
 
 @Injectable()
-export class FindQuestionsByLevelIdUseCase implements UseCase<string, Question[]> {
+export class FindQuestionsByLevelIdUseCase implements UseCase<
+  string,
+  Question[]
+> {
   constructor(private readonly questionRepository: QuestionRepository) {}
 
   async execute(levelId: string): Promise<Question[]> {

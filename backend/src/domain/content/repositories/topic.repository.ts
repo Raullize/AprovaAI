@@ -10,7 +10,7 @@ export abstract class TopicRepository {
     examId: string,
   ): Promise<Topic | null>;
   abstract create(topic: Topic): Promise<Topic>;
-  abstract update(id: string, data: Partial<Topic>): Promise<Topic>;
+  abstract save(topic: Topic): Promise<Topic>;
   abstract delete(id: string): Promise<void>;
   abstract reorder(orderedIds: string[]): Promise<void>;
   abstract countByExamId(examId: string): Promise<number>;

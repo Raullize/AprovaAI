@@ -61,32 +61,31 @@ export class PrismaQuestionRepository implements QuestionRepository {
     return PrismaQuestionMapper.toDomain(created);
   }
 
-  async update(id: string, data: Partial<Question>): Promise<Question> {
-    const updateData = { ...data } as Record<string, any>;
-    const optionsData = updateData['options'] as
-      | { text: string; isCorrect?: boolean; order: number }[]
-      | undefined;
-    if ('options' in updateData) delete updateData['options'];
-    if ('props' in updateData) delete updateData['props'];
-
+  async save(question: Question): Promise<Question> {
     const updated = await this.prisma.$transaction(async (tx) => {
-      if (optionsData) {
-        await tx.option.deleteMany({ where: { questionId: id } });
-      }
+      // Always recreate options for simplicity or we can update them.
+      // With the new model, we will just delete and recreate options since they don't have distinct identities in QuestionProps usually.
+      await tx.option.deleteMany({ where: { questionId: question.id } });
 
       const q = await tx.question.update({
-        where: { id },
+        where: { id: question.id },
         data: {
-          ...updateData,
-          ...(optionsData && {
-            options: {
-              create: optionsData.map((opt) => ({
-                text: opt.text,
-                isCorrect: opt.isCorrect ?? false,
-                order: opt.order,
-              })),
-            },
-          }),
+          content: question.content,
+          imageUrl: question.imageUrl ?? null,
+          type: question.type,
+          status: question.status,
+          order: question.order,
+          explanation: question.explanation ?? null,
+          studyLink: question.studyLink ?? null,
+          levelId: question.levelId,
+          updatedAt: question.updatedAt ?? new Date(),
+          options: {
+            create: question.options.map((opt) => ({
+              text: opt.text,
+              isCorrect: opt.isCorrect ?? false,
+              order: opt.order,
+            })),
+          },
         },
         include: { options: { orderBy: { order: 'asc' } } },
       });

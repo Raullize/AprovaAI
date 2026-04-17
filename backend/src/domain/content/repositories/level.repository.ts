@@ -10,7 +10,7 @@ export abstract class LevelRepository {
     topicId: string,
   ): Promise<Level | null>;
   abstract create(level: Level): Promise<Level>;
-  abstract update(id: string, data: Partial<Level>): Promise<Level>;
+  abstract save(level: Level): Promise<Level>;
   abstract delete(id: string): Promise<void>;
   abstract reorder(orderedIds: string[]): Promise<void>;
   abstract countByTopicId(topicId: string): Promise<number>;

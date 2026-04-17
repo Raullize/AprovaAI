@@ -47,14 +47,11 @@ export class PrismaExamRepository implements ExamRepository {
     return PrismaExamMapper.toDomain(created);
   }
 
-  async update(id: string, data: Partial<Exam>): Promise<Exam> {
-    const updateData = { ...data } as Record<string, any>;
-    if ('props' in updateData) {
-      delete updateData['props'];
-    }
+  async save(exam: Exam): Promise<Exam> {
+    const data = PrismaExamMapper.toPrisma(exam);
     const updated = await this.prisma.exam.update({
-      where: { id },
-      data: updateData,
+      where: { id: exam.id },
+      data,
     });
     return PrismaExamMapper.toDomain(updated);
   }

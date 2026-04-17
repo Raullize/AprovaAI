@@ -72,14 +72,11 @@ export class PrismaLevelRepository implements LevelRepository {
     return PrismaLevelMapper.toDomain(created);
   }
 
-  async update(id: string, data: Partial<Level>): Promise<Level> {
-    const updateData = { ...data } as Record<string, any>;
-    if ('props' in updateData) {
-      delete updateData['props'];
-    }
+  async save(level: Level): Promise<Level> {
+    const data = PrismaLevelMapper.toPrisma(level);
     const updated = await this.prisma.level.update({
-      where: { id },
-      data: updateData,
+      where: { id: level.id },
+      data,
     });
     return PrismaLevelMapper.toDomain(updated);
   }

@@ -21,17 +21,13 @@ export class UpdateTopicUseCase implements UseCase<UpdateTopicRequest, Topic> {
   constructor(private readonly topicRepository: TopicRepository) {}
 
   async execute(request: UpdateTopicRequest): Promise<Topic> {
-    const topic = await this.topicRepository.findById(request.id);
+    const topic: Topic | null = await this.topicRepository.findById(request.id);
 
     if (!topic) {
       throw new ResourceNotFoundError('Topic', request.id);
     }
 
-    const updateData: Record<string, any> = {};
-
     if (request.data.name && request.data.name !== topic.name) {
-      updateData['name'] = request.data.name;
-
       const slug = await generateUniqueSlug(
         request.data.name,
         async (testSlug: string) => {
@@ -42,22 +38,32 @@ export class UpdateTopicUseCase implements UseCase<UpdateTopicRequest, Topic> {
           return existing ? existing.id !== request.id : false;
         },
       );
-
-      updateData['slug'] = Slug.create(slug);
-    }
-
-    if (request.data.description !== undefined) {
-      updateData['description'] = request.data.description;
+      topic.updateDetails(
+        request.data.name,
+        request.data.description ?? topic.description,
+        Slug.create(slug),
+        request.data.examId ?? topic.examId,
+      );
+    } else if (
+      request.data.description !== undefined ||
+      request.data.examId !== undefined
+    ) {
+      topic.updateDetails(
+        topic.name,
+        request.data.description ?? topic.description,
+        topic.slug,
+        request.data.examId ?? topic.examId,
+      );
     }
 
     if (request.data.status !== undefined) {
-      updateData['status'] = request.data.status;
+      if (request.data.status === 'ACTIVE') {
+        topic.activate();
+      } else {
+        topic.deactivate();
+      }
     }
 
-    if (request.data.examId !== undefined) {
-      updateData['examId'] = request.data.examId;
-    }
-
-    return this.topicRepository.update(request.id, updateData);
+    return this.topicRepository.save(topic);
   }
 }

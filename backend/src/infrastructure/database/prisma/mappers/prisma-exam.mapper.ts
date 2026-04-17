@@ -13,7 +13,6 @@ export class PrismaExamMapper {
         order: raw.order,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
-        ...(raw._count ? { _count: raw._count } : {}),
       },
       raw.id,
     );

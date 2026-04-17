@@ -20,17 +20,13 @@ export class UpdateExamUseCase implements UseCase<UpdateExamRequest, Exam> {
   constructor(private readonly examRepository: ExamRepository) {}
 
   async execute(request: UpdateExamRequest): Promise<Exam> {
-    const exam = await this.examRepository.findById(request.id);
+    const exam: Exam | null = await this.examRepository.findById(request.id);
 
     if (!exam) {
       throw new ResourceNotFoundError('Exam', request.id);
     }
 
-    const updateData: Record<string, any> = {};
-
     if (request.data.name && request.data.name !== exam.name) {
-      updateData['name'] = request.data.name;
-
       const slug = await generateUniqueSlug(
         request.data.name,
         async (testSlug: string) => {
@@ -38,18 +34,23 @@ export class UpdateExamUseCase implements UseCase<UpdateExamRequest, Exam> {
           return existing ? existing.id !== request.id : false;
         },
       );
-
-      updateData['slug'] = Slug.create(slug);
-    }
-
-    if (request.data.description !== undefined) {
-      updateData['description'] = request.data.description;
+      exam.updateDetails(
+        request.data.name,
+        request.data.description ?? exam.description,
+        Slug.create(slug),
+      );
+    } else if (request.data.description !== undefined) {
+      exam.updateDetails(exam.name, request.data.description, exam.slug);
     }
 
     if (request.data.status !== undefined) {
-      updateData['status'] = request.data.status;
+      if (request.data.status === 'ACTIVE') {
+        exam.activate();
+      } else {
+        exam.deactivate();
+      }
     }
 
-    return this.examRepository.update(request.id, updateData);
+    return this.examRepository.save(exam);
   }
 }
