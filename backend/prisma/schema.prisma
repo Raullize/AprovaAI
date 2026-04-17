@@ -22,7 +22,7 @@ enum SubscriptionPlan {
 }
 
 model User {
-  id               String           @id @default(cuid()) @map("id")
+  id               String           @id @default(uuid()) @map("id")
   fullName         String           @map("full_name")
   username         String           @unique @map("username")
   dateOfBirth      DateTime         @map("date_of_birth")
@@ -55,7 +55,7 @@ enum TopicStatus {
 }
 
 model Exam {
-  id          String     @id @default(cuid()) @map("id")
+  id          String     @id @default(uuid()) @map("id")
   name        String     @map("name")
   slug        String     @unique @map("slug")
   description String?    @map("description")
@@ -71,7 +71,7 @@ model Exam {
 }
 
 model Topic {
-  id          String      @id @default(cuid()) @map("id")
+  id          String      @id @default(uuid()) @map("id")
   name        String      @map("name")
   slug        String      @map("slug")
   description String?     @map("description")
@@ -97,7 +97,7 @@ enum LevelStatus {
 }
 
 model Level {
-  id                    String      @id @default(cuid()) @map("id")
+  id                    String      @id @default(uuid()) @map("id")
   name                  String      @map("name")
   slug                  String      @map("slug")
   description           String?     @map("description")
@@ -136,7 +136,7 @@ enum QuestionStatus {
 }
 
 model Question {
-  id          String         @id @default(cuid()) @map("id")
+  id          String         @id @default(uuid()) @map("id")
   content     String         @map("content") // Question text
   imageUrl    String?        @map("image_url") // Optional image attachment
   type        QuestionType   @default(MULTIPLE_CHOICE) @map("type")
@@ -157,7 +157,7 @@ model Question {
 }
 
 model Option {
-  id         String   @id @default(cuid()) @map("id")
+  id         String   @id @default(uuid()) @map("id")
   text       String   @map("text") // Option text
   isCorrect  Boolean  @default(false) @map("is_correct") // Whether this is a correct option
   order      Int      @map("order") // Option order (A, B, C, D, etc.)
@@ -173,7 +173,7 @@ model Option {
 
 // Model to store exam results
 model ExamResult {
-  id             String   @id @default(cuid()) @map("id")
+  id             String   @id @default(uuid()) @map("id")
   userId         String   @map("user_id")
   levelId        String   @map("level_id")
   score          Int      @map("score") // Number of correct questions
@@ -194,7 +194,7 @@ model ExamResult {
 
 // Model to store individual user answers
 model ExamAnswer {
-  id              String   @id @default(cuid()) @map("id")
+  id              String   @id @default(uuid()) @map("id")
   examResultId    String   @map("exam_result_id")
   questionId      String   @map("question_id")
   selectedOptions String[] @map("selected_options") // Array of selected option IDs
