@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { Level } from '../../../domain/content/entities/level.entity';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
+import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
 export interface UpdateLevelRequest {
   id: string;
@@ -24,7 +25,7 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
     const level = await this.levelRepository.findById(request.id);
 
     if (!level) {
-      throw new NotFoundException(`Level with ID ${request.id} not found`);
+      throw new ResourceNotFoundError('Level', request.id);
     }
 
     const updateData: Record<string, any> = {};

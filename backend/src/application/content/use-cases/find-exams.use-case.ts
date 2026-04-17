@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { ExamRepository } from '../../../domain/content/repositories/exam.repository';
 import { Exam } from '../../../domain/content/entities/exam.entity';
+import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
 @Injectable()
 export class FindAllExamsUseCase implements UseCase<void, Exam[]> {
@@ -19,7 +20,7 @@ export class FindExamByIdUseCase implements UseCase<string, Exam> {
   async execute(id: string): Promise<Exam> {
     const exam = await this.examRepository.findById(id);
     if (!exam) {
-      throw new NotFoundException(`Exam with ID ${id} not found`);
+      throw new ResourceNotFoundError('Exam', id);
     }
     return exam;
   }
@@ -32,7 +33,7 @@ export class FindExamBySlugUseCase implements UseCase<string, Exam> {
   async execute(slug: string): Promise<Exam> {
     const exam = await this.examRepository.findBySlug(slug);
     if (!exam) {
-      throw new NotFoundException(`Exam with slug ${slug} not found`);
+      throw new ResourceNotFoundError('Exam (slug)', slug);
     }
     return exam;
   }

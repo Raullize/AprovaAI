@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { QuestionRepository } from '../../../domain/content/repositories/question.repository';
 import { Question } from '../../../domain/content/entities/question.entity';
+import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
 export interface UpdateQuestionRequest {
   id: string;
@@ -32,7 +33,7 @@ export class UpdateQuestionUseCase implements UseCase<
     const question = await this.questionRepository.findById(request.id);
 
     if (!question) {
-      throw new NotFoundException(`Question with ID ${request.id} not found`);
+      throw new ResourceNotFoundError('Question', request.id);
     }
 
     const updateData: Record<string, any> = {};

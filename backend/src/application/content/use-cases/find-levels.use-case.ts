@@ -1,7 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { Level } from '../../../domain/content/entities/level.entity';
+import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
 @Injectable()
 export class FindAllLevelsUseCase implements UseCase<void, Level[]> {
@@ -28,7 +29,7 @@ export class FindLevelByIdUseCase implements UseCase<string, Level> {
   async execute(id: string): Promise<Level> {
     const level = await this.levelRepository.findById(id);
     if (!level) {
-      throw new NotFoundException(`Level with ID ${id} not found`);
+      throw new ResourceNotFoundError('Level', id);
     }
     return level;
   }
@@ -41,7 +42,7 @@ export class FindLevelBySlugUseCase implements UseCase<string, Level> {
   async execute(slug: string): Promise<Level> {
     const level = await this.levelRepository.findBySlug(slug);
     if (!level) {
-      throw new NotFoundException(`Level with slug ${slug} not found`);
+      throw new ResourceNotFoundError('Level (slug)', slug);
     }
     return level;
   }
