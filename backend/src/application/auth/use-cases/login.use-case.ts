@@ -4,7 +4,11 @@ import { UserRepository } from '../../../domain/users/repositories/user.reposito
 import { HashProvider } from '../ports/hash-provider';
 import { TokenProvider } from '../ports/token-provider';
 import { InvalidCredentialsError } from '../../../domain/users/errors/invalid-credentials.error';
-import { LoginDto } from '../../../api/auth/dto/login.dto';
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
 
 export interface LoginResponse {
   user: {
@@ -23,14 +27,14 @@ export interface LoginResponse {
 }
 
 @Injectable()
-export class LoginUseCase implements UseCase<LoginDto, LoginResponse> {
+export class LoginUseCase implements UseCase<LoginRequest, LoginResponse> {
   constructor(
     private userRepository: UserRepository,
     private hashProvider: HashProvider,
     private tokenProvider: TokenProvider,
   ) {}
 
-  async execute(request: LoginDto): Promise<LoginResponse> {
+  async execute(request: LoginRequest): Promise<LoginResponse> {
     const user = await this.userRepository.findByEmail(request.email);
 
     if (!user) {

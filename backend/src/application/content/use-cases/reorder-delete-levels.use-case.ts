@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { LevelRepository } from '../../../domain/content/repositories/level.repository';
-import { ReorderDto } from '../../../api/exams/dto/exam.dto';
+
+export interface ReorderLevelsRequest {
+  ids: string[];
+}
 
 @Injectable()
-export class ReorderLevelsUseCase implements UseCase<ReorderDto, void> {
+export class ReorderLevelsUseCase implements UseCase<
+  ReorderLevelsRequest,
+  void
+> {
   constructor(private readonly levelRepository: LevelRepository) {}
 
-  async execute(request: ReorderDto): Promise<void> {
+  async execute(request: ReorderLevelsRequest): Promise<void> {
     await this.levelRepository.reorder(request.ids);
   }
 }

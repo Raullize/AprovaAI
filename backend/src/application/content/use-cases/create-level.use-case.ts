@@ -2,14 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { Level } from '../../../domain/content/entities/level.entity';
-import { CreateLevelDto } from '../../../api/levels/dto/level.dto';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 
+export interface CreateLevelRequest {
+  name: string;
+  description?: string;
+  status?: 'ACTIVE' | 'INACTIVE';
+  topicId: string;
+  xpReward?: number;
+  passingPercentage?: number;
+}
+
 @Injectable()
-export class CreateLevelUseCase implements UseCase<CreateLevelDto, Level> {
+export class CreateLevelUseCase implements UseCase<CreateLevelRequest, Level> {
   constructor(private readonly levelRepository: LevelRepository) {}
 
-  async execute(request: CreateLevelDto): Promise<Level> {
+  async execute(request: CreateLevelRequest): Promise<Level> {
     const count = await this.levelRepository.countByTopicId(request.topicId);
 
     const slug = await generateUniqueSlug(

@@ -2,12 +2,16 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { TopicRepository } from '../../../domain/content/repositories/topic.repository';
 import { Topic } from '../../../domain/content/entities/topic.entity';
-import { UpdateTopicDto } from '../../../api/topics/dto/topic.dto';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 
 export interface UpdateTopicRequest {
   id: string;
-  data: UpdateTopicDto;
+  data: {
+    name?: string;
+    description?: string;
+    status?: 'ACTIVE' | 'INACTIVE';
+    examId?: string;
+  };
 }
 
 @Injectable()

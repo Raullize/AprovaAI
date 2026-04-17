@@ -2,14 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { TopicRepository } from '../../../domain/content/repositories/topic.repository';
 import { Topic } from '../../../domain/content/entities/topic.entity';
-import { CreateTopicDto } from '../../../api/topics/dto/topic.dto';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 
+export interface CreateTopicRequest {
+  name: string;
+  description?: string;
+  status?: 'ACTIVE' | 'INACTIVE';
+  examId: string;
+}
+
 @Injectable()
-export class CreateTopicUseCase implements UseCase<CreateTopicDto, Topic> {
+export class CreateTopicUseCase implements UseCase<CreateTopicRequest, Topic> {
   constructor(private readonly topicRepository: TopicRepository) {}
 
-  async execute(request: CreateTopicDto): Promise<Topic> {
+  async execute(request: CreateTopicRequest): Promise<Topic> {
     const count = await this.topicRepository.countByExamId(request.examId);
 
     const slug = await generateUniqueSlug(

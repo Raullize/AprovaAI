@@ -2,11 +2,23 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { QuestionRepository } from '../../../domain/content/repositories/question.repository';
 import { Question } from '../../../domain/content/entities/question.entity';
-import { UpdateQuestionDto } from '../../../api/questions/dto/question.dto';
 
 export interface UpdateQuestionRequest {
   id: string;
-  data: UpdateQuestionDto;
+  data: {
+    content?: string;
+    imageUrl?: string | null;
+    type?: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
+    status?: 'ACTIVE' | 'INACTIVE';
+    levelId?: string;
+    explanation?: string | null;
+    studyLink?: string | null;
+    options?: Array<{
+      id?: string;
+      text: string;
+      isCorrect: boolean;
+    }>;
+  };
 }
 
 @Injectable()

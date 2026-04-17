@@ -1,13 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { QuestionRepository } from '../../../domain/content/repositories/question.repository';
-import { ReorderDto } from '../../../api/exams/dto/exam.dto';
+
+export interface ReorderQuestionsRequest {
+  ids: string[];
+}
 
 @Injectable()
-export class ReorderQuestionsUseCase implements UseCase<ReorderDto, void> {
+export class ReorderQuestionsUseCase implements UseCase<
+  ReorderQuestionsRequest,
+  void
+> {
   constructor(private readonly questionRepository: QuestionRepository) {}
 
-  async execute(request: ReorderDto): Promise<void> {
+  async execute(request: ReorderQuestionsRequest): Promise<void> {
     await this.questionRepository.reorder(request.ids);
   }
 }

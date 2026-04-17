@@ -7,8 +7,8 @@ export const createOptionSchema = z.object({
 
 export const updateOptionSchema = z.object({
   id: z.string().optional(),
-  text: z.string().min(1, 'Texto da opção é obrigatório').optional(),
-  isCorrect: z.boolean().optional(),
+  text: z.string().min(1, 'Texto da opção é obrigatório'),
+  isCorrect: z.boolean(),
 });
 
 export const createQuestionSchema = z.object({

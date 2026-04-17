@@ -4,7 +4,14 @@ import { UserRepository } from '../../../domain/users/repositories/user.reposito
 import { HashProvider } from '../ports/hash-provider';
 import { UserAlreadyExistsError } from '../../../domain/users/errors/user-already-exists.error';
 import { User } from '../../../domain/users/entities/user.entity';
-import { RegisterDto } from '../../../api/auth/dto/register.dto';
+
+export interface RegisterRequest {
+  fullName: string;
+  username: string;
+  email: string;
+  password: string;
+  dateOfBirth: string | Date;
+}
 
 export interface RegisterResponse {
   id: string;
@@ -20,13 +27,16 @@ export interface RegisterResponse {
 }
 
 @Injectable()
-export class RegisterUseCase implements UseCase<RegisterDto, RegisterResponse> {
+export class RegisterUseCase implements UseCase<
+  RegisterRequest,
+  RegisterResponse
+> {
   constructor(
     private userRepository: UserRepository,
     private hashProvider: HashProvider,
   ) {}
 
-  async execute(request: RegisterDto): Promise<RegisterResponse> {
+  async execute(request: RegisterRequest): Promise<RegisterResponse> {
     const emailExists = await this.userRepository.findByEmail(request.email);
     if (emailExists) {
       throw new UserAlreadyExistsError('email');

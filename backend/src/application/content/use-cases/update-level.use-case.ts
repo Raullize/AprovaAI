@@ -2,12 +2,18 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { Level } from '../../../domain/content/entities/level.entity';
-import { UpdateLevelDto } from '../../../api/levels/dto/level.dto';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 
 export interface UpdateLevelRequest {
   id: string;
-  data: UpdateLevelDto;
+  data: {
+    name?: string;
+    description?: string;
+    status?: 'ACTIVE' | 'INACTIVE';
+    topicId?: string;
+    xpReward?: number;
+    passingPercentage?: number;
+  };
 }
 
 @Injectable()
