@@ -184,8 +184,8 @@ function TopicFormContent({
 }
 
 export default function TopicList() {
-  const { examSlug } = useParams();
-  const [examId, setExamId] = useState<string | undefined>(undefined);
+  const { examId } = useParams();
+  const [examIdState, setExamId] = useState<string | undefined>(examId);
   const [topics, setTopics] = useState<Topic[]>([]);
   const [examName, setExamName] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -206,10 +206,10 @@ export default function TopicList() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      if (examSlug) {
-        const exam = await examsService.findOne(examSlug);
-        setExamId(exam.id);
+      if (examId) {
+        const exam = await examsService.findOne(examId);
         setExamName(exam.name);
+        setExamId(exam.id);
 
         const data = await topicsService.findAll(exam.id);
         setTopics(data);
@@ -224,7 +224,7 @@ export default function TopicList() {
     } finally {
       setIsLoading(false);
     }
-  }, [examSlug, toast, navigate]);
+  }, [examId, toast, navigate]);
 
   useEffect(() => {
     loadData();
@@ -464,7 +464,7 @@ export default function TopicList() {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    navigate(`/dashboard/admin/topics/${topic.slug}/levels`)
+                    navigate(`/dashboard/admin/topics/${topic.id}/levels`)
                   }
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
                 >
@@ -481,9 +481,9 @@ export default function TopicList() {
         onClose={() => setIsModalOpen(false)}
         title={editingTopicId ? 'Editar Tópico' : 'Novo Tópico'}
       >
-        {examId && (
+        {examIdState && (
           <TopicFormContent
-            examId={examId}
+            examId={examIdState}
             topicId={editingTopicId}
             onSuccess={handleFormSuccess}
             onCancel={() => setIsModalOpen(false)}

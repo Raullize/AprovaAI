@@ -453,7 +453,7 @@ export default function AdminExams() {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    navigate(`/dashboard/admin/exams/${exam.slug}/topics`)
+                    navigate(`/dashboard/admin/exams/${exam.id}/topics`)
                   }
                   className="text-primary-600 border-primary-200 hover:bg-primary-50"
                 >

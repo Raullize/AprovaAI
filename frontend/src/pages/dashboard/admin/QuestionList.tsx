@@ -469,8 +469,8 @@ function QuestionFormContent({
 }
 
 export default function QuestionList() {
-  const { levelSlug } = useParams();
-  const [levelId, setLevelId] = useState<string | undefined>(undefined);
+  const { levelId: levelIdParam } = useParams();
+  const [levelId, setLevelId] = useState<string | null>(levelIdParam || null);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -499,8 +499,8 @@ export default function QuestionList() {
     try {
       setIsLoading(true);
 
-      if (levelSlug) {
-        const level = await levelsService.findOne(levelSlug);
+      if (levelIdParam) {
+        const level = await levelsService.findOne(levelIdParam);
         setLevelId(level.id);
 
         const topic = await topicsService.findOne(level.topicId);
@@ -524,7 +524,7 @@ export default function QuestionList() {
     } finally {
       setIsLoading(false);
     }
-  }, [levelSlug, toast, navigate]);
+  }, [levelIdParam, toast, navigate]);
 
   useEffect(() => {
     loadData();
@@ -648,14 +648,14 @@ export default function QuestionList() {
                 { label: 'Exames', href: '/dashboard/exams' },
                 {
                   label: breadcrumb.examName || 'Carregando...',
-                  href: breadcrumb.examSlug
-                    ? `/dashboard/admin/exams/${breadcrumb.examSlug}/topics`
+                  href: breadcrumb.examId
+                    ? `/dashboard/admin/exams/${breadcrumb.examId}/topics`
                     : '#',
                 },
                 {
                   label: breadcrumb.topicName || 'Carregando...',
-                  href: breadcrumb.topicSlug
-                    ? `/dashboard/admin/topics/${breadcrumb.topicSlug}/levels`
+                  href: breadcrumb.topicId
+                    ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
                     : '#',
                 },
                 { label: breadcrumb.levelName || 'Carregando...', href: '#' },
@@ -668,8 +668,8 @@ export default function QuestionList() {
               <button
                 onClick={() =>
                   navigate(
-                    breadcrumb.topicSlug
-                      ? `/dashboard/admin/topics/${breadcrumb.topicSlug}/levels`
+                    breadcrumb.topicId
+                      ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
                       : '/dashboard/exams',
                   )
                 }

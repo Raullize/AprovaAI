@@ -119,7 +119,7 @@ export function AppRoutes() {
         />
 
         <Route
-          path="admin/exams/:examSlug/topics"
+          path="admin/exams/:examId/topics"
           element={
             <AdminRoute>
               <TopicList />
@@ -128,7 +128,7 @@ export function AppRoutes() {
         />
 
         <Route
-          path="admin/topics/:topicSlug/levels"
+          path="admin/topics/:topicId/levels"
           element={
             <AdminRoute>
               <LevelList />
@@ -137,7 +137,7 @@ export function AppRoutes() {
         />
 
         <Route
-          path="admin/levels/:levelSlug/questions"
+          path="admin/levels/:levelId/questions"
           element={
             <AdminRoute>
               <QuestionList />

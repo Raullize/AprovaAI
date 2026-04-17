@@ -204,12 +204,12 @@ function LevelFormContent({
 }
 
 export default function LevelList() {
-  const { topicSlug } = useParams();
-  const [topicId, setTopicId] = useState<string | undefined>(undefined);
+  const { topicId } = useParams();
+  const [topicIdState, setTopicId] = useState<string | undefined>(topicId);
   const [levels, setLevels] = useState<Level[]>([]);
   const [topicName, setTopicName] = useState('');
   const [examName, setExamName] = useState('');
-  const [examSlug, setExamSlug] = useState('');
+  const [examId, setExamId] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -229,14 +229,14 @@ export default function LevelList() {
     try {
       setIsLoading(true);
 
-      if (topicSlug) {
-        const topic = await topicsService.findOne(topicSlug);
+      if (topicId) {
+        const topic = await topicsService.findOne(topicId);
         setTopicName(topic.name);
         setTopicId(topic.id);
 
         const exam = await examsService.findOne(topic.examId);
         setExamName(exam.name);
-        setExamSlug(exam.slug);
+        setExamId(exam.id);
 
         const data = await levelsService.findAll(topic.id);
         setLevels(data);
@@ -251,7 +251,7 @@ export default function LevelList() {
     } finally {
       setIsLoading(false);
     }
-  }, [topicSlug, toast, navigate]);
+  }, [topicId, toast, navigate]);
 
   useEffect(() => {
     loadData();
@@ -346,14 +346,14 @@ export default function LevelList() {
                 { label: 'Exames', href: '/dashboard/exams' },
                 {
                   label: examName || '...',
-                  href: examSlug
-                    ? `/dashboard/admin/exams/${examSlug}/topics`
+                  href: examId
+                    ? `/dashboard/admin/exams/${examId}/topics`
                     : '#',
                 },
                 {
                   label: 'Tópicos',
-                  href: examSlug
-                    ? `/dashboard/admin/exams/${examSlug}/topics`
+                  href: examId
+                    ? `/dashboard/admin/exams/${examId}/topics`
                     : '#',
                 },
                 { label: topicName || '...', href: '#' },
@@ -366,8 +366,8 @@ export default function LevelList() {
               <button
                 onClick={() =>
                   navigate(
-                    examSlug
-                      ? `/dashboard/admin/exams/${examSlug}/topics`
+                    examId
+                      ? `/dashboard/admin/exams/${examId}/topics`
                       : '/dashboard/exams',
                   )
                 }
@@ -518,11 +518,11 @@ export default function LevelList() {
                   variant="outline"
                   size="sm"
                   onClick={() =>
-                    navigate(`/dashboard/admin/levels/${level.slug}/questions`)
+                    navigate(`/dashboard/admin/levels/${level.id}/questions`)
                   }
                   className="w-full text-primary-600 border-primary-200 hover:bg-primary-50"
                 >
-                  Gerenciar Questões <ChevronRight className="h-4 w-4 ml-1" />
+                  Gerenciar Questões <ChevronRight className="ml-1 h-4 w-4" />
                 </Button>
               </div>
             </div>
@@ -536,7 +536,7 @@ export default function LevelList() {
         title={editingLevelId ? 'Editar Nível' : 'Novo Nível'}
       >
         <LevelFormContent
-          topicId={topicId}
+          topicId={topicIdState}
           levelId={editingLevelId}
           onSuccess={handleFormSuccess}
           onCancel={() => setIsModalOpen(false)}
