@@ -21,10 +21,10 @@ const studentItems = [
 ];
 
 const adminItems = [
-  { icon: Home, label: 'Início', href: '/dashboard/admin' },
+  { icon: Home, label: 'Início', href: '/dashboard' },
   { icon: BookOpen, label: 'Exames', href: '/dashboard/exams' },
-  { icon: Users, label: 'Usuários', href: '/dashboard/admin/users' },
-  { icon: Settings, label: 'Configurações', href: '/dashboard/admin/settings' },
+  { icon: Users, label: 'Usuários', href: '/dashboard/users' },
+  { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
 ];
 
 export const Sidebar: React.FC = () => {
@@ -40,7 +40,7 @@ export const Sidebar: React.FC = () => {
   };
 
   const isRouteActive = (href: string, currentPath: string) => {
-    if (href === '/dashboard' || href === '/dashboard/admin') {
+    if (href === '/dashboard') {
       return currentPath === href;
     }
 
