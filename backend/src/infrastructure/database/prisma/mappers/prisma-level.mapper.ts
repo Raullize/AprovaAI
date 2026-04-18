@@ -1,6 +1,7 @@
 import { Level as PrismaLevel } from '@prisma/client';
 import { Level } from '../../../../domain/content/entities/level.entity';
 import { Slug } from '../../../../domain/content/value-objects/slug';
+import { Percentage } from '../../../../domain/content/value-objects/percentage';
 
 export class PrismaLevelMapper {
   static toDomain(
@@ -15,7 +16,7 @@ export class PrismaLevelMapper {
         topicId: raw.topicId,
         status: raw.status,
         xpReward: raw.xpReward,
-        passingPercentage: raw.passingPercentage,
+        passingPercentage: Percentage.create(raw.passingPercentage),
         questionsCount: raw._count?.questions,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,

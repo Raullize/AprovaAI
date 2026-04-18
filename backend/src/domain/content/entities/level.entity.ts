@@ -1,5 +1,6 @@
 import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Slug } from '../value-objects/slug';
+import { Percentage } from '../value-objects/percentage';
 import { LevelCreatedEvent } from '../events/level-created.event';
 import { ValidationError } from '../../../shared/core/errors/validation.error';
 
@@ -11,7 +12,7 @@ export interface LevelProps {
   topicId: string;
   status?: 'ACTIVE' | 'INACTIVE';
   xpReward?: number;
-  passingPercentage?: number;
+  passingPercentage?: Percentage;
   questionsCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -40,7 +41,7 @@ export class Level extends AggregateRoot<LevelProps> {
     return this.props.xpReward ?? 0;
   }
   get passingPercentage(): number {
-    return this.props.passingPercentage ?? 70.0;
+    return this.props.passingPercentage?.value ?? 70.0;
   }
   get createdAt(): Date | undefined {
     return this.props.createdAt;
@@ -58,7 +59,7 @@ export class Level extends AggregateRoot<LevelProps> {
         ...props,
         status: props.status ?? 'ACTIVE',
         xpReward: props.xpReward ?? 0,
-        passingPercentage: props.passingPercentage ?? 70.0,
+        passingPercentage: props.passingPercentage ?? Percentage.create(70.0),
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
@@ -89,13 +90,8 @@ export class Level extends AggregateRoot<LevelProps> {
     slug: Slug;
     topicId: string;
     xpReward: number;
-    passingPercentage: number;
+    passingPercentage: Percentage;
   }): void {
-    if (details.passingPercentage < 0 || details.passingPercentage > 100) {
-      throw new ValidationError(
-        'Passing percentage must be between 0 and 100.',
-      );
-    }
     this.props.name = details.name;
     this.props.description = details.description;
     this.props.slug = details.slug;

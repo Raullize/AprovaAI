@@ -2,6 +2,7 @@ import { FindLevelByIdUseCase } from '../../find-level-by-id.use-case';
 import { InMemoryLevelRepository } from '../../../../../../test/repositories/in-memory-level.repository';
 import { Level } from '../../../../../domain/content/entities/level.entity';
 import { Slug } from '../../../../../domain/content/value-objects/slug';
+import { Percentage } from '../../../../../domain/content/value-objects/percentage';
 import { ResourceNotFoundError } from '../../../../../shared/core/errors/resource-not-found.error';
 
 describe('FindLevelByIdUseCase', () => {
@@ -20,7 +21,7 @@ describe('FindLevelByIdUseCase', () => {
       topicId: 'topic-01',
       order: 0,
       xpReward: 150,
-      passingPercentage: 70,
+      passingPercentage: Percentage.create(70),
     });
     await repository.create(level);
 

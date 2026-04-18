@@ -1,5 +1,6 @@
 import { Level } from '../../level.entity';
 import { Slug } from '../../../value-objects/slug';
+import { Percentage } from '../../../value-objects/percentage';
 
 describe('Level Entity', () => {
   it('should be able to create a level', () => {
@@ -60,7 +61,7 @@ describe('Level Entity', () => {
       slug: Slug.createFromText('updated-level'),
       topicId: 'topic-2',
       xpReward: 50,
-      passingPercentage: 80.0,
+      passingPercentage: Percentage.create(80.0),
     });
 
     expect(level.name).toBe('Updated Level');
@@ -86,9 +87,9 @@ describe('Level Entity', () => {
         slug: Slug.createFromText('updated-level'),
         topicId: 'topic-2',
         xpReward: 50,
-        passingPercentage: 150.0, // Invalid percentage
+        passingPercentage: Percentage.create(150.0), // Invalid percentage throws
       });
-    }).toThrow('Passing percentage must be between 0 and 100.');
+    }).toThrow('Percentage must be between 0 and 100.');
   });
 
   it('should update level order', () => {

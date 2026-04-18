@@ -3,6 +3,7 @@ import { UseCase } from '../../../shared/core/use-case';
 import { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { Level } from '../../../domain/content/entities/level.entity';
 import { Slug } from '../../../domain/content/value-objects/slug';
+import { Percentage } from '../../../domain/content/value-objects/percentage';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
@@ -48,7 +49,9 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
         topicId: request.data.topicId ?? level.topicId,
         xpReward: request.data.xpReward ?? level.xpReward,
         passingPercentage:
-          request.data.passingPercentage ?? level.passingPercentage,
+          request.data.passingPercentage !== undefined
+            ? Percentage.create(request.data.passingPercentage)
+            : Percentage.create(level.passingPercentage),
       });
     } else if (
       request.data.description !== undefined ||
@@ -63,7 +66,9 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
         topicId: request.data.topicId ?? level.topicId,
         xpReward: request.data.xpReward ?? level.xpReward,
         passingPercentage:
-          request.data.passingPercentage ?? level.passingPercentage,
+          request.data.passingPercentage !== undefined
+            ? Percentage.create(request.data.passingPercentage)
+            : Percentage.create(level.passingPercentage),
       });
     }
 
