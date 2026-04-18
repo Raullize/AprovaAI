@@ -2,7 +2,6 @@ import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Slug } from '../value-objects/slug';
 import { Percentage } from '../value-objects/percentage';
 import { LevelCreatedEvent } from '../events/level-created.event';
-import { ValidationError } from '../../../shared/core/errors/validation.error';
 
 export interface LevelProps {
   name: string;

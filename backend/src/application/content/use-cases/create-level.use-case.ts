@@ -40,7 +40,10 @@ export class CreateLevelUseCase implements UseCase<CreateLevelRequest, Level> {
       status: request.status,
       topicId: request.topicId,
       xpReward: request.xpReward,
-      passingPercentage: request.passingPercentage !== undefined ? Percentage.create(request.passingPercentage) : undefined,
+      passingPercentage:
+        request.passingPercentage !== undefined
+          ? Percentage.create(request.passingPercentage)
+          : undefined,
       order: count,
     });
 
