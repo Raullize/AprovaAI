@@ -161,7 +161,7 @@ backend/
     └── shared/         # Core e Utils compartilhados (Filtros, Exceções)
 ```
 
-> **Para um aprofundamento na arquitetura e fluxo de dados, consulte a documentação detalhada: [Arquitetura do Backend: Clean Architecture & DDD](../docs/CLEAN_ARCHITECTURE_DDD.md)**
+> **Para um aprofundamento na arquitetura e fluxo de dados, consulte a documentação detalhada: [Arquitetura do Backend: Clean Architecture & DDD](../docs/ARCHITECTURE.md)**
 
 ---
 

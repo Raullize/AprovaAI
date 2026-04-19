@@ -99,12 +99,13 @@ AprovaAI/
 ├── backend/            # Node.js + NestJS + Prisma (API REST - Clean Architecture)
 │   └── README.md       # Documentação do backend
 └── docs/
-    ├── CLEAN_ARCHITECTURE_DDD.md # Documentação detalhada da nova arquitetura
+    ├── ARCHITECTURE.md           # Documentação detalhada da nova arquitetura
+    ├── ARCHITECTURE_EVOLUTION.md # Histórico de refatorações da arquitetura
     └── insomnia/                 # Coleção Insomnia para testes da API
 ```
 
 Para entender em detalhes como o backend está estruturado em camadas (Domain, Application, Infrastructure, API) e o fluxo de dados, consulte o documento:
-**[Arquitetura do Backend: Clean Architecture & DDD](./docs/CLEAN_ARCHITECTURE_DDD.md)**
+**[Arquitetura do Backend: Clean Architecture & DDD](./docs/ARCHITECTURE.md)** e **[Evolução da Arquitetura](./docs/ARCHITECTURE_EVOLUTION.md)**
 
 ---
 
