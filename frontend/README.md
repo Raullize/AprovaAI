@@ -115,6 +115,8 @@ frontend/
     └── App.tsx         # Roteamento principal
 ```
 
+> **Para um aprofundamento na arquitetura client-side (Roteamento e Camada de Serviços), consulte a documentação detalhada: [Arquitetura do Frontend](../docs/FRONTEND_ARCHITECTURE.md)**
+
 ---
 
 ## Autenticação
