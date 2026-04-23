@@ -21,6 +21,13 @@ interface AuthContextData {
   user: User | null;
   signed: boolean;
   signIn: (data: LoginCredentials) => Promise<void>;
+  signUp: (
+    data: Omit<LoginCredentials, 'password'> & {
+      password: string;
+      fullName: string;
+      dateOfBirth: string;
+    },
+  ) => Promise<void>;
   signOut: () => void;
   loading: boolean;
 }
@@ -57,6 +64,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     setUser(user);
   }
 
+  async function signUp(
+    data: Omit<LoginCredentials, 'password'> & {
+      password: string;
+      fullName: string;
+      dateOfBirth: string;
+    },
+  ) {
+    const response = await api.post('/auth/register', data);
+    const { token, user } = response.data;
+
+    localStorage.setItem('@aprovaai:token', token);
+    localStorage.setItem('@aprovaai:user', JSON.stringify(user));
+
+    setUser(user);
+  }
+
   function signOut() {
     localStorage.clear();
     setUser(null);
@@ -64,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ signed: !!user, user, signIn, signOut, loading }}
+      value={{ signed: !!user, user, signIn, signUp, signOut, loading }}
     >
       {children}
     </AuthContext.Provider>
