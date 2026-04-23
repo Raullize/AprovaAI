@@ -1,36 +1,39 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import AuthLayout from '../components/auth/AuthLayout';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import GoogleButton from '../components/ui/GoogleButton';
-import { useFormValidation } from '../hooks/useFormValidation';
-import { useToast } from '../hooks/use-toast';
-import type { LoginForm } from '../types';
-import Loading from '../components/ui/Loading';
+import { useAuth } from '../../context/AuthContext';
+import AuthLayout from '../../components/auth/AuthLayout';
+import Input from '../../components/ui/Input';
+import Button from '../../components/ui/Button';
+import GoogleButton from '../../components/ui/GoogleButton';
+import { useToast } from '../../hooks/use-toast';
+import Loading from '../../components/ui/Loading';
 import { AxiosError } from 'axios';
-import { usePageTitle } from '../hooks/usePageTitle';
+import { usePageTitle } from '../../hooks/usePageTitle';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema, type LoginFormData } from '../../validations/auth.schema';
 
 export default function Login() {
   usePageTitle('Entrar');
-  const [formData, setFormData] = useState<LoginForm>({
-    email: '',
-    password: '',
-  });
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { validateLoginForm, getFieldError, clearErrors } = useFormValidation();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
+
   const { toast } = useToast();
   const navigate = useNavigate();
   const { signIn } = useAuth();
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleGoogleLogin = async () => {
     toast({
@@ -40,21 +43,13 @@ export default function Login() {
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    clearErrors();
-
-    const validation = validateLoginForm(formData);
-    if (!validation.isValid) {
-      return;
-    }
-
+  const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
 
     try {
       await signIn({
-        email: formData.email || '',
-        password: formData.password || '',
+        email: data.email,
+        password: data.password,
       });
 
       toast({
@@ -88,33 +83,27 @@ export default function Login() {
       title="Bem-vindo de volta!"
       subtitle="Entre na sua conta para continuar seus estudos"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input
-          name="email"
+          {...register('email')}
           type="email"
           label="E-mail"
           placeholder="seu.email@exemplo.com"
-          value={formData.email}
-          onChange={handleInputChange}
-          error={getFieldError('email')}
+          error={errors.email?.message}
           disabled={isLoading}
-          required
         />
 
         <div className="space-y-1">
           <Input
-            name="password"
+            {...register('password')}
             type="password"
             label="Senha"
             placeholder="••••••••"
-            value={formData.password}
-            onChange={handleInputChange}
-            error={getFieldError('password')}
+            error={errors.password?.message}
             showPasswordToggle
             showPassword={showPassword}
             onTogglePassword={() => setShowPassword(!showPassword)}
             disabled={isLoading}
-            required
           />
           <div className="flex justify-end">
             <Link
@@ -146,7 +135,11 @@ export default function Login() {
           </div>
         </div>
 
-        <GoogleButton onClick={handleGoogleLogin} disabled={isLoading}>
+        <GoogleButton
+          type="button"
+          onClick={handleGoogleLogin}
+          disabled={isLoading}
+        >
           Continuar com Google
         </GoogleButton>
 
