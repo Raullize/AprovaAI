@@ -5,6 +5,7 @@ import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import { useToast } from '../../../hooks/use-toast';
 import api from '../../../services/api';
+import { AxiosError } from 'axios';
 import Loading from '../../../components/ui/Loading';
 
 interface SimulationFormData {
@@ -66,11 +67,18 @@ export default function CreateSimulation() {
       });
 
       navigate('/dashboard/simulations');
-    } catch (error) {
-      console.error(error);
+    } catch (error: unknown) {
+      console.error('Create simulation error:', error);
+      const err = error as AxiosError<{ message?: string; error?: string }>;
+
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        'Tente novamente mais tarde.';
+
       toast({
         title: 'Erro ao criar simulado',
-        description: 'Tente novamente mais tarde.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

@@ -63,8 +63,10 @@ export default function Login() {
       }, 1000);
     } catch (error: unknown) {
       console.error('Login error:', error);
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as AxiosError<{ message?: string; error?: string }>;
+
       const errorMessage =
+        err.response?.data?.message ||
         err.response?.data?.error ||
         'Credenciais inválidas. Verifique e tente novamente.';
 

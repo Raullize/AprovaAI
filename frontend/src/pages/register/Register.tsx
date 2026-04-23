@@ -97,8 +97,10 @@ export default function Register() {
       }, 1000);
     } catch (error: unknown) {
       console.error('Registration error:', error);
-      const err = error as AxiosError<{ error: string }>;
+      const err = error as AxiosError<{ message?: string; error?: string }>;
+
       const errorMessage =
+        err.response?.data?.message ||
         err.response?.data?.error ||
         'Ocorreu um erro ao criar sua conta. Tente novamente.';
 
