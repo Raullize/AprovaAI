@@ -5,16 +5,18 @@ interface GoogleButtonProps {
   onClick: () => void;
   disabled?: boolean;
   children?: React.ReactNode;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 const GoogleButton: React.FC<GoogleButtonProps> = ({
   onClick,
   disabled,
   children,
+  type = 'button',
 }) => {
   return (
     <Button
-      type="button"
+      type={type}
       variant="outline"
       onClick={onClick}
       disabled={disabled}
