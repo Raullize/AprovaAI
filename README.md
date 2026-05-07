@@ -104,8 +104,14 @@ AprovaAI/
     └── insomnia/                 # Coleção Insomnia para testes da API
 ```
 
-Para entender em detalhes como o backend está estruturado em camadas (Domain, Application, Infrastructure, API) e o fluxo de dados, consulte o documento:
-**[Arquitetura do Backend: Clean Architecture & DDD](./docs/ARCHITECTURE.md)** e **[Evolução da Arquitetura](./docs/ARCHITECTURE_EVOLUTION.md)**
+## Documentação de Arquitetura Detalhada
+
+Para compreender a fundo as decisões técnicas e arquiteturais deste projeto, consulte os documentos a seguir:
+
+- [**Evolução da Arquitetura**](docs/ARCHITECTURE_EVOLUTION.md) - Explica a trajetória do projeto desde um monolito legado até a adoção do DDD, incluindo a decisão estratégica de manter o purismo arquitetural frente ao desenvolvimento orquestrado por IA (Agentic Orchestration).
+- [**Backend Architecture (Clean Arch & DDD)**](docs/BACKEND_ARCHITECTURE.md) - Manual completo de como o código do backend está organizado, detalhando Mappers, Aggregate Roots, Repositórios em Memória e o fluxo de dados.
+- [**Frontend Architecture**](docs/FRONTEND_ARCHITECTURE.md) - Padrões de organização, gerenciamento de estado e bibliotecas usadas no cliente React.
+- [**Guia NestJS**](docs/NESTJS_GUIDE.md) - Manual focado no uso do framework.
 
 ---
 

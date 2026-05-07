@@ -32,7 +32,7 @@ Embora organizado sob a estrutura de modulos do NestJS, o codigo original persis
 - Casos de uso receberam isolamento rigido (`application/`). 
 - As verdades do negocio passaram a transitar e respirar num ecosistema imutavel chamado de _Aggregates_ protegendo invariantes internas isoladas completamente da camada NestJS ou BD (`domain/`). Pondo o ponto final ao ciclo com repositorios aplicando o padrao de gravacao limpo.
 
-> **Nota Adicional:** Para compreender o reflexo estrutural real desse novo escopo limpo passo-a-passo e sua explicacao tecnica aprofundada baseada nos diagramas, certifique-se de acessar ativamente o documento: **[Documentacao Fundamental de Arquitetura](./ARCHITECTURE.md)** e **[Frontend Architecture](./FRONTEND_ARCHITECTURE.md)**.
+> **Nota Adicional:** Para compreender o reflexo estrutural real desse novo escopo limpo passo-a-passo e sua explicacao tecnica aprofundada baseada nos diagramas, certifique-se de acessar ativamente o documento: **[Backend Architecture](./BACKEND_ARCHITECTURE.md)** e **[Frontend Architecture](./FRONTEND_ARCHITECTURE.md)**.
 
 ### 5. Decisão Estratégica: Clean Architecture vs. Desenvolvimento com IA (Agentic Orchestration)
 Durante o desenvolvimento do projeto, uma discussão arquitetural importante foi levantada a respeito do uso da Clean Architecture e DDD em conjunto com a metodologia de **Agentic Orchestration** (Desenvolvimento orquestrado por Agentes de Inteligência Artificial).
