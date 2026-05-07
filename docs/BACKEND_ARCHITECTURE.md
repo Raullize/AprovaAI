@@ -71,6 +71,17 @@ Pecas transversais, transmutaveis e fundacionais de infraestrutura que baseiam d
 - **`core/`**: Nucleo com blocos padroes de arquitetura DDD em forma abstrata: `entity.ts`, `aggregate-root.ts`, `value-object.ts`, onde caracteristicas sistemicas vitais como Identidade base (`UUID`) ou disparadores de `DomainEvents` repousam. Inclui o super-classe de erro base `AppError`.
 - **`filters/`**: Adaptadores como o `DomainExceptionFilter`, componente capaz de capturar e encampar excecoes da logica `AppError` e transforma-las impecavelmente em restricoes customizadas via HTTP antes de retornar proscricoes abertas.
 
+## Design Patterns Adotados
+
+A arquitetura do backend faz uso extensivo de padrões de projeto (Design Patterns) consolidados na engenharia de software para garantir escalabilidade, testabilidade e baixo acoplamento:
+
+- **Repository Pattern**: Abstrai o acesso a dados. O domínio interage apenas com as interfaces (`ExamRepository`), enquanto as implementações reais (`PrismaExamRepository`) ou de teste (`InMemoryExamRepository`) lidam com o "como" salvar e buscar os dados.
+- **Factory Method**: Usado intensamente na criação de Entidades e Value Objects (ex: `Exam.create(...)`, `Slug.create(...)`). Garante que nenhum objeto seja instanciado em um estado inválido e esconde a complexidade de inicialização (como a geração automática de UUIDs ou datas de criação).
+- **Data Mapper Pattern**: Presente na camada de infraestrutura (`PrismaExamMapper`), atua como uma barreira bidirecional que converte os dados "burros" do banco de dados para objetos ricos do domínio (Entidades), mantendo as duas partes independentes.
+- **Dependency Injection (DI) / Inversion of Control (IoC)**: Delegamos ao framework (NestJS) a responsabilidade de instanciar e injetar as dependências concretas (como repositórios e provedores de criptografia) dentro dos Casos de Uso que exigem apenas as interfaces abstratas (Ports).
+- **Observer / Publisher-Subscriber (Pub/Sub)**: Implementado através do `DomainEvents`. Permite que entidades publiquem eventos (ex: `LevelCreatedEvent`) de forma desacoplada, para que outros módulos possam reagir (assinar) no futuro sem alterar o fluxo principal.
+- **Command Pattern (Use Cases)**: Cada Caso de Uso é implementado como um comando único com um método `execute()`. Eles encapsulam a intenção do usuário em objetos parametrizados (Requests), facilitando o rastreamento, o teste e a adesão ao Single Responsibility Principle (SRP).
+
 ---
 
 ## Fluxo de Dados Pratico (Data Flow Exemplo)
