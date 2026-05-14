@@ -8,12 +8,15 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import {
   createExamSchema,
   updateExamSchema,
   reorderSchema,
+  CreateExamDto,
+  UpdateExamDto,
+  ReorderDto,
 } from './dto/exam.dto';
-import type { CreateExamDto, UpdateExamDto, ReorderDto } from './dto/exam.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
@@ -27,6 +30,7 @@ import { UpdateExamUseCase } from '../../application/content/use-cases/update-ex
 import { DeleteExamUseCase } from '../../application/content/use-cases/delete-exam.use-case';
 import { ReorderExamsUseCase } from '../../application/content/use-cases/reorder-exams.use-case';
 
+@ApiTags('Exams')
 @Controller('exams')
 export class ExamsController {
   constructor(
@@ -40,6 +44,7 @@ export class ExamsController {
   ) {}
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   create(
@@ -67,6 +72,7 @@ export class ExamsController {
   }
 
   @Patch('reorder')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
@@ -74,6 +80,7 @@ export class ExamsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   update(
@@ -84,6 +91,7 @@ export class ExamsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   remove(@Param('id') id: string) {

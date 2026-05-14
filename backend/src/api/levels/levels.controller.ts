@@ -8,10 +8,14 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { createLevelSchema, updateLevelSchema } from './dto/level.dto';
-import type { CreateLevelDto, UpdateLevelDto } from './dto/level.dto';
-import { reorderSchema } from '../exams/dto/exam.dto';
-import type { ReorderDto } from '../exams/dto/exam.dto';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  createLevelSchema,
+  updateLevelSchema,
+  CreateLevelDto,
+  UpdateLevelDto,
+} from './dto/level.dto';
+import { reorderSchema, ReorderDto } from '../exams/dto/exam.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
@@ -26,6 +30,7 @@ import { UpdateLevelUseCase } from '../../application/content/use-cases/update-l
 import { DeleteLevelUseCase } from '../../application/content/use-cases/delete-level.use-case';
 import { ReorderLevelsUseCase } from '../../application/content/use-cases/reorder-levels.use-case';
 
+@ApiTags('Levels')
 @Controller('levels')
 export class LevelsController {
   constructor(
@@ -40,6 +45,7 @@ export class LevelsController {
   ) {}
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   create(
@@ -73,6 +79,7 @@ export class LevelsController {
   }
 
   @Patch('reorder')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
@@ -80,6 +87,7 @@ export class LevelsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   update(
@@ -91,6 +99,7 @@ export class LevelsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   remove(@Param('id') id: string) {

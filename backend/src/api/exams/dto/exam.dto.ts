@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const createExamSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -6,7 +7,7 @@ export const createExamSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']).default('ACTIVE'),
 });
 
-export type CreateExamDto = z.infer<typeof createExamSchema>;
+export class CreateExamDto extends createZodDto(createExamSchema) {}
 
 export const updateExamSchema = z.object({
   name: z.string().optional(),
@@ -14,7 +15,7 @@ export const updateExamSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
 });
 
-export type UpdateExamDto = z.infer<typeof updateExamSchema>;
+export class UpdateExamDto extends createZodDto(updateExamSchema) {}
 
 export const reorderSchema = z.object({
   ids: z
@@ -22,4 +23,4 @@ export const reorderSchema = z.object({
     .min(1, 'ids deve ser um array com pelo menos 1 item'),
 });
 
-export type ReorderDto = z.infer<typeof reorderSchema>;
+export class ReorderDto extends createZodDto(reorderSchema) {}

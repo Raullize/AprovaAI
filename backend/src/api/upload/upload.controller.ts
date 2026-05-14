@@ -9,6 +9,7 @@ import {
   BadRequestException,
   Param,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
@@ -17,6 +18,8 @@ import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { UploadImageUseCase } from '../../application/uploads/use-cases/upload-image.use-case';
 import { DeleteImageUseCase } from '../../application/uploads/use-cases/delete-image.use-case';
 
+@ApiTags('Upload')
+@ApiBearerAuth()
 @Controller('upload')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class UploadController {
@@ -27,6 +30,21 @@ export class UploadController {
 
   @Post()
   @Roles(UserRole.ADMIN)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+        folder: {
+          type: 'string',
+        },
+      },
+    },
+  })
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: (req, file, cb) => {

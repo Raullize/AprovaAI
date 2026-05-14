@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const registerSchema = z.object({
   fullName: z
@@ -17,4 +18,4 @@ export const registerSchema = z.object({
   dateOfBirth: z.string(),
 });
 
-export type RegisterDto = z.infer<typeof registerSchema>;
+export class RegisterDto extends createZodDto(registerSchema) {}

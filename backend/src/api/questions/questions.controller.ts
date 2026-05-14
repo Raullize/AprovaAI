@@ -8,10 +8,14 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { createQuestionSchema, updateQuestionSchema } from './dto/question.dto';
-import type { CreateQuestionDto, UpdateQuestionDto } from './dto/question.dto';
-import { reorderSchema } from '../exams/dto/exam.dto';
-import type { ReorderDto } from '../exams/dto/exam.dto';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  createQuestionSchema,
+  updateQuestionSchema,
+  CreateQuestionDto,
+  UpdateQuestionDto,
+} from './dto/question.dto';
+import { reorderSchema, ReorderDto } from '../exams/dto/exam.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
@@ -25,6 +29,7 @@ import { UpdateQuestionUseCase } from '../../application/content/use-cases/updat
 import { DeleteQuestionUseCase } from '../../application/content/use-cases/delete-question.use-case';
 import { ReorderQuestionsUseCase } from '../../application/content/use-cases/reorder-questions.use-case';
 
+@ApiTags('Questions')
 @Controller('questions')
 export class QuestionsController {
   constructor(
@@ -38,6 +43,7 @@ export class QuestionsController {
   ) {}
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   create(
@@ -63,6 +69,7 @@ export class QuestionsController {
   }
 
   @Patch('reorder')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
@@ -70,6 +77,7 @@ export class QuestionsController {
   }
 
   @Patch(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   update(
@@ -81,6 +89,7 @@ export class QuestionsController {
   }
 
   @Delete(':id')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   remove(@Param('id') id: string) {

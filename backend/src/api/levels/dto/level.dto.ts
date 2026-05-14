@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 export const createLevelSchema = z.object({
   name: z.string().min(1, 'Nome é obrigatório'),
@@ -9,7 +10,7 @@ export const createLevelSchema = z.object({
   passingPercentage: z.number().min(0).max(100).default(70.0),
 });
 
-export type CreateLevelDto = z.infer<typeof createLevelSchema>;
+export class CreateLevelDto extends createZodDto(createLevelSchema) {}
 
 export const updateLevelSchema = z.object({
   name: z.string().optional(),
@@ -20,4 +21,4 @@ export const updateLevelSchema = z.object({
   passingPercentage: z.number().optional(),
 });
 
-export type UpdateLevelDto = z.infer<typeof updateLevelSchema>;
+export class UpdateLevelDto extends createZodDto(updateLevelSchema) {}

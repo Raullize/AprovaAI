@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { createZodDto } from 'nestjs-zod';
 
 const createOptionSchema = z.object({
   text: z.string().min(1, 'Texto da opção é obrigatório'),
@@ -24,7 +25,7 @@ export const createQuestionSchema = z.object({
     .min(2, 'A questão deve ter pelo menos 2 opções'),
 });
 
-export type CreateQuestionDto = z.infer<typeof createQuestionSchema>;
+export class CreateQuestionDto extends createZodDto(createQuestionSchema) {}
 
 export const updateQuestionSchema = z.object({
   content: z.string().optional(),
@@ -37,4 +38,4 @@ export const updateQuestionSchema = z.object({
   options: z.array(updateOptionSchema).optional(),
 });
 
-export type UpdateQuestionDto = z.infer<typeof updateQuestionSchema>;
+export class UpdateQuestionDto extends createZodDto(updateQuestionSchema) {}
