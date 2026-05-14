@@ -3,6 +3,8 @@ import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import * as path from 'path';
 import { DomainExceptionFilter } from './shared/filters/domain-exception.filter';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { cleanupOpenApiDoc } from 'nestjs-zod';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -19,6 +21,16 @@ async function bootstrap() {
   );
 
   app.useGlobalFilters(new DomainExceptionFilter());
+
+  const config = new DocumentBuilder()
+    .setTitle('AprovaAI API')
+    .setDescription('AprovaAI REST API documentation')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  const cleanedDoc = cleanupOpenApiDoc(document);
+  SwaggerModule.setup('api/docs', app, cleanedDoc);
 
   await app.listen(process.env.PORT ?? 3001);
 }
