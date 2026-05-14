@@ -54,16 +54,22 @@ export class QuestionsController {
   }
 
   @Get()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   findAll() {
     return this.findAllQuestionsUseCase.execute();
   }
 
   @Get('level/:levelId')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   findByLevel(@Param('levelId') levelId: string) {
     return this.findQuestionsByLevelIdUseCase.execute(levelId);
   }
 
   @Get(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
   findOne(@Param('id') id: string) {
     return this.findQuestionByIdUseCase.execute(id);
   }
