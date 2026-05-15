@@ -183,7 +183,17 @@ A API é estaticamente gerida por Controlles injetáveis:
 | `PATCH` | `/api/questions/reorder` | Reordena questões |
 | `POST` | `/api/upload` | Upload local de imagem gerenciado pelo Nest |
 
-> Para documentação exploratória extra, importe a coleção existente na raiz do monorepo em `docs/insomnia/`.
+---
+
+## Documentação Interativa (Swagger)
+
+A API fornece uma documentação interativa gerada automaticamente pelo Swagger, que permite visualizar todos os endpoints, DTOs e testar requisições diretamente pelo navegador.
+
+1. Com o servidor rodando, acesse: **[http://localhost:3001/api/docs](http://localhost:3001/api/docs)**
+2. Para rotas protegidas (ex: criação e reordenação), você precisa estar logado:
+   - Use o endpoint `/api/auth/login` (ou via interface) para obter seu token JWT.
+   - Clique no botão verde **"Authorize"** no topo da página do Swagger.
+   - Cole o token no campo de texto e confirme.
 
 ---
 

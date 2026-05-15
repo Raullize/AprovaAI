@@ -100,8 +100,7 @@ AprovaAI/
 │   └── README.md       # Documentação do backend
 └── docs/
     ├── ARCHITECTURE.md           # Documentação detalhada da nova arquitetura
-    ├── ARCHITECTURE_EVOLUTION.md # Histórico de refatorações da arquitetura
-    └── insomnia/                 # Coleção Insomnia para testes da API
+    └── ARCHITECTURE_EVOLUTION.md # Histórico de refatorações da arquitetura
 ```
 
 ## Documentação de Arquitetura Detalhada
