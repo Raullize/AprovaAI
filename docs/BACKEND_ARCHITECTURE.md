@@ -101,6 +101,7 @@ Observe aqui um Update de Fase (Level) atuando na pratica ponta-a-ponta:
 
 ## Escolhas Tecnicas Refletidas
 
+- **Swagger & OpenAPI**: Utilizamos o pacote `@nestjs/swagger` combinado com `nestjs-zod` para gerar documentação de API de forma automatizada e visual (disponível na rota `/api/docs`). Essa integração permite extrair os schemas e regras de validação escritos no Zod e traduzi-los diretamente para a documentação do Swagger, eliminando a necessidade de poluir os DTOs com inúmeros decorators `@ApiProperty`.
 - **Zod em vez de Class-Validator**: Foi selecionado por viabilizar uma modelagem de schema funcional muito mais segura sem encadear os DTOs com centenas de decoradores pesados.
 - **Injecao de Dependencia (DI)**: Componente do framework Web aproveitado amplamente para engatilhar metodos tecnicos (Infra) satisfazendo as portas agnosticas de dominio (Application Domain UseCases).
 - **Trade-off de Tokens vs. Purismo (Agentic Orchestration)**: A decisão de adotar Mappers e Entidades ricas (em vez de injetar o Prisma diretamente nos Casos de Uso) aumenta o consumo de tokens na interação com Inteligências Artificiais e adiciona *boilerplate*. No entanto, essa escolha é justificada pelo foco acadêmico do projeto (TCC), demonstrando maestria técnica na separação de responsabilidades (SRP), proteção do domínio e viabilizando testes unitários completamente desacoplados do banco de dados através de *In-Memory Repositories*.
