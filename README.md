@@ -98,9 +98,7 @@ AprovaAI/
 │   └── README.md       # Documentação do frontend
 ├── backend/            # Node.js + NestJS + Prisma (API REST - Clean Architecture)
 │   └── README.md       # Documentação do backend
-└── docs/
-    ├── ARCHITECTURE.md           # Documentação detalhada da nova arquitetura
-    └── ARCHITECTURE_EVOLUTION.md # Histórico de refatorações da arquitetura
+└── docs/               # Documentação detalhada da arquitetura, guias e histórico
 ```
 
 ## Documentação de Arquitetura Detalhada

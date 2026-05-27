@@ -183,6 +183,8 @@ A API é estaticamente gerida por Controlles injetáveis:
 | `PATCH` | `/api/questions/reorder` | Reordena questões |
 | `POST` | `/api/upload` | Upload local de imagem gerenciado pelo Nest |
 
+> **Documentação Interativa (Swagger):** Quando o servidor estiver rodando, a documentação completa e interativa da API poderá ser acessada em [http://localhost:3001/api/docs](http://localhost:3001/api/docs).
+
 ---
 
 ## Documentação Interativa (Swagger)
