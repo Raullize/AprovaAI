@@ -103,6 +103,8 @@ export class Level extends AggregateRoot<LevelProps> {
     topicId: string;
     xpReward: number;
     passingPercentage: Percentage;
+    timeLimit?: number | null;
+    simulationMode?: 'PRACTICE' | 'EXAM';
   }): void {
     this.props.name = details.name;
     this.props.description = details.description;
@@ -110,6 +112,8 @@ export class Level extends AggregateRoot<LevelProps> {
     this.props.topicId = details.topicId;
     this.props.xpReward = details.xpReward;
     this.props.passingPercentage = details.passingPercentage;
+    if (details.timeLimit !== undefined) this.props.timeLimit = details.timeLimit;
+    if (details.simulationMode !== undefined) this.props.simulationMode = details.simulationMode;
     this.props.updatedAt = new Date();
   }
 

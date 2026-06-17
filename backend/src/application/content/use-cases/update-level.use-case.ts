@@ -16,6 +16,8 @@ export interface UpdateLevelRequest {
     topicId?: string;
     xpReward?: number;
     passingPercentage?: number;
+    timeLimit?: number | null;
+    simulationMode?: 'PRACTICE' | 'EXAM';
   };
 }
 
@@ -52,12 +54,16 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
           request.data.passingPercentage !== undefined
             ? Percentage.create(request.data.passingPercentage)
             : Percentage.create(level.passingPercentage),
+        timeLimit: request.data.timeLimit !== undefined ? request.data.timeLimit : level.timeLimit,
+        simulationMode: request.data.simulationMode ?? level.simulationMode,
       });
     } else if (
       request.data.description !== undefined ||
       request.data.topicId !== undefined ||
       request.data.xpReward !== undefined ||
-      request.data.passingPercentage !== undefined
+      request.data.passingPercentage !== undefined ||
+      request.data.timeLimit !== undefined ||
+      request.data.simulationMode !== undefined
     ) {
       level.updateDetails({
         name: level.name,
@@ -69,6 +75,8 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
           request.data.passingPercentage !== undefined
             ? Percentage.create(request.data.passingPercentage)
             : Percentage.create(level.passingPercentage),
+        timeLimit: request.data.timeLimit !== undefined ? request.data.timeLimit : level.timeLimit,
+        simulationMode: request.data.simulationMode ?? level.simulationMode,
       });
     }
 

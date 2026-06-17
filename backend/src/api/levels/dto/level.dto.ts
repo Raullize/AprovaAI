@@ -56,6 +56,8 @@ export const updateLevelSchema = z.object({
   topicId: z.string().optional(),
   xpReward: z.number().int().optional(),
   passingPercentage: z.number().optional(),
+  timeLimit: z.number().int().min(1).optional().nullable(),
+  simulationMode: z.enum(['PRACTICE', 'EXAM']).optional(),
 });
 
 export class UpdateLevelDto extends createZodDto(updateLevelSchema) {}
