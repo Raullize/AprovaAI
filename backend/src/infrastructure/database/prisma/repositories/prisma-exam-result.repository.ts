@@ -30,6 +30,34 @@ export class PrismaExamResultRepository implements ExamResultRepository {
     return PrismaExamResultMapper.toDomain(result);
   }
 
+  async findHistoryByUserId(userId: string): Promise<ExamResult[]> {
+    const results = await this.prisma.examResult.findMany({
+      where: { 
+        userId,
+        status: 'COMPLETED'
+      },
+      include: { 
+        answers: true,
+        level: {
+          include: {
+            topic: {
+              include: {
+                exam: true
+              }
+            }
+          }
+        }
+      },
+      orderBy: {
+        updatedAt: 'desc'
+      }
+    });
+    
+    // We return it as domain entity, but in a real app you might want to return a DTO
+    // with the level/topic/exam names included, or handle that in the controller mapping.
+    return results.map(result => PrismaExamResultMapper.toDomain(result));
+  }
+
   async create(examResult: ExamResult): Promise<ExamResult> {
     const data = PrismaExamResultMapper.toPrisma(examResult);
     const created = await this.prisma.examResult.create({ data });

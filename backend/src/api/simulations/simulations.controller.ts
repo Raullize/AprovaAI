@@ -1,5 +1,6 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
   Param,
@@ -13,6 +14,7 @@ import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 import { StartSimulationUseCase } from '../../application/simulations/use-cases/start-simulation.use-case';
 import { SaveAnswerUseCase } from '../../application/simulations/use-cases/save-answer.use-case';
 import { FinishSimulationUseCase } from '../../application/simulations/use-cases/finish-simulation.use-case';
+import { GetSimulationHistoryUseCase } from '../../application/simulations/use-cases/get-simulation-history.use-case';
 
 import {
   startSimulationSchema,
@@ -32,7 +34,15 @@ export class SimulationsController {
     private readonly startSimulationUseCase: StartSimulationUseCase,
     private readonly saveAnswerUseCase: SaveAnswerUseCase,
     private readonly finishSimulationUseCase: FinishSimulationUseCase,
+    private readonly getSimulationHistoryUseCase: GetSimulationHistoryUseCase,
   ) {}
+
+  @Get('history')
+  getHistory(@Request() req: any) {
+    return this.getSimulationHistoryUseCase.execute({
+      userId: req.user.id,
+    });
+  }
 
   @Post('start')
   start(
