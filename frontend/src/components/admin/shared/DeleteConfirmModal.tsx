@@ -44,47 +44,53 @@ export function DeleteConfirmModal({
       title="Confirmar Exclusão"
       size="md"
     >
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="flex flex-col items-center text-center space-y-4">
-          <div className="bg-red-100 p-3 rounded-full flex-shrink-0">
-            <AlertTriangle className="h-8 w-8 text-red-600" />
+          {/* Pulsing danger icon */}
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-red-400 animate-ping opacity-20" />
+            <div className="relative bg-red-100 p-4 rounded-full">
+              <AlertTriangle className="h-8 w-8 text-red-600" />
+            </div>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-gray-900">
+            <h3 className="text-lg font-semibold text-slate-900">
               Você tem certeza absoluta?
             </h3>
-            <p className="text-sm text-gray-500 mt-2">
+            <p className="text-sm text-slate-500 mt-2 max-w-sm">
               Essa ação não pode ser desfeita. Isso excluirá permanentemente{' '}
               {entityLabel}{' '}
-              <span className="font-bold text-gray-900">{entityName}</span> e
-              removerá todos os dados associados.
+              <span className="font-semibold text-slate-800">"{entityName}"</span>{' '}
+              e todos os dados associados.
             </p>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+        <div className="space-y-1.5">
+          <label className="block text-sm font-medium text-slate-700">
             Digite{' '}
-            <span className="font-mono font-bold select-all">excluir</span> para
-            confirmar:
+            <span className="font-mono font-bold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded select-all">
+              excluir
+            </span>{' '}
+            para confirmar:
           </label>
           <input
             type="text"
             autoFocus
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 sm:text-sm"
+            className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-colors"
             value={confirmation}
             onChange={(e) => setConfirmation(e.target.value)}
           />
         </div>
 
-        <div className="flex justify-end space-x-3 bg-gray-50 -mx-6 -mb-4 px-6 py-4 rounded-b-lg mt-6">
+        <div className="flex justify-end gap-2.5 bg-red-50 -mx-6 -mb-5 px-6 py-4 rounded-b-2xl mt-2 border-t border-red-100">
           <Button variant="outline" onClick={handleClose} disabled={isDeleting}>
             Cancelar
           </Button>
           <button
             onClick={handleConfirm}
             disabled={confirmation !== 'excluir' || isDeleting}
-            className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 flex items-center gap-2"
+            className="bg-red-600 text-white px-5 py-2 rounded-xl hover:bg-red-700 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 flex items-center gap-2"
           >
             {isDeleting ? <Loading size="sm" /> : 'Excluir'}
           </button>

@@ -1,4 +1,4 @@
-import { ImageIcon } from 'lucide-react';
+import { ImageIcon, GripVertical } from 'lucide-react';
 import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
 import { type Question } from '@/services/questions.service';
@@ -40,8 +40,8 @@ export function QuestionCard({
     question.type === 'SINGLE_CHOICE' ? 'Única Escolha' : 'Múltipla Escolha';
   const typeColor =
     question.type === 'SINGLE_CHOICE'
-      ? 'bg-blue-100 text-blue-800'
-      : 'bg-purple-100 text-purple-800';
+      ? 'bg-blue-100 text-blue-800 border border-blue-200'
+      : 'bg-purple-100 text-purple-800 border border-purple-200';
 
   return (
     <div
@@ -49,23 +49,24 @@ export function QuestionCard({
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className={`bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all p-6 flex flex-col justify-between group ${
-        isDragging ? 'opacity-40 scale-95' : ''
+      className={`bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-200 p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing ${
+        isDragging ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400' : ''
       }`}
     >
       {/* Header */}
       <div>
         <div className="flex justify-between items-start mb-4">
           {/* Left: number + status */}
-          <div className="flex items-center gap-2">
-            <span className="shrink-0 w-7 h-7 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold text-xs">
+          <div className="flex items-center gap-3">
+            <span className="shrink-0 w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm group-hover:bg-indigo-100 transition-colors">
               {index + 1}
             </span>
             <StatusBadge status={question.status} />
           </div>
 
           {/* Right: grip + actions */}
-          <div className="flex items-center gap-0.5">
+          <div className="flex items-center gap-1">
+            <GripVertical className="h-4 w-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
             <EntityCardActions
               status={question.status}
               onToggleStatus={() => onToggleStatus(question)}
@@ -77,7 +78,7 @@ export function QuestionCard({
 
         {/* Image preview */}
         {question.imageUrl && (
-          <div className="mb-3 rounded-lg overflow-hidden border border-gray-200 bg-gray-50 flex items-center justify-center h-28">
+          <div className="mb-4 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center h-28">
             {previewUrl ? (
               <img
                 src={previewUrl}
@@ -85,39 +86,39 @@ export function QuestionCard({
                 className="max-h-full object-contain"
               />
             ) : (
-              <ImageIcon className="h-8 w-8 text-gray-300" />
+              <ImageIcon className="h-8 w-8 text-slate-300" />
             )}
           </div>
         )}
 
         {/* Content */}
-        <p className="text-sm text-gray-800 mb-3 line-clamp-3">
+        <p className="text-sm text-slate-800 mb-3 line-clamp-3 leading-relaxed font-medium">
           {question.content}
         </p>
 
         {/* Type badge */}
         <span
-          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${typeColor}`}
+          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider ${typeColor}`}
         >
           {typeLabel}
         </span>
 
         {/* Options preview */}
-        <ul className="mt-3 space-y-1">
+        <ul className="mt-4 space-y-1.5">
           {question.options.map((opt, i) => (
-            <li key={i} className="flex items-start gap-2 text-sm">
+            <li key={i} className="flex items-start gap-2.5 text-sm">
               <span
                 className={`mt-0.5 w-4 h-4 rounded-full flex-shrink-0 border-2 flex items-center justify-center ${
                   opt.isCorrect
-                    ? 'border-green-500 bg-green-100'
-                    : 'border-gray-300'
+                    ? 'border-emerald-500 bg-emerald-100'
+                    : 'border-slate-300'
                 }`}
               />
               <span
                 className={
                   opt.isCorrect
-                    ? 'text-green-800 font-medium line-clamp-1'
-                    : 'text-gray-600 line-clamp-1'
+                    ? 'text-emerald-700 font-medium line-clamp-1'
+                    : 'text-slate-500 line-clamp-1'
                 }
               >
                 {opt.text}
@@ -128,11 +129,15 @@ export function QuestionCard({
       </div>
 
       {/* Footer */}
-      <div className="mt-4 pt-3 border-t border-gray-100 flex justify-between items-center text-xs text-gray-500">
-        <span>{question.options.length} alternativas</span>
-        <span>
-          {correctCount} correta{correctCount !== 1 ? 's' : ''}
-        </span>
+      <div className="mt-5 pt-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500 font-medium">
+        <div className="flex items-center gap-1">
+          <span className="text-slate-700 font-bold">{question.options.length}</span>
+          <span>alternativas</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="text-emerald-600 font-bold">{correctCount}</span>
+          <span className="text-emerald-700/80">correta{correctCount !== 1 ? 's' : ''}</span>
+        </div>
       </div>
     </div>
   );

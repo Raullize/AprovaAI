@@ -3,15 +3,27 @@ interface StatusBadgeProps {
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
+  const isActive = status === 'ACTIVE';
+
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-        status === 'ACTIVE'
-          ? 'bg-green-100 text-green-800'
-          : 'bg-gray-100 text-gray-800'
+      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ${
+        isActive
+          ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20'
+          : 'bg-slate-100 text-slate-600 ring-slate-500/20'
       }`}
     >
-      {status === 'ACTIVE' ? 'Público' : 'Privado'}
+      <span className="relative flex h-1.5 w-1.5">
+        {isActive && (
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+        )}
+        <span
+          className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
+            isActive ? 'bg-emerald-500' : 'bg-slate-400'
+          }`}
+        />
+      </span>
+      {isActive ? 'Público' : 'Privado'}
     </span>
   );
 }

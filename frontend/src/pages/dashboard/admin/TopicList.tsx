@@ -69,7 +69,8 @@ export default function TopicList() {
         prev.map((t) => (t.id === topic.id ? { ...t, status: newStatus } : t)),
       );
       toast({
-        title: `Tópico ${newStatus === 'ACTIVE' ? 'ativado' : 'desativado'}`,
+        title: 'Visibilidade alterada!',
+        description: `O tópico agora está ${newStatus === 'ACTIVE' ? 'público' : 'privado'}.`,
         variant: 'success',
       });
     } catch {
@@ -119,6 +120,7 @@ export default function TopicList() {
         backHref="/dashboard/exams"
         action={
           <Button
+            className="hidden md:flex"
             onClick={() => {
               setEditingTopicId(undefined);
               setIsModalOpen(true);
@@ -129,11 +131,24 @@ export default function TopicList() {
         }
       />
 
-      <SearchInput
-        value={searchTerm}
-        onChange={setSearchTerm}
-        placeholder="Buscar tópicos..."
-      />
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Buscar tópicos..."
+          />
+        </div>
+        <Button
+          className="md:hidden shrink-0 px-3.5"
+          onClick={() => {
+            setEditingTopicId(undefined);
+            setIsModalOpen(true);
+          }}
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      </div>
 
       {isLoading ? (
         <div className="flex justify-center py-12">

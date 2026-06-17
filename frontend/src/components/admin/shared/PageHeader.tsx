@@ -22,27 +22,27 @@ export function PageHeader({
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-      <div className="flex flex-col gap-4">
+    <div className="flex flex-col space-y-4 md:flex-row md:items-start md:justify-between md:space-y-0 pb-5 mb-2 border-b border-slate-200">
+      <div className="flex flex-col gap-2">
         {breadcrumbItems && breadcrumbItems.length > 0 && (
-          <div className="hidden md:block">
-            <Breadcrumb items={breadcrumbItems} />
-          </div>
+          <Breadcrumb items={breadcrumbItems} />
         )}
 
         <div>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             {backHref && (
               <button
                 onClick={() => navigate(backHref)}
-                className="mr-3 p-1 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full md:hidden transition-colors"
+                className="p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg md:hidden transition-colors"
               >
-                <ArrowLeft className="h-6 w-6" />
+                <ArrowLeft className="h-5 w-5" />
               </button>
             )}
-            <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
           </div>
-          {subtitle && <p className="text-gray-500 mt-1">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-slate-500 text-sm mt-0.5">{subtitle}</p>
+          )}
         </div>
       </div>
 

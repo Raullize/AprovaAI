@@ -6,6 +6,7 @@ import Loading from '@/components/ui/Loading';
 import { examsService, type Exam } from '@/services/exams.service';
 import { useToast } from '@/hooks/use-toast';
 import { SearchInput } from '@/components/admin/shared/SearchInput';
+import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
 import { ExamCard } from '@/components/admin/exams/ExamCard';
 import { ExamFormModal } from '@/components/admin/exams/ExamFormModal';
@@ -96,42 +97,54 @@ export default function AdminExams() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Gerenciar Exames</h1>
-          <p className="text-gray-500 mt-1">
-            Gerencie os exames disponíveis na plataforma.
-          </p>
+      <PageHeader
+        title="Gerenciar Exames"
+        subtitle="Gerencie os exames disponíveis na plataforma."
+        action={
+          <Button
+            className="hidden md:flex"
+            onClick={() => {
+              setEditingExamId(undefined);
+              setIsModalOpen(true);
+            }}
+          >
+            <Plus className="h-5 w-5 mr-2" /> Novo Exame
+          </Button>
+        }
+      />
+
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Buscar exames..."
+          />
         </div>
         <Button
+          className="md:hidden shrink-0 px-3.5"
           onClick={() => {
             setEditingExamId(undefined);
             setIsModalOpen(true);
           }}
         >
-          <Plus className="h-5 w-5 mr-2" /> Novo Exame
+          <Plus className="h-5 w-5" />
         </Button>
       </div>
-
-      <SearchInput
-        value={searchTerm}
-        onChange={setSearchTerm}
-        placeholder="Buscar exames..."
-      />
 
       {isLoading ? (
         <div className="flex justify-center py-12">
           <Loading size="lg" />
         </div>
       ) : filteredExams.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <div className="bg-gray-50 p-4 rounded-full mb-4">
-            <BookOpen className="h-8 w-8 text-gray-400" />
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="bg-indigo-50 p-5 rounded-2xl mb-4">
+            <BookOpen className="h-10 w-10 text-indigo-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">
+          <h3 className="text-base font-semibold text-slate-900 mb-1">
             {searchTerm ? 'Nenhum exame encontrado' : 'Nenhum exame cadastrado'}
           </h3>
-          <p className="text-gray-500 mb-6 max-w-sm">
+          <p className="text-slate-500 text-sm mb-6 max-w-sm">
             {searchTerm
               ? `Não encontramos exames com "${searchTerm}".`
               : 'Comece criando o primeiro exame da plataforma.'}

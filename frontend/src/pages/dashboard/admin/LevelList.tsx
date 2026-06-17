@@ -72,7 +72,8 @@ export default function LevelList() {
         prev.map((l) => (l.id === level.id ? { ...l, status: newStatus } : l)),
       );
       toast({
-        title: newStatus === 'ACTIVE' ? 'Nível ativado' : 'Nível desativado',
+        title: 'Visibilidade alterada!',
+        description: `O nível agora está ${newStatus === 'ACTIVE' ? 'público' : 'privado'}.`,
         variant: 'success',
       });
     } catch {
@@ -134,6 +135,7 @@ export default function LevelList() {
         }
         action={
           <Button
+            className="hidden md:flex"
             onClick={() => {
               setEditingLevelId(undefined);
               setIsModalOpen(true);
@@ -144,11 +146,24 @@ export default function LevelList() {
         }
       />
 
-      <SearchInput
-        value={searchTerm}
-        onChange={setSearchTerm}
-        placeholder="Buscar níveis..."
-      />
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Buscar níveis..."
+          />
+        </div>
+        <Button
+          className="md:hidden shrink-0 px-3.5"
+          onClick={() => {
+            setEditingLevelId(undefined);
+            setIsModalOpen(true);
+          }}
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      </div>
 
       {isLoading ? (
         <div className="flex justify-center py-12">

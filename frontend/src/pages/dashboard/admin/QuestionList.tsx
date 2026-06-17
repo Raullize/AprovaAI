@@ -97,8 +97,8 @@ export default function QuestionList() {
         ),
       );
       toast({
-        title:
-          newStatus === 'ACTIVE' ? 'Questão ativada' : 'Questão desativada',
+        title: 'Visibilidade alterada!',
+        description: `A questão agora está ${newStatus === 'ACTIVE' ? 'pública' : 'privada'}.`,
         variant: 'success',
       });
     } catch {
@@ -174,6 +174,7 @@ export default function QuestionList() {
         }
         action={
           <Button
+            className="hidden md:flex"
             onClick={() => {
               setEditingQuestion(null);
               setIsFormOpen(true);
@@ -184,11 +185,24 @@ export default function QuestionList() {
         }
       />
 
-      <SearchInput
-        value={searchTerm}
-        onChange={setSearchTerm}
-        placeholder="Buscar questões por conteúdo ou alternativa..."
-      />
+      <div className="flex gap-2">
+        <div className="flex-1">
+          <SearchInput
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Buscar questões por conteúdo ou alternativa..."
+          />
+        </div>
+        <Button
+          className="md:hidden shrink-0 px-3.5"
+          onClick={() => {
+            setEditingQuestion(null);
+            setIsFormOpen(true);
+          }}
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      </div>
 
       {isLoading ? (
         <div className="flex justify-center py-16">
