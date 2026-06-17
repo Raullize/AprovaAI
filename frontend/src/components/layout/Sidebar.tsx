@@ -7,15 +7,15 @@ import {
   Settings,
   LogOut,
   GraduationCap,
-  LayoutDashboard,
-  User
+  User,
+  Compass,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 
 const studentItems = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-  { icon: GraduationCap, label: 'Simulados', href: '/dashboard/simulations' },
+  { icon: Home, label: 'Início', href: '/dashboard' },
+  { icon: Compass, label: 'Explorar', href: '/dashboard/explore' },
   { icon: User, label: 'Perfil', href: '/dashboard/profile' },
   { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
 ];
@@ -212,35 +212,33 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         </div>
       </aside>
 
-      {/* Mobile Bottom Dock — glassmorphism */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 px-4">
-        <div className="bg-slate-900/90 backdrop-blur-xl border border-white/10 rounded-2xl mx-auto px-2 py-2 flex justify-around items-center shadow-2xl mb-3">
-          {sidebarItems.map((item) => {
-            const active = isRouteActive(item.href, location.pathname);
-            return (
-              <NavLink
-                key={item.href}
-                to={item.href}
-                className={cn(
-                  'flex flex-col items-center justify-center px-3 py-1.5 rounded-xl transition-all duration-150 gap-0.5',
-                  active
-                    ? 'text-indigo-400'
-                    : 'text-slate-500 hover:text-slate-300',
-                )}
-              >
-                <item.icon className="h-5 w-5" />
-                <span className="text-[10px] font-medium">{item.label}</span>
-              </NavLink>
-            );
-          })}
-          <button
-            onClick={handleSignOut}
-            className="flex flex-col items-center justify-center px-3 py-1.5 rounded-xl text-slate-500 hover:text-red-400 transition-all duration-150 gap-0.5"
-          >
-            <LogOut className="h-5 w-5" />
-            <span className="text-[10px] font-medium">Sair</span>
-          </button>
-        </div>
+      {/* Mobile Bottom Dock */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-xl border-t border-white/10 px-2 py-2 flex justify-around items-center shadow-2xl">
+        {sidebarItems.map((item) => {
+          const active = isRouteActive(item.href, location.pathname);
+          return (
+            <NavLink
+              key={item.href}
+              to={item.href}
+              className={cn(
+                'flex flex-col items-center justify-center px-3 py-1.5 rounded-xl transition-all duration-150 gap-0.5',
+                active
+                  ? 'text-indigo-400'
+                  : 'text-slate-500 hover:text-slate-300',
+              )}
+            >
+              <item.icon className="h-5 w-5" />
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </NavLink>
+          );
+        })}
+        <button
+          onClick={handleSignOut}
+          className="flex flex-col items-center justify-center px-3 py-1.5 rounded-xl text-slate-500 hover:text-red-400 transition-all duration-150 gap-0.5"
+        >
+          <LogOut className="h-5 w-5" />
+          <span className="text-[10px] font-medium">Sair</span>
+        </button>
       </nav>
     </>
   );

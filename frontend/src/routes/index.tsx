@@ -12,6 +12,19 @@ import AdminExams from '../pages/dashboard/admin/AdminExams';
 import TopicList from '../pages/dashboard/admin/TopicList';
 import LevelList from '../pages/dashboard/admin/LevelList';
 import QuestionList from '../pages/dashboard/admin/QuestionList';
+import StudentHome from '../pages/dashboard/student/StudentHome';
+import ExploreExams from '../pages/dashboard/student/ExploreExams';
+import ExamTrail from '../pages/dashboard/student/ExamTrail';
+import SimulationEngine from '../pages/dashboard/student/SimulationEngine';
+import SimulationResults from '../pages/dashboard/student/SimulationResults';
+
+const DashboardIndex = () => {
+  const { user } = useAuth();
+  if (user?.role === 'ADMIN') {
+    return <UnderConstruction title="Dashboard" message="Visão geral e estatísticas em breve." />;
+  }
+  return <StudentHome />;
+};
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const { signed, loading } = useAuth();
@@ -56,15 +69,7 @@ export function AppRoutes() {
           </PrivateRoute>
         }
       >
-        <Route
-          index
-          element={
-            <UnderConstruction
-              title="Dashboard"
-              message="Visão geral e estatísticas em breve."
-            />
-          }
-        />
+        <Route index element={<DashboardIndex />} />
 
         <Route
           path="simulations"
@@ -78,7 +83,11 @@ export function AppRoutes() {
           }
         />
 
+        <Route path="explore" element={<ExploreExams />} />
+        <Route path="explore/:examId" element={<ExamTrail />} />
         <Route path="simulations/create" element={<CreateSimulation />} />
+        <Route path="simulations/engine/:levelId" element={<SimulationEngine />} />
+        <Route path="simulations/results" element={<SimulationResults />} />
 
         <Route
           path="profile"
