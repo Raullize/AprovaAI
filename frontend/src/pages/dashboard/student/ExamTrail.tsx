@@ -290,7 +290,7 @@ const LevelNodeTimeline = ({
 // --- Main Component ---
 export default function ExamTrail() {
   const navigate = useNavigate();
-  const [expandedTopic, setExpandedTopic] = useState<string>('topic-1');
+  const [expandedTopic, setExpandedTopic] = useState<string | null>('topic-1');
   const [selectedLevelId, setSelectedLevelId] = useState<string | null>(null);
 
   // Ensure scroll top on topic change in desktop
@@ -426,7 +426,7 @@ export default function ExamTrail() {
           <div className="col-span-12 lg:col-span-8">
             
             {/* Mobile Accordion View */}
-            <div className="lg:hidden space-y-4 max-w-sm mx-auto">
+            <div className="lg:hidden space-y-4">
                   {MOCK_TOPICS.map((topic) => {
                 const isExpanded = expandedTopic === topic.id;
                 const completedCount = topic.levels.filter((l) => l.status === 'COMPLETED').length;

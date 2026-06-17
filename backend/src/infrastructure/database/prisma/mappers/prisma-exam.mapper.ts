@@ -1,4 +1,4 @@
-import { Exam as PrismaExam } from '@prisma/client';
+import { Exam as PrismaExam, ExamCategory } from '@prisma/client';
 import { Exam } from '../../../../domain/content/entities/exam.entity';
 import { Slug } from '../../../../domain/content/value-objects/slug';
 
@@ -32,7 +32,7 @@ export class PrismaExamMapper {
       order: exam.order,
       iconKey: exam.iconKey ?? null,
       colorScheme: exam.colorScheme ?? null,
-      category: exam.category ?? null,
+      category: (exam.category as ExamCategory) || ExamCategory.OUTROS,
       createdAt: exam.createdAt ?? new Date(),
       updatedAt: exam.updatedAt ?? new Date(),
     };

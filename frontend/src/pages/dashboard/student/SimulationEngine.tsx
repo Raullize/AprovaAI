@@ -22,7 +22,6 @@ interface Question {
 }
 
 // --- Mock Data ---
-const MOCK_MODE: SimulationMode = 'PRACTICE';
 const MOCK_TIME_LIMIT = 10 * 60; // 10 min in seconds (EXAM mode)
 
 const MOCK_QUESTIONS: Question[] = [
