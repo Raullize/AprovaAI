@@ -1,8 +1,10 @@
-import { Layers, ChevronRight, GripVertical } from 'lucide-react';
+import { ChevronRight, GripVertical } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
 import { type Topic } from '@/services/topics.service';
+import { getIconOption, getColorOption } from '@/config/examThemes';
+import { cn } from '@/lib/utils';
 
 interface TopicCardProps {
   topic: Topic;
@@ -27,6 +29,10 @@ export function TopicCard({
   onDragOver,
   onDrop,
 }: TopicCardProps) {
+  const iconOpt  = getIconOption(topic.iconKey);
+  const colorOpt = getColorOption(topic.colorScheme);
+  const Icon = iconOpt.Icon;
+
   return (
     <div
       draggable
@@ -41,8 +47,8 @@ export function TopicCard({
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 group-hover:bg-indigo-100 transition-colors">
-              <Layers className="h-5 w-5 text-indigo-500" />
+            <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br', colorOpt.gradient)}>
+              <Icon className="h-5 w-5 text-white" />
             </div>
             <StatusBadge status={topic.status} />
           </div>

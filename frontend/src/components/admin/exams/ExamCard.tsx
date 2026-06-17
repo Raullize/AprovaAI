@@ -1,8 +1,10 @@
-import { BookOpen, ChevronRight, GripVertical } from 'lucide-react';
+import { ChevronRight, GripVertical } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
 import { type Exam } from '@/services/exams.service';
+import { getIconOption, getColorOption } from '@/config/examThemes';
+import { cn } from '@/lib/utils';
 
 interface ExamCardProps {
   exam: Exam;
@@ -27,6 +29,10 @@ export function ExamCard({
   onDragOver,
   onDrop,
 }: ExamCardProps) {
+  const iconOpt  = getIconOption(exam.iconKey);
+  const colorOpt = getColorOption(exam.colorScheme);
+  const Icon = iconOpt.Icon;
+
   return (
     <div
       draggable
@@ -41,8 +47,8 @@ export function ExamCard({
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center shrink-0 group-hover:bg-indigo-100 transition-colors">
-              <BookOpen className="h-5 w-5 text-indigo-500" />
+            <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br', colorOpt.gradient)}>
+              <Icon className="h-5 w-5 text-white" />
             </div>
             <StatusBadge status={exam.status} />
           </div>
