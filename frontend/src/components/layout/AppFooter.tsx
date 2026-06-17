@@ -14,12 +14,12 @@ export const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
-              <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center">
                 <GraduationCap className="h-6 w-6 text-white" />
               </div>
               <span className="text-xl font-bold font-display">AprovaAI</span>
             </div>
-            <p className="text-gray-300 mb-6 max-w-md">
+            <p className="text-slate-300 mb-6 max-w-md">
               Plataforma inovadora de estudos que combina metodologia por
               níveis, gamificação e inteligência artificial para maximizar sua
               aprovação.
@@ -28,28 +28,28 @@ export const Footer: React.FC = () => {
             <div className="flex space-x-4">
               <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors duration-200"
+                className="text-slate-400 hover:text-white transition-colors duration-200"
                 aria-label="Facebook"
               >
                 <Facebook className="h-6 w-6" />
               </a>
               <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors duration-200"
+                className="text-slate-400 hover:text-white transition-colors duration-200"
                 aria-label="Twitter"
               >
                 <Twitter className="h-6 w-6" />
               </a>
               <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors duration-200"
+                className="text-slate-400 hover:text-white transition-colors duration-200"
                 aria-label="Instagram"
               >
                 <Instagram className="h-6 w-6" />
               </a>
               <a
                 href="#"
-                className="text-gray-400 hover:text-white transition-colors duration-200"
+                className="text-slate-400 hover:text-white transition-colors duration-200"
                 aria-label="LinkedIn"
               >
                 <Linkedin className="h-6 w-6" />
@@ -63,7 +63,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href="#features"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   Como Funciona
                 </a>
@@ -71,7 +71,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href="#pricing"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   Planos
                 </a>
@@ -79,7 +79,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   Simulados
                 </a>
@@ -87,7 +87,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   Prof. Sabichão
                 </a>
@@ -101,7 +101,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   Central de Ajuda
                 </a>
@@ -109,7 +109,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   Contato
                 </a>
@@ -117,7 +117,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   Termos de Uso
                 </a>
@@ -125,7 +125,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href="#"
-                  className="text-gray-300 hover:text-white transition-colors duration-200"
+                  className="text-slate-300 hover:text-white transition-colors duration-200"
                 >
                   Política de Privacidade
                 </a>
@@ -134,18 +134,18 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-gray-800 mt-12 pt-8">
+        <div className="border-t border-slate-800 mt-12 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-slate-400 text-sm">
               © 2025 AprovaAI. Todos os direitos reservados.
             </p>
-            <p className="text-gray-400 text-sm mt-2 md:mt-0">
+            <p className="text-slate-400 text-sm mt-2 md:mt-0">
               Feito por{' '}
               <a
                 href="https://www.linkedin.com/in/raullizeteixeira/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:underline hover:text-primary-400 transition-colors"
+                className="hover:underline hover:text-indigo-400 transition-colors"
               >
                 Raul Lize
               </a>

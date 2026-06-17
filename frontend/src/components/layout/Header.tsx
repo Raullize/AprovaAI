@@ -46,15 +46,15 @@ export const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50 transition-all duration-300 ${isMenuOpen ? 'blur-md' : ''}`}
+        className={`fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-slate-200 z-50 transition-all duration-300 ${isMenuOpen ? 'blur-md' : ''}`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
                 <GraduationCap className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold font-display text-gray-900">
+              <span className="text-xl font-bold font-display text-slate-900 tracking-tight">
                 AprovaAI
               </span>
             </Link>
@@ -64,7 +64,7 @@ export const Header: React.FC = () => {
                 <button
                   key={item.label}
                   onClick={() => handleNavigation(item.href)}
-                  className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
+                  className="text-slate-600 hover:text-indigo-600 transition-colors duration-200 font-medium"
                 >
                   {item.label}
                 </button>
@@ -76,7 +76,7 @@ export const Header: React.FC = () => {
                 onClick={() =>
                   handleNavigation(signed ? '/dashboard' : '/login')
                 }
-                className="text-gray-700 hover:text-primary-600 transition-colors duration-200 font-medium"
+                className="text-slate-600 hover:text-indigo-600 transition-colors duration-200 font-medium px-4 py-2"
               >
                 Entrar
               </button>
@@ -92,7 +92,7 @@ export const Header: React.FC = () => {
             <div className="md:hidden">
               <button
                 onClick={toggleMenu}
-                className="text-gray-700 hover:text-primary-600 focus:outline-none focus:text-primary-600"
+                className="text-slate-600 hover:text-indigo-600 focus:outline-none"
               >
                 {isMenuOpen ? (
                   <X className="h-6 w-6" />
@@ -108,7 +108,7 @@ export const Header: React.FC = () => {
       {isMenuOpen && (
         <>
           <div
-            className="fixed inset-0 bg-black/30 backdrop-blur-md z-40 md:hidden transition-all duration-300"
+            className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden transition-all duration-300"
             onClick={toggleMenu}
           />
 
