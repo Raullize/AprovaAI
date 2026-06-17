@@ -3,15 +3,19 @@ import { Slug } from '../value-objects/slug';
 import { Percentage } from '../value-objects/percentage';
 import { LevelCreatedEvent } from '../events/level-created.event';
 
+export type LevelStatus = 'ACTIVE' | 'INACTIVE';
+
 export interface LevelProps {
   name: string;
   slug: Slug;
   description?: string | null;
   order: number;
   topicId: string;
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: LevelStatus;
   xpReward?: number;
   passingPercentage?: Percentage;
+  timeLimit?: number | null;
+  simulationMode?: 'PRACTICE' | 'EXAM';
   questionsCount?: number;
   createdAt?: Date;
   updatedAt?: Date;
@@ -48,6 +52,15 @@ export class Level extends AggregateRoot<LevelProps> {
   get updatedAt(): Date | undefined {
     return this.props.updatedAt;
   }
+
+  get timeLimit(): number | null | undefined {
+    return this.props.timeLimit;
+  }
+
+  get simulationMode(): 'PRACTICE' | 'EXAM' {
+    return this.props.simulationMode ?? 'PRACTICE';
+  }
+
   get questionsCount(): number {
     return this.props.questionsCount ?? 0;
   }

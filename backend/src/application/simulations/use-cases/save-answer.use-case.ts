@@ -12,6 +12,7 @@ export interface SaveAnswerRequest {
   questionId: string;
   selectedOptions: string[];
   timeSpent?: number;
+  isFlaggedForReview?: boolean;
 }
 
 @Injectable()
@@ -73,8 +74,25 @@ export class SaveAnswerUseCase implements UseCase<SaveAnswerRequest, ExamAnswer>
       selectedOptions: request.selectedOptions,
       isCorrect,
       timeSpent: request.timeSpent,
+      isFlaggedForReview: request.isFlaggedForReview ?? false,
     });
 
-    return this.examResultRepository.saveAnswer(newAnswer);
+    const savedAnswer = await this.examResultRepository.saveAnswer(newAnswer);
+
+    // 6. Anti-Cheat: If mode is EXAM, don't return the correctness of the answer
+    if (examResult.mode === 'EXAM') {
+      return ExamAnswer.create({
+        examResultId: savedAnswer.examResultId,
+        questionId: savedAnswer.questionId,
+        selectedOptions: savedAnswer.selectedOptions,
+        timeSpent: savedAnswer.timeSpent,
+        isFlaggedForReview: savedAnswer.isFlaggedForReview,
+        createdAt: savedAnswer.createdAt,
+        updatedAt: savedAnswer.updatedAt,
+        isCorrect: null // Hide the correct answer from the frontend until simulation finishes
+      }, savedAnswer.id);
+    }
+
+    return savedAnswer;
   }
 }

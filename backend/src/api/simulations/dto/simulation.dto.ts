@@ -11,6 +11,7 @@ export const saveAnswerSchema = z.object({
   questionId: z.string().uuid('ID da questão inválido'),
   selectedOptions: z.array(z.string().uuid('ID da opção inválido')).min(1, 'Selecione pelo menos uma opção'),
   timeSpent: z.number().int().min(0).optional(),
+  isFlaggedForReview: z.boolean().optional().default(false),
 });
 
 export class SaveAnswerDto extends createZodDto(saveAnswerSchema) {}

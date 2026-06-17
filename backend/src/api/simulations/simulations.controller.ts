@@ -69,6 +69,7 @@ export class SimulationsController {
       questionId: dto.questionId,
       selectedOptions: dto.selectedOptions,
       timeSpent: dto.timeSpent,
+      isFlaggedForReview: dto.isFlaggedForReview,
     });
   }
 

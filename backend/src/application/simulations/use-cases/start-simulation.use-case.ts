@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import type { ExamResultRepository } from '../../../domain/simulations/repositories/exam-result.repository';
-import { ExamResult } from '../../../domain/simulations/entities/exam-result.entity';
+import { ExamResult, SimulationMode } from '../../../domain/simulations/entities/exam-result.entity';
 import type { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 import { ValidationError } from '../../../shared/core/errors/validation.error';
@@ -47,6 +47,7 @@ export class StartSimulationUseCase implements UseCase<StartSimulationRequest, E
       userId: request.userId,
       levelId: request.levelId,
       status: 'IN_PROGRESS',
+      mode: level.simulationMode,
       totalQuestions: level.questionsCount,
       answers: [],
     });

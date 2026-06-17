@@ -2,6 +2,7 @@ import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Entity } from '../../../shared/core/entity';
 
 export type SimulationStatus = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED';
+export type SimulationMode = 'PRACTICE' | 'EXAM';
 
 export interface ExamAnswerProps {
   examResultId: string;
@@ -9,6 +10,7 @@ export interface ExamAnswerProps {
   selectedOptions: string[];
   isCorrect?: boolean | null;
   timeSpent?: number | null;
+  isFlaggedForReview?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -28,6 +30,9 @@ export class ExamAnswer extends Entity<ExamAnswerProps> {
   }
   get timeSpent(): number | null | undefined {
     return this.props.timeSpent;
+  }
+  get isFlaggedForReview(): boolean {
+    return this.props.isFlaggedForReview ?? false;
   }
   get createdAt(): Date | undefined {
     return this.props.createdAt;
@@ -52,6 +57,7 @@ export interface ExamResultProps {
   userId: string;
   levelId: string;
   status?: SimulationStatus;
+  mode?: SimulationMode;
   score?: number | null;
   totalQuestions: number;
   percentage?: number | null;
@@ -71,6 +77,9 @@ export class ExamResult extends AggregateRoot<ExamResultProps> {
   }
   get status(): SimulationStatus {
     return this.props.status ?? 'IN_PROGRESS';
+  }
+  get mode(): SimulationMode {
+    return this.props.mode ?? 'PRACTICE';
   }
   get score(): number | null | undefined {
     return this.props.score;

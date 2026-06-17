@@ -1,5 +1,5 @@
 import { ExamResult as PrismaExamResult, ExamAnswer as PrismaExamAnswer } from '@prisma/client';
-import { ExamResult, ExamAnswer, SimulationStatus } from '../../../../domain/simulations/entities/exam-result.entity';
+import { ExamResult, ExamAnswer, SimulationStatus, SimulationMode } from '../../../../domain/simulations/entities/exam-result.entity';
 
 export class PrismaExamResultMapper {
   static toDomain(
@@ -10,6 +10,7 @@ export class PrismaExamResultMapper {
         userId: raw.userId,
         levelId: raw.levelId,
         status: raw.status as SimulationStatus,
+        mode: raw.mode as SimulationMode,
         score: raw.score,
         totalQuestions: raw.totalQuestions,
         percentage: raw.percentage,
@@ -23,6 +24,7 @@ export class PrismaExamResultMapper {
           selectedOptions: ans.selectedOptions,
           isCorrect: ans.isCorrect,
           timeSpent: ans.timeSpent,
+          isFlaggedForReview: ans.isFlaggedForReview,
           createdAt: ans.createdAt,
           updatedAt: ans.updatedAt,
         }, ans.id))
@@ -37,6 +39,7 @@ export class PrismaExamResultMapper {
       userId: examResult.userId,
       levelId: examResult.levelId,
       status: examResult.status,
+      mode: examResult.mode,
       score: examResult.score ?? null,
       totalQuestions: examResult.totalQuestions,
       percentage: examResult.percentage ?? null,
@@ -55,6 +58,7 @@ export class PrismaExamResultMapper {
       selectedOptions: answer.selectedOptions,
       isCorrect: answer.isCorrect ?? null,
       timeSpent: answer.timeSpent ?? null,
+      isFlaggedForReview: answer.isFlaggedForReview,
       createdAt: answer.createdAt ?? new Date(),
       updatedAt: answer.updatedAt ?? new Date(),
     };

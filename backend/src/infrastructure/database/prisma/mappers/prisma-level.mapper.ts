@@ -4,9 +4,7 @@ import { Slug } from '../../../../domain/content/value-objects/slug';
 import { Percentage } from '../../../../domain/content/value-objects/percentage';
 
 export class PrismaLevelMapper {
-  static toDomain(
-    raw: PrismaLevel & { _count?: { questions: number } },
-  ): Level {
+  static toDomain(raw: PrismaLevel & { _count?: { questions: number } }): Level {
     return Level.create(
       {
         name: raw.name,
@@ -17,6 +15,8 @@ export class PrismaLevelMapper {
         status: raw.status,
         xpReward: raw.xpReward,
         passingPercentage: Percentage.create(raw.passingPercentage),
+        timeLimit: raw.timeLimit,
+        simulationMode: raw.simulationMode as 'PRACTICE' | 'EXAM',
         questionsCount: raw._count?.questions,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
@@ -36,6 +36,8 @@ export class PrismaLevelMapper {
       status: level.status,
       xpReward: level.xpReward,
       passingPercentage: level.passingPercentage,
+      timeLimit: level.timeLimit ?? null,
+      simulationMode: level.simulationMode,
       createdAt: level.createdAt ?? new Date(),
       updatedAt: level.updatedAt ?? new Date(),
     };
