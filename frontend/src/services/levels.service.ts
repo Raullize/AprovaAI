@@ -8,6 +8,7 @@ export interface Level {
   passingPercentage: number;
   status: 'ACTIVE' | 'INACTIVE';
   topicId: string;
+  timeLimit: number | null;
   questionsCount?: number;
 }
 
@@ -17,6 +18,7 @@ export interface CreateLevelDTO {
   passingPercentage: number;
   status: 'ACTIVE' | 'INACTIVE';
   topicId: string;
+  timeLimit?: number;
 }
 
 export type UpdateLevelDTO = Partial<Omit<CreateLevelDTO, 'topicId'>>;

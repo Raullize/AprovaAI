@@ -12,6 +12,7 @@ interface LevelFormData {
   name: string;
   xpReward: number;
   passingPercentage: number;
+  timeLimit?: number;
   topicId: string;
   status: 'ACTIVE' | 'INACTIVE';
 }
@@ -61,6 +62,7 @@ export function LevelFormModal({
             name: level.name,
             xpReward: level.xpReward,
             passingPercentage: level.passingPercentage,
+            timeLimit: level.timeLimit ?? undefined,
             status: level.status,
             topicId,
           });
@@ -78,6 +80,7 @@ export function LevelFormModal({
         name: '',
         xpReward: 0,
         passingPercentage: 70,
+        timeLimit: undefined,
       });
     }
   }, [isOpen, levelId, isEditing, topicId, reset, toast]);
@@ -89,6 +92,7 @@ export function LevelFormModal({
         ...data,
         xpReward: Number(data.xpReward),
         passingPercentage: Number(data.passingPercentage),
+        timeLimit: data.timeLimit ? Number(data.timeLimit) : undefined,
       };
       if (isEditing && levelId) {
         await levelsService.update(levelId, payload);
@@ -145,6 +149,16 @@ export function LevelFormModal({
               error={errors.passingPercentage?.message}
             />
           </div>
+
+          <Input
+            label="Tempo Limite (minutos)"
+            type="number"
+            placeholder="Opcional"
+            {...register('timeLimit', {
+              min: { value: 1, message: 'O tempo deve ser no mínimo 1 minuto' },
+            })}
+            error={errors.timeLimit?.message}
+          />
 
           <StatusToggle
             value={statusValue}
