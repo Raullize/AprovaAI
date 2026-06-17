@@ -102,9 +102,10 @@ model Level {
   topicId           String      @map("topic_id")
   status            LevelStatus @default(ACTIVE) @map("status")
   xpReward          Int         @default(0) @map("xp_reward")
-  passingPercentage Float       @default(70.0) @map("passing_percentage")
-  timeLimit         Int?        @map("time_limit")
-  createdAt         DateTime    @default(now()) @map("created_at")
+  passingPercentage Float          @default(70.0) @map("passing_percentage")
+  timeLimit         Int?           @map("time_limit")
+  simulationMode    SimulationMode @default(PRACTICE) @map("simulation_mode")
+  createdAt         DateTime       @default(now()) @map("created_at")
   updatedAt         DateTime    @updatedAt @map("updated_at")
 
   topic       Topic        @relation(fields: [topicId], references: [id], onDelete: Cascade)
