@@ -1,5 +1,5 @@
 import React from 'react';
-import { Check, Star, Zap, GraduationCap } from 'lucide-react';
+import { Check, Star, Zap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../ui/Button';
 
