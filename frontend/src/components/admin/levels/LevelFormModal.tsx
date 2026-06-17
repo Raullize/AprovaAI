@@ -13,6 +13,7 @@ interface LevelFormData {
   xpReward: number;
   passingPercentage: number;
   timeLimit?: number;
+  simulationMode: 'PRACTICE' | 'EXAM';
   topicId: string;
   status: 'ACTIVE' | 'INACTIVE';
 }
@@ -45,7 +46,7 @@ export function LevelFormModal({
     watch,
     setValue,
   } = useForm<LevelFormData>({
-    defaultValues: { status: 'ACTIVE', topicId },
+    defaultValues: { status: 'ACTIVE', topicId, simulationMode: 'PRACTICE' },
   });
 
   const statusValue = watch('status');
@@ -63,6 +64,7 @@ export function LevelFormModal({
             xpReward: level.xpReward,
             passingPercentage: level.passingPercentage,
             timeLimit: level.timeLimit ?? undefined,
+            simulationMode: level.simulationMode || 'PRACTICE',
             status: level.status,
             topicId,
           });
@@ -81,6 +83,7 @@ export function LevelFormModal({
         xpReward: 0,
         passingPercentage: 70,
         timeLimit: undefined,
+        simulationMode: 'PRACTICE',
       });
     }
   }, [isOpen, levelId, isEditing, topicId, reset, toast]);
@@ -93,6 +96,7 @@ export function LevelFormModal({
         xpReward: Number(data.xpReward),
         passingPercentage: Number(data.passingPercentage),
         timeLimit: data.timeLimit ? Number(data.timeLimit) : undefined,
+        simulationMode: data.simulationMode,
       };
       if (isEditing && levelId) {
         await levelsService.update(levelId, payload);
@@ -150,15 +154,30 @@ export function LevelFormModal({
             />
           </div>
 
-          <Input
-            label="Tempo Limite (minutos)"
-            type="number"
-            placeholder="Opcional"
-            {...register('timeLimit', {
-              min: { value: 1, message: 'O tempo deve ser no mínimo 1 minuto' },
-            })}
-            error={errors.timeLimit?.message}
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="Tempo Limite (minutos)"
+              type="number"
+              placeholder="Opcional"
+              {...register('timeLimit', {
+                min: { value: 1, message: 'O tempo deve ser no mínimo 1 minuto' },
+              })}
+              error={errors.timeLimit?.message}
+            />
+
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">
+                Modo de Simulação
+              </label>
+              <select
+                {...register('simulationMode')}
+                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <option value="PRACTICE">Prática</option>
+                <option value="EXAM">Exame</option>
+              </select>
+            </div>
+          </div>
 
           <StatusToggle
             value={statusValue}
