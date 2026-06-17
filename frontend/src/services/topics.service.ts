@@ -8,6 +8,8 @@ export interface Topic {
   status: 'ACTIVE' | 'INACTIVE';
   examId: string;
   levelsCount?: number;
+  iconKey?: string | null;
+  colorScheme?: string | null;
 }
 
 export interface CreateTopicDTO {
@@ -15,6 +17,8 @@ export interface CreateTopicDTO {
   description: string;
   status: 'ACTIVE' | 'INACTIVE';
   examId: string;
+  iconKey?: string;
+  colorScheme?: string;
 }
 
 export type UpdateTopicDTO = Partial<Omit<CreateTopicDTO, 'examId'>>;

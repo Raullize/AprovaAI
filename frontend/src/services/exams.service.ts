@@ -7,12 +7,18 @@ export interface Exam {
   description: string | null;
   status: 'ACTIVE' | 'INACTIVE';
   topicsCount: number;
+  iconKey?: string | null;
+  colorScheme?: string | null;
+  category?: string | null;
 }
 
 export interface CreateExamDTO {
   name: string;
   description: string;
   status: 'ACTIVE' | 'INACTIVE';
+  iconKey?: string;
+  colorScheme?: string;
+  category?: string;
 }
 
 export type UpdateExamDTO = Partial<CreateExamDTO>;
