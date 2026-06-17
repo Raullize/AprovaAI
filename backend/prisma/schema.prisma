@@ -103,6 +103,7 @@ model Level {
   status            LevelStatus @default(ACTIVE) @map("status")
   xpReward          Int         @default(0) @map("xp_reward")
   passingPercentage Float       @default(70.0) @map("passing_percentage")
+  timeLimit         Int?        @map("time_limit")
   createdAt         DateTime    @default(now()) @map("created_at")
   updatedAt         DateTime    @updatedAt @map("updated_at")
 
@@ -170,11 +171,19 @@ enum SimulationStatus {
   @@map("simulation_status")
 }
 
+enum SimulationMode {
+  PRACTICE
+  EXAM
+
+  @@map("simulation_mode")
+}
+
 model ExamResult {
   id             String           @id @default(uuid()) @map("id")
   userId         String           @map("user_id")
   levelId        String           @map("level_id")
   status         SimulationStatus @default(IN_PROGRESS) @map("status")
+  mode           SimulationMode   @default(PRACTICE) @map("mode")
   score          Int?             @map("score")
   totalQuestions Int              @map("total_questions")
   percentage     Float?           @map("percentage")
@@ -191,13 +200,14 @@ model ExamResult {
 }
 
 model ExamAnswer {
-  id              String   @id @default(uuid()) @map("id")
-  examResultId    String   @map("exam_result_id")
-  questionId      String   @map("question_id")
-  selectedOptions String[] @map("selected_options")
-  isCorrect       Boolean? @map("is_correct")
-  timeSpent       Int?     @map("time_spent")
-  createdAt       DateTime @default(now()) @map("created_at")
+  id               String   @id @default(uuid()) @map("id")
+  examResultId     String   @map("exam_result_id")
+  questionId       String   @map("question_id")
+  selectedOptions  String[] @map("selected_options")
+  isCorrect        Boolean? @map("is_correct")
+  timeSpent        Int?     @map("time_spent")
+  isFlaggedForReview Boolean @default(false) @map("is_flagged_for_review")
+  createdAt        DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   examResult ExamResult @relation(fields: [examResultId], references: [id], onDelete: Cascade)
