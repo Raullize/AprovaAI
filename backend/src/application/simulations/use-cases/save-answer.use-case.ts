@@ -16,7 +16,10 @@ export interface SaveAnswerRequest {
 }
 
 @Injectable()
-export class SaveAnswerUseCase implements UseCase<SaveAnswerRequest, ExamAnswer> {
+export class SaveAnswerUseCase implements UseCase<
+  SaveAnswerRequest,
+  ExamAnswer
+> {
   constructor(
     @Inject('ExamResultRepository')
     private readonly examResultRepository: ExamResultRepository,
@@ -26,18 +29,24 @@ export class SaveAnswerUseCase implements UseCase<SaveAnswerRequest, ExamAnswer>
 
   async execute(request: SaveAnswerRequest): Promise<ExamAnswer> {
     // 1. Fetch simulation
-    const examResult = await this.examResultRepository.findById(request.examResultId);
+    const examResult = await this.examResultRepository.findById(
+      request.examResultId,
+    );
     if (!examResult) {
       throw new ResourceNotFoundError('ExamResult', request.examResultId);
     }
 
     // 2. Validate simulation belongs to user and is in progress
     if (examResult.userId !== request.userId) {
-      throw new ValidationError('You do not have permission to answer this simulation');
+      throw new ValidationError(
+        'You do not have permission to answer this simulation',
+      );
     }
 
     if (examResult.status !== 'IN_PROGRESS') {
-      throw new ValidationError('Cannot answer a simulation that is not in progress');
+      throw new ValidationError(
+        'Cannot answer a simulation that is not in progress',
+      );
     }
 
     // 3. Validate question exists
@@ -48,23 +57,29 @@ export class SaveAnswerUseCase implements UseCase<SaveAnswerRequest, ExamAnswer>
 
     // Validate question belongs to the level being tested
     if (question.levelId !== examResult.levelId) {
-      throw new ValidationError('This question does not belong to the current simulation level');
+      throw new ValidationError(
+        'This question does not belong to the current simulation level',
+      );
     }
 
     // 4. Calculate if answer is correct
     // Note: Assuming question entity has options with isCorrect property
     let isCorrect = false;
-    
+
     if (question.type === 'SINGLE_CHOICE') {
-      const correctOption = question.options.find(opt => opt.isCorrect);
-      isCorrect = correctOption?.id ? request.selectedOptions.includes(correctOption.id) : false;
+      const correctOption = question.options.find((opt) => opt.isCorrect);
+      isCorrect = correctOption?.id
+        ? request.selectedOptions.includes(correctOption.id)
+        : false;
     } else if (question.type === 'MULTIPLE_CHOICE') {
-      const correctOptionsIds = question.options.filter(opt => opt.isCorrect && opt.id).map(opt => opt.id as string);
-      
+      const correctOptionsIds = question.options
+        .filter((opt) => opt.isCorrect && opt.id)
+        .map((opt) => opt.id as string);
+
       // Must select exactly all correct options
-      isCorrect = 
+      isCorrect =
         correctOptionsIds.length === request.selectedOptions.length &&
-        correctOptionsIds.every(id => request.selectedOptions.includes(id));
+        correctOptionsIds.every((id) => request.selectedOptions.includes(id));
     }
 
     // 5. Save answer
@@ -81,16 +96,19 @@ export class SaveAnswerUseCase implements UseCase<SaveAnswerRequest, ExamAnswer>
 
     // 6. Anti-Cheat: If mode is EXAM, don't return the correctness of the answer
     if (examResult.mode === 'EXAM') {
-      return ExamAnswer.create({
-        examResultId: savedAnswer.examResultId,
-        questionId: savedAnswer.questionId,
-        selectedOptions: savedAnswer.selectedOptions,
-        timeSpent: savedAnswer.timeSpent,
-        isFlaggedForReview: savedAnswer.isFlaggedForReview,
-        createdAt: savedAnswer.createdAt,
-        updatedAt: savedAnswer.updatedAt,
-        isCorrect: null // Hide the correct answer from the frontend until simulation finishes
-      }, savedAnswer.id);
+      return ExamAnswer.create(
+        {
+          examResultId: savedAnswer.examResultId,
+          questionId: savedAnswer.questionId,
+          selectedOptions: savedAnswer.selectedOptions,
+          timeSpent: savedAnswer.timeSpent,
+          isFlaggedForReview: savedAnswer.isFlaggedForReview,
+          createdAt: savedAnswer.createdAt,
+          updatedAt: savedAnswer.updatedAt,
+          isCorrect: null, // Hide the correct answer from the frontend until simulation finishes
+        },
+        savedAnswer.id,
+      );
     }
 
     return savedAnswer;

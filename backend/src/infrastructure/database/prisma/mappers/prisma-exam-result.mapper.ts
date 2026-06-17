@@ -1,5 +1,13 @@
-import { ExamResult as PrismaExamResult, ExamAnswer as PrismaExamAnswer } from '@prisma/client';
-import { ExamResult, ExamAnswer, SimulationStatus, SimulationMode } from '../../../../domain/simulations/entities/exam-result.entity';
+import {
+  ExamResult as PrismaExamResult,
+  ExamAnswer as PrismaExamAnswer,
+} from '@prisma/client';
+import {
+  ExamResult,
+  ExamAnswer,
+  SimulationStatus,
+  SimulationMode,
+} from '../../../../domain/simulations/entities/exam-result.entity';
 
 export class PrismaExamResultMapper {
   static toDomain(
@@ -18,16 +26,21 @@ export class PrismaExamResultMapper {
         timeSpent: raw.timeSpent,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
-        answers: raw.answers?.map(ans => ExamAnswer.create({
-          examResultId: ans.examResultId,
-          questionId: ans.questionId,
-          selectedOptions: ans.selectedOptions,
-          isCorrect: ans.isCorrect,
-          timeSpent: ans.timeSpent,
-          isFlaggedForReview: ans.isFlaggedForReview,
-          createdAt: ans.createdAt,
-          updatedAt: ans.updatedAt,
-        }, ans.id))
+        answers: raw.answers?.map((ans) =>
+          ExamAnswer.create(
+            {
+              examResultId: ans.examResultId,
+              questionId: ans.questionId,
+              selectedOptions: ans.selectedOptions,
+              isCorrect: ans.isCorrect,
+              timeSpent: ans.timeSpent,
+              isFlaggedForReview: ans.isFlaggedForReview,
+              createdAt: ans.createdAt,
+              updatedAt: ans.updatedAt,
+            },
+            ans.id,
+          ),
+        ),
       },
       raw.id,
     );

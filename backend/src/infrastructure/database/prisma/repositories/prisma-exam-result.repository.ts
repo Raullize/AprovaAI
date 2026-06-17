@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { ExamResultRepository } from '../../../../domain/simulations/repositories/exam-result.repository';
-import { ExamResult, ExamAnswer } from '../../../../domain/simulations/entities/exam-result.entity';
+import {
+  ExamResult,
+  ExamAnswer,
+} from '../../../../domain/simulations/entities/exam-result.entity';
 import { PrismaExamResultMapper } from '../mappers/prisma-exam-result.mapper';
 
 @Injectable()
@@ -17,12 +20,15 @@ export class PrismaExamResultRepository implements ExamResultRepository {
     return PrismaExamResultMapper.toDomain(result);
   }
 
-  async findActiveByUserIdAndLevelId(userId: string, levelId: string): Promise<ExamResult | null> {
+  async findActiveByUserIdAndLevelId(
+    userId: string,
+    levelId: string,
+  ): Promise<ExamResult | null> {
     const result = await this.prisma.examResult.findFirst({
-      where: { 
-        userId, 
+      where: {
+        userId,
         levelId,
-        status: 'IN_PROGRESS' 
+        status: 'IN_PROGRESS',
       },
       include: { answers: true },
     });
@@ -32,30 +38,30 @@ export class PrismaExamResultRepository implements ExamResultRepository {
 
   async findHistoryByUserId(userId: string): Promise<ExamResult[]> {
     const results = await this.prisma.examResult.findMany({
-      where: { 
+      where: {
         userId,
-        status: 'COMPLETED'
+        status: 'COMPLETED',
       },
-      include: { 
+      include: {
         answers: true,
         level: {
           include: {
             topic: {
               include: {
-                exam: true
-              }
-            }
-          }
-        }
+                exam: true,
+              },
+            },
+          },
+        },
       },
       orderBy: {
-        updatedAt: 'desc'
-      }
+        updatedAt: 'desc',
+      },
     });
-    
+
     // We return it as domain entity, but in a real app you might want to return a DTO
     // with the level/topic/exam names included, or handle that in the controller mapping.
-    return results.map(result => PrismaExamResultMapper.toDomain(result));
+    return results.map((result) => PrismaExamResultMapper.toDomain(result));
   }
 
   async create(examResult: ExamResult): Promise<ExamResult> {
@@ -75,13 +81,13 @@ export class PrismaExamResultRepository implements ExamResultRepository {
 
   async saveAnswer(answer: ExamAnswer): Promise<ExamAnswer> {
     const data = PrismaExamResultMapper.answerToPrisma(answer);
-    
+
     const saved = await this.prisma.examAnswer.upsert({
       where: {
         examResultId_questionId: {
           examResultId: answer.examResultId,
           questionId: answer.questionId,
-        }
+        },
       },
       update: {
         selectedOptions: data.selectedOptions,
@@ -92,14 +98,17 @@ export class PrismaExamResultRepository implements ExamResultRepository {
       create: data,
     });
 
-    return ExamAnswer.create({
-      examResultId: saved.examResultId,
-      questionId: saved.questionId,
-      selectedOptions: saved.selectedOptions,
-      isCorrect: saved.isCorrect,
-      timeSpent: saved.timeSpent,
-      createdAt: saved.createdAt,
-      updatedAt: saved.updatedAt,
-    }, saved.id);
+    return ExamAnswer.create(
+      {
+        examResultId: saved.examResultId,
+        questionId: saved.questionId,
+        selectedOptions: saved.selectedOptions,
+        isCorrect: saved.isCorrect,
+        timeSpent: saved.timeSpent,
+        createdAt: saved.createdAt,
+        updatedAt: saved.updatedAt,
+      },
+      saved.id,
+    );
   }
 }

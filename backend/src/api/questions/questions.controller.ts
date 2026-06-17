@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
   createQuestionSchema,
   updateQuestionSchema,
@@ -46,6 +46,8 @@ export class QuestionsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Criar Questão', description: 'Cria uma nova questão para um nível específico (Apenas Admin).' })
+  @ApiResponse({ status: 201, description: 'Questão criada com sucesso.' })
   create(
     @Body(new ZodValidationPipe(createQuestionSchema))
     createQuestionDto: CreateQuestionDto,
@@ -56,6 +58,8 @@ export class QuestionsController {
   @Get()
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Listar Questões', description: 'Retorna a lista de todas as questões cadastradas.' })
+  @ApiResponse({ status: 200, description: 'Lista retornada com sucesso.' })
   findAll() {
     return this.findAllQuestionsUseCase.execute();
   }
@@ -63,6 +67,8 @@ export class QuestionsController {
   @Get('level/:levelId')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Buscar Questões por Nível', description: 'Retorna todas as questões pertencentes a um nível específico.' })
+  @ApiResponse({ status: 200, description: 'Questões encontradas.' })
   findByLevel(@Param('levelId') levelId: string) {
     return this.findQuestionsByLevelIdUseCase.execute(levelId);
   }
@@ -70,6 +76,8 @@ export class QuestionsController {
   @Get(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Buscar Questão por ID', description: 'Retorna os detalhes de uma questão específica.' })
+  @ApiResponse({ status: 200, description: 'Questão encontrada.' })
   findOne(@Param('id') id: string) {
     return this.findQuestionByIdUseCase.execute(id);
   }
@@ -78,6 +86,8 @@ export class QuestionsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Reordenar Questões', description: 'Atualiza a ordem de exibição das questões (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Ordem atualizada com sucesso.' })
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
     return this.reorderQuestionsUseCase.execute(reorderDto);
   }
@@ -86,6 +96,8 @@ export class QuestionsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Atualizar Questão', description: 'Atualiza os dados de uma questão existente (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Questão atualizada com sucesso.' })
   update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateQuestionSchema))
@@ -98,6 +110,8 @@ export class QuestionsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Excluir Questão', description: 'Remove uma questão do sistema (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Questão removida com sucesso.' })
   remove(@Param('id') id: string) {
     return this.deleteQuestionUseCase.execute(id);
   }

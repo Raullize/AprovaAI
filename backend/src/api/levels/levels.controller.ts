@@ -8,7 +8,7 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
   createLevelSchema,
   updateLevelSchema,
@@ -48,6 +48,8 @@ export class LevelsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Criar Nível', description: 'Cria um novo nível/simulado (Apenas Admin).' })
+  @ApiResponse({ status: 201, description: 'Nível criado com sucesso.' })
   create(
     @Body(new ZodValidationPipe(createLevelSchema))
     createLevelDto: CreateLevelDto,
@@ -56,16 +58,22 @@ export class LevelsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Listar Níveis', description: 'Retorna a lista de todos os níveis cadastrados.' })
+  @ApiResponse({ status: 200, description: 'Lista retornada com sucesso.' })
   findAll() {
     return this.findAllLevelsUseCase.execute();
   }
 
   @Get('topic/:topicId')
+  @ApiOperation({ summary: 'Buscar Níveis por Tópico', description: 'Retorna todos os níveis pertencentes a um tópico específico.' })
+  @ApiResponse({ status: 200, description: 'Níveis encontrados.' })
   findByTopic(@Param('topicId') topicId: string) {
     return this.findLevelsByTopicIdUseCase.execute(topicId);
   }
 
   @Get(':idOrSlug')
+  @ApiOperation({ summary: 'Buscar Nível por ID ou Slug', description: 'Retorna os detalhes de um nível específico.' })
+  @ApiResponse({ status: 200, description: 'Nível encontrado.' })
   findOne(@Param('idOrSlug') idOrSlug: string) {
     const isUuidFormat =
       /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
@@ -82,6 +90,8 @@ export class LevelsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Reordenar Níveis', description: 'Atualiza a ordem de exibição dos níveis (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Ordem atualizada com sucesso.' })
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
     return this.reorderLevelsUseCase.execute(reorderDto);
   }
@@ -90,6 +100,8 @@ export class LevelsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Atualizar Nível', description: 'Atualiza os dados de um nível existente (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Nível atualizado com sucesso.' })
   update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateLevelSchema))
@@ -102,6 +114,8 @@ export class LevelsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Excluir Nível', description: 'Remove um nível do sistema (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Nível removido com sucesso.' })
   remove(@Param('id') id: string) {
     return this.deleteLevelUseCase.execute(id);
   }

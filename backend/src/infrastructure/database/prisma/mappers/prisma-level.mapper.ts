@@ -4,7 +4,9 @@ import { Slug } from '../../../../domain/content/value-objects/slug';
 import { Percentage } from '../../../../domain/content/value-objects/percentage';
 
 export class PrismaLevelMapper {
-  static toDomain(raw: PrismaLevel & { _count?: { questions: number } }): Level {
+  static toDomain(
+    raw: PrismaLevel & { _count?: { questions: number } },
+  ): Level {
     return Level.create(
       {
         name: raw.name,

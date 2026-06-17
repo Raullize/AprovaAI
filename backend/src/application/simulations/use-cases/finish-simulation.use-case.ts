@@ -13,7 +13,10 @@ export interface FinishSimulationRequest {
 }
 
 @Injectable()
-export class FinishSimulationUseCase implements UseCase<FinishSimulationRequest, ExamResult> {
+export class FinishSimulationUseCase implements UseCase<
+  FinishSimulationRequest,
+  ExamResult
+> {
   constructor(
     @Inject('ExamResultRepository')
     private readonly examResultRepository: ExamResultRepository,
@@ -23,17 +26,23 @@ export class FinishSimulationUseCase implements UseCase<FinishSimulationRequest,
 
   async execute(request: FinishSimulationRequest): Promise<ExamResult> {
     // 1. Fetch simulation with answers
-    const examResult = await this.examResultRepository.findById(request.examResultId);
+    const examResult = await this.examResultRepository.findById(
+      request.examResultId,
+    );
     if (!examResult) {
       throw new ResourceNotFoundError('ExamResult', request.examResultId);
     }
 
     if (examResult.userId !== request.userId) {
-      throw new ValidationError('You do not have permission to finish this simulation');
+      throw new ValidationError(
+        'You do not have permission to finish this simulation',
+      );
     }
 
     if (examResult.status !== 'IN_PROGRESS') {
-      throw new ValidationError('This simulation is already finished or abandoned');
+      throw new ValidationError(
+        'This simulation is already finished or abandoned',
+      );
     }
 
     // 2. Fetch level to know passing criteria
@@ -44,27 +53,33 @@ export class FinishSimulationUseCase implements UseCase<FinishSimulationRequest,
 
     // 3. Calculate score
     const totalQuestions = examResult.totalQuestions;
-    const correctAnswersCount = examResult.answers.filter(ans => ans.isCorrect).length;
-    const percentage = totalQuestions > 0 ? (correctAnswersCount / totalQuestions) * 100 : 0;
-    
+    const correctAnswersCount = examResult.answers.filter(
+      (ans) => ans.isCorrect,
+    ).length;
+    const percentage =
+      totalQuestions > 0 ? (correctAnswersCount / totalQuestions) * 100 : 0;
+
     // 4. Determine pass/fail
     const passed = percentage >= level.passingPercentage;
 
     // 5. Update and save
     // We recreate the entity to apply the business rules cleanly
-    const updatedSimulation = ExamResult.create({
-      userId: examResult.userId,
-      levelId: examResult.levelId,
-      status: 'COMPLETED',
-      score: correctAnswersCount,
-      totalQuestions: totalQuestions,
-      percentage,
-      passed,
-      timeSpent: request.timeSpent ?? examResult.timeSpent,
-      answers: examResult.answers,
-      createdAt: examResult.createdAt,
-      updatedAt: new Date(),
-    }, examResult.id);
+    const updatedSimulation = ExamResult.create(
+      {
+        userId: examResult.userId,
+        levelId: examResult.levelId,
+        status: 'COMPLETED',
+        score: correctAnswersCount,
+        totalQuestions: totalQuestions,
+        percentage,
+        passed,
+        timeSpent: request.timeSpent ?? examResult.timeSpent,
+        answers: examResult.answers,
+        createdAt: examResult.createdAt,
+        updatedAt: new Date(),
+      },
+      examResult.id,
+    );
 
     // 6. Give XP to user if passed (This would ideally dispatch a Domain Event to the User module)
     // For now, we will handle this via event or direct repository injection in a refactor

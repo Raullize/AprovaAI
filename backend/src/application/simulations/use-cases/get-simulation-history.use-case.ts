@@ -8,7 +8,10 @@ export interface GetSimulationHistoryRequest {
 }
 
 @Injectable()
-export class GetSimulationHistoryUseCase implements UseCase<GetSimulationHistoryRequest, ExamResult[]> {
+export class GetSimulationHistoryUseCase implements UseCase<
+  GetSimulationHistoryRequest,
+  ExamResult[]
+> {
   constructor(
     @Inject('ExamResultRepository')
     private readonly examResultRepository: ExamResultRepository,
