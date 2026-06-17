@@ -13,6 +13,8 @@ export class PrismaTopicMapper {
         order: raw.order,
         examId: raw.examId,
         levelsCount: raw._count?.levels,
+        iconKey: raw.iconKey,
+        colorScheme: raw.colorScheme,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -29,6 +31,8 @@ export class PrismaTopicMapper {
       status: topic.status,
       order: topic.order,
       examId: topic.examId,
+      iconKey: topic.iconKey ?? null,
+      colorScheme: topic.colorScheme ?? null,
       createdAt: topic.createdAt ?? new Date(),
       updatedAt: topic.updatedAt ?? new Date(),
     };

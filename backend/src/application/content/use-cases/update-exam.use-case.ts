@@ -12,6 +12,9 @@ export interface UpdateExamRequest {
     name?: string;
     description?: string;
     status?: 'ACTIVE' | 'INACTIVE';
+    iconKey?: string | null;
+    colorScheme?: string | null;
+    category?: string | null;
   };
 }
 
@@ -38,12 +41,23 @@ export class UpdateExamUseCase implements UseCase<UpdateExamRequest, Exam> {
         name: request.data.name,
         description: request.data.description ?? exam.description,
         slug: Slug.create(slug),
+        iconKey: request.data.iconKey,
+        colorScheme: request.data.colorScheme,
+        category: request.data.category,
       });
-    } else if (request.data.description !== undefined) {
+    } else if (
+      request.data.description !== undefined ||
+      request.data.iconKey !== undefined ||
+      request.data.colorScheme !== undefined ||
+      request.data.category !== undefined
+    ) {
       exam.updateDetails({
         name: exam.name,
-        description: request.data.description,
+        description: request.data.description ?? exam.description,
         slug: exam.slug,
+        iconKey: request.data.iconKey,
+        colorScheme: request.data.colorScheme,
+        category: request.data.category,
       });
     }
 

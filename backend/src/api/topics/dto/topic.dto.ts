@@ -21,6 +21,8 @@ export const createTopicSchema = z.object({
     .string()
     .uuid('ID do exame inválido')
     .describe('ID (UUID) da trilha principal a qual pertence. Ex: 123e4567...'),
+  iconKey: z.string().optional().describe('Chave do ícone. Ex: "book-open"'),
+  colorScheme: z.string().optional().describe('Esquema de cor. Ex: "violet"'),
 });
 
 export class CreateTopicDto extends createZodDto(createTopicSchema) {}
@@ -30,6 +32,8 @@ export const updateTopicSchema = z.object({
   description: z.string().optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
   examId: z.string().optional(),
+  iconKey: z.string().nullable().optional(),
+  colorScheme: z.string().nullable().optional(),
 });
 
 export class UpdateTopicDto extends createZodDto(updateTopicSchema) {}

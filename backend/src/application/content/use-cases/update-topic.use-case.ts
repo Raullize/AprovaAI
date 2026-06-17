@@ -13,6 +13,8 @@ export interface UpdateTopicRequest {
     description?: string;
     status?: 'ACTIVE' | 'INACTIVE';
     examId?: string;
+    iconKey?: string | null;
+    colorScheme?: string | null;
   };
 }
 
@@ -43,16 +45,22 @@ export class UpdateTopicUseCase implements UseCase<UpdateTopicRequest, Topic> {
         description: request.data.description ?? topic.description,
         slug: Slug.create(slug),
         examId: request.data.examId ?? topic.examId,
+        iconKey: request.data.iconKey,
+        colorScheme: request.data.colorScheme,
       });
     } else if (
       request.data.description !== undefined ||
-      request.data.examId !== undefined
+      request.data.examId !== undefined ||
+      request.data.iconKey !== undefined ||
+      request.data.colorScheme !== undefined
     ) {
       topic.updateDetails({
         name: topic.name,
         description: request.data.description ?? topic.description,
         slug: topic.slug,
         examId: request.data.examId ?? topic.examId,
+        iconKey: request.data.iconKey,
+        colorScheme: request.data.colorScheme,
       });
     }
 

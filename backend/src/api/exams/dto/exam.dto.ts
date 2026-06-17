@@ -14,6 +14,12 @@ export const createExamSchema = z.object({
     .enum(['ACTIVE', 'INACTIVE'])
     .default('ACTIVE')
     .describe('Controla se os alunos podem ver e acessar este exame.'),
+  iconKey: z.string().optional().describe('Chave do ícone Lucide. Ex: "trophy"'),
+  colorScheme: z.string().optional().describe('Esquema de cor. Ex: "indigo"'),
+  category: z
+    .enum(['CONCURSOS', 'CERTIFICACOES', 'VESTIBULAR', 'OAB', 'OUTROS'])
+    .default('OUTROS')
+    .describe('Categoria do exame.'),
 });
 
 export class CreateExamDto extends createZodDto(createExamSchema) {}
@@ -22,6 +28,12 @@ export const updateExamSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
+  iconKey: z.string().nullable().optional(),
+  colorScheme: z.string().nullable().optional(),
+  category: z
+    .enum(['CONCURSOS', 'CERTIFICACOES', 'VESTIBULAR', 'OAB', 'OUTROS'])
+    .nullable()
+    .optional(),
 });
 
 export class UpdateExamDto extends createZodDto(updateExamSchema) {}

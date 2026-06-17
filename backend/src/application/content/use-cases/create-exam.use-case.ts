@@ -9,6 +9,9 @@ export interface CreateExamRequest {
   name: string;
   description?: string;
   status?: 'ACTIVE' | 'INACTIVE';
+  iconKey?: string;
+  colorScheme?: string;
+  category?: string;
 }
 
 @Injectable()
@@ -32,6 +35,9 @@ export class CreateExamUseCase implements UseCase<CreateExamRequest, Exam> {
       description: request.description,
       status: request.status,
       order: count,
+      iconKey: request.iconKey,
+      colorScheme: request.colorScheme,
+      category: request.category,
     });
 
     return this.examRepository.create(exam);

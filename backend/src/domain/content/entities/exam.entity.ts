@@ -8,6 +8,9 @@ export interface ExamProps {
   status?: 'ACTIVE' | 'INACTIVE';
   order?: number;
   topicsCount?: number;
+  iconKey?: string | null;
+  colorScheme?: string | null;
+  category?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -37,6 +40,15 @@ export class Exam extends AggregateRoot<ExamProps> {
   get topicsCount(): number {
     return this.props.topicsCount ?? 0;
   }
+  get iconKey(): string | null | undefined {
+    return this.props.iconKey;
+  }
+  get colorScheme(): string | null | undefined {
+    return this.props.colorScheme;
+  }
+  get category(): string | null | undefined {
+    return this.props.category;
+  }
 
   static create(props: ExamProps, id?: string): Exam {
     return new Exam(
@@ -65,10 +77,16 @@ export class Exam extends AggregateRoot<ExamProps> {
     name: string;
     description: string | null | undefined;
     slug: Slug;
+    iconKey?: string | null;
+    colorScheme?: string | null;
+    category?: string | null;
   }): void {
     this.props.name = details.name;
     this.props.description = details.description;
     this.props.slug = details.slug;
+    if (details.iconKey !== undefined) this.props.iconKey = details.iconKey;
+    if (details.colorScheme !== undefined) this.props.colorScheme = details.colorScheme;
+    if (details.category !== undefined) this.props.category = details.category;
     this.props.updatedAt = new Date();
   }
 

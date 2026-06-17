@@ -53,15 +53,28 @@ enum TopicStatus {
   @@map("topic_status")
 }
 
+enum ExamCategory {
+  CONCURSOS
+  CERTIFICACOES
+  VESTIBULAR
+  OAB
+  OUTROS
+
+  @@map("exam_category")
+}
+
 model Exam {
-  id          String     @id @default(uuid()) @map("id")
-  name        String     @map("name")
-  slug        String     @unique @map("slug")
-  description String?    @map("description")
-  status      ExamStatus @default(ACTIVE) @map("status")
-  order       Int        @default(0) @map("order")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
+  id          String       @id @default(uuid()) @map("id")
+  name        String       @map("name")
+  slug        String       @unique @map("slug")
+  description String?      @map("description")
+  status      ExamStatus   @default(ACTIVE) @map("status")
+  order       Int          @default(0) @map("order")
+  iconKey     String?      @map("icon_key")
+  colorScheme String?      @map("color_scheme")
+  category    ExamCategory @default(OUTROS) @map("category")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
 
   topics Topic[]
 
@@ -76,6 +89,8 @@ model Topic {
   status      TopicStatus @default(ACTIVE) @map("status")
   order       Int         @default(0) @map("order")
   examId      String      @map("exam_id")
+  iconKey     String?     @map("icon_key")
+  colorScheme String?     @map("color_scheme")
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
 

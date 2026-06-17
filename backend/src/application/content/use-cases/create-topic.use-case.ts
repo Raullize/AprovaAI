@@ -10,6 +10,8 @@ export interface CreateTopicRequest {
   description?: string;
   status?: 'ACTIVE' | 'INACTIVE';
   examId: string;
+  iconKey?: string;
+  colorScheme?: string;
 }
 
 @Injectable()
@@ -37,6 +39,8 @@ export class CreateTopicUseCase implements UseCase<CreateTopicRequest, Topic> {
       status: request.status,
       examId: request.examId,
       order: count,
+      iconKey: request.iconKey,
+      colorScheme: request.colorScheme,
     });
 
     return this.topicRepository.create(topic);

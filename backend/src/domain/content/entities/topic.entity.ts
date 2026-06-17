@@ -9,6 +9,8 @@ export interface TopicProps {
   examId: string;
   order?: number;
   levelsCount?: number;
+  iconKey?: string | null;
+  colorScheme?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -41,6 +43,12 @@ export class Topic extends AggregateRoot<TopicProps> {
   get levelsCount(): number {
     return this.props.levelsCount ?? 0;
   }
+  get iconKey(): string | null | undefined {
+    return this.props.iconKey;
+  }
+  get colorScheme(): string | null | undefined {
+    return this.props.colorScheme;
+  }
 
   static create(props: TopicProps, id?: string): Topic {
     return new Topic(
@@ -70,11 +78,15 @@ export class Topic extends AggregateRoot<TopicProps> {
     description: string | null | undefined;
     slug: Slug;
     examId: string;
+    iconKey?: string | null;
+    colorScheme?: string | null;
   }): void {
     this.props.name = details.name;
     this.props.description = details.description;
     this.props.slug = details.slug;
     this.props.examId = details.examId;
+    if (details.iconKey !== undefined) this.props.iconKey = details.iconKey;
+    if (details.colorScheme !== undefined) this.props.colorScheme = details.colorScheme;
     this.props.updatedAt = new Date();
   }
 
