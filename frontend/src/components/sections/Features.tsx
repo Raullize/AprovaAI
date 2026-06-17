@@ -51,10 +51,10 @@ export const Features: React.FC = () => {
     <section id="features" className="py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold font-display text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold font-display text-slate-900 mb-4">
             Como o AprovaAI Revoluciona seus Estudos
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Nossa metodologia única combina estrutura pedagógica, tecnologia
             avançada e gamificação para maximizar seu potencial de aprovação.
           </p>
@@ -67,15 +67,15 @@ export const Features: React.FC = () => {
             return (
               <div
                 key={feature.id}
-                className="text-center p-6 rounded-xl bg-gray-50 hover:bg-white hover:shadow-lg transition-all duration-300 card-hover group"
+                className="text-center p-6 rounded-xl bg-slate-50 hover:bg-white hover:shadow-lg transition-all duration-300 card-hover group"
               >
-                <div className="w-16 h-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary-600 transition-colors duration-300">
-                  <IconComponent className="h-8 w-8 text-primary-600 group-hover:text-white transition-colors duration-300" />
+                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-600 transition-colors duration-300">
+                  <IconComponent className="h-8 w-8 text-indigo-600 group-hover:text-white transition-colors duration-300" />
                 </div>
-                <h3 className="text-xl font-semibold font-display text-gray-900 mb-3">
+                <h3 className="text-xl font-semibold font-display text-slate-900 mb-3">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-slate-600 leading-relaxed">
                   {feature.description}
                 </p>
               </div>
@@ -84,7 +84,7 @@ export const Features: React.FC = () => {
         </div>
 
         <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-primary-600 to-purple-600 rounded-2xl p-8 text-white">
+          <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-white">
             <h3 className="text-2xl font-bold font-display mb-4">
               Pronto para Acelerar sua Aprovação?
             </h3>
@@ -93,10 +93,10 @@ export const Features: React.FC = () => {
               resultados com o AprovaAI.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-white text-primary-600 font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+              <button className="bg-white text-indigo-600 font-semibold py-3 px-8 rounded-lg hover:bg-slate-100 transition-colors duration-200">
                 Teste Grátis por 7 Dias
               </button>
-              <button className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-primary-600 transition-all duration-200">
+              <button className="bg-transparent border-2 border-white text-white font-semibold py-3 px-8 rounded-lg hover:bg-white hover:text-indigo-600 transition-all duration-200">
                 Ver Demonstração
               </button>
             </div>

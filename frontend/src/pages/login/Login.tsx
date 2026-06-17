@@ -145,12 +145,12 @@ export default function Login() {
           Continuar com Google
         </GoogleButton>
 
-        <div className="text-center pt-4 border-t border-gray-200">
-          <p className="text-gray-600">
+        <div className="text-center pt-5 border-t border-slate-100">
+          <p className="text-slate-500 text-sm">
             Não tem uma conta?{' '}
             <Link
               to="/register"
-              className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
+              className="text-indigo-600 hover:text-indigo-700 font-bold transition-colors"
             >
               Cadastre-se gratuitamente
             </Link>

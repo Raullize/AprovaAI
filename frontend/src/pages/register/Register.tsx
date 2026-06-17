@@ -52,8 +52,8 @@ export default function Register() {
   const navigate = useNavigate();
   const { signUp } = useAuth();
 
+
   const handleNextStep = async () => {
-    // Validate step 1 fields before proceeding
     const isStep1Valid = await trigger([
       'fullName',
       'username',
@@ -128,15 +128,15 @@ export default function Register() {
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors duration-300 ${
                 step >= 1
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-200 text-gray-500'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-slate-200 text-slate-500'
               }`}
             >
               {step > 1 ? <CheckCircle2 className="w-5 h-5" /> : '1'}
             </div>
             <span
               className={`text-xs mt-1 font-medium ${
-                step >= 1 ? 'text-primary-600' : 'text-gray-500'
+                step >= 1 ? 'text-indigo-600' : 'text-slate-500'
               }`}
             >
               Dados
@@ -144,22 +144,22 @@ export default function Register() {
           </div>
           <div
             className={`flex-1 h-1 mx-2 rounded-full transition-colors duration-300 ${
-              step > 1 ? 'bg-primary-600' : 'bg-gray-200'
+              step > 1 ? 'bg-indigo-600' : 'bg-slate-200'
             }`}
           />
           <div className="flex flex-col items-center">
             <div
               className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors duration-300 ${
                 step >= 2
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-200 text-gray-500'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-slate-200 text-slate-500'
               }`}
             >
               2
             </div>
             <span
               className={`text-xs mt-1 font-medium ${
-                step >= 2 ? 'text-primary-600' : 'text-gray-500'
+                step >= 2 ? 'text-indigo-600' : 'text-slate-500'
               }`}
             >
               Segurança
@@ -233,7 +233,7 @@ export default function Register() {
                         className={`h-1.5 w-full rounded-full transition-colors duration-300 ${
                           passwordStrength.score >= level
                             ? passwordStrength.color
-                            : 'bg-gray-200'
+                            : 'bg-slate-200'
                         }`}
                       />
                     ))}
@@ -263,71 +263,70 @@ export default function Register() {
               }
             />
 
-            <label className="flex items-start gap-3 mt-4 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer group">
-              <div className="relative flex items-start mt-0.5">
-                <input
-                  {...register('acceptTerms')}
-                  type="checkbox"
-                  className="w-4 h-4 border-gray-300 rounded text-primary-600 focus:ring-primary-500 cursor-pointer peer"
-                />
-              </div>
-              <div className="text-sm">
-                <p className="font-medium text-gray-900 group-hover:text-primary-700 transition-colors">
-                  Aceito os termos
-                </p>
-                <p className="text-gray-500">
-                  Concordo com os Termos de Uso e a Política de Privacidade do
-                  AprovaAI.
-                </p>
-              </div>
-            </label>
-            {errors.acceptTerms && (
-              <p className="text-sm text-red-600 px-1">
-                {errors.acceptTerms.message}
-              </p>
-            )}
-
-            <div className="flex gap-3 mt-6">
-              <Button
-                type="button"
-                variant="outline"
-                size="lg"
-                className="w-1/3"
-                onClick={() => setStep(1)}
-                disabled={isLoading}
-              >
-                Voltar
-              </Button>
-              <Button
-                type="submit"
-                size="lg"
-                className="w-2/3"
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <>
-                    <Loading size="xs" className="mr-2" />
-                    Criando conta...
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-5 h-5 mr-2" />
-                    Criar conta
-                  </>
-                )}
-              </Button>
+            <label className="flex items-start gap-3 mt-4 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer group">
+            <div className="relative flex items-start mt-0.5">
+              <input
+                {...register('acceptTerms')}
+                type="checkbox"
+                className="w-4 h-4 border-slate-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer peer"
+              />
             </div>
+            <div className="text-sm">
+              <p className="font-medium text-slate-900 group-hover:text-indigo-700 transition-colors">
+                Aceito os termos
+              </p>
+              <p className="text-slate-500">
+                Concordo com os Termos de Uso e a Política de Privacidade do AprovaAI.
+              </p>
+            </div>
+          </label>
+          {errors.acceptTerms && (
+            <p className="text-sm text-red-600 px-1">
+              {errors.acceptTerms.message}
+            </p>
+          )}
+
+          <div className="flex gap-3 mt-6">
+            <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              className="w-1/3"
+              onClick={() => setStep(1)}
+              disabled={isLoading}
+            >
+              Voltar
+            </Button>
+            <Button
+              type="submit"
+              size="lg"
+              className="w-2/3"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <Loading size="xs" className="mr-2" />
+                  Criando conta...
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="w-5 h-5 mr-2" />
+                  Criar conta
+                </>
+              )}
+            </Button>
           </div>
+        </div>
         )}
 
         {step === 1 && (
           <>
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-slate-200" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">ou</span>
+                <span className="px-2 bg-white text-slate-500">ou</span>
               </div>
             </div>
 
@@ -335,12 +334,12 @@ export default function Register() {
               Continuar com Google
             </GoogleButton>
 
-            <div className="text-center pt-6 border-t border-gray-200 mt-6">
-              <p className="text-gray-600">
+            <div className="text-center pt-5 border-t border-slate-100 mt-6">
+              <p className="text-slate-500 text-sm">
                 Já tem uma conta?{' '}
                 <Link
                   to="/login"
-                  className="text-primary-600 hover:text-primary-700 font-medium transition-colors"
+                  className="text-indigo-600 hover:text-indigo-700 font-bold transition-colors"
                 >
                   Faça login
                 </Link>

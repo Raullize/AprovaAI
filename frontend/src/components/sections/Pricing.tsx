@@ -10,7 +10,7 @@ interface Plan {
   description: string;
   features: string[];
   ctaText: string;
-  ctaVariant: 'primary' | 'outline';
+  ctaVariant: 'indigo' | 'outline';
   isPopular: boolean;
 }
 
@@ -48,7 +48,7 @@ const plans: Plan[] = [
       'Análise de pontos fortes/fracos',
     ],
     ctaText: 'Assine Agora',
-    ctaVariant: 'primary',
+    ctaVariant: 'indigo',
     isPopular: true,
   },
 ];
@@ -57,13 +57,13 @@ export const Pricing: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <section id="pricing" className="py-24 bg-gray-50">
+    <section id="pricing" className="py-24 bg-slate-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold font-display text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold font-display text-slate-900 mb-4">
             Escolha Seu Caminho para a Aprovação
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Oferecemos planos flexíveis para atender suas necessidades de
             estudo. Comece grátis e evolua quando estiver pronto.
           </p>
@@ -75,13 +75,13 @@ export const Pricing: React.FC = () => {
               key={plan.id}
               className={`relative bg-white rounded-2xl shadow-lg p-8 transition-all duration-300 hover:shadow-xl ${
                 plan.isPopular
-                  ? 'ring-2 ring-primary-600 transform scale-105'
+                  ? 'ring-2 ring-indigo-600 transform scale-105'
                   : ''
               }`}
             >
               {plan.isPopular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <div className="bg-primary-600 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
+                  <div className="bg-indigo-600 text-white px-4 py-1 rounded-full text-sm font-semibold flex items-center">
                     <Star className="h-4 w-4 mr-1" />
                     Mais Popular
                   </div>
@@ -89,15 +89,15 @@ export const Pricing: React.FC = () => {
               )}
 
               <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold font-display text-gray-900 mb-2">
+                <h3 className="text-2xl font-bold font-display text-slate-900 mb-2">
                   {plan.name}
                 </h3>
                 <div className="mb-4">
-                  <span className="text-4xl font-bold text-primary-600">
+                  <span className="text-4xl font-bold text-indigo-600">
                     {plan.price}
                   </span>
                 </div>
-                <p className="text-gray-600">{plan.description}</p>
+                <p className="text-slate-600">{plan.description}</p>
               </div>
 
               <div className="space-y-4 mb-8">
@@ -106,7 +106,7 @@ export const Pricing: React.FC = () => {
                     <div className="flex-shrink-0 mr-3 mt-0.5">
                       <Check className="h-5 w-5 text-success-600" />
                     </div>
-                    <span className="text-gray-700">{feature}</span>
+                    <span className="text-slate-700">{feature}</span>
                   </div>
                 ))}
               </div>
@@ -123,7 +123,7 @@ export const Pricing: React.FC = () => {
 
               {plan.isPopular && (
                 <div className="mt-4 text-center">
-                  <p className="text-sm text-gray-500">
+                  <p className="text-sm text-slate-500">
                     Cancele a qualquer momento • Sem compromisso
                   </p>
                 </div>
