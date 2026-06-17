@@ -1,6 +1,6 @@
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { PlayCircle, Compass } from 'lucide-react';
+import { PlayCircle, Compass, Flame, Target, Award, Zap, History } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 
@@ -35,7 +35,103 @@ export default function StudentHome() {
           <h1 className="text-2xl font-bold text-slate-800 font-display">
             Olá, {user?.fullName?.split(' ')[0] || user?.username || 'Estudante'}!
           </h1>
-          <p className="text-slate-500 mt-1">Pronto para bater sua meta diária?</p>
+          <p className="text-slate-500 mt-1">Pronto para bater sua meta diária de estudos?</p>
+        </div>
+
+        {/* Metas e Gamificação */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          {/* Streak Card */}
+          <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-5 rounded-3xl border border-orange-100/70 shadow-sm flex items-center gap-4">
+            <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-md shadow-orange-500/20 shrink-0">
+              <Flame className="h-6 w-6 text-white fill-current animate-pulse" />
+            </div>
+            <div>
+              <p className="text-xs text-orange-700/80 font-bold uppercase tracking-wider">Ofensiva</p>
+              <p className="text-2xl font-black text-orange-950 font-display">5 dias</p>
+              <p className="text-[11px] text-orange-700/80 mt-0.5 font-medium">Estudando diariamente!</p>
+            </div>
+          </div>
+
+          {/* Daily Goal Card */}
+          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+                <Target className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Meta Diária</p>
+                <p className="font-bold text-slate-700 text-sm">12 / 20 questões</p>
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-emerald-500 rounded-full" style={{ width: '60%' }} />
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">60% concluído</p>
+            </div>
+          </div>
+
+          {/* Accuracy Card */}
+          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                <Award className="h-5 w-5 text-indigo-600" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Aproveitamento</p>
+                <p className="font-bold text-slate-700 text-sm">75% de acertos</p>
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div className="h-full bg-indigo-500 rounded-full" style={{ width: '75%' }} />
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">Últimas 50 questões</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Ações Rápidas */}
+        <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <Zap className="h-5 w-5 text-indigo-500" />
+          Ações Rápidas
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          {/* Quick Simulation */}
+          <button
+            onClick={() => navigate('/dashboard/simulations/create')}
+            className="group text-left p-5 bg-white rounded-3xl border border-slate-200 hover:border-indigo-300 hover:shadow-md hover:shadow-indigo-500/5 transition-all flex items-start gap-4"
+          >
+            <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center shrink-0 text-indigo-500 group-hover:scale-110 transition-transform">
+              <Zap className="h-6 w-6 fill-current animate-pulse" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-base group-hover:text-indigo-600 transition-colors">
+                Simulado Expresso
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                Gere um teste rápido de 10 questões aleatórias baseadas nos tópicos da sua trilha.
+              </p>
+            </div>
+          </button>
+
+          {/* Spaced Repetition/Incorrect questions review */}
+          <button
+            onClick={() => navigate('/dashboard/simulations')}
+            className="group text-left p-5 bg-white rounded-3xl border border-slate-200 hover:border-rose-300 hover:shadow-md hover:shadow-rose-500/5 transition-all flex items-start gap-4"
+          >
+            <div className="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center shrink-0 text-rose-500 group-hover:scale-110 transition-transform">
+              <History className="h-6 w-6" />
+            </div>
+            <div>
+              <h3 className="font-bold text-slate-800 text-base group-hover:text-rose-600 transition-colors">
+                Caderno de Erros
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                Revise e responda novamente as questões que você errou anteriormente para fixar o conteúdo.
+              </p>
+            </div>
+          </button>
         </div>
 
         {/* Continue Learning */}
@@ -46,7 +142,7 @@ export default function StudentHome() {
               Continue de onde parou
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
               {RECENT_EXAMS.map((exam) => {
                 const iconOpt  = getIconOption(exam.iconKey);
                 const colorOpt = getColorOption(exam.colorScheme);
@@ -87,7 +183,7 @@ export default function StudentHome() {
           </>
         ) : (
           /* Empty state */
-          <div className="mb-10 bg-white rounded-3xl p-10 text-center border border-slate-200 shadow-sm">
+          <div className="mb-8 bg-white rounded-3xl p-10 text-center border border-slate-200 shadow-sm">
             <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
               <PlayCircle className="h-8 w-8 text-indigo-400" />
             </div>
@@ -102,6 +198,41 @@ export default function StudentHome() {
             </button>
           </div>
         )}
+
+        {/* Conquistas Recentes */}
+        <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
+          <Award className="h-5 w-5 text-indigo-500" />
+          Suas Conquistas
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-sm">
+              🏆
+            </div>
+            <div>
+              <p className="font-bold text-slate-800 text-xs">Primeiros Passos</p>
+              <p className="text-[10px] text-slate-400">Iniciou a primeira trilha</p>
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-sm">
+              ⚡
+            </div>
+            <div>
+              <p className="font-bold text-slate-800 text-xs">Foco Total</p>
+              <p className="text-[10px] text-slate-400">Estudou 3 dias seguidos</p>
+            </div>
+          </div>
+          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3 opacity-50 relative group">
+            <div className="w-10 h-10 bg-slate-300 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-sm">
+              🔒
+            </div>
+            <div>
+              <p className="font-bold text-slate-800 text-xs">Mestre de Nuvem</p>
+              <p className="text-[10px] text-slate-400">Resolva 100 questões</p>
+            </div>
+          </div>
+        </div>
 
         {/* Explore CTA */}
         <div className="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-3xl p-6 sm:p-8 border border-indigo-100 flex flex-col sm:flex-row items-center gap-6 justify-between">
