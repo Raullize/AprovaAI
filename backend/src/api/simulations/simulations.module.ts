@@ -1,0 +1,32 @@
+import { Module } from '@nestjs/common';
+import { PrismaModule } from '../../infrastructure/database/prisma/prisma.module';
+import { SimulationsController } from './simulations.controller';
+import { StartSimulationUseCase } from '../../application/simulations/use-cases/start-simulation.use-case';
+import { SaveAnswerUseCase } from '../../application/simulations/use-cases/save-answer.use-case';
+import { FinishSimulationUseCase } from '../../application/simulations/use-cases/finish-simulation.use-case';
+import { PrismaExamResultRepository } from '../../infrastructure/database/prisma/repositories/prisma-exam-result.repository';
+import { PrismaLevelRepository } from '../../infrastructure/database/prisma/repositories/prisma-level.repository';
+import { PrismaQuestionRepository } from '../../infrastructure/database/prisma/repositories/prisma-question.repository';
+
+@Module({
+  imports: [PrismaModule],
+  controllers: [SimulationsController],
+  providers: [
+    {
+      provide: 'ExamResultRepository',
+      useClass: PrismaExamResultRepository,
+    },
+    {
+      provide: 'LevelRepository',
+      useClass: PrismaLevelRepository,
+    },
+    {
+      provide: 'QuestionRepository',
+      useClass: PrismaQuestionRepository,
+    },
+    StartSimulationUseCase,
+    SaveAnswerUseCase,
+    FinishSimulationUseCase,
+  ],
+})
+export class SimulationsModule {}

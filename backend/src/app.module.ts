@@ -7,6 +7,7 @@ import { LevelsModule } from './api/levels/levels.module';
 import { QuestionsModule } from './api/questions/questions.module';
 import { UploadModule } from './api/upload/upload.module';
 import { HealthModule } from './api/health/health.module';
+import { SimulationsModule } from './api/simulations/simulations.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { HealthModule } from './api/health/health.module';
     QuestionsModule,
     UploadModule,
     HealthModule,
+    SimulationsModule,
   ],
   controllers: [],
   providers: [],
