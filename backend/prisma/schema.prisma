@@ -30,11 +30,10 @@ model User {
   passwordHash     String           @map("password_hash")
   subscriptionPlan SubscriptionPlan @default(FREE) @map("subscription_plan")
   role             UserRole         @default(USER) @map("role")
-  xp               Int              @default(0) @map("xp") // User experience points
+  xp               Int              @default(0) @map("xp")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
 
-  // Relationships
   examResults ExamResult[]
 
   @@map("users")
@@ -64,7 +63,6 @@ model Exam {
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
 
-  // Relationships
   topics Topic[]
 
   @@map("exams")
@@ -81,7 +79,6 @@ model Topic {
   createdAt   DateTime    @default(now()) @map("created_at")
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
-  // Relationships
   exam   Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
   levels Level[]
 
@@ -97,22 +94,18 @@ enum LevelStatus {
 }
 
 model Level {
-  id                    String      @id @default(uuid()) @map("id")
-  name                  String      @map("name")
-  slug                  String      @map("slug")
-  description           String?     @map("description")
-  order                 Int         @map("order") // For level ordering
-  topicId               String      @map("topic_id")
-  status                LevelStatus @default(ACTIVE) @map("status")
-  
-  // Exam fields
-  xpReward              Int      @default(0) @map("xp_reward")
-  passingPercentage     Float    @default(70.0) @map("passing_percentage") // Minimum percentage to pass
-  
-  createdAt             DateTime @default(now()) @map("created_at")
-  updatedAt             DateTime @updatedAt @map("updated_at")
+  id                String      @id @default(uuid()) @map("id")
+  name              String      @map("name")
+  slug              String      @map("slug")
+  description       String?     @map("description")
+  order             Int         @map("order")
+  topicId           String      @map("topic_id")
+  status            LevelStatus @default(ACTIVE) @map("status")
+  xpReward          Int         @default(0) @map("xp_reward")
+  passingPercentage Float       @default(70.0) @map("passing_percentage")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
 
-  // Relationships
   topic       Topic        @relation(fields: [topicId], references: [id], onDelete: Cascade)
   questions   Question[]
   examResults ExamResult[]
@@ -137,19 +130,18 @@ enum QuestionStatus {
 
 model Question {
   id          String         @id @default(uuid()) @map("id")
-  content     String         @map("content") // Question text
-  imageUrl    String?        @map("image_url") // Optional image attachment
+  content     String         @map("content")
+  imageUrl    String?        @map("image_url")
   type        QuestionType   @default(MULTIPLE_CHOICE) @map("type")
   status      QuestionStatus @default(ACTIVE) @map("status")
-  order       Int            @map("order") // Question order in the exam
-  explanation String?        @map("explanation") // Optional answer explanation
-  studyLink   String?        @map("study_link") // Optional study link
+  order       Int            @map("order")
+  explanation String?        @map("explanation")
+  studyLink   String?        @map("study_link")
   levelId     String         @map("level_id")
   createdAt   DateTime       @default(now()) @map("created_at")
   updatedAt   DateTime       @updatedAt @map("updated_at")
 
-  // Relationships
-  level   Level            @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  level   Level        @relation(fields: [levelId], references: [id], onDelete: Cascade)
   options Option[]
   answers ExamAnswer[]
 
@@ -158,50 +150,56 @@ model Question {
 
 model Option {
   id         String   @id @default(uuid()) @map("id")
-  text       String   @map("text") // Option text
-  isCorrect  Boolean  @default(false) @map("is_correct") // Whether this is a correct option
-  order      Int      @map("order") // Option order (A, B, C, D, etc.)
+  text       String   @map("text")
+  isCorrect  Boolean  @default(false) @map("is_correct")
+  order      Int      @map("order")
   questionId String   @map("question_id")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @updatedAt @map("updated_at")
 
-  // Relationships
   question Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
   @@map("options")
 }
 
-// Model to store exam results
-model ExamResult {
-  id             String   @id @default(uuid()) @map("id")
-  userId         String   @map("user_id")
-  levelId        String   @map("level_id")
-  score          Int      @map("score") // Number of correct questions
-  totalQuestions Int      @map("total_questions") // Total questions in the exam
-  percentage     Float    @map("percentage") // Percentage of correct answers
-  passed         Boolean  @map("passed") // Whether passed the exam
-  timeSpent      Int?     @map("time_spent") // Time spent in seconds
-  createdAt      DateTime @default(now()) @map("created_at")
-  updatedAt      DateTime @updatedAt @map("updated_at")
+enum SimulationStatus {
+  IN_PROGRESS
+  COMPLETED
+  ABANDONED
 
-  // Relationships
-  user    User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  level   Level       @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  @@map("simulation_status")
+}
+
+model ExamResult {
+  id             String           @id @default(uuid()) @map("id")
+  userId         String           @map("user_id")
+  levelId        String           @map("level_id")
+  status         SimulationStatus @default(IN_PROGRESS) @map("status")
+  score          Int?             @map("score")
+  totalQuestions Int              @map("total_questions")
+  percentage     Float?           @map("percentage")
+  passed         Boolean?         @map("passed")
+  timeSpent      Int?             @map("time_spent")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level   Level        @relation(fields: [levelId], references: [id], onDelete: Cascade)
   answers ExamAnswer[]
 
   @@map("exam_results")
 }
 
-// Model to store individual user answers
 model ExamAnswer {
   id              String   @id @default(uuid()) @map("id")
   examResultId    String   @map("exam_result_id")
   questionId      String   @map("question_id")
-  selectedOptions String[] @map("selected_options") // Array of selected option IDs
+  selectedOptions String[] @map("selected_options")
+  isCorrect       Boolean? @map("is_correct")
+  timeSpent       Int?     @map("time_spent")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
-  // Relationships
   examResult ExamResult @relation(fields: [examResultId], references: [id], onDelete: Cascade)
   question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
