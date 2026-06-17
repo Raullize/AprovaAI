@@ -140,10 +140,16 @@ export const Footer: React.FC = () => {
             <p className="text-gray-400 text-sm">
               © 2025 AprovaAI. Todos os direitos reservados.
             </p>
-            <p className="text-gray-400 text-sm mt-2 md:mt-0 flex items-center">
-              Feito com{' '}
-              <Heart className="h-4 w-4 text-red-500 mx-1 fill-current" /> para
-              estudantes brasileiros
+            <p className="text-gray-400 text-sm mt-2 md:mt-0">
+              Feito por{' '}
+              <a
+                href="https://www.linkedin.com/in/raullizeteixeira/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline hover:text-primary-400 transition-colors"
+              >
+                Raul Lize
+              </a>
             </p>
           </div>
         </div>
