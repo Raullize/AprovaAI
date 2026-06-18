@@ -14,6 +14,8 @@ export class PrismaUserMapper {
         subscriptionPlan: raw.subscriptionPlan,
         role: raw.role,
         xp: raw.xp,
+        streakCount: raw.streakCount,
+        lastActiveAt: raw.lastActiveAt,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -32,6 +34,8 @@ export class PrismaUserMapper {
       subscriptionPlan: user.subscriptionPlan,
       role: user.role,
       xp: user.xp,
+      streakCount: user.streakCount,
+      lastActiveAt: user.lastActiveAt ?? null,
       createdAt: user.createdAt ?? new Date(),
       updatedAt: user.updatedAt ?? new Date(),
     };

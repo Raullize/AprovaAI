@@ -11,6 +11,8 @@ export interface UserProps {
   subscriptionPlan?: 'FREE' | 'PREMIUM';
   role?: 'USER' | 'ADMIN';
   xp?: number;
+  streakCount?: number;
+  lastActiveAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -40,6 +42,12 @@ export class User extends AggregateRoot<UserProps> {
   get xp(): number {
     return this.props.xp ?? 0;
   }
+  get streakCount(): number {
+    return this.props.streakCount ?? 0;
+  }
+  get lastActiveAt(): Date | null | undefined {
+    return this.props.lastActiveAt;
+  }
   get createdAt(): Date | undefined {
     return this.props.createdAt;
   }
@@ -54,11 +62,46 @@ export class User extends AggregateRoot<UserProps> {
         subscriptionPlan: props.subscriptionPlan ?? 'FREE',
         role: props.role ?? 'USER',
         xp: props.xp ?? 0,
+        streakCount: props.streakCount ?? 0,
+        lastActiveAt: props.lastActiveAt ?? null,
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
       id,
     );
+  }
+
+  public updateStreak(today: Date): boolean {
+    const lastActive = this.props.lastActiveAt;
+    
+    // truncate dates to midnight for comparison
+    const truncateDate = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const todayTrunc = truncateDate(today);
+
+    if (!lastActive) {
+      this.props.streakCount = 1;
+      this.props.lastActiveAt = today;
+      this.props.updatedAt = new Date();
+      return true;
+    }
+
+    const lastActiveTrunc = truncateDate(lastActive);
+    const diffTime = todayTrunc.getTime() - lastActiveTrunc.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+    if (diffDays === 1) {
+      this.props.streakCount = (this.props.streakCount ?? 0) + 1;
+      this.props.lastActiveAt = today;
+      this.props.updatedAt = new Date();
+      return true;
+    } else if (diffDays > 1) {
+      this.props.streakCount = 1;
+      this.props.lastActiveAt = today;
+      this.props.updatedAt = new Date();
+      return true;
+    }
+    
+    return false;
   }
 
   public grantXp(amount: number): void {
@@ -76,6 +119,27 @@ export class User extends AggregateRoot<UserProps> {
 
   public upgradeToPremium(): void {
     this.props.subscriptionPlan = 'PREMIUM';
+    this.props.updatedAt = new Date();
+  }
+
+  public changeFullName(fullName: string): void {
+    if (!fullName || fullName.trim().length === 0) {
+      throw new ValidationError('Nome completo não pode ser vazio.');
+    }
+    this.props.fullName = fullName;
+    this.props.updatedAt = new Date();
+  }
+
+  public changeEmail(email: Email): void {
+    this.props.email = email;
+    this.props.updatedAt = new Date();
+  }
+
+  public changeUsername(username: string): void {
+    if (!username || username.trim().length === 0) {
+      throw new ValidationError('Nome de usuário não pode ser vazio.');
+    }
+    this.props.username = username;
     this.props.updatedAt = new Date();
   }
 }
