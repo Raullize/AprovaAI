@@ -6,6 +6,7 @@ export interface Topic {
   slug: string;
   description: string | null;
   status: 'ACTIVE' | 'INACTIVE';
+  showComingSoon?: boolean;
   examId: string;
   levelsCount?: number;
   iconKey?: string | null;
@@ -16,6 +17,7 @@ export interface CreateTopicDTO {
   name: string;
   description: string;
   status: 'ACTIVE' | 'INACTIVE';
+  showComingSoon?: boolean;
   examId: string;
   iconKey?: string;
   colorScheme?: string;

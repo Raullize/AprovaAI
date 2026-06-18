@@ -19,6 +19,7 @@ interface TopicFormData {
   name: string;
   description: string;
   status: 'ACTIVE' | 'INACTIVE';
+  showComingSoon: boolean;
   examId: string;
   iconKey: string;
   colorScheme: string;
@@ -54,6 +55,7 @@ export function TopicFormModal({
   } = useForm<TopicFormData>({
     defaultValues: {
       status: 'ACTIVE',
+      showComingSoon: false,
       examId,
       iconKey: ICON_OPTIONS[0].key,
       colorScheme: COLOR_OPTIONS[0].key,
@@ -61,6 +63,7 @@ export function TopicFormModal({
   });
 
   const statusValue = watch('status');
+  const showComingSoonValue = watch('showComingSoon');
   const iconKeyValue = watch('iconKey');
   const colorSchemeValue = watch('colorScheme');
 
@@ -79,6 +82,7 @@ export function TopicFormModal({
             name: topic.name,
             description: topic.description || '',
             status: topic.status,
+            showComingSoon: topic.showComingSoon || false,
             examId,
             iconKey: topic.iconKey || ICON_OPTIONS[0].key,
             colorScheme: topic.colorScheme || COLOR_OPTIONS[0].key,
@@ -93,6 +97,7 @@ export function TopicFormModal({
     } else {
       reset({
         status: 'ACTIVE',
+        showComingSoon: false,
         description: '',
         name: '',
         examId,
@@ -234,6 +239,41 @@ export function TopicFormModal({
             disabled={isSaving}
           />
           <input type="hidden" {...register('status')} />
+
+          <div className="flex items-center justify-between p-3 rounded-lg border border-gray-200 bg-gray-50">
+            <div>
+              <p className="text-sm font-medium text-gray-700">Indicador de Em Breve</p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {showComingSoonValue
+                  ? 'O tópico aparece para o aluno mesmo sem níveis públicos e mostra uma etapa final de "Em breve".'
+                  : 'O tópico só aparece para o aluno quando tiver pelo menos um nível público.'}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() =>
+                setValue('showComingSoon', !showComingSoonValue, {
+                  shouldDirty: true,
+                })
+              }
+              disabled={isSaving}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 ${
+                showComingSoonValue ? 'bg-primary-600' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                  showComingSoonValue ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+          <input
+            type="hidden"
+            {...register('showComingSoon', {
+              setValueAs: (value) => value === true || value === 'true',
+            })}
+          />
 
           <div className="flex justify-end space-x-3 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
