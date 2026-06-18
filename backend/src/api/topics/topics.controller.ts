@@ -29,6 +29,7 @@ import { CreateTopicUseCase } from '../../application/content/use-cases/create-t
 import { UpdateTopicUseCase } from '../../application/content/use-cases/update-topic.use-case';
 import { DeleteTopicUseCase } from '../../application/content/use-cases/delete-topic.use-case';
 import { ReorderTopicsUseCase } from '../../application/content/use-cases/reorder-topics.use-case';
+import { ResourceNotFoundError } from '../../shared/core/errors/resource-not-found.error';
 
 @ApiTags('Topics')
 @Controller('topics')
@@ -74,16 +75,15 @@ export class TopicsController {
   @Get(':idOrSlug')
   @ApiOperation({ summary: 'Buscar Tópico por ID ou Slug', description: 'Retorna os detalhes de um tópico específico.' })
   @ApiResponse({ status: 200, description: 'Tópico encontrado.' })
-  findOne(@Param('idOrSlug') idOrSlug: string) {
-    const isUuidFormat =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        idOrSlug,
-      );
-
-    if (isUuidFormat) {
-      return this.findTopicByIdUseCase.execute(idOrSlug);
+  async findOne(@Param('idOrSlug') idOrSlug: string) {
+    try {
+      return await this.findTopicByIdUseCase.execute(idOrSlug);
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return this.findTopicBySlugUseCase.execute(idOrSlug);
+      }
+      throw error;
     }
-    return this.findTopicBySlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')

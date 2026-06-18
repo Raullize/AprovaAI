@@ -29,6 +29,7 @@ import { CreateLevelUseCase } from '../../application/content/use-cases/create-l
 import { UpdateLevelUseCase } from '../../application/content/use-cases/update-level.use-case';
 import { DeleteLevelUseCase } from '../../application/content/use-cases/delete-level.use-case';
 import { ReorderLevelsUseCase } from '../../application/content/use-cases/reorder-levels.use-case';
+import { ResourceNotFoundError } from '../../shared/core/errors/resource-not-found.error';
 
 @ApiTags('Levels')
 @Controller('levels')
@@ -74,16 +75,15 @@ export class LevelsController {
   @Get(':idOrSlug')
   @ApiOperation({ summary: 'Buscar Nível por ID ou Slug', description: 'Retorna os detalhes de um nível específico.' })
   @ApiResponse({ status: 200, description: 'Nível encontrado.' })
-  findOne(@Param('idOrSlug') idOrSlug: string) {
-    const isUuidFormat =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        idOrSlug,
-      );
-
-    if (isUuidFormat) {
-      return this.findLevelByIdUseCase.execute(idOrSlug);
+  async findOne(@Param('idOrSlug') idOrSlug: string) {
+    try {
+      return await this.findLevelByIdUseCase.execute(idOrSlug);
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return this.findLevelBySlugUseCase.execute(idOrSlug);
+      }
+      throw error;
     }
-    return this.findLevelBySlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')

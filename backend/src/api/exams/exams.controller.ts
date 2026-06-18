@@ -29,6 +29,7 @@ import { CreateExamUseCase } from '../../application/content/use-cases/create-ex
 import { UpdateExamUseCase } from '../../application/content/use-cases/update-exam.use-case';
 import { DeleteExamUseCase } from '../../application/content/use-cases/delete-exam.use-case';
 import { ReorderExamsUseCase } from '../../application/content/use-cases/reorder-exams.use-case';
+import { ResourceNotFoundError } from '../../shared/core/errors/resource-not-found.error';
 
 @ApiTags('Exams')
 @Controller('exams')
@@ -65,16 +66,15 @@ export class ExamsController {
   @Get(':idOrSlug')
   @ApiOperation({ summary: 'Buscar Exame por ID ou Slug', description: 'Retorna os detalhes de um exame específico.' })
   @ApiResponse({ status: 200, description: 'Exame encontrado.' })
-  findOne(@Param('idOrSlug') idOrSlug: string) {
-    const isUuidFormat =
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        idOrSlug,
-      );
-
-    if (isUuidFormat) {
-      return this.findExamByIdUseCase.execute(idOrSlug);
+  async findOne(@Param('idOrSlug') idOrSlug: string) {
+    try {
+      return await this.findExamByIdUseCase.execute(idOrSlug);
+    } catch (error) {
+      if (error instanceof ResourceNotFoundError) {
+        return this.findExamBySlugUseCase.execute(idOrSlug);
+      }
+      throw error;
     }
-    return this.findExamBySlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')
