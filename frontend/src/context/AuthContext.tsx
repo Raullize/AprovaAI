@@ -8,6 +8,8 @@ interface User {
   role: string;
   username: string;
   xp: number;
+  streakCount?: number;
+  lastActiveAt?: string | null;
   subscriptionPlan: string;
 }
 
@@ -29,6 +31,7 @@ interface AuthContextData {
     },
   ) => Promise<void>;
   signOut: () => void;
+  refreshUser: () => Promise<void>;
   loading: boolean;
 }
 
@@ -40,6 +43,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  async function refreshUser() {
+    try {
+      const response = await api.get('/student/profile');
+      const updatedUser = response.data;
+      if (updatedUser) {
+        localStorage.setItem('@aprovaai:user', JSON.stringify(updatedUser));
+        setUser(updatedUser);
+      }
+    } catch (error) {
+      console.error('Failed to refresh user profile:', error);
+    }
+  }
+
   useEffect(() => {
     async function loadStorageData() {
       const storedToken = localStorage.getItem('@aprovaai:token');
@@ -47,6 +63,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (storedToken && storedUser) {
         setUser(JSON.parse(storedUser));
+        // Refresh profile in background
+        api.get('/student/profile')
+          .then((response) => {
+            if (response.data) {
+              localStorage.setItem('@aprovaai:user', JSON.stringify(response.data));
+              setUser(response.data);
+            }
+          })
+          .catch((err) => console.error(err));
       }
       setLoading(false);
     }
@@ -62,6 +87,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem('@aprovaai:user', JSON.stringify(user));
 
     setUser(user);
+    // Refresh to get up-to-date stats
+    await refreshUser();
   }
 
   async function signUp(
@@ -78,6 +105,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem('@aprovaai:user', JSON.stringify(user));
 
     setUser(user);
+    // Refresh to get up-to-date stats
+    await refreshUser();
   }
 
   function signOut() {
@@ -87,7 +116,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ signed: !!user, user, signIn, signUp, signOut, loading }}
+      value={{ signed: !!user, user, signIn, signUp, signOut, refreshUser, loading }}
     >
       {children}
     </AuthContext.Provider>

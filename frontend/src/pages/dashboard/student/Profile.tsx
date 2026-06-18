@@ -26,6 +26,7 @@ import Modal from '../../../components/ui/Modal';
 import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
+import api from '../../../services/api';
 
 interface Achievement {
   id: string;
@@ -45,7 +46,7 @@ interface LeaderboardUser {
 }
 
 export default function Profile() {
-  const { user, signOut } = useAuth();
+  const { user, signOut, refreshUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Generate days for the current month calendar
@@ -81,7 +82,36 @@ export default function Profile() {
     monthName: currentMonthName,
     currentDay,
   } = getMonthCalendar();
-  const activeDays = [1, 2, 4, 5, 8, 9, 10, 12, 13, 14, 15, 16, 17];
+
+  const [activeDays, setActiveDays] = useState<number[]>([]);
+  const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const [statsRes, lbRes, historyRes] = await Promise.all([
+          api.get('/student/dashboard-stats'),
+          api.get('/student/leaderboard'),
+          api.get('/simulations/history'),
+        ]);
+        if (statsRes.data) {
+          setActiveDays(statsRes.data.activeDays);
+          setStreakCount(statsRes.data.streakCount);
+        }
+        if (lbRes.data) {
+          setLeaderboard(lbRes.data);
+        }
+        if (historyRes.data) {
+          setHistory(historyRes.data);
+        }
+      } catch (err) {
+        console.error('Failed to load profile stats:', err);
+      }
+    }
+    loadStats();
+  }, []);
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'achievements' | 'ranking'>(
@@ -121,9 +151,14 @@ export default function Profile() {
   // Delete account verification
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
-  const totalXP = user?.xp || 320;
+  const totalXP = user?.xp || 0;
   const currentLevel = Math.floor(totalXP / 100) + 1;
   const xpNeededForNextLevel = 100 - (totalXP % 100);
+
+  const completedAttempts = history.filter((h) => h.status === 'COMPLETED');
+  const totalCorrect = completedAttempts.reduce((sum, h) => sum + (h.score || 0), 0);
+  const totalQuest = completedAttempts.reduce((sum, h) => sum + (h.totalQuestions || 0), 0);
+  const accuracy = totalQuest > 0 ? Math.round((totalCorrect / totalQuest) * 100) : 0;
 
   // Handle avatar upload
   const handleAvatarClick = () => {
@@ -158,32 +193,57 @@ export default function Profile() {
     }
   };
 
-  const handleSaveSettings = (e: React.FormEvent) => {
+  const handleSaveSettings = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    setTimeout(() => {
-      setIsSaving(false);
+    try {
+      await api.patch('/student/profile', {
+        fullName,
+        email,
+        username,
+      });
+      await refreshUser();
       toast.success('Configurações atualizadas com sucesso!');
       setShowSettings(false);
-    }, 800);
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Falha ao salvar configurações.';
+      toast.error(Array.isArray(msg) ? msg[0] : msg);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleChangePassword = (e: React.FormEvent) => {
+  const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
       toast.error('A nova senha e a confirmação não coincidem.');
       return;
     }
-    toast.success('Senha atualizada com sucesso! (Simulado)');
-    setCurrentPassword('');
-    setNewPassword('');
-    setConfirmPassword('');
+    try {
+      await api.patch('/student/password', {
+        currentPassword,
+        newPassword,
+      });
+      toast.success('Senha atualizada com sucesso!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Falha ao atualizar senha.';
+      toast.error(Array.isArray(msg) ? msg[0] : msg);
+    }
   };
 
-  const handleDeleteAccount = () => {
-    setShowDeleteModal(false);
-    toast.success('Conta excluída com sucesso.');
-    signOut();
+  const handleDeleteAccount = async () => {
+    try {
+      await api.delete('/student/account');
+      setShowDeleteModal(false);
+      toast.success('Conta excluída com sucesso.');
+      signOut();
+    } catch (err: any) {
+      const msg = err.response?.data?.message || 'Falha ao excluir conta.';
+      toast.error(Array.isArray(msg) ? msg[0] : msg);
+    }
   };
 
   // Helper for password strength calculation
@@ -281,27 +341,11 @@ export default function Profile() {
     },
   ];
 
-  const leaderboard: LeaderboardUser[] = [
-    { rank: 1, fullName: 'João Silva', username: 'joaosilva', xp: 1200 },
-    { rank: 2, fullName: 'Mariana Souza', username: 'mari_souza', xp: 950 },
-    { rank: 3, fullName: 'Pedro Gomes', username: 'pedrog', xp: 720 },
-    {
-      rank: 4,
-      fullName: user?.fullName || 'Você',
-      username: user?.username || 'user',
-      xp: totalXP,
-      isCurrentUser: true,
-    },
-    { rank: 5, fullName: 'Lucas Lima', username: 'lucasl', xp: 280 },
-  ];
-
   // Sort leaderboard by XP
-  const sortedLeaderboard = [...leaderboard]
-    .sort((a, b) => b.xp - a.xp)
-    .map((item, index) => ({
-      ...item,
-      rank: index + 1,
-    }));
+  const sortedLeaderboard = leaderboard.map((item) => ({
+    ...item,
+    isCurrentUser: item.username === user?.username,
+  }));
 
   return (
     <div className="min-h-screen bg-slate-50/50 px-4 py-8">
@@ -399,14 +443,14 @@ export default function Profile() {
                       Aproveitamento
                     </p>
                     <p className="font-bold text-slate-700 text-sm">
-                      82% de acertos
+                      {accuracy}% de acertos
                     </p>
                   </div>
                 </div>
                 <div className="mt-3">
-                  <ProgressBar progress={82} colorScheme="emerald" size="md" />
+                  <ProgressBar progress={accuracy} colorScheme="emerald" size="md" />
                   <p className="text-[10px] text-slate-400 mt-1">
-                    Mapeado das últimas 50 questões
+                    Mapeado de todos os seus simulados
                   </p>
                 </div>
               </Card>
@@ -416,13 +460,13 @@ export default function Profile() {
                   <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
                     Plano Atual
                   </p>
-                  <p className="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-1.5 font-display">
+                  <p className="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-1.5 font-display uppercase">
                     <Shield className="h-5 w-5 text-indigo-500" />
-                    Free
+                    {user?.subscriptionPlan || 'FREE'}
                   </p>
                 </div>
                 <p className="text-[10px] text-slate-400 mt-2">
-                  Plano Gratuito
+                  {user?.subscriptionPlan === 'PREMIUM' ? 'Plano Premium' : 'Plano Gratuito'}
                 </p>
               </Card>
             </div>
@@ -453,8 +497,7 @@ export default function Profile() {
                 </div>
                 <div className="flex sm:justify-end">
                   <span className="text-xs font-bold text-orange-600 bg-orange-50 border border-orange-150 rounded-xl px-3 py-1.5 flex items-center gap-1">
-                    <Flame className="h-3.5 w-3.5 fill-current" />5 dias
-                    seguidos
+                    <Flame className="h-3.5 w-3.5 fill-current" />{streakCount} {streakCount === 1 ? 'dia de ofensiva' : 'dias de ofensiva'}
                   </span>
                 </div>
               </div>

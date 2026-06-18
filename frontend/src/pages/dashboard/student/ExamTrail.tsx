@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Zap,
   Lock,
@@ -11,7 +11,9 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
-import Modal from '../../../components/ui/Modal';
+
+import api from '../../../services/api';
+import Loading from '../../../components/ui/Loading';
 
 // --- HEX Colors ---
 const HEX_COLORS: Record<string, string> = {
@@ -24,136 +26,6 @@ const HEX_COLORS: Record<string, string> = {
   amber: '#f59e0b',
   slate: '#475569',
 };
-
-// --- Mock Data ---
-interface MockLevel {
-  id: string;
-  name: string;
-  order: number;
-  status: 'COMPLETED' | 'CURRENT' | 'LOCKED';
-  stars?: number;
-  questionsCount: number;
-  xpReward: number;
-  description?: string;
-}
-
-interface MockTopic {
-  id: string;
-  name: string;
-  iconKey: string;
-  colorScheme: string;
-  levels: MockLevel[];
-}
-
-const MOCK_TOPICS: MockTopic[] = [
-  {
-    id: 'topic-1',
-    name: 'Conceitos de Nuvem',
-    iconKey: 'book-open',
-    colorScheme: 'indigo',
-    levels: [
-      {
-        id: 'lvl-1',
-        name: 'O que é Cloud?',
-        order: 1,
-        status: 'COMPLETED',
-        stars: 3,
-        questionsCount: 10,
-        xpReward: 50,
-        description: 'Fundamentos da computação em nuvem e seus modelos.',
-      },
-      {
-        id: 'lvl-2',
-        name: 'Vantagens da Nuvem',
-        order: 2,
-        status: 'COMPLETED',
-        stars: 2,
-        questionsCount: 15,
-        xpReward: 75,
-        description: 'Agilidade, elasticidade e economia de custos globais.',
-      },
-      {
-        id: 'lvl-3',
-        name: 'Economia da Nuvem',
-        order: 3,
-        status: 'CURRENT',
-        questionsCount: 12,
-        xpReward: 60,
-        description: 'CapEx vs OpEx e modelos de precificação da AWS.',
-      },
-      {
-        id: 'lvl-4',
-        name: 'Princípios de Design',
-        order: 4,
-        status: 'LOCKED',
-        questionsCount: 10,
-        xpReward: 50,
-        description: 'Como arquitetar para a nuvem de forma eficiente.',
-      },
-      {
-        id: 'lvl-5',
-        name: 'Arquitetura Global AWS',
-        order: 5,
-        status: 'LOCKED',
-        questionsCount: 14,
-        xpReward: 70,
-        description: 'Regiões, Zonas de Disponibilidade e Edge Locations.',
-      },
-    ],
-  },
-  {
-    id: 'topic-2',
-    name: 'Segurança e Conformidade',
-    iconKey: 'shield',
-    colorScheme: 'violet',
-    levels: [
-      {
-        id: 'lvl-6',
-        name: 'Modelo Compartilhado',
-        order: 1,
-        status: 'LOCKED',
-        questionsCount: 10,
-        xpReward: 50,
-        description: 'Responsabilidades de segurança do cliente vs AWS.',
-      },
-      {
-        id: 'lvl-7',
-        name: 'IAM e Controle de Acesso',
-        order: 2,
-        status: 'LOCKED',
-        questionsCount: 12,
-        xpReward: 60,
-        description: 'Gerenciamento de usuários, grupos e políticas.',
-      },
-    ],
-  },
-  {
-    id: 'topic-3',
-    name: 'Serviços Principais',
-    iconKey: 'cpu',
-    colorScheme: 'emerald',
-    levels: [
-      {
-        id: 'lvl-8',
-        name: 'Computação (EC2)',
-        order: 1,
-        status: 'LOCKED',
-        questionsCount: 8,
-        xpReward: 40,
-        description: 'Máquinas virtuais elásticas na nuvem.',
-      },
-      {
-        id: 'lvl-9',
-        name: 'Armazenamento (S3)',
-        order: 2,
-        status: 'LOCKED',
-        questionsCount: 10,
-        xpReward: 50,
-        description: 'Armazenamento de objetos escalável e durável.',
-      },
-    ],
-  },
-];
 
 // --- Sub-components ---
 
@@ -241,15 +113,36 @@ const COLOR_THEMES: Record<
   },
 };
 
+interface LevelData {
+  id: string;
+  name: string;
+  description?: string;
+  xpReward: number;
+  questionsCount: number;
+  order: number;
+  status: 'COMPLETED' | 'CURRENT' | 'LOCKED';
+  stars?: number;
+  attempted?: boolean;
+  simulationMode: 'PRACTICE' | 'EXAM';
+}
+
+interface TopicData {
+  id: string;
+  name: string;
+  iconKey: string;
+  colorScheme: string;
+  levels: LevelData[];
+}
+
 const LevelNodeTimeline = ({
   level,
   topic,
   onStart,
   isLast,
 }: {
-  level: MockLevel;
-  topic: MockTopic;
-  onStart: (id: string) => void;
+  level: LevelData;
+  topic: TopicData;
+  onStart: (level: LevelData) => void;
   isLast: boolean;
 }) => {
   const isCompleted = level.status === 'COMPLETED';
@@ -344,7 +237,7 @@ const LevelNodeTimeline = ({
 
             {isCurrent && (
               <button
-                onClick={() => onStart(level.id)}
+                onClick={() => onStart(level)}
                 className={cn(
                   'mt-4 flex items-center gap-2 text-white font-bold px-6 py-3 rounded-2xl shadow-md border-b-4 hover:-translate-y-0.5 active:translate-y-0 active:border-b-0 transition-all',
                   theme.buttonBg,
@@ -410,7 +303,7 @@ const LevelNodeTimeline = ({
       <div className="relative z-20">
         {isCompleted && (
           <button
-            onClick={() => onStart(level.id)}
+            onClick={() => onStart(level)}
             className={cn(
               'w-16 h-16 lg:w-20 lg:h-20 rounded-full flex flex-col items-center justify-center shadow-md transition-all hover:scale-105 bg-gradient-to-br ring-4 lg:ring-[6px] relative',
               colorOpt.gradient,
@@ -434,23 +327,35 @@ const LevelNodeTimeline = ({
               )}
             />
             <button
-              onClick={() => onStart(level.id)}
+              onClick={() => onStart(level)}
               className={cn(
-                'relative w-20 h-20 lg:w-24 lg:h-24 rounded-full flex items-center justify-center bg-gradient-to-br shadow-xl hover:scale-105 transition-all active:scale-95 ring-4 lg:ring-[6px]',
+                'relative w-20 h-20 lg:w-24 lg:h-24 rounded-full flex flex-col items-center justify-center bg-gradient-to-br shadow-xl hover:scale-105 transition-all active:scale-95 ring-4 lg:ring-[6px]',
                 colorOpt.gradient,
                 colorOpt.ring,
               )}
             >
-              <Star className="h-8 w-8 lg:h-10 lg:w-10 text-white fill-white/80" />
+              <Star
+                className={cn(
+                  'text-white fill-white/80 transition-all',
+                  level.attempted
+                    ? 'h-6 w-6 lg:h-8 lg:w-8 mb-0.5'
+                    : 'h-8 w-8 lg:h-10 lg:w-10',
+                )}
+              />
+              {level.attempted && (
+                <div className="relative z-10">
+                  <StarRating stars={level.stars || 0} />
+                </div>
+              )}
             </button>
             <button
-              onClick={() => onStart(level.id)}
+              onClick={() => onStart(level)}
               className={cn(
                 'lg:hidden relative z-10 text-white text-sm font-bold px-6 py-2.5 rounded-2xl shadow-md active:translate-y-1 transition-all bg-gradient-to-br',
                 colorOpt.gradient,
               )}
             >
-              INICIAR
+              {level.attempted ? 'TENTAR NOVAMENTE' : 'INICIAR'}
             </button>
           </div>
         )}
@@ -467,27 +372,125 @@ const LevelNodeTimeline = ({
 
 // --- Main Component ---
 export default function ExamTrail() {
+  const { examId } = useParams<{ examId: string }>();
   const navigate = useNavigate();
-  const [expandedTopic, setExpandedTopic] = useState<string | null>('topic-1');
-  const [selectedLevelId, setSelectedLevelId] = useState<string | null>(null);
+
+  const [exam, setExam] = useState<any>(null);
+  const [topics, setTopics] = useState<any[]>([]);
+  const [history, setHistory] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
+
+
+  useEffect(() => {
+    async function loadTrail() {
+      try {
+        setIsLoading(true);
+        const examRes = await api.get(`/exams/${examId}`);
+        setExam(examRes.data);
+
+        const topicsRes = await api.get(`/topics/exam/${examRes.data.id}`);
+        const topicsData = topicsRes.data;
+
+        const topicsWithLevels = await Promise.all(
+          topicsData.map(async (topic: any) => {
+            const levelsRes = await api.get(`/levels/topic/${topic.id}`);
+            return {
+              ...topic,
+              levels: levelsRes.data.sort((a: any, b: any) => a.order - b.order),
+            };
+          })
+        );
+
+        topicsWithLevels.sort((a: any, b: any) => a.order - b.order);
+        setTopics(topicsWithLevels);
+        if (topicsWithLevels.length > 0) {
+          setExpandedTopic(topicsWithLevels[0].id);
+        }
+
+        const historyRes = await api.get('/simulations/history');
+        setHistory(historyRes.data || []);
+      } catch (err) {
+        console.error('Failed to load trail:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (examId) {
+      loadTrail();
+    }
+  }, [examId]);
 
   // Ensure scroll top on topic change in desktop
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [expandedTopic]);
 
-  const handleStartLevel = (levelId: string) => {
-    setSelectedLevelId(levelId);
-  };
+  if (isLoading) {
+    return <Loading />;
+  }
 
-  const activeTopicObj =
-    MOCK_TOPICS.find((t) => t.id === expandedTopic) || MOCK_TOPICS[0];
-  const totalCompleted = MOCK_TOPICS.reduce(
-    (acc, t) => acc + t.levels.filter((l) => l.status === 'COMPLETED').length,
+  // Build lock status map
+  const allLevels = topics.flatMap((t) => t.levels);
+  const levelStatusMap: Record<
+    string,
+    { stars: number; passed: boolean; attempted: boolean; status: 'COMPLETED' | 'CURRENT' | 'LOCKED' }
+  > = {};
+
+  let previousPassed = true;
+
+  allLevels.forEach((lvl) => {
+    const lvlHistory = history.filter(
+      (h) => h.levelId === lvl.id && h.status === 'COMPLETED',
+    );
+    const passed = lvlHistory.some((h) => h.passed);
+    const attempted = lvlHistory.length > 0;
+    const maxStars = lvlHistory.reduce((max, h) => {
+      const s = h.stars ?? 0;
+      return s > max ? s : max;
+    }, 0);
+
+    let status: 'COMPLETED' | 'CURRENT' | 'LOCKED' = 'LOCKED';
+    if (passed) {
+      status = 'COMPLETED';
+    } else if (previousPassed) {
+      status = 'CURRENT';
+    }
+
+    levelStatusMap[lvl.id] = {
+      stars: maxStars,
+      passed,
+      attempted,
+      status,
+    };
+
+    previousPassed = passed;
+  });
+
+  const mappedTopics: TopicData[] = topics.map((t) => ({
+    ...t,
+    levels: t.levels.map((l: any) => ({
+      ...l,
+      status: levelStatusMap[l.id]?.status || 'LOCKED',
+      stars: levelStatusMap[l.id]?.stars || 0,
+      attempted: levelStatusMap[l.id]?.attempted || false,
+      questionsCount: l.questionsCount || 10,
+    })),
+  }));
+
+  const activeTopicObj: TopicData =
+    mappedTopics.find((t) => t.id === expandedTopic) || mappedTopics[0];
+  const totalCompleted = mappedTopics.reduce(
+    (acc: number, t: TopicData) => acc + t.levels.filter((l: LevelData) => l.status === 'COMPLETED').length,
     0,
   );
-  const totalLevels = MOCK_TOPICS.reduce((acc, t) => acc + t.levels.length, 0);
-  const globalProgress = (totalCompleted / totalLevels) * 100;
+  const totalLevels = mappedTopics.reduce((acc: number, t: TopicData) => acc + t.levels.length, 0);
+  const globalProgress = totalLevels > 0 ? (totalCompleted / totalLevels) * 100 : 0;
+
+  const handleStartLevel = (level: LevelData) => {
+    navigate(`/dashboard/simulations/engine/${level.id}?mode=${level.simulationMode}`);
+  };
 
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -506,15 +509,18 @@ export default function ExamTrail() {
         {/* Mobile-only Exam Info Card */}
         <div className="lg:hidden bg-white p-5 rounded-3xl shadow-sm border border-slate-200 text-center mb-6">
           <div className="flex items-center gap-4 text-left">
-            <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-amber-500 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
+            <div className={cn(
+              "w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 bg-gradient-to-br",
+              getColorOption(exam?.colorScheme || 'orange').gradient
+            )}>
               <PlayCircle className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-bold text-slate-800 font-display truncate">
-                AWS Cloud Practitioner
+                {exam?.name || 'AWS Cloud Practitioner'}
               </h1>
               <p className="text-slate-500 font-medium text-xs mt-0.5">
-                Trilha de Certificação
+                {exam?.category === 'OAB' ? 'Exame da Ordem' : 'Trilha de Certificação'}
               </p>
             </div>
             <div className="text-right shrink-0">
@@ -542,14 +548,17 @@ export default function ExamTrail() {
             <div className="sticky top-24 space-y-6">
               {/* Exam Info Card */}
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center">
-                <div className="w-16 h-16 bg-gradient-to-br from-orange-400 to-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner">
+                <div className={cn(
+                  "w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner bg-gradient-to-br",
+                  getColorOption(exam?.colorScheme || 'orange').gradient
+                )}>
                   <PlayCircle className="h-8 w-8 text-white" />
                 </div>
                 <h1 className="text-2xl font-bold text-slate-800 font-display">
-                  AWS Cloud Practitioner
+                  {exam?.name || 'AWS Cloud Practitioner'}
                 </h1>
                 <p className="text-slate-500 font-medium text-sm mt-1">
-                  Trilha de Certificação
+                  {exam?.category === 'OAB' ? 'Exame da Ordem' : 'Trilha de Certificação'}
                 </p>
 
                 <div className="mt-6 text-left">
@@ -578,10 +587,10 @@ export default function ExamTrail() {
                   </h2>
                 </div>
                 <div className="p-2 space-y-1">
-                  {MOCK_TOPICS.map((topic) => {
+                  {mappedTopics.map((topic: any) => {
                     const isActive = expandedTopic === topic.id;
                     const completed = topic.levels.filter(
-                      (l) => l.status === 'COMPLETED',
+                      (l: any) => l.status === 'COMPLETED',
                     ).length;
                     const iconOpt = getIconOption(topic.iconKey);
                     const colorOpt = getColorOption(topic.colorScheme);
@@ -643,9 +652,9 @@ export default function ExamTrail() {
           <div className="col-span-12 lg:col-span-8">
             {/* Mobile Continuous Trail View */}
             <div className="lg:hidden space-y-12">
-              {MOCK_TOPICS.map((topic) => {
+              {mappedTopics.map((topic: TopicData) => {
                 const completedCount = topic.levels.filter(
-                  (l) => l.status === 'COMPLETED',
+                  (l: LevelData) => l.status === 'COMPLETED',
                 ).length;
                 const iconOpt = getIconOption(topic.iconKey);
                 const colorOpt = getColorOption(topic.colorScheme);
@@ -690,7 +699,7 @@ export default function ExamTrail() {
 
                     {/* Levels list (continuous timeline) */}
                     <div className="flex flex-col items-center py-4">
-                      {topic.levels.map((level, idx) => (
+                      {topic.levels.map((level: LevelData, idx: number) => (
                         <LevelNodeTimeline
                           key={level.id}
                           level={level}
@@ -728,7 +737,7 @@ export default function ExamTrail() {
               </div>
 
               <div className="flex flex-col items-center py-8">
-                {activeTopicObj.levels.map((level, idx) => (
+                {activeTopicObj.levels.map((level: LevelData, idx: number) => (
                   <LevelNodeTimeline
                     key={level.id}
                     level={level}
@@ -743,62 +752,6 @@ export default function ExamTrail() {
         </div>
       </div>
 
-      {/* Mode Selection Modal */}
-      <Modal
-        isOpen={selectedLevelId !== null}
-        onClose={() => setSelectedLevelId(null)}
-        title="Escolha o Modo do Exercício"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-slate-500">
-            Como você prefere realizar este nível?
-          </p>
-
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => {
-                if (selectedLevelId) {
-                  navigate(
-                    `/dashboard/simulations/engine/${selectedLevelId}?mode=PRACTICE`,
-                  );
-                }
-                setSelectedLevelId(null);
-              }}
-              className="flex flex-col items-start text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/30 transition-all group"
-            >
-              <span className="font-bold text-slate-800 group-hover:text-indigo-600">
-                Modo Treino (Prática)
-              </span>
-              <span className="text-xs text-slate-500 mt-1">
-                Ideal para aprender. Tem feedback imediato por questão e
-                explicação detalhada da resposta. Sem tempo limite.
-              </span>
-            </button>
-
-            <button
-              onClick={() => {
-                if (selectedLevelId) {
-                  navigate(
-                    `/dashboard/simulations/engine/${selectedLevelId}?mode=EXAM`,
-                  );
-                }
-                setSelectedLevelId(null);
-              }}
-              className="flex flex-col items-start text-left p-4 rounded-2xl border-2 border-slate-200 hover:border-indigo-500 hover:bg-indigo-50/30 transition-all group"
-            >
-              <span className="font-bold text-slate-800 group-hover:text-indigo-600">
-                Modo Simulado (Exame)
-              </span>
-              <span className="text-xs text-slate-500 mt-1">
-                Simulação real da prova. Tem tempo limite, permite
-                avançar/voltar e marcar questões para revisar. O feedback só é
-                exibido no final.
-              </span>
-            </button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import {
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import UserAvatar from '../ui/UserAvatar';
+import api from '../../services/api';
 
 const routeLabels: Record<string, string> = {
   '/dashboard': 'Início',
@@ -55,10 +56,40 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
 
   const pageTitle = getPageTitle(location.pathname);
 
-  const MOCK_STREAK = 7;
-  const MOCK_DAILY_GOAL = 3;
-  const MOCK_DAILY_DONE = 2;
-  const dailyProgress = (MOCK_DAILY_DONE / MOCK_DAILY_GOAL) * 100;
+  const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
+  const [dailyDone, setDailyDone] = useState(0);
+  const dailyGoal = 3;
+
+  useEffect(() => {
+    if (!user || user.role === 'ADMIN') return;
+    async function loadHeaderStats() {
+      try {
+        const [statsRes, historyRes] = await Promise.all([
+          api.get('/student/dashboard-stats'),
+          api.get('/simulations/history'),
+        ]);
+
+        if (statsRes.data) {
+          setStreakCount(statsRes.data.streakCount);
+        }
+
+        if (historyRes.data) {
+          const todayStr = new Date().toDateString();
+          const doneToday = historyRes.data.filter((h: any) => {
+            if (h.status !== 'COMPLETED') return false;
+            const itemDate = new Date(h.createdAt).toDateString();
+            return itemDate === todayStr;
+          }).length;
+          setDailyDone(doneToday);
+        }
+      } catch (err) {
+        console.error('Failed to load header stats:', err);
+      }
+    }
+    loadHeaderStats();
+  }, [user]);
+
+  const dailyProgress = Math.min(100, (dailyDone / dailyGoal) * 100);
 
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200/80 h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 sticky top-0 z-20">
@@ -77,7 +108,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
             <div className="flex items-center gap-1.5 sm:gap-2 bg-orange-50 border border-orange-200 rounded-xl sm:rounded-2xl px-2 sm:px-3 py-1 sm:py-1.5">
               <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 fill-orange-400" />
               <span className="text-xs sm:text-sm font-bold text-orange-600">
-                {MOCK_STREAK}
+                {streakCount}
               </span>
             </div>
 
@@ -88,7 +119,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
                   META
                 </span>
                 <span className="text-[10px] sm:text-xs font-bold text-slate-600 leading-tight">
-                  {MOCK_DAILY_DONE}/{MOCK_DAILY_GOAL}
+                  {dailyDone}/{dailyGoal}
                 </span>
               </div>
               <div className="w-12 sm:w-20 lg:w-28 h-1.5 sm:h-2 bg-slate-200 rounded-full overflow-hidden">

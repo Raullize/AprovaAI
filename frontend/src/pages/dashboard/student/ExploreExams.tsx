@@ -26,48 +26,6 @@ const CATEGORIES = [
   { key: 'OUTROS', label: 'Outros' },
 ];
 
-const CATALOG = [
-  {
-    id: 'oab',
-    name: 'Exame da Ordem (OAB)',
-    description:
-      'Prepare-se para a prova da OAB com milhares de questões comentadas e simulados atualizados.',
-    category: 'OAB',
-    iconKey: 'trophy',
-    colorScheme: 'sky',
-    topicsCount: 15,
-  },
-  {
-    id: 'enem',
-    name: 'ENEM 2026',
-    description:
-      'A trilha completa para você garantir sua vaga na universidade pública.',
-    category: 'VESTIBULAR',
-    iconKey: 'star',
-    colorScheme: 'emerald',
-    topicsCount: 22,
-  },
-  {
-    id: 'aws-cpp',
-    name: 'AWS Cloud Practitioner',
-    description:
-      'Conquiste a certificação inicial da AWS e impulsione sua carreira em Cloud.',
-    category: 'CERTIFICACOES',
-    iconKey: 'cpu',
-    colorScheme: 'orange',
-    topicsCount: 8,
-  },
-  {
-    id: 'pf',
-    name: 'Polícia Federal',
-    description:
-      'Questões focadas no edital da PF para os cargos de Agente e Escrivão.',
-    category: 'CONCURSOS',
-    iconKey: 'shield',
-    colorScheme: 'slate',
-    topicsCount: 18,
-  },
-];
 
 export default function ExploreExams() {
   const navigate = useNavigate();
@@ -83,16 +41,9 @@ export default function ExploreExams() {
       try {
         setIsLoading(true);
         const data = await examsService.findAll();
-        // filter only active exams for students
-        const activeExams = data.filter((e) => e.status === 'ACTIVE');
-        if (activeExams.length > 0) {
-          setExams(activeExams);
-        } else {
-          // fallback fallback mock se o banco estiver vazio
-          setExams(CATALOG as unknown as Exam[]);
-        }
+        setExams(data.filter((e) => e.status === 'ACTIVE'));
       } catch {
-        setExams(CATALOG as unknown as Exam[]);
+        setExams([]);
       } finally {
         setIsLoading(false);
       }
@@ -177,6 +128,10 @@ export default function ExploreExams() {
               <div className="flex justify-center py-20">
                 <Loading size="lg" />
               </div>
+            ) : exams.length === 0 ? (
+              <EmptyState
+                message="Nenhum exame está disponível no momento."
+              />
             ) : filtered.length === 0 ? (
               <EmptyState
                 message={`Nenhum exame encontrado para "${search || CATEGORY_MAP[activeCategory] || activeCategory}".`}

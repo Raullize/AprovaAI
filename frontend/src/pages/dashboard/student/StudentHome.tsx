@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -15,33 +16,94 @@ import { getIconOption, getColorOption } from '../../../config/examThemes';
 import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
-
-const RECENT_EXAMS = [
-  {
-    id: 'aws-cpp',
-    title: 'AWS Cloud Practitioner',
-    progress: 30,
-    lastTopic: 'Conceitos de Nuvem',
-    iconKey: 'cpu',
-    colorScheme: 'orange',
-  },
-  {
-    id: 'oab',
-    title: 'Exame da Ordem (OAB)',
-    progress: 45,
-    lastTopic: 'Direito Constitucional',
-    iconKey: 'trophy',
-    colorScheme: 'sky',
-  },
-];
+import api from '../../../services/api';
 
 export default function StudentHome() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const totalXP = user?.xp || 320;
+  const [activeDays, setActiveDays] = useState<number[]>([]);
+  const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
+  const [history, setHistory] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const [statsRes, historyRes] = await Promise.all([
+          api.get('/student/dashboard-stats'),
+          api.get('/simulations/history'),
+        ]);
+
+        if (statsRes.data) {
+          setActiveDays(statsRes.data.activeDays);
+          setStreakCount(statsRes.data.streakCount);
+        }
+
+        if (historyRes.data) {
+          setHistory(historyRes.data);
+        }
+      } catch (err) {
+        console.error('Failed to load dashboard data:', err);
+      }
+    }
+
+    loadData();
+  }, []);
+
+  const totalXP = user?.xp || 0;
   const currentLevel = Math.floor(totalXP / 100) + 1;
   const xpNeededForNextLevel = 100 - (totalXP % 100);
+
+  const completedAttempts = history.filter((h) => h.status === 'COMPLETED');
+  const totalCorrect = completedAttempts.reduce((sum, h) => sum + (h.score || 0), 0);
+  const totalQuest = completedAttempts.reduce((sum, h) => sum + (h.totalQuestions || 0), 0);
+  const accuracy = totalQuest > 0 ? Math.round((totalCorrect / totalQuest) * 100) : 0;
+
+  // Extract unique recent exams from history
+  const recentExams = Array.from(
+    new Map(
+      history
+        .filter((h) => h.level?.topic?.exam)
+        .map((h) => {
+          const examId = h.level.topic.exam.id;
+          const examHistory = history.filter(
+            (item) => item.level?.topic?.exam?.id === examId && item.status === 'COMPLETED'
+          );
+          const completedLevels = new Set(examHistory.map((item) => item.levelId));
+          const totalEstimated = examId.includes('aws') ? 10 : 9;
+          const progress = Math.min(100, Math.round((completedLevels.size / totalEstimated) * 100));
+          return [
+            examId,
+            {
+              id: examId,
+              title: h.level.topic.exam.name,
+              iconKey: h.level.topic.exam.iconKey || 'cpu',
+              colorScheme: h.level.topic.exam.colorScheme || 'orange',
+              lastTopic: h.level.name,
+              progress,
+            },
+          ];
+        })
+    ).values()
+  ).slice(0, 2);
+
+  const getWeeklyActiveState = () => {
+    const today = new Date();
+    const currentDayOfWeek = today.getDay();
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - currentDayOfWeek);
+
+    return Array.from({ length: 7 }).map((_, i) => {
+      const dayDate = new Date(sunday);
+      dayDate.setDate(sunday.getDate() + i);
+      const isCurrentMonth =
+        dayDate.getMonth() === today.getMonth() &&
+        dayDate.getFullYear() === today.getFullYear();
+      return isCurrentMonth && activeDays.includes(dayDate.getDate());
+    });
+  };
+
+  const weeklyActive = getWeeklyActiveState();
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -79,12 +141,12 @@ export default function StudentHome() {
                   Ofensiva
                 </p>
                 <p className="text-2xl font-black text-orange-950 font-display">
-                  5 dias
+                  {streakCount} {streakCount === 1 ? 'dia' : 'dias'}
                 </p>
               </div>
             </div>
             <div className="mt-4 flex items-center justify-between gap-1">
-              {[false, true, true, true, true, true, false].map((active, i) => (
+              {weeklyActive.map((active, i) => (
                 <div key={i} className="flex flex-col items-center gap-1">
                   <div
                     className={cn(
@@ -144,14 +206,14 @@ export default function StudentHome() {
                   Aproveitamento
                 </p>
                 <p className="font-bold text-slate-700 text-sm">
-                  82% de acertos
+                  {accuracy}% de acertos
                 </p>
               </div>
             </div>
             <div className="mt-3">
-              <ProgressBar progress={82} colorScheme="emerald" size="md" />
+              <ProgressBar progress={accuracy} colorScheme="emerald" size="md" />
               <p className="text-[10px] text-slate-400 mt-1">
-                Mapeado das últimas 50 questões
+                Mapeado de todos os seus simulados
               </p>
             </div>
           </Card>
@@ -213,7 +275,7 @@ export default function StudentHome() {
         </div>
 
         {/* Continue Learning */}
-        {RECENT_EXAMS.length > 0 ? (
+        {recentExams.length > 0 ? (
           <>
             <h2 className="text-lg font-bold text-slate-800 mb-4 flex items-center gap-2">
               <PlayCircle className="h-5 w-5 text-indigo-500" />
@@ -221,7 +283,7 @@ export default function StudentHome() {
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-              {RECENT_EXAMS.map((exam) => {
+              {recentExams.map((exam) => {
                 const iconOpt = getIconOption(exam.iconKey);
                 const colorOpt = getColorOption(exam.colorScheme);
                 const Icon = iconOpt.Icon;
