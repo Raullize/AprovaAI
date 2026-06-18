@@ -4,7 +4,6 @@ import {
   PlayCircle,
   Compass,
   Flame,
-  Target,
   Award,
   Zap,
   History,
@@ -36,6 +35,10 @@ const RECENT_EXAMS = [
 export default function StudentHome() {
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  const totalXP = user?.xp || 320;
+  const currentLevel = Math.floor(totalXP / 100) + 1;
+  const xpNeededForNextLevel = 100 - (totalXP % 100);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -87,18 +90,44 @@ export default function StudentHome() {
             </div>
           </div>
 
-          {/* Daily Goal Card */}
+          {/* XP Total Card */}
           <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
-                <Target className="h-5 w-5 text-emerald-600" />
+              <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                <Zap className="h-5 w-5 text-indigo-600 animate-pulse" />
               </div>
               <div className="min-w-0">
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                  Meta Diária
+                  XP Total
+                </p>
+                <p className="font-bold text-slate-700 text-sm">{totalXP} XP</p>
+              </div>
+            </div>
+            <div className="mt-3">
+              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-indigo-500 rounded-full"
+                  style={{ width: `${totalXP % 100}%` }}
+                />
+              </div>
+              <p className="text-[10px] text-slate-400 mt-1">
+                Faltam {xpNeededForNextLevel} XP para o Nível {currentLevel + 1}
+              </p>
+            </div>
+          </div>
+
+          {/* Accuracy Card */}
+          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+                <Award className="h-5 w-5 text-emerald-600" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                  Aproveitamento
                 </p>
                 <p className="font-bold text-slate-700 text-sm">
-                  12 / 20 questões
+                  82% de acertos
                 </p>
               </div>
             </div>
@@ -106,37 +135,11 @@ export default function StudentHome() {
               <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-500 rounded-full"
-                  style={{ width: '60%' }}
+                  style={{ width: '82%' }}
                 />
               </div>
-              <p className="text-[11px] text-slate-400 mt-1">60% concluído</p>
-            </div>
-          </div>
-
-          {/* Accuracy Card */}
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
-                <Award className="h-5 w-5 text-indigo-600" />
-              </div>
-              <div className="min-w-0">
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                  Aproveitamento
-                </p>
-                <p className="font-bold text-slate-700 text-sm">
-                  75% de acertos
-                </p>
-              </div>
-            </div>
-            <div className="mt-3">
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-indigo-500 rounded-full"
-                  style={{ width: '75%' }}
-                />
-              </div>
-              <p className="text-[11px] text-slate-400 mt-1">
-                Últimas 50 questões
+              <p className="text-[10px] text-slate-400 mt-1">
+                Mapeado das últimas 50 questões
               </p>
             </div>
           </div>

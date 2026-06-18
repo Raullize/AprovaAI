@@ -306,6 +306,16 @@ export default function Profile() {
         {/* Toggle between profile view and settings view */}
         {!showSettings ? (
           <>
+            {/* Header */}
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800 font-display">
+                Meu Perfil
+              </h1>
+              <p className="text-slate-500 mt-1">
+                Acompanhe suas conquistas, ranking de XP e gerencie sua conta.
+              </p>
+            </div>
+
             {/* User Profile Card */}
             <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-6 relative">
               <button
@@ -338,13 +348,21 @@ export default function Profile() {
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                  XP Total
-                </p>
-                <p className="text-3xl font-black text-indigo-600 mt-2 font-display">
-                  {totalXP} XP
-                </p>
+              {/* XP Total Card */}
+              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
+                    <Zap className="h-5 w-5 text-indigo-600 animate-pulse" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                      XP Total
+                    </p>
+                    <p className="font-bold text-slate-700 text-sm">
+                      {totalXP} XP
+                    </p>
+                  </div>
+                </div>
                 <div className="mt-3">
                   <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
                     <div
@@ -359,18 +377,32 @@ export default function Profile() {
                 </div>
               </div>
 
+              {/* Accuracy Card */}
               <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
-                <div>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                    Aproveitamento Médio
-                  </p>
-                  <p className="text-3xl font-black text-emerald-600 mt-2 font-display">
-                    82%
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
+                    <Award className="h-5 w-5 text-emerald-600" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
+                      Aproveitamento
+                    </p>
+                    <p className="font-bold text-slate-700 text-sm">
+                      82% de acertos
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-emerald-500 rounded-full"
+                      style={{ width: '82%' }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    Mapeado das últimas 50 questões
                   </p>
                 </div>
-                <p className="text-[10px] text-slate-400 mt-2">
-                  Mapeado das últimas questões
-                </p>
               </div>
 
               <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
@@ -380,11 +412,11 @@ export default function Profile() {
                   </p>
                   <p className="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-1.5">
                     <Shield className="h-5 w-5 text-indigo-500" />
-                    Gratuito
+                    Free
                   </p>
                 </div>
                 <p className="text-[10px] text-slate-400 mt-2">
-                  AprovaAI Basic
+                  Plano Gratuito
                 </p>
               </div>
             </div>
