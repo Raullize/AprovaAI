@@ -19,6 +19,7 @@ import { getIconOption, getColorOption } from '../../../config/examThemes';
 import api from '../../../services/api';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
+import EmptyState from '../../../components/ui/EmptyState';
 
 // --- HEX Colors ---
 const HEX_COLORS: Record<string, string> = {
@@ -138,6 +139,7 @@ interface TopicData {
   name: string;
   iconKey: string;
   colorScheme: string;
+  showComingSoon?: boolean;
   levels: LevelData[];
 }
 
@@ -377,6 +379,41 @@ const LevelNodeTimeline = ({
   );
 };
 
+const ComingSoonNodeTimeline = () => {
+  return (
+    <div className="relative flex justify-center items-center w-full min-h-[140px] lg:min-h-[180px] py-4">
+      <div className="hidden lg:block absolute left-1/2 ml-10 xl:ml-14 w-[calc(50%-5rem)] xl:w-[calc(50%-6rem)]">
+        <div className="p-6 rounded-3xl border border-dashed border-slate-300 bg-slate-100/80 shadow-sm opacity-80">
+          <div className="flex flex-col gap-2">
+            <h3 className="text-xl font-bold font-display text-slate-600">
+              Em breve
+            </h3>
+            <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
+              Este tópico ainda vai receber novos níveis. Continue acompanhando a
+              trilha para liberar o próximo desafio.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute lg:hidden left-[calc(50%+40px)] max-w-[140px] z-10 pointer-events-none">
+        <div className="rounded-xl p-2.5 text-xs shadow-sm border border-dashed border-slate-300 bg-slate-100/80 opacity-80">
+          <p className="font-bold mb-0.5 leading-tight text-slate-600">
+            Em breve
+          </p>
+          <p className="text-slate-500 leading-relaxed">
+            Novos níveis serão adicionados aqui.
+          </p>
+        </div>
+      </div>
+
+      <div className="relative z-20 w-16 h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center bg-slate-200 ring-4 lg:ring-[6px] ring-slate-100 shadow-md cursor-not-allowed">
+        <Clock3 className="h-6 w-6 lg:h-8 lg:w-8 text-slate-400" />
+      </div>
+    </div>
+  );
+};
+
 function formatDuration(seconds?: number | null) {
   if (!seconds || seconds <= 0) return 'Sem limite';
 
@@ -418,22 +455,36 @@ export default function ExamTrail() {
         setExam(examRes.data);
 
         const topicsRes = await api.get(`/topics/exam/${examRes.data.id}`);
-        const topicsData = topicsRes.data;
+        const topicsData = topicsRes.data.filter(
+          (topic: any) => topic.status === 'ACTIVE',
+        );
 
         const topicsWithLevels = await Promise.all(
           topicsData.map(async (topic: any) => {
             const levelsRes = await api.get(`/levels/topic/${topic.id}`);
+            const publicLevels = levelsRes.data
+              .filter((level: any) => level.status === 'ACTIVE')
+              .sort((a: any, b: any) => a.order - b.order);
+
             return {
               ...topic,
-              levels: levelsRes.data.sort((a: any, b: any) => a.order - b.order),
+              levels: publicLevels,
             };
-          })
+          }),
         );
 
-        topicsWithLevels.sort((a: any, b: any) => a.order - b.order);
-        setTopics(topicsWithLevels);
-        if (topicsWithLevels.length > 0) {
-          setExpandedTopic(topicsWithLevels[0].id);
+        const visibleTopics = topicsWithLevels
+          .filter(
+            (topic: any) =>
+              topic.levels.length > 0 || topic.showComingSoon === true,
+          )
+          .sort((a: any, b: any) => a.order - b.order);
+
+        setTopics(visibleTopics);
+        if (visibleTopics.length > 0) {
+          setExpandedTopic(visibleTopics[0].id);
+        } else {
+          setExpandedTopic(null);
         }
 
         const historyRes = await api.get('/simulations/history');
@@ -498,6 +549,7 @@ export default function ExamTrail() {
 
   const mappedTopics: TopicData[] = topics.map((t) => ({
     ...t,
+    showComingSoon: t.showComingSoon ?? false,
     levels: t.levels.map((l: any) => ({
       ...l,
       status: levelStatusMap[l.id]?.status || 'LOCKED',
@@ -509,7 +561,7 @@ export default function ExamTrail() {
     })),
   }));
 
-  const activeTopicObj: TopicData =
+  const activeTopicObj: TopicData | undefined =
     mappedTopics.find((t) => t.id === expandedTopic) || mappedTopics[0];
   const totalCompleted = mappedTopics.reduce(
     (acc: number, t: TopicData) => acc + t.levels.filter((l: LevelData) => l.status === 'COMPLETED').length,
@@ -549,6 +601,26 @@ export default function ExamTrail() {
       `/dashboard/simulations/engine/${pendingStart.level.id}?mode=${pendingStart.level.simulationMode}`,
     );
   };
+
+  if (mappedTopics.length === 0 || !activeTopicObj) {
+    return (
+      <div className="min-h-screen bg-slate-50/50">
+        <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 py-8 pb-32">
+          <div className="mb-6">
+            <button
+              onClick={() => navigate('/dashboard/explore')}
+              className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar ao Catálogo
+            </button>
+          </div>
+
+          <EmptyState message="Este exame ainda não possui tópicos públicos disponíveis." />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/50">
@@ -828,7 +900,9 @@ export default function ExamTrail() {
                             {topic.name}
                           </p>
                           <p className="text-xs text-slate-400 font-medium mt-0.5">
-                            {completed}/{topic.levels.length} concluídos
+                            {topic.levels.length === 0 && topic.showComingSoon
+                              ? 'Em breve'
+                              : `${completed}/${topic.levels.length} concluídos`}
                           </p>
                         </div>
                         <ChevronRight
@@ -877,7 +951,9 @@ export default function ExamTrail() {
                             {topic.name}
                           </h4>
                           <p className="text-[10px] font-semibold text-slate-400 mt-0.5">
-                            {completedCount}/{topic.levels.length} concluídos
+                            {topic.levels.length === 0 && topic.showComingSoon
+                              ? 'Em breve'
+                              : `${completedCount}/${topic.levels.length} concluídos`}
                           </p>
                         </div>
                       </div>
@@ -904,9 +980,13 @@ export default function ExamTrail() {
                           level={level}
                           topic={topic}
                           onStart={handleStartLevel}
-                          isLast={idx === topic.levels.length - 1}
+                          isLast={
+                            idx === topic.levels.length - 1 &&
+                            !topic.showComingSoon
+                          }
                         />
                       ))}
+                      {topic.showComingSoon && <ComingSoonNodeTimeline />}
                     </div>
                   </div>
                 );
@@ -942,9 +1022,13 @@ export default function ExamTrail() {
                     level={level}
                     topic={activeTopicObj}
                     onStart={handleStartLevel}
-                    isLast={idx === activeTopicObj.levels.length - 1}
+                    isLast={
+                      idx === activeTopicObj.levels.length - 1 &&
+                      !activeTopicObj.showComingSoon
+                    }
                   />
                 ))}
+                {activeTopicObj.showComingSoon && <ComingSoonNodeTimeline />}
               </div>
             </div>
           </div>

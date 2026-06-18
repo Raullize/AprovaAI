@@ -24,6 +24,7 @@ interface AnswerRecord {
 
 interface ResultsState {
   answers: AnswerRecord[];
+  questions?: ReviewQuestion[];
   total: number;
   correct: number;
   timeSpent: number;
@@ -230,13 +231,22 @@ export default function SimulationResults() {
     return generated;
   }, [state.answers, state.total, state.correct]);
 
+  const indexedAnswers = useMemo(
+    () =>
+      answers.map((ans, originalIndex) => ({
+        ...ans,
+        originalIndex,
+      })),
+    [answers],
+  );
+
   const filteredAnswers = useMemo(() => {
-    return answers.filter((ans) => {
+    return indexedAnswers.filter((ans) => {
       if (filter === 'CORRECT') return ans.correct;
       if (filter === 'INCORRECT') return !ans.correct;
       return true;
     });
-  }, [answers, filter]);
+  }, [indexedAnswers, filter]);
 
   const confettiItems = STATIC_CONFETTI_ITEMS;
 
@@ -486,11 +496,7 @@ export default function SimulationResults() {
                   {/* Compact Number Badges Grid */}
                   <div className="flex flex-wrap gap-2 justify-center py-2 bg-slate-50/50 rounded-2xl border border-slate-100 p-3">
                     {filteredAnswers.map((ans, idx) => {
-                      const originalIndex = answers.findIndex(
-                        (a) => a.questionId === ans.questionId,
-                      );
-                      const qNum =
-                        originalIndex !== -1 ? originalIndex + 1 : idx + 1;
+                      const qNum = ans.originalIndex + 1;
                       const isActive = idx === activeIndex;
 
                       return (
@@ -518,12 +524,11 @@ export default function SimulationResults() {
                   {(() => {
                     const ans = filteredAnswers[activeIndex];
                     if (!ans) return null;
-                    const originalIndex = answers.findIndex(
-                      (a) => a.questionId === ans.questionId,
-                    );
-                    const displayIndex =
-                      originalIndex !== -1 ? originalIndex : activeIndex;
+                    const displayIndex = ans.originalIndex;
                     const q =
+                      state.questions?.find(
+                        (question) => question.id === ans.questionId,
+                      ) ||
                       QUESTIONS_LOOKUP[ans.questionId] ||
                       QUESTIONS_LOOKUP['q' + ((displayIndex % 5) + 1)];
                     if (!q) return null;

@@ -180,6 +180,7 @@ export default function SimulationEngine() {
             selectedId: ans.selectedOptions[0] || '',
             correct: ans.isCorrect ?? false,
           })),
+          questions,
           total: examResult.totalQuestions,
           correct: examResult.score,
           timeSpent: examResult.timeSpent,
