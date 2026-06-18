@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   Home,
@@ -9,15 +9,17 @@ import {
   GraduationCap,
   User,
   Compass,
+  History,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
+import UserAvatar from '../ui/UserAvatar';
 
 const studentItems = [
   { icon: Home, label: 'Início', href: '/dashboard' },
   { icon: Compass, label: 'Explorar', href: '/dashboard/explore' },
+  { icon: History, label: 'Simulados', href: '/dashboard/simulations' },
   { icon: User, label: 'Perfil', href: '/dashboard/profile' },
-  { icon: Settings, label: 'Configurações', href: '/dashboard/settings' },
 ];
 
 const adminItems = [
@@ -36,6 +38,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const sidebarDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        sidebarDropdownRef.current &&
+        !sidebarDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const sidebarItems = user?.role === 'ADMIN' ? adminItems : studentItems;
 
@@ -60,15 +78,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
 
     return currentPath.startsWith(href);
   };
-
-  const initials = user?.fullName
-    ? user.fullName
-        .split(' ')
-        .map((n: string) => n[0])
-        .slice(0, 2)
-        .join('')
-        .toUpperCase()
-    : (user?.username?.[0]?.toUpperCase() ?? '?');
 
   return (
     <>
@@ -173,19 +182,62 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
           </ul>
         </nav>
 
-        {/* Footer — User info + Logout */}
-        <div className="p-3 shrink-0 border-t border-sidebar-border">
-          <div
+        {/* Footer — User info + Popover */}
+        <div
+          className="p-3 shrink-0 border-t border-sidebar-border relative"
+          ref={sidebarDropdownRef}
+        >
+          {isUserMenuOpen && (
+            <div
+              className={cn(
+                'absolute bg-slate-900 border border-slate-800 rounded-xl shadow-xl py-1.5 z-50 w-48 text-slate-200 animate-in fade-in slide-in-from-bottom-1 duration-100',
+                isCollapsed
+                  ? 'left-20 bottom-3'
+                  : 'left-3 right-3 bottom-16 w-auto',
+              )}
+            >
+              <button
+                onClick={() => {
+                  navigate('/dashboard/profile');
+                  setIsUserMenuOpen(false);
+                }}
+                className="w-full flex items-center px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-850 hover:text-white transition-colors gap-2 text-left rounded-lg"
+              >
+                <User className="h-4 w-4 text-slate-500" />
+                <span>Perfil</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/dashboard/profile?settings=true');
+                  setIsUserMenuOpen(false);
+                }}
+                className="w-full flex items-center px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-850 hover:text-white transition-colors gap-2 text-left rounded-lg"
+              >
+                <Settings className="h-4 w-4 text-slate-500" />
+                <span>Configurações</span>
+              </button>
+              <div className="border-t border-slate-800 my-1" />
+              <button
+                onClick={() => {
+                  handleSignOut();
+                  setIsUserMenuOpen(false);
+                }}
+                className="w-full flex items-center px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors gap-2 text-left rounded-lg"
+              >
+                <LogOut className="h-4 w-4 text-red-500" />
+                <span>Sair</span>
+              </button>
+            </div>
+          )}
+
+          <button
+            onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
             className={cn(
-              'flex rounded-xl bg-slate-800/40 border border-white/5 transition-all',
-              isCollapsed ? 'flex-col items-center p-2 gap-2' : 'items-center gap-3 px-3 py-2',
+              'w-full flex text-left rounded-xl bg-slate-800/40 border border-white/5 transition-all hover:bg-slate-800/60 focus:outline-none items-center',
+              isCollapsed ? 'justify-center p-2' : 'gap-3 px-3 py-2',
             )}
           >
-            <div
-              className="h-8 w-8 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-xs font-bold shrink-0 ring-2 ring-indigo-500/30"
-            >
-              {initials}
-            </div>
+            <UserAvatar size="xs" />
             {!isCollapsed && (
               <>
                 <div className="flex-1 min-w-0 flex flex-col">
@@ -196,19 +248,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                     {user?.email || 'email@exemplo.com'}
                   </span>
                 </div>
+                <span className="text-slate-500 text-xs shrink-0 select-none">
+                  •••
+                </span>
               </>
             )}
-            <button
-              onClick={handleSignOut}
-              className={cn(
-                "text-slate-400 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors shrink-0",
-                isCollapsed ? "p-2 w-full flex justify-center" : "p-1.5"
-              )}
-              title="Sair"
-            >
-              <LogOut className="h-4 w-4" />
-            </button>
-          </div>
+          </button>
         </div>
       </aside>
 

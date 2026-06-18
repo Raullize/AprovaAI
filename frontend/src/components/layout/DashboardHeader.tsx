@@ -1,7 +1,15 @@
-import React from 'react';
-import { Bell, User as UserIcon, Flame, Zap } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Bell,
+  User as UserIcon,
+  Flame,
+  Zap,
+  Settings,
+  LogOut,
+} from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import UserAvatar from '../ui/UserAvatar';
 
 const routeLabels: Record<string, string> = {
   '/dashboard': 'Início',
@@ -25,19 +33,27 @@ interface DashboardHeaderProps {
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const pageTitle = getPageTitle(location.pathname);
-
-  const initials = user?.fullName
-    ? user.fullName
-      .split(' ')
-      .map((n: string) => n[0])
-      .slice(0, 2)
-      .join('')
-      .toUpperCase()
-    : (user?.username?.[0]?.toUpperCase() ?? '?');
 
   const MOCK_STREAK = 7;
   const MOCK_DAILY_GOAL = 3;
@@ -60,13 +76,17 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
             {/* Streak */}
             <div className="flex items-center gap-1.5 sm:gap-2 bg-orange-50 border border-orange-200 rounded-xl sm:rounded-2xl px-2 sm:px-3 py-1 sm:py-1.5">
               <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 fill-orange-400" />
-              <span className="text-xs sm:text-sm font-bold text-orange-600">{MOCK_STREAK}</span>
+              <span className="text-xs sm:text-sm font-bold text-orange-600">
+                {MOCK_STREAK}
+              </span>
             </div>
 
             {/* Daily goal progress */}
             <div className="flex items-center gap-1.5 sm:gap-2">
               <div className="flex flex-col items-center">
-                <span className="text-[9px] sm:text-[10px] text-slate-400 font-medium leading-none">META</span>
+                <span className="text-[9px] sm:text-[10px] text-slate-400 font-medium leading-none">
+                  META
+                </span>
                 <span className="text-[10px] sm:text-xs font-bold text-slate-600 leading-tight">
                   {MOCK_DAILY_DONE}/{MOCK_DAILY_GOAL}
                 </span>
@@ -82,7 +102,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
             {/* XP */}
             <div className="flex items-center gap-1.5 sm:gap-2 bg-amber-50 border border-amber-200 rounded-xl sm:rounded-2xl px-2 sm:px-3 py-1 sm:py-1.5">
               <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-amber-500 fill-amber-400" />
-              <span className="text-xs sm:text-sm font-bold text-amber-600">{user?.xp || 0} XP</span>
+              <span className="text-xs sm:text-sm font-bold text-amber-600">
+                {user?.xp || 0} XP
+              </span>
             </div>
           </>
         ) : null}
@@ -98,20 +120,58 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
         <div className="h-6 w-px bg-slate-200" />
 
         {/* User avatar */}
-        <div className="flex items-center gap-2.5">
-          <div className="hidden md:flex flex-col items-end">
-            <span className="text-sm font-semibold text-slate-700 leading-tight">
+        <div className="relative flex items-center gap-2.5" ref={dropdownRef}>
+          <div className="hidden md:flex flex-col items-end text-right text-slate-700">
+            <span className="text-sm font-semibold leading-tight">
               {user?.username || user?.fullName || 'Estudante'}
             </span>
             <span className="text-xs text-slate-400">{user?.email}</span>
           </div>
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-400 to-violet-500 flex items-center justify-center text-white text-sm font-bold shadow-sm ring-2 ring-indigo-500/20">
-            {user?.fullName ? (
-              initials
-            ) : (
-              <UserIcon className="h-4.5 w-4.5" />
-            )}
-          </div>
+
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="focus:outline-none hover:opacity-80 transition-opacity shrink-0"
+            title="Menu do Usuário"
+          >
+            <UserAvatar size="sm" />
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-30 animate-in fade-in slide-in-from-top-1 duration-100">
+              <button
+                onClick={() => {
+                  navigate('/dashboard/profile');
+                  setIsDropdownOpen(false);
+                }}
+                className="w-full flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors gap-2 text-left"
+              >
+                <UserIcon className="h-4 w-4 text-slate-400" />
+                <span>Perfil</span>
+              </button>
+              <button
+                onClick={() => {
+                  navigate('/dashboard/profile?settings=true');
+                  setIsDropdownOpen(false);
+                }}
+                className="w-full flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors gap-2 text-left"
+              >
+                <Settings className="h-4 w-4 text-slate-400" />
+                <span>Configurações</span>
+              </button>
+              <div className="border-t border-slate-100 my-1" />
+              <button
+                onClick={() => {
+                  signOut();
+                  navigate('/login');
+                  setIsDropdownOpen(false);
+                }}
+                className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors gap-2 text-left"
+              >
+                <LogOut className="h-4 w-4 text-red-400" />
+                <span>Sair</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </header>
