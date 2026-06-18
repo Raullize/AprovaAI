@@ -51,8 +51,8 @@ export default function StudentHome() {
   }, []);
 
   const totalXP = user?.xp || 0;
-  const currentLevel = Math.floor(totalXP / 100) + 1;
-  const xpNeededForNextLevel = 100 - (totalXP % 100);
+  const currentLevel = Math.floor(totalXP / 100);
+  const xpNeededForNextLevel = 100 - (totalXP % 100 || 0);
 
   const completedAttempts = history.filter((h) => h.status === 'COMPLETED');
   const totalCorrect = completedAttempts.reduce((sum, h) => sum + (h.score || 0), 0);
@@ -63,7 +63,11 @@ export default function StudentHome() {
   const recentExams = Array.from(
     new Map(
       history
-        .filter((h) => h.level?.topic?.exam?.name)
+        .filter(
+          (h) =>
+            h.level?.topic?.exam?.name &&
+            (h.level?.topic?.exam?.slug || h.level?.topic?.exam?.id),
+        )
         .map((h) => {
           const examKey =
             h.level?.topic?.exam?.id ??
@@ -84,6 +88,10 @@ export default function StudentHome() {
             examKey,
             {
               id: examKey,
+              routeId:
+                h.level.topic.exam.slug ||
+                h.level.topic.exam.id ||
+                examKey,
               title: h.level.topic.exam.name,
               iconKey: h.level.topic.exam.iconKey || 'cpu',
               colorScheme: h.level.topic.exam.colorScheme || 'orange',
@@ -298,7 +306,7 @@ export default function StudentHome() {
                 return (
                   <button
                     key={exam.id}
-                    onClick={() => navigate(`/dashboard/explore/${exam.id}`)}
+                    onClick={() => navigate(`/dashboard/explore/${exam.routeId}`)}
                     className="group w-full"
                   >
                     <Card
@@ -309,7 +317,7 @@ export default function StudentHome() {
                       <div className="flex items-start gap-4">
                         <div
                           className={cn(
-                            'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner',
+                            'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner bg-gradient-to-br',
                             colorOpt.gradient,
                           )}
                         >
@@ -380,9 +388,12 @@ export default function StudentHome() {
           </h2>
           <button
             onClick={() => navigate('/dashboard/profile')}
-            className="text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-0.5"
+            className="group text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-0.5 no-underline"
           >
-            Ver todas &rarr;
+            <span className="group-hover:underline underline-offset-4">
+              Ver todas
+            </span>
+            <span>&rarr;</span>
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">

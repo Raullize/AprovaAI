@@ -152,8 +152,8 @@ export default function Profile() {
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
   const totalXP = user?.xp || 0;
-  const currentLevel = Math.floor(totalXP / 100) + 1;
-  const xpNeededForNextLevel = 100 - (totalXP % 100);
+  const currentLevel = Math.floor(totalXP / 100);
+  const xpNeededForNextLevel = 100 - (totalXP % 100 || 0);
 
   const completedAttempts = history.filter((h) => h.status === 'COMPLETED');
   const totalCorrect = completedAttempts.reduce((sum, h) => sum + (h.score || 0), 0);

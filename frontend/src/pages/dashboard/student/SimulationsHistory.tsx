@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   Search,
   SlidersHorizontal,
+  Star,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import api from '../../../services/api';
@@ -98,15 +99,15 @@ function Stars({ value }: { value: number }) {
   return (
     <div className="flex items-center gap-0.5" aria-label={`${value} estrelas`}>
       {[1, 2, 3].map((i) => (
-        <span
+        <Star
           key={i}
           className={cn(
-            'text-sm leading-none',
-            i <= value ? 'text-amber-500' : 'text-slate-300',
+            'h-3.5 w-3.5',
+            i <= value
+              ? 'text-amber-500 fill-amber-500'
+              : 'text-slate-300 fill-slate-300',
           )}
-        >
-          ★
-        </span>
+        />
       ))}
     </div>
   );
@@ -461,7 +462,7 @@ export default function SimulationsHistory() {
             {/* Filter and Search Bar */}
             <div className="flex flex-col md:flex-row gap-3">
               {/* Search */}
-              <div className="relative flex-1">
+              <div className="relative flex-1 min-w-[280px]">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <input
                   type="text"
@@ -473,7 +474,7 @@ export default function SimulationsHistory() {
               </div>
 
               {/* Filters Row */}
-              <div className="flex flex-wrap gap-2.5">
+              <div className="flex flex-wrap gap-3">
                 {/* Mode Filter */}
                 <div className="relative">
                   <select
@@ -483,13 +484,13 @@ export default function SimulationsHistory() {
                         e.target.value as 'ALL' | 'PRACTICE' | 'EXAM',
                       )
                     }
-                    className="appearance-none pl-3.5 pr-7 py-3.5 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none cursor-pointer shadow-sm"
+                    className="appearance-none h-[52px] min-w-[132px] pl-4 pr-10 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none cursor-pointer shadow-sm"
                   >
                     <option value="ALL">Modo: Todos</option>
                     <option value="PRACTICE">Treino</option>
                     <option value="EXAM">Simulado</option>
                   </select>
-                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-550 pointer-events-none" />
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-550 pointer-events-none" />
                 </div>
 
                 {/* Status Filter */}
@@ -501,13 +502,13 @@ export default function SimulationsHistory() {
                         e.target.value as 'ALL' | 'PASSED' | 'FAILED',
                       )
                     }
-                    className="appearance-none pl-3.5 pr-7 py-3.5 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none cursor-pointer shadow-sm"
+                    className="appearance-none h-[52px] min-w-[132px] pl-4 pr-10 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none cursor-pointer shadow-sm"
                   >
                     <option value="ALL">Status: Todos</option>
                     <option value="PASSED">Aprovados</option>
                     <option value="FAILED">Reprovados</option>
                   </select>
-                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-550 pointer-events-none" />
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-550 pointer-events-none" />
                 </div>
 
                 {/* Sort Order */}
@@ -515,7 +516,7 @@ export default function SimulationsHistory() {
                   onClick={() =>
                     setSortOrder(sortOrder === 'NEWEST' ? 'OLDEST' : 'NEWEST')
                   }
-                  className="px-3 py-3.5 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white flex items-center gap-1.5 active:scale-95 transition-all shadow-sm"
+                  className="h-[52px] min-w-[132px] px-4 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white flex items-center justify-center gap-1.5 active:scale-95 transition-all shadow-sm"
                 >
                   <SlidersHorizontal className="h-3.5 w-3.5" />
                   {sortOrder === 'NEWEST' ? 'Mais recentes' : 'Mais antigos'}
