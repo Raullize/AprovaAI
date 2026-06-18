@@ -9,6 +9,7 @@ export interface CreateTopicRequest {
   name: string;
   description?: string;
   status?: 'ACTIVE' | 'INACTIVE';
+  showComingSoon?: boolean;
   examId: string;
   iconKey?: string;
   colorScheme?: string;
@@ -37,6 +38,7 @@ export class CreateTopicUseCase implements UseCase<CreateTopicRequest, Topic> {
       slug: Slug.create(slug),
       description: request.description,
       status: request.status,
+      showComingSoon: request.showComingSoon,
       examId: request.examId,
       order: count,
       iconKey: request.iconKey,

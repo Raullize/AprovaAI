@@ -17,6 +17,12 @@ export const createTopicSchema = z.object({
     .enum(['ACTIVE', 'INACTIVE'])
     .default('ACTIVE')
     .describe('Status de visibilidade'),
+  showComingSoon: z
+    .boolean()
+    .default(false)
+    .describe(
+      'Quando ativo, o tópico pode aparecer para o aluno com um indicador de "em breve", mesmo sem níveis públicos.',
+    ),
   examId: z
     .string()
     .uuid('ID do exame inválido')
@@ -31,6 +37,7 @@ export const updateTopicSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
   status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
+  showComingSoon: z.boolean().optional(),
   examId: z.string().optional(),
   iconKey: z.string().nullable().optional(),
   colorScheme: z.string().nullable().optional(),

@@ -12,6 +12,7 @@ export interface UpdateTopicRequest {
     name?: string;
     description?: string;
     status?: 'ACTIVE' | 'INACTIVE';
+    showComingSoon?: boolean;
     examId?: string;
     iconKey?: string | null;
     colorScheme?: string | null;
@@ -47,9 +48,11 @@ export class UpdateTopicUseCase implements UseCase<UpdateTopicRequest, Topic> {
         examId: request.data.examId ?? topic.examId,
         iconKey: request.data.iconKey,
         colorScheme: request.data.colorScheme,
+        showComingSoon: request.data.showComingSoon,
       });
     } else if (
       request.data.description !== undefined ||
+      request.data.showComingSoon !== undefined ||
       request.data.examId !== undefined ||
       request.data.iconKey !== undefined ||
       request.data.colorScheme !== undefined
@@ -61,6 +64,7 @@ export class UpdateTopicUseCase implements UseCase<UpdateTopicRequest, Topic> {
         examId: request.data.examId ?? topic.examId,
         iconKey: request.data.iconKey,
         colorScheme: request.data.colorScheme,
+        showComingSoon: request.data.showComingSoon,
       });
     }
 

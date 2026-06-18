@@ -90,6 +90,7 @@ model Topic {
   slug        String      @map("slug")
   description String?     @map("description")
   status      TopicStatus @default(ACTIVE) @map("status")
+  showComingSoon Boolean  @default(false) @map("show_coming_soon")
   order       Int         @default(0) @map("order")
   examId      String      @map("exam_id")
   iconKey     String?     @map("icon_key")
