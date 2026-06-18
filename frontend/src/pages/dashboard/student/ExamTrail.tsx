@@ -8,12 +8,17 @@ import {
   ChevronRight,
   PlayCircle,
   ArrowLeft,
+  Clock3,
+  Brain,
+  ShieldCheck,
+  Target,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 
 import api from '../../../services/api';
 import Loading from '../../../components/ui/Loading';
+import Modal from '../../../components/ui/Modal';
 
 // --- HEX Colors ---
 const HEX_COLORS: Record<string, string> = {
@@ -124,6 +129,8 @@ interface LevelData {
   stars?: number;
   attempted?: boolean;
   simulationMode: 'PRACTICE' | 'EXAM';
+  timeLimit?: number | null;
+  passingPercentage?: number;
 }
 
 interface TopicData {
@@ -142,7 +149,7 @@ const LevelNodeTimeline = ({
 }: {
   level: LevelData;
   topic: TopicData;
-  onStart: (level: LevelData) => void;
+  onStart: (level: LevelData, topic: TopicData) => void;
   isLast: boolean;
 }) => {
   const isCompleted = level.status === 'COMPLETED';
@@ -237,7 +244,7 @@ const LevelNodeTimeline = ({
 
             {isCurrent && (
               <button
-                onClick={() => onStart(level)}
+                onClick={() => onStart(level, topic)}
                 className={cn(
                   'mt-4 flex items-center gap-2 text-white font-bold px-6 py-3 rounded-2xl shadow-md border-b-4 hover:-translate-y-0.5 active:translate-y-0 active:border-b-0 transition-all',
                   theme.buttonBg,
@@ -303,7 +310,7 @@ const LevelNodeTimeline = ({
       <div className="relative z-20">
         {isCompleted && (
           <button
-            onClick={() => onStart(level)}
+            onClick={() => onStart(level, topic)}
             className={cn(
               'w-16 h-16 lg:w-20 lg:h-20 rounded-full flex flex-col items-center justify-center shadow-md transition-all hover:scale-105 bg-gradient-to-br ring-4 lg:ring-[6px] relative',
               colorOpt.gradient,
@@ -327,7 +334,7 @@ const LevelNodeTimeline = ({
               )}
             />
             <button
-              onClick={() => onStart(level)}
+              onClick={() => onStart(level, topic)}
               className={cn(
                 'relative w-20 h-20 lg:w-24 lg:h-24 rounded-full flex flex-col items-center justify-center bg-gradient-to-br shadow-xl hover:scale-105 transition-all active:scale-95 ring-4 lg:ring-[6px]',
                 colorOpt.gradient,
@@ -349,7 +356,7 @@ const LevelNodeTimeline = ({
               )}
             </button>
             <button
-              onClick={() => onStart(level)}
+              onClick={() => onStart(level, topic)}
               className={cn(
                 'lg:hidden relative z-10 text-white text-sm font-bold px-6 py-2.5 rounded-2xl shadow-md active:translate-y-1 transition-all bg-gradient-to-br',
                 colorOpt.gradient,
@@ -370,6 +377,23 @@ const LevelNodeTimeline = ({
   );
 };
 
+function formatDuration(seconds?: number | null) {
+  if (!seconds || seconds <= 0) return 'Sem limite';
+
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+
+  if (minutes > 0 && remainingSeconds > 0) {
+    return `${minutes} min ${remainingSeconds}s`;
+  }
+
+  if (minutes > 0) {
+    return `${minutes} min`;
+  }
+
+  return `${remainingSeconds}s`;
+}
+
 // --- Main Component ---
 export default function ExamTrail() {
   const { examId } = useParams<{ examId: string }>();
@@ -380,6 +404,10 @@ export default function ExamTrail() {
   const [history, setHistory] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
+  const [pendingStart, setPendingStart] = useState<{
+    level: LevelData;
+    topic: TopicData;
+  } | null>(null);
 
 
   useEffect(() => {
@@ -476,6 +504,8 @@ export default function ExamTrail() {
       stars: levelStatusMap[l.id]?.stars || 0,
       attempted: levelStatusMap[l.id]?.attempted || false,
       questionsCount: l.questionsCount || 10,
+      timeLimit: l.timeLimit ?? null,
+      passingPercentage: l.passingPercentage ?? 70,
     })),
   }));
 
@@ -487,13 +517,182 @@ export default function ExamTrail() {
   );
   const totalLevels = mappedTopics.reduce((acc: number, t: TopicData) => acc + t.levels.length, 0);
   const globalProgress = totalLevels > 0 ? (totalCompleted / totalLevels) * 100 : 0;
+  const pendingTheme = pendingStart
+    ? COLOR_THEMES[pendingStart.topic.colorScheme] || COLOR_THEMES.indigo
+    : COLOR_THEMES.indigo;
+  const PendingTopicIcon = pendingStart
+    ? getIconOption(pendingStart.topic.iconKey).Icon
+    : PlayCircle;
+  const instructions =
+    pendingStart?.level.simulationMode === 'EXAM'
+      ? [
+          'Leia cada questão com calma e confirme sua resposta quando estiver seguro.',
+          'O feedback aparece ao final do simulado, junto com seu resultado completo.',
+          pendingStart.level.timeLimit
+            ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
+            : 'Este exame não tem cronômetro, então você pode concluir no seu ritmo.',
+        ]
+      : [
+          'O modo treino mostra feedback imediato após cada resposta confirmada.',
+          'Use este nível para aprender com mais leveza e reforçar os pontos principais.',
+          'Ao concluir, seu desempenho atualiza XP, progresso e histórico normalmente.',
+        ];
 
-  const handleStartLevel = (level: LevelData) => {
-    navigate(`/dashboard/simulations/engine/${level.id}?mode=${level.simulationMode}`);
+  const handleStartLevel = (level: LevelData, topic: TopicData) => {
+    setPendingStart({ level, topic });
+  };
+
+  const handleConfirmStart = () => {
+    if (!pendingStart) return;
+
+    navigate(
+      `/dashboard/simulations/engine/${pendingStart.level.id}?mode=${pendingStart.level.simulationMode}`,
+    );
   };
 
   return (
     <div className="min-h-screen bg-slate-50/50">
+      <Modal
+        isOpen={!!pendingStart}
+        onClose={() => setPendingStart(null)}
+        title="Preparar simulado"
+        size="lg"
+      >
+        {pendingStart && (
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div
+                className={cn(
+                  'w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-inner shrink-0 bg-gradient-to-br',
+                  getColorOption(pendingStart.topic.colorScheme).gradient,
+                )}
+              >
+                <PendingTopicIcon className="h-7 w-7" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                  <span
+                    className={cn(
+                      'px-3 py-1 rounded-full text-xs font-bold border',
+                      pendingStart.level.simulationMode === 'EXAM'
+                        ? 'bg-rose-50 text-rose-700 border-rose-100'
+                        : 'bg-indigo-50 text-indigo-700 border-indigo-100',
+                    )}
+                  >
+                    {pendingStart.level.simulationMode === 'EXAM'
+                      ? 'Modo exame'
+                      : 'Modo treino'}
+                  </span>
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                    {pendingStart.topic.name}
+                  </span>
+                </div>
+                <h3 className="text-2xl font-bold text-slate-800 font-display">
+                  {pendingStart.level.name}
+                </h3>
+                <p className="text-sm text-slate-500 mt-1 leading-relaxed">
+                  {pendingStart.level.description ||
+                    'Revise este nível com atenção antes de avançar na trilha.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="flex items-center gap-2 text-slate-400 mb-2">
+                  <Clock3 className="h-4 w-4" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider">
+                    Tempo
+                  </span>
+                </div>
+                <p className="text-base font-bold text-slate-800">
+                  {pendingStart.level.simulationMode === 'EXAM'
+                    ? formatDuration(pendingStart.level.timeLimit)
+                    : 'Sem cronômetro'}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="flex items-center gap-2 text-slate-400 mb-2">
+                  <Target className="h-4 w-4" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider">
+                    Questões
+                  </span>
+                </div>
+                <p className="text-base font-bold text-slate-800">
+                  {pendingStart.level.questionsCount} questões
+                </p>
+              </div>
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
+                <div className="flex items-center gap-2 text-slate-400 mb-2">
+                  <Zap className="h-4 w-4" />
+                  <span className="text-[11px] font-bold uppercase tracking-wider">
+                    Recompensa
+                  </span>
+                </div>
+                <p className="text-base font-bold text-slate-800">
+                  {pendingStart.level.xpReward} XP
+                </p>
+              </div>
+            </div>
+
+            <div
+              className={cn(
+                'rounded-3xl border px-5 py-5',
+                pendingTheme.bgLight,
+                pendingTheme.borderLight,
+              )}
+            >
+              <div className="flex items-center gap-2 mb-3">
+                {pendingStart.level.simulationMode === 'EXAM' ? (
+                  <ShieldCheck className={cn('h-5 w-5', pendingTheme.textDark)} />
+                ) : (
+                  <Brain className={cn('h-5 w-5', pendingTheme.textDark)} />
+                )}
+                <h4 className={cn('font-bold', pendingTheme.textDark)}>
+                  Instruções rápidas
+                </h4>
+              </div>
+              <div className="space-y-2.5 text-sm text-slate-600">
+                {instructions.map((instruction) => (
+                  <p key={instruction} className="flex items-start gap-2">
+                    <span className={cn('mt-0.5 text-base leading-none', pendingTheme.textDark)}>
+                      •
+                    </span>
+                    <span>{instruction}</span>
+                  </p>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3">
+              <p className="text-sm text-amber-800">
+                Meta de aprovação: <span className="font-bold">{pendingStart.level.passingPercentage ?? 70}%</span>
+                {' '}de acertos para concluir este nível com sucesso.
+              </p>
+            </div>
+
+            <div className="flex flex-col-reverse sm:flex-row gap-3">
+              <button
+                onClick={() => setPendingStart(null)}
+                className="flex-1 py-3.5 rounded-2xl font-bold text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors"
+              >
+                Voltar
+              </button>
+              <button
+                onClick={handleConfirmStart}
+                className={cn(
+                  'flex-1 py-3.5 rounded-2xl font-bold text-white border-b-4 active:border-b-0 active:translate-y-1 transition-all',
+                  pendingTheme.buttonBg,
+                  pendingTheme.buttonBorder,
+                )}
+              >
+                Começar agora
+              </button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
       <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 py-8 pb-32">
         {/* Back Button */}
         <div className="mb-6">
