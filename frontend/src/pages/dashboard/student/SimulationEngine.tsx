@@ -5,6 +5,7 @@ import { cn } from '../../../lib/utils';
 import Modal from '../../../components/ui/Modal';
 import api from '../../../services/api';
 import Loading from '../../../components/ui/Loading';
+import { useAuth } from '../../../context/AuthContext';
 
 // --- Types ---
 type SimulationMode = 'PRACTICE' | 'EXAM';
@@ -29,10 +30,10 @@ const MOCK_TIME_LIMIT = 10 * 60; // 10 min in seconds (EXAM mode)
 
 // --- Encouragement messages ---
 const CORRECT_MESSAGES = [
-  { title: 'Excelente! 🎉', subtitle: 'Continue assim, você está arrasando!' },
-  { title: 'Correto! ✨', subtitle: 'Sua dedicação está fazendo a diferença.' },
-  { title: 'Perfeito! 🏆', subtitle: 'Mais um passo rumo à aprovação!' },
-  { title: 'Isso aí! 🔥', subtitle: 'Continue no ritmo!' },
+  { title: 'Excelente!', subtitle: 'Continue assim, você está arrasando!' },
+  { title: 'Correto!', subtitle: 'Sua dedicação está fazendo a diferença.' },
+  { title: 'Perfeito!', subtitle: 'Mais um passo rumo à aprovação!' },
+  { title: 'Isso aí!', subtitle: 'Continue no ritmo!' },
 ];
 
 const WRONG_MESSAGES = [
@@ -63,6 +64,7 @@ function formatTime(seconds: number) {
 export default function SimulationEngine() {
   const { levelId } = useParams<{ levelId: string }>();
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
   const [searchParams] = useSearchParams();
   const mode = (searchParams.get('mode') as SimulationMode) || 'PRACTICE';
@@ -169,6 +171,7 @@ export default function SimulationEngine() {
         timeSpent: mode === 'EXAM' ? (level?.timeLimit || MOCK_TIME_LIMIT) - timeLeft : 0,
       });
       const { examResult, xpGained } = finishRes.data;
+      await refreshUser();
 
       navigate('/dashboard/simulations/results', {
         state: {
@@ -191,7 +194,7 @@ export default function SimulationEngine() {
     } finally {
       setIsLoading(false);
     }
-  }, [simulationId, mode, timeLeft, navigate, level]);
+  }, [simulationId, mode, level?.timeLimit, timeLeft, refreshUser, navigate, level?.passingPercentage, level?.name]);
 
   // Timer for EXAM mode
   useEffect(() => {
@@ -647,11 +650,9 @@ export default function SimulationEngine() {
                     feedback === 'correct' ? 'bg-green-400' : 'bg-red-400',
                   )}
                 >
-                  {feedback === 'correct' ? (
-                    <CheckCircle2 className="h-6 w-6 text-white" />
-                  ) : (
-                    <XCircle className="h-6 w-6 text-white" />
-                  )}
+                  <span className="text-xl leading-none">
+                    {feedback === 'correct' ? '✅' : '❌'}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-bold text-base">

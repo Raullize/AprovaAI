@@ -63,19 +63,27 @@ export default function StudentHome() {
   const recentExams = Array.from(
     new Map(
       history
-        .filter((h) => h.level?.topic?.exam)
+        .filter((h) => h.level?.topic?.exam?.name)
         .map((h) => {
-          const examId = h.level.topic.exam.id;
+          const examKey =
+            h.level?.topic?.exam?.id ??
+            h.level?.topic?.exam?.slug ??
+            h.level?.topic?.exam?.name ??
+            'unknown-exam';
           const examHistory = history.filter(
-            (item) => item.level?.topic?.exam?.id === examId && item.status === 'COMPLETED'
+            (item) =>
+              (item.level?.topic?.exam?.id ??
+                item.level?.topic?.exam?.slug ??
+                item.level?.topic?.exam?.name) === examKey &&
+              item.status === 'COMPLETED',
           );
           const completedLevels = new Set(examHistory.map((item) => item.levelId));
-          const totalEstimated = examId.includes('aws') ? 10 : 9;
+          const totalEstimated = 10;
           const progress = Math.min(100, Math.round((completedLevels.size / totalEstimated) * 100));
           return [
-            examId,
+            examKey,
             {
-              id: examId,
+              id: examKey,
               title: h.level.topic.exam.name,
               iconKey: h.level.topic.exam.iconKey || 'cpu',
               colorScheme: h.level.topic.exam.colorScheme || 'orange',
