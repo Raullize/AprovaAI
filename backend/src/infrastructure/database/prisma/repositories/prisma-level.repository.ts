@@ -31,6 +31,11 @@ export class PrismaLevelRepository implements LevelRepository {
   async findById(id: string): Promise<Level | null> {
     const level = await this.prisma.level.findUnique({
       where: { id },
+      include: {
+        _count: {
+          select: { questions: true },
+        },
+      },
     });
     if (!level) return null;
     return PrismaLevelMapper.toDomain(level);
