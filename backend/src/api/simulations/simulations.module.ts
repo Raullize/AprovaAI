@@ -8,6 +8,8 @@ import { GetSimulationHistoryUseCase } from '../../application/simulations/use-c
 import { PrismaExamResultRepository } from '../../infrastructure/database/prisma/repositories/prisma-exam-result.repository';
 import { PrismaLevelRepository } from '../../infrastructure/database/prisma/repositories/prisma-level.repository';
 import { PrismaQuestionRepository } from '../../infrastructure/database/prisma/repositories/prisma-question.repository';
+import { UserRepository } from '../../domain/users/repositories/user.repository';
+import { PrismaUserRepository } from '../../infrastructure/database/prisma/repositories/prisma-user.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -24,6 +26,10 @@ import { PrismaQuestionRepository } from '../../infrastructure/database/prisma/r
     {
       provide: 'QuestionRepository',
       useClass: PrismaQuestionRepository,
+    },
+    {
+      provide: UserRepository,
+      useClass: PrismaUserRepository,
     },
     StartSimulationUseCase,
     SaveAnswerUseCase,

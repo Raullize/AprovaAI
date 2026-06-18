@@ -53,6 +53,19 @@ export class ExamAnswer extends Entity<ExamAnswerProps> {
   }
 }
 
+export interface ExamResultLevel {
+  name: string;
+  topic?: {
+    name: string;
+    exam?: {
+      name: string;
+      category?: string;
+      iconKey?: string;
+      colorScheme?: string;
+    };
+  };
+}
+
 export interface ExamResultProps {
   userId: string;
   levelId: string;
@@ -62,8 +75,10 @@ export interface ExamResultProps {
   totalQuestions: number;
   percentage?: number | null;
   passed?: boolean | null;
+  stars?: number | null;
   timeSpent?: number | null;
   answers?: ExamAnswer[];
+  level?: ExamResultLevel | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -93,11 +108,17 @@ export class ExamResult extends AggregateRoot<ExamResultProps> {
   get passed(): boolean | null | undefined {
     return this.props.passed;
   }
+  get stars(): number | null | undefined {
+    return this.props.stars;
+  }
   get timeSpent(): number | null | undefined {
     return this.props.timeSpent;
   }
   get answers(): ExamAnswer[] {
     return this.props.answers ?? [];
+  }
+  get level(): ExamResultLevel | null | undefined {
+    return this.props.level;
   }
   get createdAt(): Date | undefined {
     return this.props.createdAt;
@@ -111,6 +132,7 @@ export class ExamResult extends AggregateRoot<ExamResultProps> {
       {
         ...props,
         status: props.status ?? 'IN_PROGRESS',
+        stars: props.stars ?? null,
         answers: props.answers ?? [],
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),

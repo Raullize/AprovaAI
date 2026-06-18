@@ -3,6 +3,7 @@ import { UseCase } from '../../../shared/core/use-case';
 import type { ExamResultRepository } from '../../../domain/simulations/repositories/exam-result.repository';
 import { ExamResult } from '../../../domain/simulations/entities/exam-result.entity';
 import type { LevelRepository } from '../../../domain/content/repositories/level.repository';
+import { UserRepository } from '../../../domain/users/repositories/user.repository';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 import { ValidationError } from '../../../shared/core/errors/validation.error';
 
@@ -12,19 +13,25 @@ export interface FinishSimulationRequest {
   timeSpent?: number;
 }
 
+export interface FinishSimulationResponse {
+  examResult: ExamResult;
+  xpGained: number;
+}
+
 @Injectable()
 export class FinishSimulationUseCase implements UseCase<
   FinishSimulationRequest,
-  ExamResult
+  FinishSimulationResponse
 > {
   constructor(
     @Inject('ExamResultRepository')
     private readonly examResultRepository: ExamResultRepository,
     @Inject('LevelRepository')
     private readonly levelRepository: LevelRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
-  async execute(request: FinishSimulationRequest): Promise<ExamResult> {
+  async execute(request: FinishSimulationRequest): Promise<FinishSimulationResponse> {
     // 1. Fetch simulation with answers
     const examResult = await this.examResultRepository.findById(
       request.examResultId,
@@ -62,8 +69,58 @@ export class FinishSimulationUseCase implements UseCase<
     // 4. Determine pass/fail
     const passed = percentage >= level.passingPercentage;
 
-    // 5. Update and save
-    // We recreate the entity to apply the business rules cleanly
+    // 5. Calculate stars dynamically based on level.passingPercentage
+    let stars = 0;
+    const P = level.passingPercentage;
+    if (percentage >= Math.max(90, P)) {
+      stars = 3;
+    } else if (passed) {
+      stars = 2;
+    } else if (percentage >= Math.max(0, P - 20) && correctAnswersCount > 0) {
+      stars = 1;
+    }
+
+    // 6. Fetch user and calculate delta XP
+    const user = await this.userRepository.findById(request.userId);
+    if (!user) {
+      throw new ResourceNotFoundError('User', request.userId);
+    }
+
+    const userAttempts = await this.examResultRepository.findHistoryByUserId(request.userId);
+    const completedAttemptsForLevel = userAttempts.filter(
+      (attempt) =>
+        attempt.levelId === examResult.levelId &&
+        attempt.status === 'COMPLETED' &&
+        attempt.id !== examResult.id,
+    );
+    const maxPrevStars = completedAttemptsForLevel.reduce((max, attempt) => {
+      const attemptStars = attempt.stars ?? 0;
+      return attemptStars > max ? attemptStars : max;
+    }, 0);
+
+    const getMultiplier = (s: number) => {
+      if (s === 3) return 1.0;
+      if (s === 2) return 0.5;
+      if (s === 1) return 0.2;
+      return 0.0;
+    };
+
+    const prevMultiplier = getMultiplier(maxPrevStars);
+    const newMultiplier = getMultiplier(stars);
+    const multiplierDiff = Math.max(0, newMultiplier - prevMultiplier);
+    const xpGained = Math.round(multiplierDiff * level.xpReward);
+
+    if (xpGained > 0) {
+      user.grantXp(xpGained);
+    }
+
+    // Update user streak & active activities
+    const today = new Date();
+    user.updateStreak(today);
+    await this.userRepository.logActivity(user.id, today);
+    await this.userRepository.save(user);
+
+    // 7. Update and save
     const updatedSimulation = ExamResult.create(
       {
         userId: examResult.userId,
@@ -73,6 +130,7 @@ export class FinishSimulationUseCase implements UseCase<
         totalQuestions: totalQuestions,
         percentage,
         passed,
+        stars,
         timeSpent: request.timeSpent ?? examResult.timeSpent,
         answers: examResult.answers,
         createdAt: examResult.createdAt,
@@ -81,10 +139,11 @@ export class FinishSimulationUseCase implements UseCase<
       examResult.id,
     );
 
-    // 6. Give XP to user if passed (This would ideally dispatch a Domain Event to the User module)
-    // For now, we will handle this via event or direct repository injection in a refactor
-    // Example: if (passed) { user.addXp(level.xpReward); userRepository.save(user); }
+    const savedResult = await this.examResultRepository.save(updatedSimulation);
 
-    return this.examResultRepository.save(updatedSimulation);
+    return {
+      examResult: savedResult,
+      xpGained,
+    };
   }
 }

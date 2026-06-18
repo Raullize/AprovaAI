@@ -4,17 +4,15 @@ import { createZodDto } from 'nestjs-zod';
 export const startSimulationSchema = z.object({
   levelId: z
     .string()
-    .uuid('ID do nível inválido')
-    .describe('ID único (UUID) do Nível/Simulado que o aluno deseja iniciar. Exemplo: 123e4567-e89b-12d3-a456-426614174000'),
+    .describe('ID único do Nível/Simulado que o aluno deseja iniciar. Exemplo: 123e4567-e89b-12d3-a456-426614174000'),
 });
 
 export const saveAnswerSchema = z.object({
   questionId: z
     .string()
-    .uuid('ID da questão inválido')
-    .describe('ID único (UUID) da Questão sendo respondida. Exemplo: 123e4567-e89b-12d3-a456-426614174000'),
+    .describe('ID único da Questão sendo respondida. Exemplo: 123e4567-e89b-12d3-a456-426614174000'),
   selectedOptions: z
-    .array(z.string().uuid('ID da opção inválido'))
+    .array(z.string())
     .min(1, 'Selecione pelo menos uma opção')
     .describe('Array contendo os IDs das opções que o aluno selecionou.'),
   timeSpent: z
