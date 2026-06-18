@@ -7,7 +7,12 @@ import Loading from '@/components/ui/Loading';
 import { StatusToggle } from '@/components/admin/shared/StatusToggle';
 import { topicsService } from '@/services/topics.service';
 import { useToast } from '@/hooks/use-toast';
-import { ICON_OPTIONS, COLOR_OPTIONS, getIconOption, getColorOption } from '@/config/examThemes';
+import {
+  ICON_OPTIONS,
+  COLOR_OPTIONS,
+  getIconOption,
+  getColorOption,
+} from '@/config/examThemes';
 import { cn } from '@/lib/utils';
 
 interface TopicFormData {
@@ -86,7 +91,14 @@ export function TopicFormModal({
       };
       load();
     } else {
-      reset({ status: 'ACTIVE', description: '', name: '', examId, iconKey: ICON_OPTIONS[0].key, colorScheme: COLOR_OPTIONS[0].key });
+      reset({
+        status: 'ACTIVE',
+        description: '',
+        name: '',
+        examId,
+        iconKey: ICON_OPTIONS[0].key,
+        colorScheme: COLOR_OPTIONS[0].key,
+      });
     }
   }, [isOpen, topicId, isEditing, examId, reset, toast]);
 
@@ -109,7 +121,12 @@ export function TopicFormModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? 'Editar Tópico' : 'Novo Tópico'} size="lg">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isEditing ? 'Editar Tópico' : 'Novo Tópico'}
+      size="lg"
+    >
       {isLoading ? (
         <div className="py-8 flex justify-center">
           <Loading size="md" />
@@ -124,7 +141,9 @@ export function TopicFormModal({
           />
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Descrição</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Descrição
+            </label>
             <textarea
               {...register('description')}
               rows={3}
@@ -135,18 +154,29 @@ export function TopicFormModal({
 
           {/* Preview */}
           <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-            <div className={cn('w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner', selectedColor.gradient)}>
+            <div
+              className={cn(
+                'w-12 h-12 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
+                selectedColor.gradient,
+              )}
+            >
               <SelectedIcon className="h-6 w-6 text-white" />
             </div>
             <div>
-              <p className="text-xs text-slate-400 font-medium uppercase tracking-wide mb-0.5">Preview</p>
-              <p className="font-bold text-slate-800">{watch('name') || 'Nome do Tópico'}</p>
+              <p className="text-xs text-slate-400 font-medium uppercase tracking-wide mb-0.5">
+                Preview
+              </p>
+              <p className="font-bold text-slate-800">
+                {watch('name') || 'Nome do Tópico'}
+              </p>
             </div>
           </div>
 
           {/* Icon picker */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Ícone</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Ícone
+            </label>
             <input type="hidden" {...register('iconKey')} />
             <div className="grid grid-cols-5 gap-2">
               {ICON_OPTIONS.map(({ key, label, Icon }) => (
@@ -154,12 +184,14 @@ export function TopicFormModal({
                   key={key}
                   type="button"
                   title={label}
-                  onClick={() => setValue('iconKey', key, { shouldDirty: true })}
+                  onClick={() =>
+                    setValue('iconKey', key, { shouldDirty: true })
+                  }
                   className={cn(
                     'flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all text-xs font-medium',
                     iconKeyValue === key
                       ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                      : 'border-slate-200 text-slate-500 hover:border-indigo-300 hover:bg-indigo-50/50'
+                      : 'border-slate-200 text-slate-500 hover:border-indigo-300 hover:bg-indigo-50/50',
                   )}
                 >
                   <Icon className="h-5 w-5" />
@@ -171,7 +203,9 @@ export function TopicFormModal({
 
           {/* Color picker */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Cor</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Cor
+            </label>
             <input type="hidden" {...register('colorScheme')} />
             <div className="flex flex-wrap gap-4">
               {COLOR_OPTIONS.map(({ key, label, gradient }) => (
@@ -179,13 +213,15 @@ export function TopicFormModal({
                   key={key}
                   type="button"
                   title={label}
-                  onClick={() => setValue('colorScheme', key, { shouldDirty: true })}
+                  onClick={() =>
+                    setValue('colorScheme', key, { shouldDirty: true })
+                  }
                   className={cn(
                     'w-10 h-10 rounded-full bg-gradient-to-br shadow-sm transition-all',
                     gradient,
                     colorSchemeValue === key
                       ? 'ring-4 ring-offset-2 ring-indigo-500 scale-110'
-                      : 'hover:scale-105'
+                      : 'hover:scale-105',
                   )}
                 />
               ))}
@@ -200,9 +236,17 @@ export function TopicFormModal({
           <input type="hidden" {...register('status')} />
 
           <div className="flex justify-end space-x-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Loading size="sm" /> : isEditing ? 'Salvar' : 'Criar'}
+              {isSaving ? (
+                <Loading size="sm" />
+              ) : isEditing ? (
+                'Salvar'
+              ) : (
+                'Criar'
+              )}
             </Button>
           </div>
         </form>

@@ -29,7 +29,7 @@ export function ExamCard({
   onDragOver,
   onDrop,
 }: ExamCardProps) {
-  const iconOpt  = getIconOption(exam.iconKey);
+  const iconOpt = getIconOption(exam.iconKey);
   const colorOpt = getColorOption(exam.colorScheme);
   const Icon = iconOpt.Icon;
 
@@ -40,14 +40,21 @@ export function ExamCard({
       onDragOver={onDragOver}
       onDrop={onDrop}
       className={`bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-200 p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing ${
-        isDragging ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400' : ''
+        isDragging
+          ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400'
+          : ''
       }`}
     >
       <div>
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
-            <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br', colorOpt.gradient)}>
+            <div
+              className={cn(
+                'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-gradient-to-br',
+                colorOpt.gradient,
+              )}
+            >
               <Icon className="h-5 w-5 text-white" />
             </div>
             <StatusBadge status={exam.status} />
@@ -74,7 +81,9 @@ export function ExamCard({
       {/* Footer */}
       <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
         <div className="flex items-center gap-1.5 text-sm text-slate-400">
-          <span className="font-semibold text-slate-600">{exam.topicsCount ?? 0}</span>
+          <span className="font-semibold text-slate-600">
+            {exam.topicsCount ?? 0}
+          </span>
           <span>tópicos</span>
         </div>
         <Button

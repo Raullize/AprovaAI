@@ -13,7 +13,6 @@ interface BreadcrumbProps {
 }
 
 const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, maxLength = 25 }) => {
-
   return (
     <nav aria-label="Breadcrumb">
       {/* Desktop view: Breadcrumb completo */}

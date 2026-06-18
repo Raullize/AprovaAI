@@ -8,7 +8,12 @@ import { StatusToggle } from '@/components/admin/shared/StatusToggle';
 import { examsService } from '@/services/exams.service';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
-import { ICON_OPTIONS, COLOR_OPTIONS, getIconOption, getColorOption } from '@/config/examThemes';
+import {
+  ICON_OPTIONS,
+  COLOR_OPTIONS,
+  getIconOption,
+  getColorOption,
+} from '@/config/examThemes';
 import { cn } from '@/lib/utils';
 
 interface ExamFormData {
@@ -89,7 +94,14 @@ export function ExamFormModal({
       };
       loadExam();
     } else {
-      reset({ status: 'ACTIVE', description: '', name: '', iconKey: ICON_OPTIONS[0].key, colorScheme: COLOR_OPTIONS[0].key, category: 'OUTROS' });
+      reset({
+        status: 'ACTIVE',
+        description: '',
+        name: '',
+        iconKey: ICON_OPTIONS[0].key,
+        colorScheme: COLOR_OPTIONS[0].key,
+        category: 'OUTROS',
+      });
     }
   }, [isOpen, examId, isEditing, reset, toast]);
 
@@ -112,7 +124,12 @@ export function ExamFormModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={isEditing ? 'Editar Exame' : 'Novo Exame'} size="lg">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={isEditing ? 'Editar Exame' : 'Novo Exame'}
+      size="lg"
+    >
       {isLoading ? (
         <div className="py-8 flex justify-center">
           <Loading size="md" />
@@ -127,7 +144,9 @@ export function ExamFormModal({
           />
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Descrição</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Descrição
+            </label>
             <textarea
               {...register('description')}
               rows={3}
@@ -137,7 +156,9 @@ export function ExamFormModal({
           </div>
 
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Categoria</label>
+            <label className="text-sm font-medium text-gray-700">
+              Categoria
+            </label>
             <select
               {...register('category')}
               disabled={isSaving}
@@ -153,18 +174,29 @@ export function ExamFormModal({
 
           {/* Preview */}
           <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
-            <div className={cn('w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner', selectedColor.gradient)}>
+            <div
+              className={cn(
+                'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
+                selectedColor.gradient,
+              )}
+            >
               <SelectedIcon className="h-7 w-7 text-white" />
             </div>
             <div>
-              <p className="text-xs text-slate-400 font-medium uppercase tracking-wide mb-0.5">Preview</p>
-              <p className="font-bold text-slate-800">{watch('name') || 'Nome do Exame'}</p>
+              <p className="text-xs text-slate-400 font-medium uppercase tracking-wide mb-0.5">
+                Preview
+              </p>
+              <p className="font-bold text-slate-800">
+                {watch('name') || 'Nome do Exame'}
+              </p>
             </div>
           </div>
 
           {/* Icon picker */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Ícone</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Ícone
+            </label>
             <input type="hidden" {...register('iconKey')} />
             <div className="grid grid-cols-5 gap-2">
               {ICON_OPTIONS.map(({ key, label, Icon }) => (
@@ -172,12 +204,14 @@ export function ExamFormModal({
                   key={key}
                   type="button"
                   title={label}
-                  onClick={() => setValue('iconKey', key, { shouldDirty: true })}
+                  onClick={() =>
+                    setValue('iconKey', key, { shouldDirty: true })
+                  }
                   className={cn(
                     'flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all text-xs font-medium',
                     iconKeyValue === key
                       ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                      : 'border-slate-200 text-slate-500 hover:border-indigo-300 hover:bg-indigo-50/50'
+                      : 'border-slate-200 text-slate-500 hover:border-indigo-300 hover:bg-indigo-50/50',
                   )}
                 >
                   <Icon className="h-5 w-5" />
@@ -189,7 +223,9 @@ export function ExamFormModal({
 
           {/* Color picker */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Cor</label>
+            <label className="block text-sm font-medium text-gray-700">
+              Cor
+            </label>
             <input type="hidden" {...register('colorScheme')} />
             <div className="flex flex-wrap gap-4">
               {COLOR_OPTIONS.map(({ key, label, gradient }) => (
@@ -197,13 +233,15 @@ export function ExamFormModal({
                   key={key}
                   type="button"
                   title={label}
-                  onClick={() => setValue('colorScheme', key, { shouldDirty: true })}
+                  onClick={() =>
+                    setValue('colorScheme', key, { shouldDirty: true })
+                  }
                   className={cn(
                     'w-10 h-10 rounded-full bg-gradient-to-br shadow-sm transition-all',
                     gradient,
                     colorSchemeValue === key
                       ? 'ring-4 ring-offset-2 ring-indigo-500 scale-110'
-                      : 'hover:scale-105'
+                      : 'hover:scale-105',
                   )}
                 />
               ))}
@@ -218,9 +256,17 @@ export function ExamFormModal({
           <input type="hidden" {...register('status')} />
 
           <div className="flex justify-end space-x-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>Cancelar</Button>
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
             <Button type="submit" disabled={isSaving}>
-              {isSaving ? <Loading size="sm" /> : isEditing ? 'Salvar' : 'Criar'}
+              {isSaving ? (
+                <Loading size="sm" />
+              ) : isEditing ? (
+                'Salvar'
+              ) : (
+                'Criar'
+              )}
             </Button>
           </div>
         </form>

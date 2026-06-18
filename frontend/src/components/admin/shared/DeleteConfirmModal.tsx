@@ -60,7 +60,9 @@ export function DeleteConfirmModal({
             <p className="text-sm text-slate-500 mt-2 max-w-sm">
               Essa ação não pode ser desfeita. Isso excluirá permanentemente{' '}
               {entityLabel}{' '}
-              <span className="font-semibold text-slate-800">"{entityName}"</span>{' '}
+              <span className="font-semibold text-slate-800">
+                "{entityName}"
+              </span>{' '}
               e todos os dados associados.
             </p>
           </div>

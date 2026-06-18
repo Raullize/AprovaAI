@@ -50,7 +50,9 @@ export function QuestionCard({
       onDragOver={onDragOver}
       onDrop={onDrop}
       className={`bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-200 p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing ${
-        isDragging ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400' : ''
+        isDragging
+          ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400'
+          : ''
       }`}
     >
       {/* Header */}
@@ -131,12 +133,16 @@ export function QuestionCard({
       {/* Footer */}
       <div className="mt-5 pt-4 border-t border-slate-100 flex justify-between items-center text-xs text-slate-500 font-medium">
         <div className="flex items-center gap-1">
-          <span className="text-slate-700 font-bold">{question.options.length}</span>
+          <span className="text-slate-700 font-bold">
+            {question.options.length}
+          </span>
           <span>alternativas</span>
         </div>
         <div className="flex items-center gap-1">
           <span className="text-emerald-600 font-bold">{correctCount}</span>
-          <span className="text-emerald-700/80">correta{correctCount !== 1 ? 's' : ''}</span>
+          <span className="text-emerald-700/80">
+            correta{correctCount !== 1 ? 's' : ''}
+          </span>
         </div>
       </div>
     </div>

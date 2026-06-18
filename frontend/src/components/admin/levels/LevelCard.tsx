@@ -18,15 +18,18 @@ interface LevelCardProps {
   onDrop: () => void;
 }
 
-const CARD_THEMES: Record<string, {
-  iconBg: string;
-  iconText: string;
-  hoverBorder: string;
-  hoverShadow: string;
-  buttonText: string;
-  buttonBorder: string;
-  buttonHoverBg: string;
-}> = {
+const CARD_THEMES: Record<
+  string,
+  {
+    iconBg: string;
+    iconText: string;
+    hoverBorder: string;
+    hoverShadow: string;
+    buttonText: string;
+    buttonBorder: string;
+    buttonHoverBg: string;
+  }
+> = {
   indigo: {
     iconBg: 'bg-indigo-50 group-hover:bg-indigo-100',
     iconText: 'text-indigo-600',
@@ -122,18 +125,25 @@ export function LevelCard({
       onDragOver={onDragOver}
       onDrop={onDrop}
       className={cn(
-        "bg-white rounded-2xl border border-slate-200 transition-all duration-200 p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing hover:shadow-lg",
+        'bg-white rounded-2xl border border-slate-200 transition-all duration-200 p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing hover:shadow-lg',
         theme.hoverBorder,
         theme.hoverShadow,
-        isDragging ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400' : ''
+        isDragging
+          ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400'
+          : '',
       )}
     >
       <div>
         {/* Header */}
         <div className="flex justify-between items-start mb-4">
           <div className="flex items-center gap-3">
-            <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors", theme.iconBg)}>
-              <Target className={cn("h-5 w-5", theme.iconText)} />
+            <div
+              className={cn(
+                'w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors',
+                theme.iconBg,
+              )}
+            >
+              <Target className={cn('h-5 w-5', theme.iconText)} />
             </div>
             <StatusBadge status={level.status} />
           </div>
@@ -155,12 +165,20 @@ export function LevelCard({
         {/* Info Grid */}
         <div className="grid grid-cols-2 gap-2 mt-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400">Recompensa</span>
-            <span className="text-sm font-semibold text-amber-600">{level.xpReward} XP</span>
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400">
+              Recompensa
+            </span>
+            <span className="text-sm font-semibold text-amber-600">
+              {level.xpReward} XP
+            </span>
           </div>
           <div className="flex flex-col">
-            <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400">Aprovação</span>
-            <span className="text-sm font-semibold text-slate-700">{level.passingPercentage}%</span>
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400">
+              Aprovação
+            </span>
+            <span className="text-sm font-semibold text-slate-700">
+              {level.passingPercentage}%
+            </span>
           </div>
         </div>
       </div>
@@ -168,14 +186,21 @@ export function LevelCard({
       {/* Footer */}
       <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
         <div className="flex items-center gap-1.5 text-sm text-slate-400">
-          <span className="font-semibold text-slate-600">{level.questionsCount ?? 0}</span>
+          <span className="font-semibold text-slate-600">
+            {level.questionsCount ?? 0}
+          </span>
           <span>questões</span>
         </div>
         <Button
           variant="outline"
           size="sm"
           onClick={() => onNavigate(level.id)}
-          className={cn("text-xs transition-all", theme.buttonText, theme.buttonBorder, theme.buttonHoverBg)}
+          className={cn(
+            'text-xs transition-all',
+            theme.buttonText,
+            theme.buttonBorder,
+            theme.buttonHoverBg,
+          )}
         >
           Gerenciar Questões <ChevronRight className="h-3.5 w-3.5 ml-1" />
         </Button>

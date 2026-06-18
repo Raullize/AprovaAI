@@ -160,7 +160,10 @@ export function LevelFormModal({
               type="number"
               placeholder="Opcional"
               {...register('timeLimit', {
-                min: { value: 1, message: 'O tempo deve ser no mínimo 1 minuto' },
+                min: {
+                  value: 1,
+                  message: 'O tempo deve ser no mínimo 1 minuto',
+                },
               })}
               error={errors.timeLimit?.message}
             />

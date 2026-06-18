@@ -38,7 +38,9 @@ export function PageHeader({
                 <ArrowLeft className="h-5 w-5" />
               </button>
             )}
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">
+              {title}
+            </h1>
           </div>
           {subtitle && (
             <p className="text-slate-500 text-sm mt-0.5">{subtitle}</p>

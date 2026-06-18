@@ -52,7 +52,6 @@ export default function Register() {
   const navigate = useNavigate();
   const { signUp } = useAuth();
 
-
   const handleNextStep = async () => {
     const isStep1Valid = await trigger([
       'fullName',
@@ -264,59 +263,60 @@ export default function Register() {
             />
 
             <label className="flex items-start gap-3 mt-4 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer group">
-            <div className="relative flex items-start mt-0.5">
-              <input
-                {...register('acceptTerms')}
-                type="checkbox"
-                className="w-4 h-4 border-slate-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer peer"
-              />
-            </div>
-            <div className="text-sm">
-              <p className="font-medium text-slate-900 group-hover:text-indigo-700 transition-colors">
-                Aceito os termos
+              <div className="relative flex items-start mt-0.5">
+                <input
+                  {...register('acceptTerms')}
+                  type="checkbox"
+                  className="w-4 h-4 border-slate-300 rounded text-indigo-600 focus:ring-indigo-500 cursor-pointer peer"
+                />
+              </div>
+              <div className="text-sm">
+                <p className="font-medium text-slate-900 group-hover:text-indigo-700 transition-colors">
+                  Aceito os termos
+                </p>
+                <p className="text-slate-500">
+                  Concordo com os Termos de Uso e a Política de Privacidade do
+                  AprovaAI.
+                </p>
+              </div>
+            </label>
+            {errors.acceptTerms && (
+              <p className="text-sm text-red-600 px-1">
+                {errors.acceptTerms.message}
               </p>
-              <p className="text-slate-500">
-                Concordo com os Termos de Uso e a Política de Privacidade do AprovaAI.
-              </p>
-            </div>
-          </label>
-          {errors.acceptTerms && (
-            <p className="text-sm text-red-600 px-1">
-              {errors.acceptTerms.message}
-            </p>
-          )}
+            )}
 
-          <div className="flex gap-3 mt-6">
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              className="w-1/3"
-              onClick={() => setStep(1)}
-              disabled={isLoading}
-            >
-              Voltar
-            </Button>
-            <Button
-              type="submit"
-              size="lg"
-              className="w-2/3"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loading size="xs" className="mr-2" />
-                  Criando conta...
-                </>
-              ) : (
-                <>
-                  <ShieldCheck className="w-5 h-5 mr-2" />
-                  Criar conta
-                </>
-              )}
-            </Button>
+            <div className="flex gap-3 mt-6">
+              <Button
+                type="button"
+                variant="outline"
+                size="lg"
+                className="w-1/3"
+                onClick={() => setStep(1)}
+                disabled={isLoading}
+              >
+                Voltar
+              </Button>
+              <Button
+                type="submit"
+                size="lg"
+                className="w-2/3"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <>
+                    <Loading size="xs" className="mr-2" />
+                    Criando conta...
+                  </>
+                ) : (
+                  <>
+                    <ShieldCheck className="w-5 h-5 mr-2" />
+                    Criar conta
+                  </>
+                )}
+              </Button>
+            </div>
           </div>
-        </div>
         )}
 
         {step === 1 && (
