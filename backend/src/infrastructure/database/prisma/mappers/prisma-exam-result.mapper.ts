@@ -9,9 +9,25 @@ import {
   SimulationMode,
 } from '../../../../domain/simulations/entities/exam-result.entity';
 
+type PrismaExamResultWithRelations = PrismaExamResult & {
+  answers?: PrismaExamAnswer[];
+  level?: {
+    name: string;
+    topic?: {
+      name: string;
+      exam?: {
+        name: string;
+        category?: unknown;
+        iconKey?: string | null;
+        colorScheme?: string | null;
+      } | null;
+    } | null;
+  } | null;
+};
+
 export class PrismaExamResultMapper {
   static toDomain(
-    raw: PrismaExamResult & { answers?: PrismaExamAnswer[] },
+    raw: PrismaExamResultWithRelations,
   ): ExamResult {
     return ExamResult.create(
       {
@@ -27,6 +43,29 @@ export class PrismaExamResultMapper {
         timeSpent: raw.timeSpent,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
+        level: raw.level
+          ? {
+              name: raw.level.name,
+              topic: raw.level.topic
+                ? {
+                    name: raw.level.topic.name,
+                    exam: raw.level.topic.exam
+                      ? {
+                          name: raw.level.topic.exam.name,
+                          category:
+                            raw.level.topic.exam.category !== undefined &&
+                            raw.level.topic.exam.category !== null
+                              ? String(raw.level.topic.exam.category)
+                              : undefined,
+                          iconKey: raw.level.topic.exam.iconKey ?? undefined,
+                          colorScheme:
+                            raw.level.topic.exam.colorScheme ?? undefined,
+                        }
+                      : undefined,
+                  }
+                : undefined,
+            }
+          : undefined,
         answers: raw.answers?.map((ans) =>
           ExamAnswer.create(
             {
