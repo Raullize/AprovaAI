@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
+import { Card } from '../../../components/ui/Card';
+import { ProgressBar } from '../../../components/ui/ProgressBar';
+import { IconBox } from '../../../components/ui/IconBox';
 
 const RECENT_EXAMS = [
   {
@@ -57,11 +60,20 @@ export default function StudentHome() {
         {/* Metas e Gamificação */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           {/* Streak Card */}
-          <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-5 rounded-3xl border border-orange-100/70 shadow-sm flex flex-col justify-between">
+          <Card
+            className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-100/70 flex flex-col justify-between"
+            padding="normal"
+          >
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-md shadow-orange-500/20 shrink-0">
-                <Flame className="h-6 w-6 text-white fill-current animate-pulse" />
-              </div>
+              <IconBox
+                icon={
+                  <Flame className="h-6 w-6 text-white fill-current animate-pulse" />
+                }
+                size="lg"
+                shape="square"
+                className="bg-orange-500 shadow-md shadow-orange-500/20"
+                iconClassName=""
+              />
               <div>
                 <p className="text-xs text-orange-700/80 font-bold uppercase tracking-wider">
                   Ofensiva
@@ -88,14 +100,17 @@ export default function StudentHome() {
                 </div>
               ))}
             </div>
-          </div>
+          </Card>
 
           {/* XP Total Card */}
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <Card className="flex flex-col justify-between" padding="normal">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
-                <Zap className="h-5 w-5 text-indigo-600 animate-pulse" />
-              </div>
+              <IconBox
+                icon={<Zap className="h-5 w-5 animate-pulse" />}
+                colorScheme="indigo"
+                size="md"
+                shape="square"
+              />
               <div className="min-w-0">
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
                   XP Total
@@ -104,24 +119,26 @@ export default function StudentHome() {
               </div>
             </div>
             <div className="mt-3">
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-indigo-500 rounded-full"
-                  style={{ width: `${totalXP % 100}%` }}
-                />
-              </div>
+              <ProgressBar
+                progress={totalXP % 100}
+                colorScheme="indigo"
+                size="md"
+              />
               <p className="text-[10px] text-slate-400 mt-1">
                 Faltam {xpNeededForNextLevel} XP para o Nível {currentLevel + 1}
               </p>
             </div>
-          </div>
+          </Card>
 
           {/* Accuracy Card */}
-          <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+          <Card className="flex flex-col justify-between" padding="normal">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
-                <Award className="h-5 w-5 text-emerald-600" />
-              </div>
+              <IconBox
+                icon={<Award className="h-5 w-5" />}
+                colorScheme="emerald"
+                size="md"
+                shape="square"
+              />
               <div className="min-w-0">
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
                   Aproveitamento
@@ -132,17 +149,12 @@ export default function StudentHome() {
               </div>
             </div>
             <div className="mt-3">
-              <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-emerald-500 rounded-full"
-                  style={{ width: '82%' }}
-                />
-              </div>
+              <ProgressBar progress={82} colorScheme="emerald" size="md" />
               <p className="text-[10px] text-slate-400 mt-1">
                 Mapeado das últimas 50 questões
               </p>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Ações Rápidas */}
@@ -152,10 +164,13 @@ export default function StudentHome() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           {/* Quick Simulation */}
-          <div className="group text-left p-5 bg-white rounded-3xl border border-slate-200 flex items-start gap-4">
-            <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center shrink-0 text-indigo-500">
-              <Zap className="h-6 w-6 fill-current" />
-            </div>
+          <Card padding="normal" className="flex items-start gap-4 text-left">
+            <IconBox
+              icon={<Zap className="h-6 w-6 fill-current" />}
+              colorScheme="indigo"
+              size="lg"
+              shape="square"
+            />
             <div>
               <h3 className="font-bold text-slate-800 text-base">
                 Simulado Expresso
@@ -165,25 +180,35 @@ export default function StudentHome() {
                 tópicos da sua trilha.
               </p>
             </div>
-          </div>
+          </Card>
 
           {/* Spaced Repetition/Incorrect questions review */}
           <button
             onClick={() => navigate('/dashboard/simulations')}
-            className="group text-left p-5 bg-white rounded-3xl border border-slate-200 hover:border-rose-300 hover:shadow-md hover:shadow-rose-500/5 transition-all flex items-start gap-4"
+            className="group w-full"
           >
-            <div className="w-12 h-12 bg-rose-50 rounded-2xl flex items-center justify-center shrink-0 text-rose-500 group-hover:scale-110 transition-transform">
-              <History className="h-6 w-6" />
-            </div>
-            <div>
-              <h3 className="font-bold text-slate-800 text-base group-hover:text-rose-650 transition-colors">
-                Histórico de Simulados
-              </h3>
-              <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-                Acesse o histórico completo de tentativas e confira seu
-                progresso nos simulados realizados.
-              </p>
-            </div>
+            <Card
+              hoverEffect
+              padding="normal"
+              className="flex items-start gap-4 text-left border-slate-200 group-hover:border-rose-300 group-hover:shadow-rose-500/5 transition-all"
+            >
+              <IconBox
+                icon={<History className="h-6 w-6" />}
+                colorScheme="rose"
+                size="lg"
+                shape="square"
+                className="group-hover:scale-110 transition-transform"
+              />
+              <div>
+                <h3 className="font-bold text-slate-800 text-base group-hover:text-rose-650 transition-colors">
+                  Histórico de Simulados
+                </h3>
+                <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  Acesse o histórico completo de tentativas e confira seu
+                  progresso nos simulados realizados.
+                </p>
+              </div>
+            </Card>
           </button>
         </div>
 
@@ -204,44 +229,47 @@ export default function StudentHome() {
                   <button
                     key={exam.id}
                     onClick={() => navigate(`/dashboard/explore/${exam.id}`)}
-                    className="group text-left bg-white rounded-3xl p-5 shadow-sm border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all duration-200 hover:-translate-y-1"
+                    className="group w-full"
                   >
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={cn(
-                          'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
-                          colorOpt.gradient,
-                        )}
-                      >
-                        <Icon className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-slate-800 truncate text-lg group-hover:text-indigo-600 transition-colors">
-                          {exam.title}
-                        </h3>
-                        <p className="text-sm text-slate-500 mt-0.5 truncate">
-                          Próximo:{' '}
-                          <span className="font-medium text-slate-700">
-                            {exam.lastTopic}
-                          </span>
-                        </p>
+                    <Card
+                      hoverEffect
+                      padding="normal"
+                      className="text-left group-hover:-translate-y-1"
+                    >
+                      <div className="flex items-start gap-4">
+                        <div
+                          className={cn(
+                            'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner',
+                            colorOpt.gradient,
+                          )}
+                        >
+                          <Icon className="h-6 w-6 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-slate-800 truncate text-lg group-hover:text-indigo-600 transition-colors">
+                            {exam.title}
+                          </h3>
+                          <p className="text-sm text-slate-500 mt-0.5 truncate">
+                            Próximo:{' '}
+                            <span className="font-medium text-slate-700">
+                              {exam.lastTopic}
+                            </span>
+                          </p>
 
-                        <div className="mt-4 flex items-center gap-3">
-                          <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              className={cn(
-                                'h-full rounded-full bg-gradient-to-r',
-                                colorOpt.gradient,
-                              )}
-                              style={{ width: `${exam.progress}%` }}
+                          <div className="mt-4 flex items-center gap-3">
+                            <ProgressBar
+                              progress={exam.progress}
+                              size="md"
+                              barClassName={colorOpt.gradient}
+                              className="flex-1"
                             />
+                            <span className="text-xs font-bold text-slate-400 w-8">
+                              {exam.progress}%
+                            </span>
                           </div>
-                          <span className="text-xs font-bold text-slate-400 w-8">
-                            {exam.progress}%
-                          </span>
                         </div>
                       </div>
-                    </div>
+                    </Card>
                   </button>
                 );
               })}
@@ -249,10 +277,14 @@ export default function StudentHome() {
           </>
         ) : (
           /* Empty state */
-          <div className="mb-8 bg-white rounded-3xl p-10 text-center border border-slate-200 shadow-sm">
-            <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <PlayCircle className="h-8 w-8 text-indigo-400" />
-            </div>
+          <Card padding="large" className="mb-8 text-center">
+            <IconBox
+              icon={<PlayCircle className="h-8 w-8 text-indigo-400" />}
+              colorScheme="indigo"
+              size="xl"
+              shape="square"
+              className="mx-auto mb-4"
+            />
             <h2 className="text-lg font-bold text-slate-800 mb-2">
               Você ainda não iniciou nenhum exame
             </h2>
@@ -267,7 +299,7 @@ export default function StudentHome() {
               <Compass className="h-5 w-5" />
               Explorar Catálogo
             </button>
-          </div>
+          </Card>
         )}
 
         {/* Conquistas Recentes */}
@@ -284,10 +316,13 @@ export default function StudentHome() {
           </button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center shrink-0 text-white shadow-sm">
-              <Trophy className="h-5 w-5" />
-            </div>
+          <Card padding="small" className="flex items-center gap-3">
+            <IconBox
+              icon={<Trophy className="h-5 w-5 text-white" />}
+              size="md"
+              shape="circle"
+              className="bg-amber-500"
+            />
             <div>
               <p className="font-bold text-slate-800 text-xs">
                 Primeiros Passos
@@ -296,33 +331,42 @@ export default function StudentHome() {
                 Iniciou a primeira trilha
               </p>
             </div>
-          </div>
-          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shrink-0 text-white shadow-sm">
-              <Zap className="h-5 w-5" />
-            </div>
+          </Card>
+          <Card padding="small" className="flex items-center gap-3">
+            <IconBox
+              icon={<Zap className="h-5 w-5 text-white" />}
+              size="md"
+              shape="circle"
+              className="bg-indigo-500"
+            />
             <div>
               <p className="font-bold text-slate-800 text-xs">Foco Total</p>
               <p className="text-[10px] text-slate-400">
                 Estudou 3 dias seguidos
               </p>
             </div>
-          </div>
-          <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3 opacity-50 relative group">
-            <div className="w-10 h-10 bg-slate-300 rounded-full flex items-center justify-center shrink-0 text-white shadow-sm">
-              <Lock className="h-5 w-5" />
-            </div>
+          </Card>
+          <Card
+            padding="small"
+            className="flex items-center gap-3 opacity-50 relative group"
+          >
+            <IconBox
+              icon={<Lock className="h-5 w-5 text-white" />}
+              size="md"
+              shape="circle"
+              className="bg-slate-300"
+            />
             <div>
               <p className="font-bold text-slate-800 text-xs">
                 Mestre de Nuvem
               </p>
               <p className="text-[10px] text-slate-400">Resolva 100 questões</p>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Explore CTA */}
-        <div className="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-3xl p-6 sm:p-8 border border-indigo-100 flex flex-col sm:flex-row items-center gap-6 justify-between">
+        <div className="bg-gradient-to-br from-indigo-50 to-violet-50 rounded-3xl p-6 sm:p-8 border border-indigo-100 flex flex-col sm:flex-row items-center gap-6 justify-between shadow-sm">
           <div className="text-center sm:text-left">
             <h3 className="text-lg font-bold text-indigo-900 mb-1">
               Quer começar algo novo?

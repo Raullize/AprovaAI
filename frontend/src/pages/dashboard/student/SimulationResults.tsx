@@ -13,6 +13,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { Card } from '../../../components/ui/Card';
 
 // --- Types ---
 interface AnswerRecord {
@@ -328,7 +329,7 @@ export default function SimulationResults() {
       <div className="px-4 -mt-6 relative z-10">
         <div className="grid grid-cols-3 gap-3 max-w-md mx-auto">
           {/* Acertos */}
-          <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100 text-center">
+          <Card padding="small" className="text-center">
             <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
             </div>
@@ -336,31 +337,31 @@ export default function SimulationResults() {
               {animatedCorrect}
             </p>
             <p className="text-xs text-slate-500 mt-0.5">Acertos</p>
-          </div>
+          </Card>
 
           {/* Erros */}
-          <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100 text-center">
+          <Card padding="small" className="text-center">
             <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-2">
               <XCircle className="h-5 w-5 text-red-400" />
             </div>
             <p className="text-2xl font-bold text-slate-800">{animatedWrong}</p>
             <p className="text-xs text-slate-500 mt-0.5">Erros</p>
-          </div>
+          </Card>
 
           {/* XP */}
-          <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100 text-center">
+          <Card padding="small" className="text-center">
             <div className="w-10 h-10 bg-amber-100 rounded-xl flex items-center justify-center mx-auto mb-2">
               <Zap className="h-5 w-5 text-amber-500 fill-amber-400" />
             </div>
             <p className="text-2xl font-bold text-amber-600">+{animatedXP}</p>
             <p className="text-xs text-slate-500 mt-0.5">XP Ganho</p>
-          </div>
+          </Card>
         </div>
 
         {/* Score & time */}
         <div className="mt-3 grid grid-cols-2 gap-3 max-w-md mx-auto">
           {/* Score bar */}
-          <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100 col-span-1">
+          <Card padding="small" className="col-span-1">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs text-slate-500 font-medium">
                 Aproveitamento
@@ -391,10 +392,13 @@ export default function SimulationResults() {
                 Mínimo: {passingPercentage}%
               </span>
             </div>
-          </div>
+          </Card>
 
           {/* Time */}
-          <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100 flex flex-col items-center justify-center">
+          <Card
+            padding="small"
+            className="flex flex-col items-center justify-center"
+          >
             <div className="w-10 h-10 bg-slate-100 rounded-xl flex items-center justify-center mb-2">
               <Clock className="h-5 w-5 text-slate-500" />
             </div>
@@ -402,25 +406,28 @@ export default function SimulationResults() {
               {timeSpent > 0 ? formatTime(timeSpent) : '—'}
             </p>
             <p className="text-xs text-slate-500">Tempo</p>
-          </div>
+          </Card>
         </div>
       </div>
 
       {/* Review section */}
       <div className="px-4 mt-4">
         <div className="max-w-md mx-auto">
-          <button
-            onClick={() => setShowReview(!showReview)}
-            className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors"
-          >
-            <span className="text-sm font-semibold text-slate-700">
-              Revisar Respostas
-            </span>
-            {showReview ? (
-              <ChevronUp className="h-4 w-4 text-slate-400" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-slate-400" />
-            )}
+          <button onClick={() => setShowReview(!showReview)} className="w-full">
+            <Card
+              hoverEffect
+              padding="normal"
+              className="flex items-center justify-between text-left"
+            >
+              <span className="text-sm font-semibold text-slate-700">
+                Revisar Respostas
+              </span>
+              {showReview ? (
+                <ChevronUp className="h-4 w-4 text-slate-400" />
+              ) : (
+                <ChevronDown className="h-4 w-4 text-slate-400" />
+              )}
+            </Card>
           </button>
 
           {showReview && answers.length > 0 && (
@@ -522,7 +529,10 @@ export default function SimulationResults() {
                     if (!q) return null;
 
                     return (
-                      <div className="p-5 rounded-3xl border border-slate-200 bg-white shadow-sm space-y-4 text-left transition-all">
+                      <Card
+                        padding="normal"
+                        className="space-y-4 text-left transition-all"
+                      >
                         {/* Question Header */}
                         <div className="flex items-start gap-3">
                           {ans.correct ? (
@@ -580,7 +590,7 @@ export default function SimulationResults() {
                           </span>
                           {q.explanation}
                         </div>
-                      </div>
+                      </Card>
                     );
                   })()}
 

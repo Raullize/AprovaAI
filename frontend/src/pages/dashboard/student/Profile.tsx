@@ -23,6 +23,9 @@ import { cn } from '../../../lib/utils';
 import { toast } from 'sonner';
 import UserAvatar from '../../../components/ui/UserAvatar';
 import Modal from '../../../components/ui/Modal';
+import { Card } from '../../../components/ui/Card';
+import { ProgressBar } from '../../../components/ui/ProgressBar';
+import { IconBox } from '../../../components/ui/IconBox';
 
 interface Achievement {
   id: string;
@@ -317,7 +320,10 @@ export default function Profile() {
             </div>
 
             {/* User Profile Card */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-6 relative">
+            <Card
+              padding="large"
+              className="flex flex-col sm:flex-row items-center gap-6 relative"
+            >
               <button
                 onClick={() => setSearchParams({ settings: 'true' })}
                 className="absolute top-6 right-6 p-2 rounded-xl text-slate-400 hover:text-slate-650 hover:bg-slate-50 active:scale-95 transition-all border border-slate-100"
@@ -344,16 +350,19 @@ export default function Profile() {
                   </span>
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {/* XP Total Card */}
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <Card className="flex flex-col justify-between" padding="normal">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0">
-                    <Zap className="h-5 w-5 text-indigo-600 animate-pulse" />
-                  </div>
+                  <IconBox
+                    icon={<Zap className="h-5 w-5 animate-pulse" />}
+                    colorScheme="indigo"
+                    size="md"
+                    shape="square"
+                  />
                   <div className="min-w-0">
                     <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
                       XP Total
@@ -364,25 +373,27 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-indigo-500 rounded-full"
-                      style={{ width: `${totalXP % 100}%` }}
-                    />
-                  </div>
+                  <ProgressBar
+                    progress={totalXP % 100}
+                    colorScheme="indigo"
+                    size="md"
+                  />
                   <p className="text-[10px] text-slate-400 mt-1">
                     Faltam {xpNeededForNextLevel} XP para o Nível{' '}
                     {currentLevel + 1}
                   </p>
                 </div>
-              </div>
+              </Card>
 
               {/* Accuracy Card */}
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <Card className="flex flex-col justify-between" padding="normal">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
-                    <Award className="h-5 w-5 text-emerald-600" />
-                  </div>
+                  <IconBox
+                    icon={<Award className="h-5 w-5" />}
+                    colorScheme="emerald"
+                    size="md"
+                    shape="square"
+                  />
                   <div className="min-w-0">
                     <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
                       Aproveitamento
@@ -393,24 +404,19 @@ export default function Profile() {
                   </div>
                 </div>
                 <div className="mt-3">
-                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-emerald-500 rounded-full"
-                      style={{ width: '82%' }}
-                    />
-                  </div>
+                  <ProgressBar progress={82} colorScheme="emerald" size="md" />
                   <p className="text-[10px] text-slate-400 mt-1">
                     Mapeado das últimas 50 questões
                   </p>
                 </div>
-              </div>
+              </Card>
 
-              <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col justify-between">
+              <Card className="flex flex-col justify-between" padding="normal">
                 <div>
                   <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
                     Plano Atual
                   </p>
-                  <p className="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-1.5">
+                  <p className="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-1.5 font-display">
                     <Shield className="h-5 w-5 text-indigo-500" />
                     Free
                   </p>
@@ -418,16 +424,22 @@ export default function Profile() {
                 <p className="text-[10px] text-slate-400 mt-2">
                   Plano Gratuito
                 </p>
-              </div>
+              </Card>
             </div>
 
             {/* Monthly Streak Calendar */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+            <Card padding="large">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-orange-500 rounded-2xl flex items-center justify-center shadow-md shadow-orange-500/20 shrink-0">
-                    <Flame className="h-6 w-6 text-white fill-current animate-pulse" />
-                  </div>
+                  <IconBox
+                    icon={
+                      <Flame className="h-6 w-6 text-white fill-current animate-pulse" />
+                    }
+                    size="lg"
+                    shape="square"
+                    className="bg-orange-500 shadow-md shadow-orange-500/20"
+                    iconClassName=""
+                  />
                   <div>
                     <h3 className="font-bold text-slate-800 text-base font-display">
                       Ofensiva Mensal
@@ -487,10 +499,10 @@ export default function Profile() {
                   );
                 })}
               </div>
-            </div>
+            </Card>
 
             {/* Tabs for Achievements and Ranking */}
-            <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <Card padding="none" className="overflow-hidden">
               <div className="flex border-b border-slate-100 bg-slate-50/50 p-2 gap-1">
                 <button
                   onClick={() => setActiveTab('achievements')}
@@ -641,7 +653,7 @@ export default function Profile() {
                   </div>
                 )}
               </div>
-            </div>
+            </Card>
           </>
         ) : (
           /* Profile Settings Panel */
@@ -660,7 +672,10 @@ export default function Profile() {
             </div>
 
             {/* Profile image change and removal option */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center gap-6">
+            <Card
+              padding="large"
+              className="flex flex-col sm:flex-row items-center gap-6"
+            >
               <div
                 className="relative group cursor-pointer"
                 onClick={handleAvatarClick}
@@ -703,10 +718,10 @@ export default function Profile() {
                   )}
                 </div>
               </div>
-            </div>
+            </Card>
 
             {/* Form edit personal info */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+            <Card padding="large">
               <h3 className="font-bold text-slate-850 text-base mb-4 font-display">
                 Dados Cadastrais
               </h3>
@@ -759,10 +774,10 @@ export default function Profile() {
                   </button>
                 </div>
               </form>
-            </div>
+            </Card>
 
             {/* Change Password Panel */}
-            <div className="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+            <Card padding="large">
               <h3 className="font-bold text-slate-850 text-base mb-4 font-display flex items-center gap-2">
                 <Key className="h-5 w-5 text-indigo-500" />
                 Alterar Senha
@@ -884,10 +899,13 @@ export default function Profile() {
                   </button>
                 </div>
               </form>
-            </div>
+            </Card>
 
             {/* Danger Zone */}
-            <div className="bg-rose-50/50 rounded-3xl p-6 border border-rose-100 shadow-sm space-y-4">
+            <Card
+              padding="large"
+              className="bg-rose-50/50 border-rose-100 space-y-4"
+            >
               <div>
                 <h3 className="font-bold text-rose-800 text-base font-display flex items-center gap-2">
                   <Trash2 className="h-5 w-5 text-rose-500" />
@@ -911,7 +929,7 @@ export default function Profile() {
                 <Trash2 className="h-4 w-4" />
                 Excluir Minha Conta
               </button>
-            </div>
+            </Card>
           </div>
         )}
       </div>

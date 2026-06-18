@@ -7,6 +7,7 @@ import { examsService, type Exam } from '../../../services/exams.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
 import EmptyState from '../../../components/ui/EmptyState';
+import { Card } from '../../../components/ui/Card';
 
 const CATEGORY_MAP: Record<string, string> = {
   CONCURSOS: 'Concursos',
@@ -146,7 +147,7 @@ export default function ExploreExams() {
         <div className="md:grid md:grid-cols-4 md:gap-8">
           {/* Sidebar Filter for Desktop */}
           <div className="hidden md:block md:col-span-1">
-            <div className="bg-white rounded-3xl p-5 border border-slate-200 sticky top-24">
+            <Card className="sticky top-24" padding="normal">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">
                 Categorias
               </h3>
@@ -167,7 +168,7 @@ export default function ExploreExams() {
                   </button>
                 ))}
               </div>
-            </div>
+            </Card>
           </div>
 
           {/* Main content grid */}
@@ -190,41 +191,47 @@ export default function ExploreExams() {
                     <button
                       key={exam.id}
                       onClick={() => setSelectedExam(exam)}
-                      className="group text-left bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all duration-200 hover:-translate-y-1 flex flex-col"
+                      className="group w-full"
                     >
-                      <div className="flex items-start gap-4 mb-4">
-                        <div
-                          className={cn(
-                            'w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
-                            colorOpt.gradient,
-                          )}
-                        >
-                          <Icon className="h-8 w-8 text-white" />
+                      <Card
+                        hoverEffect
+                        padding="large"
+                        className="text-left flex flex-col h-full group-hover:-translate-y-1"
+                      >
+                        <div className="flex items-start gap-4 mb-4">
+                          <div
+                            className={cn(
+                              'w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
+                              colorOpt.gradient,
+                            )}
+                          >
+                            <Icon className="h-8 w-8 text-white" />
+                          </div>
+                          <div>
+                            {exam.category && (
+                              <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold mb-2">
+                                {CATEGORY_MAP[exam.category] || exam.category}
+                              </span>
+                            )}
+                            <h3 className="font-bold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors leading-tight">
+                              {exam.name}
+                            </h3>
+                          </div>
                         </div>
-                        <div>
-                          {exam.category && (
-                            <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold mb-2">
-                              {CATEGORY_MAP[exam.category] || exam.category}
-                            </span>
-                          )}
-                          <h3 className="font-bold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors leading-tight">
-                            {exam.name}
-                          </h3>
+
+                        <p className="text-sm text-slate-500 mb-6 flex-1">
+                          {exam.description}
+                        </p>
+
+                        <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto w-full">
+                          <span className="text-xs font-semibold text-slate-400">
+                            {exam.topicsCount} tópicos
+                          </span>
+                          <span className="text-sm font-bold text-indigo-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                            Ver Trilha &rarr;
+                          </span>
                         </div>
-                      </div>
-
-                      <p className="text-sm text-slate-500 mb-6 flex-1">
-                        {exam.description}
-                      </p>
-
-                      <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto w-full">
-                        <span className="text-xs font-semibold text-slate-400">
-                          {exam.topicsCount} tópicos
-                        </span>
-                        <span className="text-sm font-bold text-indigo-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                          Ver Trilha &rarr;
-                        </span>
-                      </div>
+                      </Card>
                     </button>
                   );
                 })}

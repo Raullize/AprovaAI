@@ -14,6 +14,7 @@ import api from '../../../services/api';
 import Loading from '../../../components/ui/Loading';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import EmptyState from '../../../components/ui/EmptyState';
+import { Card } from '../../../components/ui/Card';
 
 interface HistoryItem {
   id: string;
@@ -318,7 +319,7 @@ export default function SimulationsHistory() {
             <div className="md:grid md:grid-cols-4 md:gap-8">
               {/* Sidebar Filter for Desktop */}
               <div className="hidden md:block md:col-span-1">
-                <div className="bg-white rounded-3xl p-5 border border-slate-200 sticky top-24">
+                <Card className="sticky top-24" padding="normal">
                   <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">
                     Categorias
                   </h3>
@@ -339,7 +340,7 @@ export default function SimulationsHistory() {
                       </button>
                     ))}
                   </div>
-                </div>
+                </Card>
               </div>
 
               {/* Exam Groups Grid */}
@@ -361,43 +362,49 @@ export default function SimulationsHistory() {
                         <button
                           key={group.examName}
                           onClick={() => setSelectedExamName(group.examName)}
-                          className="group text-left bg-white rounded-3xl p-6 border border-slate-200 hover:border-indigo-350 hover:shadow-md transition-all flex flex-col justify-between"
+                          className="group w-full"
                         >
-                          <div className="flex items-start gap-4 mb-4">
-                            <div
-                              className={cn(
-                                'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
-                                colorOpt.gradient,
-                              )}
-                            >
-                              <Icon className="h-6 w-6 text-white" />
+                          <Card
+                            hoverEffect
+                            padding="large"
+                            className="text-left flex flex-col justify-between h-full"
+                          >
+                            <div className="flex items-start gap-4 mb-4">
+                              <div
+                                className={cn(
+                                  'w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
+                                  colorOpt.gradient,
+                                )}
+                              >
+                                <Icon className="h-6 w-6 text-white" />
+                              </div>
+                              <div className="min-w-0">
+                                <h3 className="font-bold text-slate-800 text-base leading-tight group-hover:text-indigo-600 transition-colors truncate">
+                                  {group.examName}
+                                </h3>
+                                <p className="text-xs text-slate-400 font-medium mt-1">
+                                  {group.count}{' '}
+                                  {group.count === 1
+                                    ? 'simulado feito'
+                                    : 'simulados feitos'}
+                                </p>
+                              </div>
                             </div>
-                            <div className="min-w-0">
-                              <h3 className="font-bold text-slate-800 text-base leading-tight group-hover:text-indigo-600 transition-colors truncate">
-                                {group.examName}
-                              </h3>
-                              <p className="text-xs text-slate-400 font-medium mt-1">
-                                {group.count}{' '}
-                                {group.count === 1
-                                  ? 'simulado feito'
-                                  : 'simulados feitos'}
-                              </p>
-                            </div>
-                          </div>
 
-                          <div className="flex items-center justify-between border-t border-slate-100 pt-4 w-full mt-2">
-                            <div>
-                              <span className="text-[9px] font-bold text-slate-400 block uppercase tracking-wider">
-                                Média Geral
-                              </span>
-                              <span className="text-base font-black text-slate-800 mt-0.5 block font-display">
-                                {group.avgPercentage}% acertos
+                            <div className="flex items-center justify-between border-t border-slate-100 pt-4 w-full mt-2">
+                              <div>
+                                <span className="text-[9px] font-bold text-slate-400 block uppercase tracking-wider">
+                                  Média Geral
+                                </span>
+                                <span className="text-base font-black text-slate-800 mt-0.5 block font-display">
+                                  {group.avgPercentage}% acertos
+                                </span>
+                              </div>
+                              <span className="text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition-transform flex items-center gap-0.5">
+                                Ver Histórico &rarr;
                               </span>
                             </div>
-                            <span className="text-xs font-bold text-indigo-600 group-hover:translate-x-1 transition-transform flex items-center gap-0.5">
-                              Ver Histórico &rarr;
-                            </span>
-                          </div>
+                          </Card>
                         </button>
                       );
                     })}
@@ -545,9 +552,11 @@ export default function SimulationsHistory() {
             ) : (
               <div className="space-y-4">
                 {detailItems.map((item) => (
-                  <div
+                  <Card
                     key={item.id}
-                    className="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:shadow-md transition-all"
+                    hoverEffect
+                    padding="normal"
+                    className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
                   >
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5">
@@ -620,7 +629,7 @@ export default function SimulationsHistory() {
                         <ChevronRight className="h-5 w-5" />
                       </button>
                     </div>
-                  </div>
+                  </Card>
                 ))}
               </div>
             )}
