@@ -27,6 +27,7 @@ interface HistoryItem {
   totalQuestions: number;
   percentage: number;
   passed: boolean;
+  stars?: number;
   timeSpent: number;
   createdAt: string;
   iconKey?: string;
@@ -127,6 +128,7 @@ interface ApiHistoryItem {
   totalQuestions?: number;
   percentage?: number;
   passed?: boolean;
+  stars?: number;
   timeSpent?: number;
   createdAt: string;
   answers?: {
@@ -175,6 +177,7 @@ export default function SimulationsHistory() {
             totalQuestions: item.totalQuestions || 5,
             percentage: item.percentage || 0,
             passed: item.passed || false,
+            stars: item.stars || 0,
             timeSpent: item.timeSpent || 0,
             createdAt: item.createdAt,
             iconKey: item.level?.topic?.exam?.iconKey || 'star',
@@ -621,6 +624,7 @@ export default function SimulationsHistory() {
                               ),
                               passingPercentage: 70,
                               levelName: item.levelName,
+                              stars: item.stars,
                             },
                           });
                         }}

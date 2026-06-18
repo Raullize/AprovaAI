@@ -1,8 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { X, Clock, CheckCircle2, XCircle, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import Modal from '../../../components/ui/Modal';
+import api from '../../../services/api';
+import Loading from '../../../components/ui/Loading';
 
 // --- Types ---
 type SimulationMode = 'PRACTICE' | 'EXAM';
@@ -24,68 +26,6 @@ interface Question {
 // --- Mock Data ---
 const MOCK_TIME_LIMIT = 10 * 60; // 10 min in seconds (EXAM mode)
 
-const MOCK_QUESTIONS: Question[] = [
-  {
-    id: 'q1',
-    text: 'Qual serviço da AWS fornece uma rede virtual dedicada para a sua conta da AWS?',
-    explanation:
-      'O Amazon Virtual Private Cloud (Amazon VPC) permite provisionar uma seção isolada logicamente da Nuvem AWS onde você pode iniciar recursos da AWS em uma rede virtual definida por você.',
-    options: [
-      { id: 'a', text: 'Amazon VPC', isCorrect: true },
-      { id: 'b', text: 'Amazon EC2', isCorrect: false },
-      { id: 'c', text: 'Amazon Route 53', isCorrect: false },
-      { id: 'd', text: 'AWS Direct Connect', isCorrect: false },
-    ],
-  },
-  {
-    id: 'q2',
-    text: 'No modelo de responsabilidade compartilhada da AWS, o que é de responsabilidade da AWS?',
-    explanation:
-      'A AWS é responsável pela "segurança da nuvem", o que inclui a infraestrutura global (hardware, software, redes e instalações) que executa os serviços.',
-    options: [
-      { id: 'a', text: 'Configuração de Security Groups', isCorrect: false },
-      { id: 'b', text: 'Criptografia de dados de clientes', isCorrect: false },
-      { id: 'c', text: 'Segurança da infraestrutura física', isCorrect: true },
-      { id: 'd', text: 'Gerenciamento de usuários do IAM', isCorrect: false },
-    ],
-  },
-  {
-    id: 'q3',
-    text: 'Qual serviço de banco de dados da AWS é totalmente gerenciado e focado em banco de dados relacional (SQL)?',
-    explanation:
-      'O Amazon Relational Database Service (Amazon RDS) facilita a configuração, operação e escalabilidade de um banco de dados relacional na nuvem.',
-    options: [
-      { id: 'a', text: 'Amazon DynamoDB', isCorrect: false },
-      { id: 'b', text: 'Amazon RDS', isCorrect: true },
-      { id: 'c', text: 'Amazon Redshift', isCorrect: false },
-      { id: 'd', text: 'Amazon ElastiCache', isCorrect: false },
-    ],
-  },
-  {
-    id: 'q4',
-    text: 'Qual serviço AWS é ideal para armazenar objetos de forma altamente durável, como backups e arquivos estáticos (imagens/vídeos)?',
-    explanation:
-      'O Amazon S3 (Simple Storage Service) é um serviço de armazenamento de objetos líder no mercado, oferecendo escalabilidade e durabilidade.',
-    options: [
-      { id: 'a', text: 'Amazon EBS', isCorrect: false },
-      { id: 'b', text: 'Amazon S3', isCorrect: true },
-      { id: 'c', text: 'Amazon EFS', isCorrect: false },
-      { id: 'd', text: 'Amazon Inspector', isCorrect: false },
-    ],
-  },
-  {
-    id: 'q5',
-    text: 'Qual serviço oferece computação serverless que permite executar código sem provisionar ou gerenciar servidores?',
-    explanation:
-      'O AWS Lambda é um serviço de computação serverless e orientado a eventos que permite executar código em resposta a triggers.',
-    options: [
-      { id: 'a', text: 'Amazon EC2', isCorrect: false },
-      { id: 'b', text: 'Amazon ECS', isCorrect: false },
-      { id: 'c', text: 'AWS Beanstalk', isCorrect: false },
-      { id: 'd', text: 'AWS Lambda', isCorrect: true },
-    ],
-  },
-];
 
 // --- Encouragement messages ---
 const CORRECT_MESSAGES = [
@@ -121,11 +61,16 @@ function formatTime(seconds: number) {
 
 // --- Main Component ---
 export default function SimulationEngine() {
+  const { levelId } = useParams<{ levelId: string }>();
   const navigate = useNavigate();
 
   const [searchParams] = useSearchParams();
   const mode = (searchParams.get('mode') as SimulationMode) || 'PRACTICE';
-  const questions = MOCK_QUESTIONS;
+
+  const [level, setLevel] = useState<any>(null);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [simulationId, setSimulationId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -145,43 +90,108 @@ export default function SimulationEngine() {
     () => WRONG_MESSAGES[Math.floor(Math.random() * WRONG_MESSAGES.length)],
   );
 
-  const currentQuestion = questions[currentIndex];
-  const totalQuestions = questions.length;
-
-  const answeredCount = answers.filter((a) => a.selectedId !== '').length;
-  const progress =
-    mode === 'EXAM'
-      ? (answeredCount / totalQuestions) * 100
-      : (currentIndex / totalQuestions) * 100;
-
-  // Sync selectedOption with saved answers when index changes (EXAM mode)
   useEffect(() => {
-    if (mode === 'EXAM') {
-      const existing = answers.find((a) => a.questionId === currentQuestion.id);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setSelectedOption(existing ? existing.selectedId : null);
-    }
-  }, [currentIndex, answers, currentQuestion.id, mode]);
+    async function loadSimulation() {
+      try {
+        setIsLoading(true);
+        const lvlRes = await api.get(`/levels/${levelId}`);
+        setLevel(lvlRes.data);
+        setTimeLeft(lvlRes.data.timeLimit || MOCK_TIME_LIMIT);
 
-  const handleFinish = useCallback(() => {
-    const finalAnswers = questions.map((q) => {
-      const existing = answers.find((a) => a.questionId === q.id);
-      if (existing) return existing;
-      return { questionId: q.id, selectedId: '', correct: false };
-    });
-    const correctCount = finalAnswers.filter((a) => a.correct).length;
-    navigate('/dashboard/simulations/results', {
-      state: {
-        answers: finalAnswers,
-        total: totalQuestions,
-        correct: correctCount,
-        timeSpent: mode === 'EXAM' ? MOCK_TIME_LIMIT - timeLeft : 0,
-        xpEarned: Math.round((correctCount / totalQuestions) * 60),
-        passingPercentage: 70,
-        levelName: 'O que é Cloud?',
-      },
-    });
-  }, [answers, navigate, totalQuestions, mode, timeLeft, questions]);
+        const startRes = await api.post('/simulations/start', { levelId });
+        setSimulationId(startRes.data.id);
+
+        const qRes = await api.get(`/questions/level/${levelId}`);
+        const mappedQuestions = qRes.data.map((q: any) => ({
+          id: q.id,
+          text: q.content,
+          explanation: q.explanation || 'Sem explicação disponível.',
+          options: q.options.map((o: any) => ({
+            id: o.id,
+            text: o.text,
+            isCorrect: o.isCorrect,
+          })).sort((a: any, b: any) => a.order - b.order),
+        })).sort((a: any, b: any) => a.order - b.order);
+
+        setQuestions(mappedQuestions);
+
+        if (startRes.data.answers && startRes.data.answers.length > 0) {
+          const mappedAnswers = startRes.data.answers.map((ans: any) => ({
+            questionId: ans.questionId,
+            selectedId: ans.selectedOptions[0] || '',
+            correct: ans.isCorrect ?? false,
+          }));
+          setAnswers(mappedAnswers);
+
+          const mappedFlagged: Record<string, boolean> = {};
+          startRes.data.answers.forEach((ans: any) => {
+            if (ans.isFlaggedForReview) {
+              mappedFlagged[ans.questionId] = true;
+            }
+          });
+          setFlagged(mappedFlagged);
+        }
+      } catch (err) {
+        console.error('Failed to initialize simulation:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (levelId) {
+      loadSimulation();
+    }
+  }, [levelId]);
+
+  const saveAnswerToBackend = async (
+    questionId: string,
+    selectedOptionId: string,
+    isFlagged: boolean,
+  ) => {
+    if (!simulationId) return;
+    try {
+      await api.post(`/simulations/${simulationId}/answers`, {
+        questionId,
+        selectedOptions: selectedOptionId ? [selectedOptionId] : [],
+        timeSpent: 0,
+        isFlaggedForReview: isFlagged,
+      });
+    } catch (err) {
+      console.error('Failed to save answer:', err);
+    }
+  };
+
+  const handleFinish = useCallback(async () => {
+    if (!simulationId) return;
+    try {
+      setIsLoading(true);
+      const finishRes = await api.post(`/simulations/${simulationId}/finish`, {
+        timeSpent: mode === 'EXAM' ? (level?.timeLimit || MOCK_TIME_LIMIT) - timeLeft : 0,
+      });
+      const { examResult, xpGained } = finishRes.data;
+
+      navigate('/dashboard/simulations/results', {
+        state: {
+          answers: examResult.answers.map((ans: any) => ({
+            questionId: ans.questionId,
+            selectedId: ans.selectedOptions[0] || '',
+            correct: ans.isCorrect ?? false,
+          })),
+          total: examResult.totalQuestions,
+          correct: examResult.score,
+          timeSpent: examResult.timeSpent,
+          xpEarned: xpGained,
+          stars: examResult.stars ?? 0,
+          passingPercentage: level?.passingPercentage || 70,
+          levelName: level?.name || 'Simulado',
+        },
+      });
+    } catch (err) {
+      console.error('Failed to finish simulation:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [simulationId, mode, timeLeft, navigate, level]);
 
   // Timer for EXAM mode
   useEffect(() => {
@@ -194,6 +204,29 @@ export default function SimulationEngine() {
     return () => clearInterval(timer);
   }, [mode, timeLeft, handleFinish]);
 
+  const currentQuestion = questions[currentIndex];
+  const totalQuestions = questions.length;
+
+  const answeredCount = answers.filter((a) => a.selectedId !== '').length;
+  const progress =
+    totalQuestions > 0
+      ? mode === 'EXAM'
+        ? (answeredCount / totalQuestions) * 100
+        : (currentIndex / totalQuestions) * 100
+      : 0;
+
+  // Sync selectedOption with saved answers when index changes (EXAM mode)
+  useEffect(() => {
+    if (mode === 'EXAM' && currentQuestion) {
+      const existing = answers.find((a) => a.questionId === currentQuestion.id);
+      setSelectedOption(existing ? existing.selectedId : null);
+    }
+  }, [currentIndex, answers, currentQuestion, mode]);
+
+  if (isLoading || !currentQuestion) {
+    return <Loading />;
+  }
+
   const handleVerify = () => {
     if (!selectedOption) return;
     const correct =
@@ -204,6 +237,7 @@ export default function SimulationEngine() {
       ...prev,
       { questionId: currentQuestion.id, selectedId: selectedOption, correct },
     ]);
+    saveAnswerToBackend(currentQuestion.id, selectedOption, !!flagged[currentQuestion.id]);
   };
 
   const handleSelectOption = (optionId: string) => {
@@ -215,6 +249,7 @@ export default function SimulationEngine() {
         setAnswers((prev) =>
           prev.filter((a) => a.questionId !== currentQuestion.id),
         );
+        saveAnswerToBackend(currentQuestion.id, '', !!flagged[currentQuestion.id]);
       }
       return;
     }
@@ -240,38 +275,13 @@ export default function SimulationEngine() {
         }
         return [...prev, newAns];
       });
+      saveAnswerToBackend(currentQuestion.id, optionId, !!flagged[currentQuestion.id]);
     }
   };
 
   const handleNext = () => {
     if (currentIndex + 1 >= totalQuestions) {
-      // Last question — submit
-      const finalAnswers = [
-        ...answers,
-        ...(selectedOption && feedback === null
-          ? [
-              {
-                questionId: currentQuestion.id,
-                selectedId: selectedOption,
-                correct:
-                  currentQuestion.options.find((o) => o.id === selectedOption)
-                    ?.isCorrect ?? false,
-              },
-            ]
-          : []),
-      ];
-      const correctCount = finalAnswers.filter((a) => a.correct).length;
-      navigate('/dashboard/simulations/results', {
-        state: {
-          answers: finalAnswers,
-          total: totalQuestions,
-          correct: correctCount,
-          timeSpent: 0,
-          xpEarned: Math.round((correctCount / totalQuestions) * 60),
-          passingPercentage: 70,
-          levelName: 'O que é Cloud?',
-        },
-      });
+      handleFinish();
       return;
     }
     setCurrentIndex((i) => i + 1);
@@ -502,10 +512,12 @@ export default function SimulationEngine() {
                     {mode === 'EXAM' && (
                       <button
                         onClick={() => {
+                          const newFlag = !flagged[currentQuestion.id];
                           setFlagged((prev) => ({
                             ...prev,
-                            [currentQuestion.id]: !prev[currentQuestion.id],
+                            [currentQuestion.id]: newFlag,
                           }));
+                          saveAnswerToBackend(currentQuestion.id, selectedOption || '', newFlag);
                         }}
                         className={cn(
                           'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border',

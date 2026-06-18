@@ -30,6 +30,7 @@ interface ResultsState {
   xpEarned: number;
   passingPercentage: number;
   levelName: string;
+  stars?: number;
 }
 
 // --- Default fallback mock (accessed directly, no navigation state) ---
@@ -41,6 +42,7 @@ const FALLBACK: ResultsState = {
   xpEarned: 48,
   passingPercentage: 70,
   levelName: 'Organização do Estado',
+  stars: 2,
 };
 
 // --- Utility ---
@@ -75,12 +77,6 @@ function useCountUp(target: number, duration = 1200) {
 }
 
 // --- Star display ---
-function getStars(percentage: number): number {
-  if (percentage >= 90) return 3;
-  if (percentage >= 70) return 2;
-  if (percentage >= 50) return 1;
-  return 0;
-}
 
 // Confetti colors (CSS-only burst) - generated once statically to remain pure
 const STATIC_CONFETTI_ITEMS = Array.from({ length: 20 }).map((_, i) => ({
@@ -173,12 +169,18 @@ export default function SimulationResults() {
   const navigate = useNavigate();
   const state = (location.state as ResultsState) || FALLBACK;
 
-  const { total, correct, timeSpent, xpEarned, passingPercentage, levelName } =
+  const { total, correct, timeSpent, xpEarned, passingPercentage, levelName, stars: stateStars } =
     state;
 
   const percentage = Math.round((correct / total) * 100);
   const passed = percentage >= passingPercentage;
-  const stars = getStars(percentage);
+  const getDynamicStars = (pct: number, passPct: number) => {
+    if (pct >= Math.max(90, passPct)) return 3;
+    if (pct >= passPct) return 2;
+    if (pct >= Math.max(0, passPct - 20)) return 1;
+    return 0;
+  };
+  const stars = stateStars !== undefined && stateStars !== null ? stateStars : getDynamicStars(percentage, passingPercentage);
   const wrong = total - correct;
 
   const animatedXP = useCountUp(xpEarned);
@@ -289,24 +291,22 @@ export default function SimulationResults() {
           </div>
 
           {/* Stars */}
-          {passed && (
-            <div className="flex justify-center gap-2 mt-4">
-              {[1, 2, 3].map((s) => (
-                <Star
-                  key={s}
-                  className={cn(
-                    'h-8 w-8 transition-all',
-                    s <= stars
-                      ? 'text-amber-400 fill-amber-400 scale-110'
-                      : 'text-white/30 fill-white/20',
-                  )}
-                  style={{
-                    animationDelay: `${s * 0.15}s`,
-                  }}
-                />
-              ))}
-            </div>
-          )}
+          <div className="flex justify-center gap-2 mt-4">
+            {[1, 2, 3].map((s) => (
+              <Star
+                key={s}
+                className={cn(
+                  'h-8 w-8 transition-all',
+                  s <= stars
+                    ? 'text-amber-400 fill-amber-400 scale-110'
+                    : 'text-white/30 fill-white/20',
+                )}
+                style={{
+                  animationDelay: `${s * 0.15}s`,
+                }}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Title */}
