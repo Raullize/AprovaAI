@@ -4,6 +4,7 @@ import {
   Calendar,
   Clock,
   ChevronRight,
+  ChevronDown,
   ArrowLeft,
   Search,
   SlidersHorizontal,
@@ -29,6 +30,11 @@ interface HistoryItem {
   createdAt: string;
   iconKey?: string;
   colorScheme?: string;
+  answers?: {
+    questionId: string;
+    selectedId: string;
+    correct: boolean;
+  }[];
 }
 
 interface ExamGroup {
@@ -122,6 +128,11 @@ interface ApiHistoryItem {
   passed?: boolean;
   timeSpent?: number;
   createdAt: string;
+  answers?: {
+    questionId: string;
+    selectedOptions: string[];
+    isCorrect: boolean | null;
+  }[];
 }
 
 export default function SimulationsHistory() {
@@ -167,6 +178,12 @@ export default function SimulationsHistory() {
             createdAt: item.createdAt,
             iconKey: item.level?.topic?.exam?.iconKey || 'star',
             colorScheme: item.level?.topic?.exam?.colorScheme || 'indigo',
+            answers:
+              item.answers?.map((ans) => ({
+                questionId: ans.questionId,
+                selectedId: ans.selectedOptions?.[0] || '',
+                correct: ans.isCorrect ?? false,
+              })) || [],
           }));
           setHistory(mapped);
         } else {
@@ -389,49 +406,54 @@ export default function SimulationsHistory() {
               </div>
             </div>
 
-            {/* Mobile Filters Modal */}
-            {isMobileFiltersOpen && (
-              <div className="fixed inset-0 z-50 md:hidden">
-                {/* Backdrop */}
-                <div
-                  className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-                  onClick={() => setIsMobileFiltersOpen(false)}
-                />
-                {/* Drawer */}
-                <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-[32px] p-6 shadow-2xl border-t border-slate-200 animate-in slide-in-from-bottom duration-350">
-                  <div className="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-6" />
-                  <h3 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4">
-                    Categorias
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {CATEGORIES.map((cat) => (
-                      <button
-                        key={cat.key}
-                        type="button"
-                        onClick={() => {
-                          setActiveCategory(cat.key);
-                          setIsMobileFiltersOpen(false);
-                        }}
-                        className={cn(
-                          'px-4 py-3 rounded-xl font-medium text-sm transition-all text-center',
-                          activeCategory === cat.key
-                            ? 'bg-indigo-50 text-indigo-600 font-bold border border-indigo-200'
-                            : 'text-slate-600 bg-slate-50 hover:bg-slate-100 border border-transparent',
-                        )}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-                  <button
-                    onClick={() => setIsMobileFiltersOpen(false)}
-                    className="w-full mt-6 py-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl transition-colors text-sm"
-                  >
-                    Aplicar Filtros
-                  </button>
+            {/* Mobile Filter Drawer (Bottom Sheet) */}
+            <div
+              className={cn(
+                'fixed inset-0 z-50 bg-black/60 backdrop-blur-sm transition-opacity duration-350 md:hidden',
+                isMobileFiltersOpen
+                  ? 'opacity-100 pointer-events-auto'
+                  : 'opacity-0 pointer-events-none',
+              )}
+              onClick={() => setIsMobileFiltersOpen(false)}
+            >
+              <div
+                className={cn(
+                  'fixed inset-x-0 bottom-0 max-h-[85vh] bg-white rounded-t-[2.5rem] p-6 transition-transform duration-350 transform flex flex-col shadow-2xl border-t border-slate-100',
+                  isMobileFiltersOpen ? 'translate-y-0' : 'translate-y-full',
+                )}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="w-12 h-1 bg-slate-200 rounded-full mx-auto mb-5" />
+                <h3 className="text-lg font-bold text-slate-800 mb-4 font-display">
+                  Filtrar por Categoria
+                </h3>
+                <div className="flex flex-col gap-1.5 overflow-y-auto mb-6">
+                  {CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.key}
+                      onClick={() => {
+                        setActiveCategory(cat.key);
+                        setIsMobileFiltersOpen(false);
+                      }}
+                      className={cn(
+                        'w-full text-left px-4 py-3.5 rounded-2xl font-medium transition-all text-sm',
+                        activeCategory === cat.key
+                          ? 'bg-indigo-50 text-indigo-600 font-bold'
+                          : 'text-slate-600 hover:bg-slate-50',
+                      )}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
                 </div>
+                <button
+                  onClick={() => setIsMobileFiltersOpen(false)}
+                  className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all"
+                >
+                  Confirmar Filtro
+                </button>
               </div>
-            )}
+            </div>
           </div>
         ) : (
           /* Detailed Simulations List View */
@@ -453,23 +475,23 @@ export default function SimulationsHistory() {
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm space-y-4">
-              <div className="flex flex-col md:flex-row gap-3">
-                {/* Search */}
-                <div className="relative flex-1">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-slate-400" />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Buscar pelo nome da fase/nível..."
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm text-slate-800 bg-white"
-                  />
-                </div>
+            <div className="flex flex-col md:flex-row gap-3">
+              {/* Search */}
+              <div className="relative flex-1">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Buscar pelo nome da fase/nível..."
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm text-slate-800 bg-white shadow-sm"
+                />
+              </div>
 
-                {/* Filters Row */}
-                <div className="flex flex-wrap gap-2.5">
-                  {/* Mode Filter */}
+              {/* Filters Row */}
+              <div className="flex flex-wrap gap-2.5">
+                {/* Mode Filter */}
+                <div className="relative">
                   <select
                     value={modeFilter}
                     onChange={(e) =>
@@ -477,14 +499,17 @@ export default function SimulationsHistory() {
                         e.target.value as 'ALL' | 'PRACTICE' | 'EXAM',
                       )
                     }
-                    className="px-3 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none cursor-pointer"
+                    className="appearance-none pl-3.5 pr-7 py-3.5 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none cursor-pointer shadow-sm"
                   >
                     <option value="ALL">Modo: Todos</option>
                     <option value="PRACTICE">Treino</option>
                     <option value="EXAM">Simulado</option>
                   </select>
+                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-550 pointer-events-none" />
+                </div>
 
-                  {/* Status Filter */}
+                {/* Status Filter */}
+                <div className="relative">
                   <select
                     value={statusFilter}
                     onChange={(e) =>
@@ -492,24 +517,25 @@ export default function SimulationsHistory() {
                         e.target.value as 'ALL' | 'PASSED' | 'FAILED',
                       )
                     }
-                    className="px-3 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none cursor-pointer"
+                    className="appearance-none pl-3.5 pr-7 py-3.5 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none cursor-pointer shadow-sm"
                   >
                     <option value="ALL">Status: Todos</option>
                     <option value="PASSED">Aprovados</option>
                     <option value="FAILED">Reprovados</option>
                   </select>
-
-                  {/* Sort Order */}
-                  <button
-                    onClick={() =>
-                      setSortOrder(sortOrder === 'NEWEST' ? 'OLDEST' : 'NEWEST')
-                    }
-                    className="px-3 py-3 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white flex items-center gap-1.5 active:scale-95 transition-all"
-                  >
-                    <SlidersHorizontal className="h-3.5 w-3.5" />
-                    {sortOrder === 'NEWEST' ? 'Mais recentes' : 'Mais antigos'}
-                  </button>
+                  <ChevronDown className="absolute right-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-550 pointer-events-none" />
                 </div>
+
+                {/* Sort Order */}
+                <button
+                  onClick={() =>
+                    setSortOrder(sortOrder === 'NEWEST' ? 'OLDEST' : 'NEWEST')
+                  }
+                  className="px-3 py-3.5 rounded-2xl border border-slate-200 text-xs font-bold text-slate-600 bg-white flex items-center gap-1.5 active:scale-95 transition-all shadow-sm"
+                >
+                  <SlidersHorizontal className="h-3.5 w-3.5" />
+                  {sortOrder === 'NEWEST' ? 'Mais recentes' : 'Mais antigos'}
+                </button>
               </div>
             </div>
 
@@ -577,7 +603,7 @@ export default function SimulationsHistory() {
                         onClick={() => {
                           navigate('/dashboard/simulations/results', {
                             state: {
-                              answers: [],
+                              answers: item.answers || [],
                               total: item.totalQuestions,
                               correct: item.score,
                               timeSpent: item.timeSpent,
