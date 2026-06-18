@@ -1,6 +1,6 @@
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { PlayCircle, Compass, Flame, Target, Award, Zap, History } from 'lucide-react';
+import { PlayCircle, Compass, Flame, Target, Award, Zap, History, Trophy, Lock } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 
@@ -206,8 +206,8 @@ export default function StudentHome() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
           <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-sm">
-              🏆
+            <div className="w-10 h-10 bg-amber-500 rounded-full flex items-center justify-center shrink-0 text-white shadow-sm">
+              <Trophy className="h-5 w-5" />
             </div>
             <div>
               <p className="font-bold text-slate-800 text-xs">Primeiros Passos</p>
@@ -215,8 +215,8 @@ export default function StudentHome() {
             </div>
           </div>
           <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3">
-            <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-sm">
-              ⚡
+            <div className="w-10 h-10 bg-indigo-500 rounded-full flex items-center justify-center shrink-0 text-white shadow-sm">
+              <Zap className="h-5 w-5" />
             </div>
             <div>
               <p className="font-bold text-slate-800 text-xs">Foco Total</p>
@@ -224,8 +224,8 @@ export default function StudentHome() {
             </div>
           </div>
           <div className="bg-white p-4 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-3 opacity-50 relative group">
-            <div className="w-10 h-10 bg-slate-300 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-lg shadow-sm">
-              🔒
+            <div className="w-10 h-10 bg-slate-300 rounded-full flex items-center justify-center shrink-0 text-white shadow-sm">
+              <Lock className="h-5 w-5" />
             </div>
             <div>
               <p className="font-bold text-slate-800 text-xs">Mestre de Nuvem</p>
