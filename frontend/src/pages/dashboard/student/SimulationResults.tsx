@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Trophy,
@@ -81,13 +81,23 @@ function getStars(percentage: number): number {
   return 0;
 }
 
+// Confetti colors (CSS-only burst) - generated once statically to remain pure
+const STATIC_CONFETTI_ITEMS = Array.from({ length: 20 }).map((_, i) => ({
+  top: `${Math.random() * 100}%`,
+  left: `${Math.random() * 100}%`,
+  color: ['#fbbf24', '#34d399', '#60a5fa', '#f87171', '#a78bfa'][i % 5],
+  delay: `${Math.random() * 1.5}s`,
+  duration: `${1 + Math.random()}s`,
+}));
+
 // --- Main Component ---
 export default function SimulationResults() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = (location.state as ResultsState) || FALLBACK;
 
-  const { total, correct, timeSpent, xpEarned, passingPercentage, levelName } = state;
+  const { total, correct, timeSpent, xpEarned, passingPercentage, levelName } =
+    state;
 
   const percentage = Math.round((correct / total) * 100);
   const passed = percentage >= passingPercentage;
@@ -99,8 +109,7 @@ export default function SimulationResults() {
 
   const [showReview, setShowReview] = useState(false);
 
-  // Confetti colors (CSS-only burst)
-  const confettiItems = Array.from({ length: 20 });
+  const confettiItems = STATIC_CONFETTI_ITEMS;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 pb-24">
@@ -115,16 +124,16 @@ export default function SimulationResults() {
       >
         {/* Confetti dots for success */}
         {passed &&
-          confettiItems.map((_, i) => (
+          confettiItems.map((item, i) => (
             <div
               key={i}
               className="absolute w-2 h-2 rounded-full animate-ping"
               style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-                backgroundColor: ['#fbbf24', '#34d399', '#60a5fa', '#f87171', '#a78bfa'][i % 5],
-                animationDelay: `${Math.random() * 1.5}s`,
-                animationDuration: `${1 + Math.random()}s`,
+                top: item.top,
+                left: item.left,
+                backgroundColor: item.color,
+                animationDelay: item.delay,
+                animationDuration: item.duration,
                 opacity: 0.7,
               }}
             />
@@ -135,7 +144,9 @@ export default function SimulationResults() {
           <div
             className={cn(
               'w-24 h-24 rounded-full mx-auto flex items-center justify-center shadow-2xl',
-              passed ? 'bg-amber-400 shadow-amber-500/40' : 'bg-slate-600 shadow-slate-500/40',
+              passed
+                ? 'bg-amber-400 shadow-amber-500/40'
+                : 'bg-slate-600 shadow-slate-500/40',
             )}
           >
             {passed ? (
@@ -171,9 +182,7 @@ export default function SimulationResults() {
           <h1 className="text-3xl font-bold text-white font-display">
             {passed ? 'Nível Concluído!' : 'Continue Tentando!'}
           </h1>
-          <p className="text-white/70 mt-1.5 text-sm">
-            {levelName}
-          </p>
+          <p className="text-white/70 mt-1.5 text-sm">{levelName}</p>
           <p className="text-white/60 text-xs mt-1">
             {passed
               ? stars === 3
@@ -220,7 +229,9 @@ export default function SimulationResults() {
           {/* Score bar */}
           <div className="bg-white rounded-2xl p-4 shadow-md border border-slate-100 col-span-1">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs text-slate-500 font-medium">Aproveitamento</span>
+              <span className="text-xs text-slate-500 font-medium">
+                Aproveitamento
+              </span>
               <span
                 className={cn(
                   'text-sm font-bold',
@@ -234,7 +245,9 @@ export default function SimulationResults() {
               <div
                 className={cn(
                   'h-full rounded-full transition-all duration-1000',
-                  passed ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 'bg-gradient-to-r from-red-400 to-rose-500',
+                  passed
+                    ? 'bg-gradient-to-r from-green-400 to-emerald-500'
+                    : 'bg-gradient-to-r from-red-400 to-rose-500',
                 )}
                 style={{ width: `${percentage}%` }}
               />
@@ -266,7 +279,9 @@ export default function SimulationResults() {
           onClick={() => setShowReview(!showReview)}
           className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors"
         >
-          <span className="text-sm font-semibold text-slate-700">Revisar Respostas</span>
+          <span className="text-sm font-semibold text-slate-700">
+            Revisar Respostas
+          </span>
           {showReview ? (
             <ChevronUp className="h-4 w-4 text-slate-400" />
           ) : (
@@ -291,7 +306,9 @@ export default function SimulationResults() {
                 ) : (
                   <XCircle className="h-4 w-4 text-red-500 shrink-0" />
                 )}
-                <span className={ans.correct ? 'text-green-700' : 'text-red-700'}>
+                <span
+                  className={ans.correct ? 'text-green-700' : 'text-red-700'}
+                >
                   Questão {idx + 1} — {ans.correct ? 'Correta' : 'Incorreta'}
                 </span>
               </div>

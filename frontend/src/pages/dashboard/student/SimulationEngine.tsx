@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { X, Clock, CheckCircle2, XCircle, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import Modal from '../../../components/ui/Modal';
@@ -28,7 +28,8 @@ const MOCK_QUESTIONS: Question[] = [
   {
     id: 'q1',
     text: 'Qual serviço da AWS fornece uma rede virtual dedicada para a sua conta da AWS?',
-    explanation: 'O Amazon Virtual Private Cloud (Amazon VPC) permite provisionar uma seção isolada logicamente da Nuvem AWS onde você pode iniciar recursos da AWS em uma rede virtual definida por você.',
+    explanation:
+      'O Amazon Virtual Private Cloud (Amazon VPC) permite provisionar uma seção isolada logicamente da Nuvem AWS onde você pode iniciar recursos da AWS em uma rede virtual definida por você.',
     options: [
       { id: 'a', text: 'Amazon VPC', isCorrect: true },
       { id: 'b', text: 'Amazon EC2', isCorrect: false },
@@ -39,7 +40,8 @@ const MOCK_QUESTIONS: Question[] = [
   {
     id: 'q2',
     text: 'No modelo de responsabilidade compartilhada da AWS, o que é de responsabilidade da AWS?',
-    explanation: 'A AWS é responsável pela "segurança da nuvem", o que inclui a infraestrutura global (hardware, software, redes e instalações) que executa os serviços.',
+    explanation:
+      'A AWS é responsável pela "segurança da nuvem", o que inclui a infraestrutura global (hardware, software, redes e instalações) que executa os serviços.',
     options: [
       { id: 'a', text: 'Configuração de Security Groups', isCorrect: false },
       { id: 'b', text: 'Criptografia de dados de clientes', isCorrect: false },
@@ -50,7 +52,8 @@ const MOCK_QUESTIONS: Question[] = [
   {
     id: 'q3',
     text: 'Qual serviço de banco de dados da AWS é totalmente gerenciado e focado em banco de dados relacional (SQL)?',
-    explanation: 'O Amazon Relational Database Service (Amazon RDS) facilita a configuração, operação e escalabilidade de um banco de dados relacional na nuvem.',
+    explanation:
+      'O Amazon Relational Database Service (Amazon RDS) facilita a configuração, operação e escalabilidade de um banco de dados relacional na nuvem.',
     options: [
       { id: 'a', text: 'Amazon DynamoDB', isCorrect: false },
       { id: 'b', text: 'Amazon RDS', isCorrect: true },
@@ -61,7 +64,8 @@ const MOCK_QUESTIONS: Question[] = [
   {
     id: 'q4',
     text: 'Qual serviço AWS é ideal para armazenar objetos de forma altamente durável, como backups e arquivos estáticos (imagens/vídeos)?',
-    explanation: 'O Amazon S3 (Simple Storage Service) é um serviço de armazenamento de objetos líder no mercado, oferecendo escalabilidade e durabilidade.',
+    explanation:
+      'O Amazon S3 (Simple Storage Service) é um serviço de armazenamento de objetos líder no mercado, oferecendo escalabilidade e durabilidade.',
     options: [
       { id: 'a', text: 'Amazon EBS', isCorrect: false },
       { id: 'b', text: 'Amazon S3', isCorrect: true },
@@ -72,7 +76,8 @@ const MOCK_QUESTIONS: Question[] = [
   {
     id: 'q5',
     text: 'Qual serviço oferece computação serverless que permite executar código sem provisionar ou gerenciar servidores?',
-    explanation: 'O AWS Lambda é um serviço de computação serverless e orientado a eventos que permite executar código em resposta a triggers.',
+    explanation:
+      'O AWS Lambda é um serviço de computação serverless e orientado a eventos que permite executar código em resposta a triggers.',
     options: [
       { id: 'a', text: 'Amazon EC2', isCorrect: false },
       { id: 'b', text: 'Amazon ECS', isCorrect: false },
@@ -91,23 +96,32 @@ const CORRECT_MESSAGES = [
 ];
 
 const WRONG_MESSAGES = [
-  { title: 'Quase lá...', subtitle: 'Não desanime! Cada erro é um aprendizado.' },
-  { title: 'Não foi dessa vez', subtitle: 'Revise a explicação e avance com confiança!' },
-  { title: 'Continue tentando!', subtitle: 'A persistência é o caminho da aprovação.' },
+  {
+    title: 'Quase lá...',
+    subtitle: 'Não desanime! Cada erro é um aprendizado.',
+  },
+  {
+    title: 'Não foi dessa vez',
+    subtitle: 'Revise a explicação e avance com confiança!',
+  },
+  {
+    title: 'Continue tentando!',
+    subtitle: 'A persistência é o caminho da aprovação.',
+  },
 ];
 
 // --- Utility ---
 function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+  const m = Math.floor(seconds / 60)
+    .toString()
+    .padStart(2, '0');
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
 
-
 // --- Main Component ---
 export default function SimulationEngine() {
   const navigate = useNavigate();
-  const { levelId: _levelId } = useParams();
 
   const [searchParams] = useSearchParams();
   const mode = (searchParams.get('mode') as SimulationMode) || 'PRACTICE';
@@ -118,7 +132,9 @@ export default function SimulationEngine() {
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [timeLeft, setTimeLeft] = useState(MOCK_TIME_LIMIT);
   const [showExit, setShowExit] = useState(false);
-  const [answers, setAnswers] = useState<{ questionId: string; selectedId: string; correct: boolean }[]>([]);
+  const [answers, setAnswers] = useState<
+    { questionId: string; selectedId: string; correct: boolean }[]
+  >([]);
   const [flagged, setFlagged] = useState<Record<string, boolean>>({});
   const [showReviewPanel, setShowReviewPanel] = useState(false);
 
@@ -132,15 +148,17 @@ export default function SimulationEngine() {
   const currentQuestion = questions[currentIndex];
   const totalQuestions = questions.length;
 
-  const answeredCount = answers.filter(a => a.selectedId !== '').length;
-  const progress = mode === 'EXAM'
-    ? (answeredCount / totalQuestions) * 100
-    : (currentIndex / totalQuestions) * 100;
+  const answeredCount = answers.filter((a) => a.selectedId !== '').length;
+  const progress =
+    mode === 'EXAM'
+      ? (answeredCount / totalQuestions) * 100
+      : (currentIndex / totalQuestions) * 100;
 
   // Sync selectedOption with saved answers when index changes (EXAM mode)
   useEffect(() => {
     if (mode === 'EXAM') {
       const existing = answers.find((a) => a.questionId === currentQuestion.id);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedOption(existing ? existing.selectedId : null);
     }
   }, [currentIndex, answers, currentQuestion.id, mode]);
@@ -178,7 +196,9 @@ export default function SimulationEngine() {
 
   const handleVerify = () => {
     if (!selectedOption) return;
-    const correct = currentQuestion.options.find((o) => o.id === selectedOption)?.isCorrect ?? false;
+    const correct =
+      currentQuestion.options.find((o) => o.id === selectedOption)?.isCorrect ??
+      false;
     setFeedback(correct ? 'correct' : 'wrong');
     setAnswers((prev) => [
       ...prev,
@@ -190,10 +210,18 @@ export default function SimulationEngine() {
     if (feedback !== null) return;
     setSelectedOption(optionId);
     if (mode === 'EXAM') {
-      const correct = currentQuestion.options.find((o) => o.id === optionId)?.isCorrect ?? false;
+      const correct =
+        currentQuestion.options.find((o) => o.id === optionId)?.isCorrect ??
+        false;
       setAnswers((prev) => {
-        const existingIdx = prev.findIndex((a) => a.questionId === currentQuestion.id);
-        const newAns = { questionId: currentQuestion.id, selectedId: optionId, correct };
+        const existingIdx = prev.findIndex(
+          (a) => a.questionId === currentQuestion.id,
+        );
+        const newAns = {
+          questionId: currentQuestion.id,
+          selectedId: optionId,
+          correct,
+        };
         if (existingIdx >= 0) {
           const next = [...prev];
           next[existingIdx] = newAns;
@@ -210,11 +238,15 @@ export default function SimulationEngine() {
       const finalAnswers = [
         ...answers,
         ...(selectedOption && feedback === null
-          ? [{
-            questionId: currentQuestion.id,
-            selectedId: selectedOption,
-            correct: currentQuestion.options.find((o) => o.id === selectedOption)?.isCorrect ?? false,
-          }]
+          ? [
+              {
+                questionId: currentQuestion.id,
+                selectedId: selectedOption,
+                correct:
+                  currentQuestion.options.find((o) => o.id === selectedOption)
+                    ?.isCorrect ?? false,
+              },
+            ]
           : []),
       ];
       const correctCount = finalAnswers.filter((a) => a.correct).length;
@@ -241,7 +273,11 @@ export default function SimulationEngine() {
 
   // Timer color
   const timerColor =
-    timeLeft > 60 ? 'text-slate-700' : timeLeft > 30 ? 'text-orange-500' : 'text-red-500';
+    timeLeft > 60
+      ? 'text-slate-700'
+      : timeLeft > 30
+        ? 'text-orange-500'
+        : 'text-red-500';
 
   return (
     <div className="fixed inset-0 bg-white flex flex-col z-50 overflow-hidden">
@@ -253,7 +289,8 @@ export default function SimulationEngine() {
         size="sm"
       >
         <p className="text-slate-600 mb-6 text-sm">
-          Seu progresso não será salvo. Tem certeza que deseja voltar para a trilha?
+          Seu progresso não será salvo. Tem certeza que deseja voltar para a
+          trilha?
         </p>
         <div className="flex gap-3">
           <button
@@ -280,12 +317,15 @@ export default function SimulationEngine() {
       >
         <div className="space-y-6">
           <p className="text-slate-500 text-sm">
-            Confira abaixo as questões respondidas, não respondidas ou marcadas para revisão. Clique no número para ir direto até a questão.
+            Confira abaixo as questões respondidas, não respondidas ou marcadas
+            para revisão. Clique no número para ir direto até a questão.
           </p>
 
           <div className="grid grid-cols-5 gap-3 justify-items-center">
             {questions.map((q, idx) => {
-              const isAnswered = answers.some(a => a.questionId === q.id && a.selectedId !== '');
+              const isAnswered = answers.some(
+                (a) => a.questionId === q.id && a.selectedId !== '',
+              );
               const isFlagged = flagged[q.id];
               return (
                 <button
@@ -296,12 +336,12 @@ export default function SimulationEngine() {
                     setShowReviewPanel(false);
                   }}
                   className={cn(
-                    "w-12 h-12 rounded-2xl font-bold flex items-center justify-center border-2 transition-all relative text-sm",
+                    'w-12 h-12 rounded-2xl font-bold flex items-center justify-center border-2 transition-all relative text-sm',
                     isFlagged
-                      ? "bg-amber-50 border-amber-500 text-amber-700 hover:bg-amber-100/50"
+                      ? 'bg-amber-50 border-amber-500 text-amber-700 hover:bg-amber-100/50'
                       : isAnswered
-                        ? "bg-indigo-50 border-indigo-500 text-indigo-750 hover:bg-indigo-100/50"
-                        : "bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100"
+                        ? 'bg-indigo-50 border-indigo-500 text-indigo-750 hover:bg-indigo-100/50'
+                        : 'bg-slate-50 border-slate-200 text-slate-500 hover:bg-slate-100',
                   )}
                 >
                   {idx + 1}
@@ -371,7 +411,9 @@ export default function SimulationEngine() {
 
         {/* Timer (EXAM only) */}
         {mode === 'EXAM' && (
-          <div className={`flex items-center gap-1.5 font-bold text-sm tabular-nums ${timerColor}`}>
+          <div
+            className={`flex items-center gap-1.5 font-bold text-sm tabular-nums ${timerColor}`}
+          >
             <Clock className="h-4 w-4" />
             {formatTime(timeLeft)}
           </div>
@@ -395,20 +437,27 @@ export default function SimulationEngine() {
               {mode === 'EXAM' && (
                 <button
                   onClick={() => {
-                    setFlagged(prev => ({
+                    setFlagged((prev) => ({
                       ...prev,
-                      [currentQuestion.id]: !prev[currentQuestion.id]
+                      [currentQuestion.id]: !prev[currentQuestion.id],
                     }));
                   }}
                   className={cn(
-                    "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border",
+                    'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border',
                     flagged[currentQuestion.id]
-                      ? "bg-amber-50 border-amber-200 text-amber-600"
-                      : "bg-white border-slate-200 text-slate-400 hover:text-slate-650 hover:bg-slate-50"
+                      ? 'bg-amber-50 border-amber-200 text-amber-600'
+                      : 'bg-white border-slate-200 text-slate-400 hover:text-slate-650 hover:bg-slate-50',
                   )}
                 >
-                  <Flag className={cn("h-3.5 w-3.5", flagged[currentQuestion.id] && "fill-amber-500")} />
-                  {flagged[currentQuestion.id] ? "Marcada para Revisar" : "Marcar para Revisar"}
+                  <Flag
+                    className={cn(
+                      'h-3.5 w-3.5',
+                      flagged[currentQuestion.id] && 'fill-amber-500',
+                    )}
+                  />
+                  {flagged[currentQuestion.id]
+                    ? 'Marcada para Revisar'
+                    : 'Marcar para Revisar'}
                 </button>
               )}
             </div>
@@ -423,7 +472,8 @@ export default function SimulationEngine() {
               const isSelected = selectedOption === option.id;
               const isCorrectOption = option.id === correctOptionId;
 
-              let borderClass = 'border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50';
+              let borderClass =
+                'border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50';
               let bgClass = 'bg-white';
               let labelClass = 'bg-slate-100 text-slate-500';
 
@@ -445,7 +495,9 @@ export default function SimulationEngine() {
                 labelClass = 'bg-indigo-600 text-white';
               }
 
-              const optionLabel = ['A', 'B', 'C', 'D', 'E'][currentQuestion.options.indexOf(option)];
+              const optionLabel = ['A', 'B', 'C', 'D', 'E'][
+                currentQuestion.options.indexOf(option)
+              ];
 
               return (
                 <button
@@ -525,7 +577,9 @@ export default function SimulationEngine() {
                 {feedback === 'correct' ? feedbackMsg.title : wrongMsg.title}
               </p>
               <p className="text-white/80 text-xs truncate">
-                {feedback === 'correct' ? feedbackMsg.subtitle : wrongMsg.subtitle}
+                {feedback === 'correct'
+                  ? feedbackMsg.subtitle
+                  : wrongMsg.subtitle}
               </p>
             </div>
           </div>
