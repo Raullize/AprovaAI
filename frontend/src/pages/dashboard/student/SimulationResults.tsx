@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Trophy,
@@ -90,6 +90,82 @@ const STATIC_CONFETTI_ITEMS = Array.from({ length: 20 }).map((_, i) => ({
   duration: `${1 + Math.random()}s`,
 }));
 
+interface ReviewOption {
+  id: string;
+  text: string;
+  isCorrect: boolean;
+}
+
+interface ReviewQuestion {
+  id: string;
+  text: string;
+  explanation: string;
+  options: ReviewOption[];
+}
+
+const QUESTIONS_LOOKUP: Record<string, ReviewQuestion> = {
+  q1: {
+    id: 'q1',
+    text: 'Qual serviço da AWS fornece uma rede virtual dedicada para a sua conta da AWS?',
+    explanation:
+      'O Amazon Virtual Private Cloud (Amazon VPC) permite provisionar uma seção isolada logicamente da Nuvem AWS onde você pode iniciar recursos da AWS em uma rede virtual definida por você.',
+    options: [
+      { id: 'a', text: 'Amazon VPC', isCorrect: true },
+      { id: 'b', text: 'Amazon EC2', isCorrect: false },
+      { id: 'c', text: 'Amazon Route 53', isCorrect: false },
+      { id: 'd', text: 'AWS Direct Connect', isCorrect: false },
+    ],
+  },
+  q2: {
+    id: 'q2',
+    text: 'No modelo de responsabilidade compartilhada da AWS, o que é de responsabilidade da AWS?',
+    explanation:
+      'A AWS é responsável pela "segurança da nuvem", o que inclui a infraestrutura global (hardware, software, redes e instalações) que executa os serviços.',
+    options: [
+      { id: 'a', text: 'Configuração de Security Groups', isCorrect: false },
+      { id: 'b', text: 'Criptografia de dados de clientes', isCorrect: false },
+      { id: 'c', text: 'Segurança da infraestrutura física', isCorrect: true },
+      { id: 'd', text: 'Gerenciamento de usuários do IAM', isCorrect: false },
+    ],
+  },
+  q3: {
+    id: 'q3',
+    text: 'Qual serviço de banco de dados da AWS é totalmente gerenciado e focado em banco de dados relacional (SQL)?',
+    explanation:
+      'O Amazon Relational Database Service (Amazon RDS) facilita a configuração, operação e escalabilidade de um banco de dados relacional na nuvem.',
+    options: [
+      { id: 'a', text: 'Amazon DynamoDB', isCorrect: false },
+      { id: 'b', text: 'Amazon RDS', isCorrect: true },
+      { id: 'c', text: 'Amazon Redshift', isCorrect: false },
+      { id: 'd', text: 'Amazon ElastiCache', isCorrect: false },
+    ],
+  },
+  q4: {
+    id: 'q4',
+    text: 'Qual serviço AWS é ideal para armazenar objetos de forma altamente durável, como backups e arquivos estáticos (imagens/vídeos)?',
+    explanation:
+      'O Amazon S3 (Simple Storage Service) é um serviço de armazenamento de objetos líder no mercado, oferecendo escalabilidade e durabilidade.',
+    options: [
+      { id: 'a', text: 'Amazon EBS', isCorrect: false },
+      { id: 'b', text: 'Amazon S3', isCorrect: true },
+      { id: 'c', text: 'Amazon EFS', isCorrect: false },
+      { id: 'd', text: 'Amazon Inspector', isCorrect: false },
+    ],
+  },
+  q5: {
+    id: 'q5',
+    text: 'Qual serviço oferece computação serverless que permite executar código sem provisionar ou gerenciar servidores?',
+    explanation:
+      'O AWS Lambda é um serviço de computação serverless e orientado a eventos que permite executar código em resposta a triggers.',
+    options: [
+      { id: 'a', text: 'Amazon EC2', isCorrect: false },
+      { id: 'b', text: 'Amazon ECS', isCorrect: false },
+      { id: 'c', text: 'AWS Beanstalk', isCorrect: false },
+      { id: 'd', text: 'AWS Lambda', isCorrect: true },
+    ],
+  },
+};
+
 // --- Main Component ---
 export default function SimulationResults() {
   const location = useLocation();
@@ -106,13 +182,68 @@ export default function SimulationResults() {
 
   const animatedXP = useCountUp(xpEarned);
   const animatedPercentage = useCountUp(percentage);
+  const animatedCorrect = useCountUp(correct);
+  const animatedWrong = useCountUp(wrong);
+  const [barWidth, setBarWidth] = useState(0);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setBarWidth(percentage);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [percentage]);
 
   const [showReview, setShowReview] = useState(false);
+  const [filter, setFilter] = useState<'ALL' | 'CORRECT' | 'INCORRECT'>('ALL');
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // Generate mock answers if history doesn't provide them
+  const answers = useMemo(() => {
+    if (state.answers && state.answers.length > 0) {
+      return state.answers;
+    }
+
+    const t = state.total || 5;
+    const c = state.correct || 0;
+    const generated: AnswerRecord[] = [];
+    const questionKeys = Object.keys(QUESTIONS_LOOKUP);
+
+    for (let i = 0; i < t; i++) {
+      const qKey = questionKeys[i % questionKeys.length];
+      const isCorrect = i < c;
+      const q = QUESTIONS_LOOKUP[qKey];
+
+      const correctOption = q.options.find((o) => o.isCorrect);
+      const wrongOption = q.options.find((o) => !o.isCorrect);
+
+      generated.push({
+        questionId: q.id,
+        selectedId: isCorrect
+          ? correctOption?.id || 'a'
+          : wrongOption?.id || 'b',
+        correct: isCorrect,
+      });
+    }
+    return generated;
+  }, [state.answers, state.total, state.correct]);
+
+  const filteredAnswers = useMemo(() => {
+    return answers.filter((ans) => {
+      if (filter === 'CORRECT') return ans.correct;
+      if (filter === 'INCORRECT') return !ans.correct;
+      return true;
+    });
+  }, [answers, filter]);
 
   const confettiItems = STATIC_CONFETTI_ITEMS;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 pb-24">
+    <div
+      className={cn(
+        'min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30',
+        passed ? 'pb-48 md:pb-32' : 'pb-72 md:pb-52',
+      )}
+    >
       {/* Hero section */}
       <div
         className={cn(
@@ -201,7 +332,9 @@ export default function SimulationResults() {
             <div className="w-10 h-10 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-2">
               <CheckCircle2 className="h-5 w-5 text-green-500" />
             </div>
-            <p className="text-2xl font-bold text-slate-800">{correct}</p>
+            <p className="text-2xl font-bold text-slate-800">
+              {animatedCorrect}
+            </p>
             <p className="text-xs text-slate-500 mt-0.5">Acertos</p>
           </div>
 
@@ -210,7 +343,7 @@ export default function SimulationResults() {
             <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-2">
               <XCircle className="h-5 w-5 text-red-400" />
             </div>
-            <p className="text-2xl font-bold text-slate-800">{wrong}</p>
+            <p className="text-2xl font-bold text-slate-800">{animatedWrong}</p>
             <p className="text-xs text-slate-500 mt-0.5">Erros</p>
           </div>
 
@@ -249,7 +382,7 @@ export default function SimulationResults() {
                     ? 'bg-gradient-to-r from-green-400 to-emerald-500'
                     : 'bg-gradient-to-r from-red-400 to-rose-500',
                 )}
-                style={{ width: `${percentage}%` }}
+                style={{ width: `${barWidth}%` }}
               />
             </div>
             <div className="flex justify-between mt-1">
@@ -274,51 +407,236 @@ export default function SimulationResults() {
       </div>
 
       {/* Review section */}
-      <div className="px-4 mt-4 max-w-md mx-auto">
-        <button
-          onClick={() => setShowReview(!showReview)}
-          className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors"
-        >
-          <span className="text-sm font-semibold text-slate-700">
-            Revisar Respostas
-          </span>
-          {showReview ? (
-            <ChevronUp className="h-4 w-4 text-slate-400" />
-          ) : (
-            <ChevronDown className="h-4 w-4 text-slate-400" />
-          )}
-        </button>
+      <div className="px-4 mt-4">
+        <div className="max-w-md mx-auto">
+          <button
+            onClick={() => setShowReview(!showReview)}
+            className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors"
+          >
+            <span className="text-sm font-semibold text-slate-700">
+              Revisar Respostas
+            </span>
+            {showReview ? (
+              <ChevronUp className="h-4 w-4 text-slate-400" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-slate-400" />
+            )}
+          </button>
 
-        {showReview && state.answers.length > 0 && (
-          <div className="mt-2 space-y-2">
-            {state.answers.map((ans, idx) => (
-              <div
-                key={ans.questionId}
-                className={cn(
-                  'flex items-center gap-3 p-3 rounded-xl border text-sm',
-                  ans.correct
-                    ? 'bg-green-50 border-green-200'
-                    : 'bg-red-50 border-red-200',
-                )}
-              >
-                {ans.correct ? (
-                  <CheckCircle2 className="h-4 w-4 text-green-500 shrink-0" />
-                ) : (
-                  <XCircle className="h-4 w-4 text-red-500 shrink-0" />
-                )}
-                <span
-                  className={ans.correct ? 'text-green-700' : 'text-red-700'}
+          {showReview && answers.length > 0 && (
+            <div className="mt-4 space-y-6">
+              {/* Filter Selector */}
+              <div className="flex bg-slate-100 p-1 rounded-2xl gap-1 border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilter('ALL');
+                    setActiveIndex(0);
+                  }}
+                  className={cn(
+                    'flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center',
+                    filter === 'ALL'
+                      ? 'bg-white text-slate-800 shadow-sm'
+                      : 'text-slate-500 hover:text-slate-800',
+                  )}
                 >
-                  Questão {idx + 1} — {ans.correct ? 'Correta' : 'Incorreta'}
-                </span>
+                  Todas ({answers.length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilter('CORRECT');
+                    setActiveIndex(0);
+                  }}
+                  className={cn(
+                    'flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center',
+                    filter === 'CORRECT'
+                      ? 'bg-white text-emerald-700 shadow-sm'
+                      : 'text-slate-500 hover:text-emerald-700',
+                  )}
+                >
+                  Acertos ({answers.filter((a) => a.correct).length})
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFilter('INCORRECT');
+                    setActiveIndex(0);
+                  }}
+                  className={cn(
+                    'flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center',
+                    filter === 'INCORRECT'
+                      ? 'bg-white text-rose-700 shadow-sm'
+                      : 'text-slate-500 hover:text-rose-700',
+                  )}
+                >
+                  Erros ({answers.filter((a) => !a.correct).length})
+                </button>
               </div>
-            ))}
-          </div>
-        )}
+
+              {filteredAnswers.length > 0 ? (
+                <div className="space-y-4">
+                  {/* Compact Number Badges Grid */}
+                  <div className="flex flex-wrap gap-2 justify-center py-2 bg-slate-50/50 rounded-2xl border border-slate-100 p-3">
+                    {filteredAnswers.map((ans, idx) => {
+                      const originalIndex = answers.findIndex(
+                        (a) => a.questionId === ans.questionId,
+                      );
+                      const qNum =
+                        originalIndex !== -1 ? originalIndex + 1 : idx + 1;
+                      const isActive = idx === activeIndex;
+
+                      return (
+                        <button
+                          key={ans.questionId + '-' + idx}
+                          type="button"
+                          onClick={() => setActiveIndex(idx)}
+                          className={cn(
+                            'w-9 h-9 rounded-xl font-bold flex items-center justify-center text-xs transition-all relative',
+                            isActive
+                              ? 'ring-2 ring-indigo-500 ring-offset-2 scale-105'
+                              : 'hover:scale-105',
+                            ans.correct
+                              ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+                              : 'bg-rose-50 border border-rose-200 text-rose-700',
+                          )}
+                        >
+                          {qNum}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Active Question Detailed Card */}
+                  {(() => {
+                    const ans = filteredAnswers[activeIndex];
+                    if (!ans) return null;
+                    const originalIndex = answers.findIndex(
+                      (a) => a.questionId === ans.questionId,
+                    );
+                    const displayIndex =
+                      originalIndex !== -1 ? originalIndex : activeIndex;
+                    const q =
+                      QUESTIONS_LOOKUP[ans.questionId] ||
+                      QUESTIONS_LOOKUP['q' + ((displayIndex % 5) + 1)];
+                    if (!q) return null;
+
+                    return (
+                      <div className="p-5 rounded-3xl border border-slate-200 bg-white shadow-sm space-y-4 text-left transition-all">
+                        {/* Question Header */}
+                        <div className="flex items-start gap-3">
+                          {ans.correct ? (
+                            <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
+                          ) : (
+                            <XCircle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />
+                          )}
+                          <div>
+                            <h4 className="font-bold text-slate-800 text-sm">
+                              Questão {displayIndex + 1}
+                            </h4>
+                            <p className="text-slate-650 text-xs mt-1 leading-relaxed">
+                              {q.text}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Options List */}
+                        <div className="space-y-2 pl-8">
+                          {q.options.map((opt: ReviewOption) => {
+                            const isSelected = opt.id === ans.selectedId;
+                            const isCorrect = opt.isCorrect;
+
+                            let optionStyle =
+                              'border-slate-100 bg-slate-50/50 text-slate-600';
+                            if (isCorrect) {
+                              optionStyle =
+                                'border-emerald-250 bg-emerald-50/60 text-emerald-800 font-semibold';
+                            } else if (isSelected && !isCorrect) {
+                              optionStyle =
+                                'border-rose-250 bg-rose-50/60 text-rose-800 font-semibold';
+                            }
+
+                            return (
+                              <div
+                                key={opt.id}
+                                className={cn(
+                                  'flex items-center gap-2.5 p-3 rounded-2xl border text-xs leading-relaxed transition-all',
+                                  optionStyle,
+                                )}
+                              >
+                                <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0 border border-current">
+                                  {opt.id}
+                                </span>
+                                <span>{opt.text}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+
+                        {/* Explanation */}
+                        <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[10px] text-slate-500 pl-8 leading-relaxed">
+                          <span className="font-bold text-slate-700 block mb-1">
+                            Explicação:
+                          </span>
+                          {q.explanation}
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Pagination Controls */}
+                  <div className="flex justify-between items-center gap-4 pt-1">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveIndex((prev) => Math.max(0, prev - 1))
+                      }
+                      disabled={activeIndex === 0}
+                      className={cn(
+                        'flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors text-center',
+                        activeIndex === 0
+                          ? 'border-slate-150 text-slate-300 cursor-not-allowed'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50',
+                      )}
+                    >
+                      Anterior
+                    </button>
+                    <span className="text-xs text-slate-400 font-semibold">
+                      {activeIndex + 1} de {filteredAnswers.length}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setActiveIndex((prev) =>
+                          Math.min(filteredAnswers.length - 1, prev + 1),
+                        )
+                      }
+                      disabled={activeIndex === filteredAnswers.length - 1}
+                      className={cn(
+                        'flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors text-center',
+                        activeIndex === filteredAnswers.length - 1
+                          ? 'border-slate-150 text-slate-300 cursor-not-allowed'
+                          : 'border-slate-200 text-slate-600 hover:bg-slate-50',
+                      )}
+                    >
+                      Próxima
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-8 text-center bg-white border border-slate-200 rounded-3xl">
+                  <p className="text-sm font-semibold text-slate-400">
+                    Nenhuma questão nesta categoria.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* CTA buttons */}
-      <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 space-y-3">
+      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 space-y-3 z-40">
         <div className="max-w-md mx-auto space-y-3">
           <button
             onClick={() => navigate('/dashboard')}
