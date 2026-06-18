@@ -6,7 +6,6 @@ import Login from '../pages/login/Login';
 import Register from '../pages/register/Register';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
 import UnderConstruction from '../components/ui/UnderConstruction';
-import CreateSimulation from '../pages/dashboard/simulations/CreateSimulation';
 
 import AdminExams from '../pages/dashboard/admin/AdminExams';
 import TopicList from '../pages/dashboard/admin/TopicList';
@@ -17,11 +16,18 @@ import ExploreExams from '../pages/dashboard/student/ExploreExams';
 import ExamTrail from '../pages/dashboard/student/ExamTrail';
 import SimulationEngine from '../pages/dashboard/student/SimulationEngine';
 import SimulationResults from '../pages/dashboard/student/SimulationResults';
+import Profile from '../pages/dashboard/student/Profile';
+import SimulationsHistory from '../pages/dashboard/student/SimulationsHistory';
 
 const DashboardIndex = () => {
   const { user } = useAuth();
   if (user?.role === 'ADMIN') {
-    return <UnderConstruction title="Dashboard" message="Visão geral e estatísticas em breve." />;
+    return (
+      <UnderConstruction
+        title="Dashboard"
+        message="Visão geral e estatísticas em breve."
+      />
+    );
   }
   return <StudentHome />;
 };
@@ -71,42 +77,17 @@ export function AppRoutes() {
       >
         <Route index element={<DashboardIndex />} />
 
-        <Route
-          path="simulations"
-          element={
-            <div className="space-y-6">
-              <UnderConstruction
-                title="Listagem de Simulados"
-                message="O histórico de simulados estará disponível aqui."
-              />
-            </div>
-          }
-        />
+        <Route path="simulations" element={<SimulationsHistory />} />
 
         <Route path="explore" element={<ExploreExams />} />
         <Route path="explore/:examId" element={<ExamTrail />} />
-        <Route path="simulations/create" element={<CreateSimulation />} />
-        <Route path="simulations/engine/:levelId" element={<SimulationEngine />} />
+        <Route
+          path="simulations/engine/:levelId"
+          element={<SimulationEngine />}
+        />
         <Route path="simulations/results" element={<SimulationResults />} />
 
-        <Route
-          path="profile"
-          element={
-            <UnderConstruction
-              title="Meu Perfil"
-              message="Edição de dados pessoais em breve."
-            />
-          }
-        />
-        <Route
-          path="settings"
-          element={
-            <UnderConstruction
-              title="Configurações"
-              message="Preferências do sistema em breve."
-            />
-          }
-        />
+        <Route path="profile" element={<Profile />} />
         <Route
           path="users"
           element={
