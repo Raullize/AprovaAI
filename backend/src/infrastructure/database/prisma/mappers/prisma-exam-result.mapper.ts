@@ -16,6 +16,8 @@ type PrismaExamResultWithRelations = PrismaExamResult & {
     topic?: {
       name: string;
       exam?: {
+        id?: string;
+        slug?: string;
         name: string;
         category?: unknown;
         iconKey?: string | null;
@@ -51,6 +53,8 @@ export class PrismaExamResultMapper {
                     name: raw.level.topic.name,
                     exam: raw.level.topic.exam
                       ? {
+                          id: raw.level.topic.exam.id,
+                          slug: raw.level.topic.exam.slug,
                           name: raw.level.topic.exam.name,
                           category:
                             raw.level.topic.exam.category !== undefined &&

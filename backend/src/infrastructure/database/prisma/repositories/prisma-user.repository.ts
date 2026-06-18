@@ -102,6 +102,9 @@ export class PrismaUserRepository implements UserRepository {
 
   async findLeaderboard(limit: number): Promise<User[]> {
     const users = await this.prisma.user.findMany({
+      where: {
+        role: 'USER',
+      },
       orderBy: { xp: 'desc' },
       take: limit,
     });

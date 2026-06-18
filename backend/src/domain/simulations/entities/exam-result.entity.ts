@@ -58,6 +58,8 @@ export interface ExamResultLevel {
   topic?: {
     name: string;
     exam?: {
+      id?: string;
+      slug?: string;
       name: string;
       category?: string;
       iconKey?: string;
