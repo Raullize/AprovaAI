@@ -650,9 +650,11 @@ export default function SimulationEngine() {
                     feedback === 'correct' ? 'bg-green-400' : 'bg-red-400',
                   )}
                 >
-                  <span className="text-xl leading-none">
-                    {feedback === 'correct' ? '✅' : '❌'}
-                  </span>
+                  {feedback === 'correct' ? (
+                    <CheckCircle2 className="h-5 w-5 text-white" />
+                  ) : (
+                    <XCircle className="h-5 w-5 text-white" />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-white font-bold text-base">

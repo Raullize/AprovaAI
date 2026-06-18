@@ -318,7 +318,7 @@ export default function SimulationResults() {
           <p className="text-white/60 text-xs mt-1">
             {passed
               ? stars === 3
-                ? 'Desempenho perfeito! 🌟'
+                ? 'Desempenho perfeito!'
                 : 'Parabéns pela aprovação!'
               : `Você precisava de ${passingPercentage}% para passar.`}
           </p>

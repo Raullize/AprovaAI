@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { Eye, EyeOff } from 'lucide-react';
+import { AlertTriangle, Eye, EyeOff } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -67,7 +67,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
         {error && (
           <p className="text-sm text-red-600 flex items-center">
-            <span className="mr-1">⚠</span>
+            <AlertTriangle className="mr-1 h-4 w-4 shrink-0" />
             {error}
           </p>
         )}
