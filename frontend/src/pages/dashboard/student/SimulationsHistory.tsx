@@ -21,6 +21,7 @@ interface HistoryItem {
   levelId: string;
   levelName: string;
   examName: string;
+  topicName: string;
   examCategory?: string;
   mode: 'PRACTICE' | 'EXAM';
   score: number;
@@ -58,63 +59,13 @@ const CATEGORIES = [
   { key: 'OUTROS', label: 'Outros' },
 ];
 
-const MOCK_HISTORY: HistoryItem[] = [
-  {
-    id: 'h1',
-    levelId: 'lvl-1',
-    levelName: 'O que é Cloud?',
-    examName: 'AWS Cloud Practitioner',
-    examCategory: 'CERTIFICACOES',
-    mode: 'PRACTICE',
-    score: 8,
-    totalQuestions: 10,
-    percentage: 80,
-    passed: true,
-    timeSpent: 124,
-    createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    iconKey: 'cpu',
-    colorScheme: 'orange',
-  },
-  {
-    id: 'h2',
-    levelId: 'lvl-2',
-    levelName: 'Vantagens da Nuvem',
-    examName: 'AWS Cloud Practitioner',
-    examCategory: 'CERTIFICACOES',
-    mode: 'EXAM',
-    score: 12,
-    totalQuestions: 15,
-    percentage: 80,
-    passed: true,
-    timeSpent: 420,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-    iconKey: 'cpu',
-    colorScheme: 'orange',
-  },
-  {
-    id: 'h3',
-    levelId: 'lvl-3',
-    levelName: 'Ética Profissional',
-    examName: 'Exame da Ordem (OAB)',
-    examCategory: 'OAB',
-    mode: 'EXAM',
-    score: 6,
-    totalQuestions: 10,
-    percentage: 60,
-    passed: false,
-    timeSpent: 300,
-    createdAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
-    iconKey: 'trophy',
-    colorScheme: 'sky',
-  },
-];
-
 interface ApiHistoryItem {
   id: string;
   levelId: string;
   level?: {
     name?: string;
     topic?: {
+      name?: string;
       exam?: {
         name?: string;
         category?: string;
@@ -136,6 +87,29 @@ interface ApiHistoryItem {
     selectedOptions: string[];
     isCorrect: boolean | null;
   }[];
+}
+
+function formatCategoryLabel(category?: string) {
+  const found = CATEGORIES.find((c) => c.key === category);
+  return found?.label ?? category ?? 'Outros';
+}
+
+function Stars({ value }: { value: number }) {
+  return (
+    <div className="flex items-center gap-0.5" aria-label={`${value} estrelas`}>
+      {[1, 2, 3].map((i) => (
+        <span
+          key={i}
+          className={cn(
+            'text-sm leading-none',
+            i <= value ? 'text-amber-500' : 'text-slate-300',
+          )}
+        >
+          ★
+        </span>
+      ))}
+    </div>
+  );
 }
 
 export default function SimulationsHistory() {
@@ -165,36 +139,36 @@ export default function SimulationsHistory() {
     async function load() {
       try {
         const response = await api.get('/simulations/history');
-        if (response.data && response.data.length > 0) {
-          const mapped = response.data.map((item: ApiHistoryItem) => ({
-            id: item.id,
-            levelId: item.levelId,
-            levelName: item.level?.name || 'Sem nome',
-            examName: item.level?.topic?.exam?.name || 'Outros',
-            examCategory: item.level?.topic?.exam?.category || 'OUTROS',
-            mode: item.mode,
-            score: item.score || 0,
-            totalQuestions: item.totalQuestions || 5,
-            percentage: item.percentage || 0,
-            passed: item.passed || false,
-            stars: item.stars || 0,
-            timeSpent: item.timeSpent || 0,
-            createdAt: item.createdAt,
-            iconKey: item.level?.topic?.exam?.iconKey || 'star',
-            colorScheme: item.level?.topic?.exam?.colorScheme || 'indigo',
-            answers:
-              item.answers?.map((ans) => ({
-                questionId: ans.questionId,
-                selectedId: ans.selectedOptions?.[0] || '',
-                correct: ans.isCorrect ?? false,
-              })) || [],
-          }));
-          setHistory(mapped);
-        } else {
-          setHistory(MOCK_HISTORY);
-        }
+        const data: ApiHistoryItem[] = Array.isArray(response.data)
+          ? response.data
+          : [];
+        const mapped = data.map((item) => ({
+          id: item.id,
+          levelId: item.levelId,
+          levelName: item.level?.name ?? 'Sem nome',
+          examName: item.level?.topic?.exam?.name ?? 'Outros',
+          topicName: item.level?.topic?.name ?? 'Sem tópico',
+          examCategory: item.level?.topic?.exam?.category ?? 'OUTROS',
+          mode: item.mode,
+          score: item.score ?? 0,
+          totalQuestions: item.totalQuestions ?? 0,
+          percentage: item.percentage ?? 0,
+          passed: item.passed ?? false,
+          stars: item.stars ?? 0,
+          timeSpent: item.timeSpent ?? 0,
+          createdAt: item.createdAt,
+          iconKey: item.level?.topic?.exam?.iconKey ?? 'star',
+          colorScheme: item.level?.topic?.exam?.colorScheme ?? 'indigo',
+          answers:
+            item.answers?.map((ans) => ({
+              questionId: ans.questionId,
+              selectedId: ans.selectedOptions?.[0] ?? '',
+              correct: ans.isCorrect ?? false,
+            })) ?? [],
+        }));
+        setHistory(mapped);
       } catch {
-        setHistory(MOCK_HISTORY);
+        setHistory([]);
       } finally {
         setIsLoading(false);
       }
@@ -573,10 +547,17 @@ export default function SimulationsHistory() {
                         >
                           {item.mode === 'EXAM' ? 'EXAME' : 'TREINO'}
                         </span>
+                        <span className="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-slate-50 text-slate-600 border border-slate-200">
+                          {formatCategoryLabel(item.examCategory)}
+                        </span>
+                        <Stars value={item.stars ?? 0} />
                       </div>
                       <h3 className="font-bold text-slate-800 text-base leading-tight truncate">
                         {item.levelName}
                       </h3>
+                      <p className="text-xs text-slate-500 font-medium truncate mt-1">
+                        {item.examName} • {item.topicName}
+                      </p>
                       <div className="flex flex-wrap items-center gap-4 mt-2 text-xs text-slate-400 font-medium">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3.5 w-3.5" />
@@ -619,9 +600,12 @@ export default function SimulationsHistory() {
                               total: item.totalQuestions,
                               correct: item.score,
                               timeSpent: item.timeSpent,
-                              xpEarned: Math.round(
-                                (item.score / item.totalQuestions) * 60,
-                              ),
+                              xpEarned:
+                                item.totalQuestions > 0
+                                  ? Math.round(
+                                      (item.score / item.totalQuestions) * 60,
+                                    )
+                                  : 0,
                               passingPercentage: 70,
                               levelName: item.levelName,
                               stars: item.stars,
