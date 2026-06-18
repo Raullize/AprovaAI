@@ -10,7 +10,7 @@ interface Plan {
   description: string;
   features: string[];
   ctaText: string;
-  ctaVariant: 'indigo' | 'outline';
+  ctaVariant: 'primary' | 'outline';
   isPopular: boolean;
 }
 
@@ -48,7 +48,7 @@ const plans: Plan[] = [
       'Análise de pontos fortes/fracos',
     ],
     ctaText: 'Assine Agora',
-    ctaVariant: 'indigo',
+    ctaVariant: 'primary',
     isPopular: true,
   },
 ];
