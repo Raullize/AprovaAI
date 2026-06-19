@@ -1,15 +1,15 @@
-import { GetStudentProfileUseCase } from '../../get-student-profile.use-case';
+import { GetAccountProfileUseCase } from '../../get-account-profile.use-case';
 import { InMemoryUserRepository } from '../../../../../../test/repositories/in-memory-user.repository';
 import { User } from '../../../../../domain/users/entities/user.entity';
 import { Email } from '../../../../../domain/users/value-objects/email';
 
-describe('GetStudentProfileUseCase', () => {
+describe('GetAccountProfileUseCase', () => {
   let userRepository: InMemoryUserRepository;
-  let sut: GetStudentProfileUseCase;
+  let sut: GetAccountProfileUseCase;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
-    sut = new GetStudentProfileUseCase(userRepository);
+    sut = new GetAccountProfileUseCase(userRepository);
   });
 
   it('should return the student profile when the user exists', async () => {

@@ -5,20 +5,20 @@ import { HashProvider } from '../../auth/ports/hash-provider';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 import { InvalidCurrentPasswordError } from '../../../domain/users/errors/invalid-current-password.error';
 
-export interface UpdateStudentPasswordRequest {
+export interface UpdateAccountPasswordRequest {
   userId: string;
   currentPassword: string;
   newPassword: string;
 }
 
-export interface UpdateStudentPasswordResponse {
+export interface UpdateAccountPasswordResponse {
   message: string;
 }
 
 @Injectable()
-export class UpdateStudentPasswordUseCase
+export class UpdateAccountPasswordUseCase
   implements
-    UseCase<UpdateStudentPasswordRequest, UpdateStudentPasswordResponse>
+    UseCase<UpdateAccountPasswordRequest, UpdateAccountPasswordResponse>
 {
   constructor(
     private readonly userRepository: UserRepository,
@@ -26,8 +26,8 @@ export class UpdateStudentPasswordUseCase
   ) {}
 
   async execute(
-    request: UpdateStudentPasswordRequest,
-  ): Promise<UpdateStudentPasswordResponse> {
+    request: UpdateAccountPasswordRequest,
+  ): Promise<UpdateAccountPasswordResponse> {
     const user = await this.userRepository.findById(request.userId);
 
     if (!user) {

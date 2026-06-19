@@ -1,33 +1,33 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
-export const updateStudentProfileSchema = z
+export const updateAccountProfileSchema = z
   .object({
     fullName: z
       .string()
       .min(1, 'Nome completo nao pode ser vazio.')
       .optional()
-      .describe('Novo nome completo do estudante. Ex: Raul Lize'),
+      .describe('Novo nome completo do usuario autenticado. Ex: Raul Lize'),
     email: z
       .string()
       .email('E-mail invalido')
       .optional()
-      .describe('Novo e-mail principal do estudante. Ex: aluno@aprovaai.com'),
+      .describe('Novo e-mail principal da conta. Ex: aluno@aprovaai.com'),
     username: z
       .string()
       .min(1, 'Nome de usuario nao pode ser vazio.')
       .optional()
-      .describe('Novo nome de usuario unico do estudante. Ex: raullize'),
+      .describe('Novo nome de usuario unico da conta. Ex: raullize'),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Informe ao menos um campo para atualizar o perfil.',
   });
 
-export class UpdateStudentProfileDto extends createZodDto(
-  updateStudentProfileSchema,
+export class UpdateAccountProfileDto extends createZodDto(
+  updateAccountProfileSchema,
 ) {}
 
-export const updateStudentPasswordSchema = z.object({
+export const updateAccountPasswordSchema = z.object({
   currentPassword: z
     .string()
     .min(1, 'Senha atual e obrigatoria.')
@@ -38,6 +38,6 @@ export const updateStudentPasswordSchema = z.object({
     .describe('Nova senha da conta com no minimo 6 caracteres. Ex: novaSenha123'),
 });
 
-export class UpdateStudentPasswordDto extends createZodDto(
-  updateStudentPasswordSchema,
+export class UpdateAccountPasswordDto extends createZodDto(
+  updateAccountPasswordSchema,
 ) {}

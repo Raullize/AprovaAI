@@ -1,16 +1,16 @@
-import { DeleteStudentAccountUseCase } from '../../delete-student-account.use-case';
+import { DeleteAccountUseCase } from '../../delete-account.use-case';
 import { InMemoryUserRepository } from '../../../../../../test/repositories/in-memory-user.repository';
 import { User } from '../../../../../domain/users/entities/user.entity';
 import { Email } from '../../../../../domain/users/value-objects/email';
 import { ResourceNotFoundError } from '../../../../../shared/core/errors/resource-not-found.error';
 
-describe('DeleteStudentAccountUseCase', () => {
+describe('DeleteAccountUseCase', () => {
   let userRepository: InMemoryUserRepository;
-  let sut: DeleteStudentAccountUseCase;
+  let sut: DeleteAccountUseCase;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
-    sut = new DeleteStudentAccountUseCase(userRepository);
+    sut = new DeleteAccountUseCase(userRepository);
   });
 
   it('should be able to delete the student account', async () => {

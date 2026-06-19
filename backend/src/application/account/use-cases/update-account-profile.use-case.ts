@@ -4,9 +4,9 @@ import { UserRepository } from '../../../domain/users/repositories/user.reposito
 import { Email } from '../../../domain/users/value-objects/email';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 import { UserAlreadyExistsError } from '../../../domain/users/errors/user-already-exists.error';
-import { StudentProfileResponse } from './get-student-profile.use-case';
+import { AccountProfileResponse } from './get-account-profile.use-case';
 
-export interface UpdateStudentProfileRequest {
+export interface UpdateAccountProfileRequest {
   userId: string;
   fullName?: string;
   email?: string;
@@ -14,14 +14,14 @@ export interface UpdateStudentProfileRequest {
 }
 
 @Injectable()
-export class UpdateStudentProfileUseCase
-  implements UseCase<UpdateStudentProfileRequest, StudentProfileResponse>
+export class UpdateAccountProfileUseCase
+  implements UseCase<UpdateAccountProfileRequest, AccountProfileResponse>
 {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(
-    request: UpdateStudentProfileRequest,
-  ): Promise<StudentProfileResponse> {
+    request: UpdateAccountProfileRequest,
+  ): Promise<AccountProfileResponse> {
     const user = await this.userRepository.findById(request.userId);
 
     if (!user) {

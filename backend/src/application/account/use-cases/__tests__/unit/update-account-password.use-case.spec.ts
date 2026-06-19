@@ -1,4 +1,4 @@
-import { UpdateStudentPasswordUseCase } from '../../update-student-password.use-case';
+import { UpdateAccountPasswordUseCase } from '../../update-account-password.use-case';
 import { InMemoryUserRepository } from '../../../../../../test/repositories/in-memory-user.repository';
 import { FakeHashProvider } from '../../../../../../test/providers/fake-hash.provider';
 import { User } from '../../../../../domain/users/entities/user.entity';
@@ -6,15 +6,15 @@ import { Email } from '../../../../../domain/users/value-objects/email';
 import { ResourceNotFoundError } from '../../../../../shared/core/errors/resource-not-found.error';
 import { InvalidCurrentPasswordError } from '../../../../../domain/users/errors/invalid-current-password.error';
 
-describe('UpdateStudentPasswordUseCase', () => {
+describe('UpdateAccountPasswordUseCase', () => {
   let userRepository: InMemoryUserRepository;
   let hashProvider: FakeHashProvider;
-  let sut: UpdateStudentPasswordUseCase;
+  let sut: UpdateAccountPasswordUseCase;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
     hashProvider = new FakeHashProvider();
-    sut = new UpdateStudentPasswordUseCase(userRepository, hashProvider);
+    sut = new UpdateAccountPasswordUseCase(userRepository, hashProvider);
   });
 
   it('should be able to update the student password', async () => {

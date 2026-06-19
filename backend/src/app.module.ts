@@ -8,6 +8,7 @@ import { QuestionsModule } from './api/questions/questions.module';
 import { UploadModule } from './api/upload/upload.module';
 import { HealthModule } from './api/health/health.module';
 import { SimulationsModule } from './api/simulations/simulations.module';
+import { AccountModule } from './api/account/account.module';
 import { StudentModule } from './api/student/student.module';
 
 @Module({
@@ -21,6 +22,7 @@ import { StudentModule } from './api/student/student.module';
     UploadModule,
     HealthModule,
     SimulationsModule,
+    AccountModule,
     StudentModule,
   ],
   controllers: [],

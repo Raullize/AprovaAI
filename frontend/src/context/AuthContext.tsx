@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   async function refreshUser() {
     try {
-      const response = await api.get('/student/profile');
+      const response = await api.get('/account/profile');
       const updatedUser = response.data;
       if (updatedUser) {
         localStorage.setItem('@aprovaai:user', JSON.stringify(updatedUser));
@@ -64,7 +64,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       if (storedToken && storedUser) {
         setUser(JSON.parse(storedUser));
         // Refresh profile in background
-        api.get('/student/profile')
+        api.get('/account/profile')
           .then((response) => {
             if (response.data) {
               localStorage.setItem('@aprovaai:user', JSON.stringify(response.data));

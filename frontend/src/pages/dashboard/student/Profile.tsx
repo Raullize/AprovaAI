@@ -48,6 +48,7 @@ interface LeaderboardUser {
 export default function Profile() {
   const { user, signOut, refreshUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const roleLabel = user?.role === 'ADMIN' ? 'Administrador' : 'Estudante';
 
   // Generate days for the current month calendar
   const getMonthCalendar = () => {
@@ -197,7 +198,7 @@ export default function Profile() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await api.patch('/student/profile', {
+      await api.patch('/account/profile', {
         fullName,
         email,
         username,
@@ -220,7 +221,7 @@ export default function Profile() {
       return;
     }
     try {
-      await api.patch('/student/password', {
+      await api.patch('/account/password', {
         currentPassword,
         newPassword,
       });
@@ -236,7 +237,7 @@ export default function Profile() {
 
   const handleDeleteAccount = async () => {
     try {
-      await api.delete('/student/account');
+      await api.delete('/account');
       setShowDeleteModal(false);
       toast.success('Conta excluída com sucesso.');
       signOut();
@@ -359,7 +360,7 @@ export default function Profile() {
                 Meu Perfil
               </h1>
               <p className="text-slate-500 mt-1">
-                Acompanhe suas conquistas, ranking de XP e gerencie sua conta.
+                Gerencie sua conta e acompanhe seus principais indicadores na plataforma.
               </p>
             </div>
 
@@ -386,7 +387,7 @@ export default function Profile() {
                 </p>
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
                   <span className="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold border border-indigo-150">
-                    Estudante
+                    {roleLabel}
                   </span>
                   <span className="px-3 py-1 rounded-xl bg-amber-50 text-amber-600 text-xs font-bold border border-amber-150 flex items-center gap-1">
                     <Zap className="h-3.5 w-3.5 fill-current animate-pulse" />

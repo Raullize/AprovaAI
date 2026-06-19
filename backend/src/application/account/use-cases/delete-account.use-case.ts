@@ -3,23 +3,23 @@ import { UseCase } from '../../../shared/core/use-case';
 import { UserRepository } from '../../../domain/users/repositories/user.repository';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
-export interface DeleteStudentAccountRequest {
+export interface DeleteAccountRequest {
   userId: string;
 }
 
-export interface DeleteStudentAccountResponse {
+export interface DeleteAccountResponse {
   message: string;
 }
 
 @Injectable()
-export class DeleteStudentAccountUseCase
-  implements UseCase<DeleteStudentAccountRequest, DeleteStudentAccountResponse>
+export class DeleteAccountUseCase
+  implements UseCase<DeleteAccountRequest, DeleteAccountResponse>
 {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(
-    request: DeleteStudentAccountRequest,
-  ): Promise<DeleteStudentAccountResponse> {
+    request: DeleteAccountRequest,
+  ): Promise<DeleteAccountResponse> {
     const user = await this.userRepository.findById(request.userId);
 
     if (!user) {

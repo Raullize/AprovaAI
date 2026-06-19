@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { UserRepository } from '../../../domain/users/repositories/user.repository';
 
-export interface GetStudentProfileRequest {
+export interface GetAccountProfileRequest {
   userId: string;
 }
 
-export interface StudentProfileResponse {
+export interface AccountProfileResponse {
   id: string;
   fullName: string;
   username: string;
@@ -19,14 +19,14 @@ export interface StudentProfileResponse {
 }
 
 @Injectable()
-export class GetStudentProfileUseCase
-  implements UseCase<GetStudentProfileRequest, StudentProfileResponse | null>
+export class GetAccountProfileUseCase
+  implements UseCase<GetAccountProfileRequest, AccountProfileResponse | null>
 {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(
-    request: GetStudentProfileRequest,
-  ): Promise<StudentProfileResponse | null> {
+    request: GetAccountProfileRequest,
+  ): Promise<AccountProfileResponse | null> {
     const user = await this.userRepository.findById(request.userId);
 
     if (!user) {

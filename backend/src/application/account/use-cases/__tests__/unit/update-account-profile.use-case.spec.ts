@@ -1,17 +1,17 @@
-import { UpdateStudentProfileUseCase } from '../../update-student-profile.use-case';
+import { UpdateAccountProfileUseCase } from '../../update-account-profile.use-case';
 import { InMemoryUserRepository } from '../../../../../../test/repositories/in-memory-user.repository';
 import { User } from '../../../../../domain/users/entities/user.entity';
 import { Email } from '../../../../../domain/users/value-objects/email';
 import { ResourceNotFoundError } from '../../../../../shared/core/errors/resource-not-found.error';
 import { UserAlreadyExistsError } from '../../../../../domain/users/errors/user-already-exists.error';
 
-describe('UpdateStudentProfileUseCase', () => {
+describe('UpdateAccountProfileUseCase', () => {
   let userRepository: InMemoryUserRepository;
-  let sut: UpdateStudentProfileUseCase;
+  let sut: UpdateAccountProfileUseCase;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
-    sut = new UpdateStudentProfileUseCase(userRepository);
+    sut = new UpdateAccountProfileUseCase(userRepository);
   });
 
   it('should be able to update the student profile', async () => {
