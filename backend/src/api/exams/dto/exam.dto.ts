@@ -25,15 +25,33 @@ export const createExamSchema = z.object({
 export class CreateExamDto extends createZodDto(createExamSchema) {}
 
 export const updateExamSchema = z.object({
-  name: z.string().optional(),
-  description: z.string().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
-  iconKey: z.string().nullable().optional(),
-  colorScheme: z.string().nullable().optional(),
+  name: z
+    .string()
+    .optional()
+    .describe('Novo nome da trilha principal. Ex: "Concurso Caixa 2025"'),
+  description: z
+    .string()
+    .optional()
+    .describe('Nova descrição detalhada do exame ou trilha.'),
+  status: z
+    .enum(['ACTIVE', 'INACTIVE'])
+    .optional()
+    .describe('Controla se o exame continua visível para os alunos.'),
+  iconKey: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Nova chave do ícone Lucide ou `null` para remover.'),
+  colorScheme: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Novo esquema de cor ou `null` para limpar o valor.'),
   category: z
     .enum(['CONCURSOS', 'CERTIFICACOES', 'VESTIBULAR', 'OAB', 'OUTROS'])
     .nullable()
-    .optional(),
+    .optional()
+    .describe('Nova categoria do exame ou `null` para remover a categoria.'),
 });
 
 export class UpdateExamDto extends createZodDto(updateExamSchema) {}
@@ -41,7 +59,10 @@ export class UpdateExamDto extends createZodDto(updateExamSchema) {}
 export const reorderSchema = z.object({
   ids: z
     .array(z.string())
-    .min(1, 'ids deve ser um array com pelo menos 1 item'),
+    .min(1, 'ids deve ser um array com pelo menos 1 item')
+    .describe(
+      'Array ordenado com os IDs dos registros na nova sequência de exibição.',
+    ),
 });
 
 export class ReorderDto extends createZodDto(reorderSchema) {}

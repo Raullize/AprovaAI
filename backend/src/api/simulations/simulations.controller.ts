@@ -61,7 +61,10 @@ export class SimulationsController {
     description:
       'Inicia um novo simulado para o nível especificado ou retoma um simulado em andamento.',
   })
-  @ApiResponse({ status: 201, description: 'Simulado iniciado com sucesso.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Simulado iniciado ou retomado com sucesso.',
+  })
   start(
     @Request() req: { user: { id: string } },
     @Body(new ZodValidationPipe(startSimulationSchema))
@@ -79,7 +82,7 @@ export class SimulationsController {
     description:
       'Salva a resposta selecionada pelo aluno para uma questão específica durante o simulado.',
   })
-  @ApiResponse({ status: 201, description: 'Resposta salva com sucesso.' })
+  @ApiResponse({ status: 200, description: 'Resposta salva com sucesso.' })
   saveAnswer(
     @Request() req: { user: { id: string } },
     @Param('id') id: string,
@@ -102,7 +105,7 @@ export class SimulationsController {
     description:
       'Finaliza o simulado, calcula a nota final e define se o aluno foi aprovado ou reprovado.',
   })
-  @ApiResponse({ status: 201, description: 'Simulado finalizado com sucesso.' })
+  @ApiResponse({ status: 200, description: 'Simulado finalizado com sucesso.' })
   finish(
     @Request() req: { user: { id: string } },
     @Param('id') id: string,

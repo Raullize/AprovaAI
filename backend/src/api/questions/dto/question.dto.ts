@@ -13,9 +13,17 @@ const createOptionSchema = z.object({
 });
 
 const updateOptionSchema = z.object({
-  id: z.string().optional(),
-  text: z.string().min(1, 'Texto da opção é obrigatório'),
-  isCorrect: z.boolean(),
+  id: z
+    .string()
+    .optional()
+    .describe('ID da alternativa existente. Omitir para criar uma nova opção.'),
+  text: z
+    .string()
+    .min(1, 'Texto da opção é obrigatório')
+    .describe('Novo texto da alternativa. Ex: "São Paulo"'),
+  isCorrect: z
+    .boolean()
+    .describe('Indica se esta alternativa deve ser marcada como correta.'),
 });
 
 export const createQuestionSchema = z.object({
@@ -65,14 +73,44 @@ export const createQuestionSchema = z.object({
 export class CreateQuestionDto extends createZodDto(createQuestionSchema) {}
 
 export const updateQuestionSchema = z.object({
-  content: z.string().optional(),
-  imageUrl: z.string().optional().nullable(),
-  type: z.enum(['MULTIPLE_CHOICE', 'SINGLE_CHOICE']).optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
-  explanation: z.string().optional().nullable(),
-  studyLink: z.string().optional().nullable(),
-  levelId: z.string().optional(),
-  options: z.array(updateOptionSchema).optional(),
+  content: z
+    .string()
+    .optional()
+    .describe('Novo enunciado da questão.'),
+  imageUrl: z
+    .string()
+    .url('URL inválida')
+    .optional()
+    .nullable()
+    .describe('Nova URL da imagem ilustrativa ou `null` para remover.'),
+  type: z
+    .enum(['MULTIPLE_CHOICE', 'SINGLE_CHOICE'])
+    .optional()
+    .describe('Novo tipo da questão.'),
+  status: z
+    .enum(['ACTIVE', 'INACTIVE'])
+    .optional()
+    .describe('Novo status de visibilidade da questão.'),
+  explanation: z
+    .string()
+    .optional()
+    .nullable()
+    .describe('Nova explicação de apoio ao aluno ou `null` para remover.'),
+  studyLink: z
+    .string()
+    .url('URL inválida')
+    .optional()
+    .nullable()
+    .describe('Novo link de estudo complementar ou `null` para remover.'),
+  levelId: z
+    .string()
+    .uuid('ID do nível inválido')
+    .optional()
+    .describe('Novo ID (UUID) do nível ao qual a questão pertence.'),
+  options: z
+    .array(updateOptionSchema)
+    .optional()
+    .describe('Lista completa de alternativas atualizadas da questão.'),
 });
 
 export class UpdateQuestionDto extends createZodDto(updateQuestionSchema) {}

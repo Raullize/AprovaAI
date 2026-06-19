@@ -50,14 +50,45 @@ export const createLevelSchema = z.object({
 export class CreateLevelDto extends createZodDto(createLevelSchema) {}
 
 export const updateLevelSchema = z.object({
-  name: z.string().optional(),
-  description: z.string().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
-  topicId: z.string().optional(),
-  xpReward: z.number().int().optional(),
-  passingPercentage: z.number().optional(),
-  timeLimit: z.number().int().min(1).optional().nullable(),
-  simulationMode: z.enum(['PRACTICE', 'EXAM']).optional(),
+  name: z
+    .string()
+    .optional()
+    .describe('Novo nome do nível. Ex: "Nível 2 - Intermediário"'),
+  description: z
+    .string()
+    .optional()
+    .describe('Nova descrição opcional do nível.'),
+  status: z
+    .enum(['ACTIVE', 'INACTIVE'])
+    .optional()
+    .describe('Novo status de visibilidade do nível.'),
+  topicId: z
+    .string()
+    .uuid('ID do tópico inválido')
+    .optional()
+    .describe('Novo ID (UUID) do tópico ao qual este nível pertence.'),
+  xpReward: z
+    .number()
+    .int()
+    .optional()
+    .describe('Novo total de XP concedido ao concluir o nível. Ex: 100'),
+  passingPercentage: z
+    .number()
+    .min(0)
+    .max(100)
+    .optional()
+    .describe('Nova porcentagem mínima de acertos para aprovação. Ex: 80'),
+  timeLimit: z
+    .number()
+    .int()
+    .min(1)
+    .optional()
+    .nullable()
+    .describe('Novo tempo limite em minutos ou `null` para remover. Ex: 45'),
+  simulationMode: z
+    .enum(['PRACTICE', 'EXAM'])
+    .optional()
+    .describe('Novo modo do simulado: PRACTICE ou EXAM.'),
 });
 
 export class UpdateLevelDto extends createZodDto(updateLevelSchema) {}

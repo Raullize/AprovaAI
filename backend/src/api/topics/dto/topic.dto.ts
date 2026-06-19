@@ -34,13 +34,39 @@ export const createTopicSchema = z.object({
 export class CreateTopicDto extends createZodDto(createTopicSchema) {}
 
 export const updateTopicSchema = z.object({
-  name: z.string().optional(),
-  description: z.string().optional(),
-  status: z.enum(['ACTIVE', 'INACTIVE']).optional(),
-  showComingSoon: z.boolean().optional(),
-  examId: z.string().optional(),
-  iconKey: z.string().nullable().optional(),
-  colorScheme: z.string().nullable().optional(),
+  name: z
+    .string()
+    .optional()
+    .describe('Novo nome da disciplina ou tópico. Ex: "Segurança em Cloud"'),
+  description: z
+    .string()
+    .optional()
+    .describe('Nova descrição opcional do tópico.'),
+  status: z
+    .enum(['ACTIVE', 'INACTIVE'])
+    .optional()
+    .describe('Novo status de visibilidade do tópico.'),
+  showComingSoon: z
+    .boolean()
+    .optional()
+    .describe(
+      'Define se o tópico deve exibir o indicador de "em breve" para o aluno.',
+    ),
+  examId: z
+    .string()
+    .uuid('ID do exame inválido')
+    .optional()
+    .describe('Novo ID (UUID) da trilha principal a qual este tópico pertence.'),
+  iconKey: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Nova chave do ícone ou `null` para remover.'),
+  colorScheme: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Novo esquema de cor ou `null` para limpar o valor.'),
 });
 
 export class UpdateTopicDto extends createZodDto(updateTopicSchema) {}
