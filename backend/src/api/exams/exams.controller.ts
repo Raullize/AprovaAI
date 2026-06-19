@@ -23,21 +23,18 @@ import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
 import { FindAllExamsUseCase } from '../../application/content/use-cases/find-all-exams.use-case';
-import { FindExamByIdUseCase } from '../../application/content/use-cases/find-exam-by-id.use-case';
-import { FindExamBySlugUseCase } from '../../application/content/use-cases/find-exam-by-slug.use-case';
+import { FindExamByIdOrSlugUseCase } from '../../application/content/use-cases/find-exam-by-id-or-slug.use-case';
 import { CreateExamUseCase } from '../../application/content/use-cases/create-exam.use-case';
 import { UpdateExamUseCase } from '../../application/content/use-cases/update-exam.use-case';
 import { DeleteExamUseCase } from '../../application/content/use-cases/delete-exam.use-case';
 import { ReorderExamsUseCase } from '../../application/content/use-cases/reorder-exams.use-case';
-import { ResourceNotFoundError } from '../../shared/core/errors/resource-not-found.error';
 
 @ApiTags('Exams')
 @Controller('exams')
 export class ExamsController {
   constructor(
     private readonly findAllExamsUseCase: FindAllExamsUseCase,
-    private readonly findExamByIdUseCase: FindExamByIdUseCase,
-    private readonly findExamBySlugUseCase: FindExamBySlugUseCase,
+    private readonly findExamByIdOrSlugUseCase: FindExamByIdOrSlugUseCase,
     private readonly createExamUseCase: CreateExamUseCase,
     private readonly updateExamUseCase: UpdateExamUseCase,
     private readonly deleteExamUseCase: DeleteExamUseCase,
@@ -66,15 +63,8 @@ export class ExamsController {
   @Get(':idOrSlug')
   @ApiOperation({ summary: 'Buscar Exame por ID ou Slug', description: 'Retorna os detalhes de um exame específico.' })
   @ApiResponse({ status: 200, description: 'Exame encontrado.' })
-  async findOne(@Param('idOrSlug') idOrSlug: string) {
-    try {
-      return await this.findExamByIdUseCase.execute(idOrSlug);
-    } catch (error) {
-      if (error instanceof ResourceNotFoundError) {
-        return this.findExamBySlugUseCase.execute(idOrSlug);
-      }
-      throw error;
-    }
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.findExamByIdOrSlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')

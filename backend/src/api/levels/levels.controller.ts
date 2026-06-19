@@ -23,13 +23,11 @@ import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
 import { FindAllLevelsUseCase } from '../../application/content/use-cases/find-all-levels.use-case';
 import { FindLevelsByTopicIdUseCase } from '../../application/content/use-cases/find-levels-by-topic-id.use-case';
-import { FindLevelByIdUseCase } from '../../application/content/use-cases/find-level-by-id.use-case';
-import { FindLevelBySlugUseCase } from '../../application/content/use-cases/find-level-by-slug.use-case';
+import { FindLevelByIdOrSlugUseCase } from '../../application/content/use-cases/find-level-by-id-or-slug.use-case';
 import { CreateLevelUseCase } from '../../application/content/use-cases/create-level.use-case';
 import { UpdateLevelUseCase } from '../../application/content/use-cases/update-level.use-case';
 import { DeleteLevelUseCase } from '../../application/content/use-cases/delete-level.use-case';
 import { ReorderLevelsUseCase } from '../../application/content/use-cases/reorder-levels.use-case';
-import { ResourceNotFoundError } from '../../shared/core/errors/resource-not-found.error';
 
 @ApiTags('Levels')
 @Controller('levels')
@@ -37,8 +35,7 @@ export class LevelsController {
   constructor(
     private readonly findAllLevelsUseCase: FindAllLevelsUseCase,
     private readonly findLevelsByTopicIdUseCase: FindLevelsByTopicIdUseCase,
-    private readonly findLevelByIdUseCase: FindLevelByIdUseCase,
-    private readonly findLevelBySlugUseCase: FindLevelBySlugUseCase,
+    private readonly findLevelByIdOrSlugUseCase: FindLevelByIdOrSlugUseCase,
     private readonly createLevelUseCase: CreateLevelUseCase,
     private readonly updateLevelUseCase: UpdateLevelUseCase,
     private readonly deleteLevelUseCase: DeleteLevelUseCase,
@@ -75,15 +72,8 @@ export class LevelsController {
   @Get(':idOrSlug')
   @ApiOperation({ summary: 'Buscar Nível por ID ou Slug', description: 'Retorna os detalhes de um nível específico.' })
   @ApiResponse({ status: 200, description: 'Nível encontrado.' })
-  async findOne(@Param('idOrSlug') idOrSlug: string) {
-    try {
-      return await this.findLevelByIdUseCase.execute(idOrSlug);
-    } catch (error) {
-      if (error instanceof ResourceNotFoundError) {
-        return this.findLevelBySlugUseCase.execute(idOrSlug);
-      }
-      throw error;
-    }
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.findLevelByIdOrSlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')

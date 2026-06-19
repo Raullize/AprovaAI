@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ExamsController } from './exams.controller';
 import { FindAllExamsUseCase } from '../../application/content/use-cases/find-all-exams.use-case';
+import { FindExamByIdOrSlugUseCase } from '../../application/content/use-cases/find-exam-by-id-or-slug.use-case';
 import { FindExamByIdUseCase } from '../../application/content/use-cases/find-exam-by-id.use-case';
 import { FindExamBySlugUseCase } from '../../application/content/use-cases/find-exam-by-slug.use-case';
 import { CreateExamUseCase } from '../../application/content/use-cases/create-exam.use-case';
@@ -14,6 +15,7 @@ import { PrismaExamRepository } from '../../infrastructure/database/prisma/repos
   controllers: [ExamsController],
   providers: [
     FindAllExamsUseCase,
+    FindExamByIdOrSlugUseCase,
     FindExamByIdUseCase,
     FindExamBySlugUseCase,
     CreateExamUseCase,

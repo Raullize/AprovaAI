@@ -23,13 +23,11 @@ import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
 import { FindAllTopicsUseCase } from '../../application/content/use-cases/find-all-topics.use-case';
 import { FindTopicsByExamIdUseCase } from '../../application/content/use-cases/find-topics-by-exam-id.use-case';
-import { FindTopicByIdUseCase } from '../../application/content/use-cases/find-topic-by-id.use-case';
-import { FindTopicBySlugUseCase } from '../../application/content/use-cases/find-topic-by-slug.use-case';
+import { FindTopicByIdOrSlugUseCase } from '../../application/content/use-cases/find-topic-by-id-or-slug.use-case';
 import { CreateTopicUseCase } from '../../application/content/use-cases/create-topic.use-case';
 import { UpdateTopicUseCase } from '../../application/content/use-cases/update-topic.use-case';
 import { DeleteTopicUseCase } from '../../application/content/use-cases/delete-topic.use-case';
 import { ReorderTopicsUseCase } from '../../application/content/use-cases/reorder-topics.use-case';
-import { ResourceNotFoundError } from '../../shared/core/errors/resource-not-found.error';
 
 @ApiTags('Topics')
 @Controller('topics')
@@ -37,8 +35,7 @@ export class TopicsController {
   constructor(
     private readonly findAllTopicsUseCase: FindAllTopicsUseCase,
     private readonly findTopicsByExamIdUseCase: FindTopicsByExamIdUseCase,
-    private readonly findTopicByIdUseCase: FindTopicByIdUseCase,
-    private readonly findTopicBySlugUseCase: FindTopicBySlugUseCase,
+    private readonly findTopicByIdOrSlugUseCase: FindTopicByIdOrSlugUseCase,
     private readonly createTopicUseCase: CreateTopicUseCase,
     private readonly updateTopicUseCase: UpdateTopicUseCase,
     private readonly deleteTopicUseCase: DeleteTopicUseCase,
@@ -75,15 +72,8 @@ export class TopicsController {
   @Get(':idOrSlug')
   @ApiOperation({ summary: 'Buscar Tópico por ID ou Slug', description: 'Retorna os detalhes de um tópico específico.' })
   @ApiResponse({ status: 200, description: 'Tópico encontrado.' })
-  async findOne(@Param('idOrSlug') idOrSlug: string) {
-    try {
-      return await this.findTopicByIdUseCase.execute(idOrSlug);
-    } catch (error) {
-      if (error instanceof ResourceNotFoundError) {
-        return this.findTopicBySlugUseCase.execute(idOrSlug);
-      }
-      throw error;
-    }
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.findTopicByIdOrSlugUseCase.execute(idOrSlug);
   }
 
   @Patch('reorder')

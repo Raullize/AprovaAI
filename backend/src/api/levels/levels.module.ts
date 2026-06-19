@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { LevelsController } from './levels.controller';
 import { FindAllLevelsUseCase } from '../../application/content/use-cases/find-all-levels.use-case';
 import { FindLevelsByTopicIdUseCase } from '../../application/content/use-cases/find-levels-by-topic-id.use-case';
+import { FindLevelByIdOrSlugUseCase } from '../../application/content/use-cases/find-level-by-id-or-slug.use-case';
 import { FindLevelByIdUseCase } from '../../application/content/use-cases/find-level-by-id.use-case';
 import { FindLevelBySlugUseCase } from '../../application/content/use-cases/find-level-by-slug.use-case';
 import { CreateLevelUseCase } from '../../application/content/use-cases/create-level.use-case';
@@ -16,6 +17,7 @@ import { PrismaLevelRepository } from '../../infrastructure/database/prisma/repo
   providers: [
     FindAllLevelsUseCase,
     FindLevelsByTopicIdUseCase,
+    FindLevelByIdOrSlugUseCase,
     FindLevelByIdUseCase,
     FindLevelBySlugUseCase,
     CreateLevelUseCase,
