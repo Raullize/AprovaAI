@@ -256,12 +256,12 @@ export default function SimulationsHistory() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 px-4 py-8">
+    <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="max-w-4xl mx-auto">
         {/* Main Selection View */}
         {!selectedExamName ? (
-          <div className="space-y-6">
-            <div>
+          <div>
+            <div className="mb-8">
               <h1 className="text-2xl font-bold text-slate-800 font-display">
                 Meus Simulados
               </h1>
@@ -272,7 +272,7 @@ export default function SimulationsHistory() {
             </div>
 
             {/* Search and Filters */}
-            <div className="space-y-4">
+            <div className="mb-8 space-y-4">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                 <input
