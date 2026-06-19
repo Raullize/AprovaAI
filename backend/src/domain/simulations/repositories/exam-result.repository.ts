@@ -1,13 +1,13 @@
 import { ExamResult, ExamAnswer } from '../entities/exam-result.entity';
 
-export interface ExamResultRepository {
-  findById(id: string): Promise<ExamResult | null>;
-  findActiveByUserIdAndLevelId(
+export abstract class ExamResultRepository {
+  abstract findById(id: string): Promise<ExamResult | null>;
+  abstract findActiveByUserIdAndLevelId(
     userId: string,
     levelId: string,
   ): Promise<ExamResult | null>;
-  findHistoryByUserId(userId: string): Promise<ExamResult[]>;
-  create(examResult: ExamResult): Promise<ExamResult>;
-  save(examResult: ExamResult): Promise<ExamResult>;
-  saveAnswer(answer: ExamAnswer): Promise<ExamAnswer>;
+  abstract findHistoryByUserId(userId: string): Promise<ExamResult[]>;
+  abstract create(examResult: ExamResult): Promise<ExamResult>;
+  abstract save(examResult: ExamResult): Promise<ExamResult>;
+  abstract saveAnswer(answer: ExamAnswer): Promise<ExamAnswer>;
 }

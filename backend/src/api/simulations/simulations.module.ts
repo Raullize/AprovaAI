@@ -5,6 +5,9 @@ import { StartSimulationUseCase } from '../../application/simulations/use-cases/
 import { SaveAnswerUseCase } from '../../application/simulations/use-cases/save-answer.use-case';
 import { FinishSimulationUseCase } from '../../application/simulations/use-cases/finish-simulation.use-case';
 import { GetSimulationHistoryUseCase } from '../../application/simulations/use-cases/get-simulation-history.use-case';
+import { ExamResultRepository } from '../../domain/simulations/repositories/exam-result.repository';
+import { LevelRepository } from '../../domain/content/repositories/level.repository';
+import { QuestionRepository } from '../../domain/content/repositories/question.repository';
 import { PrismaExamResultRepository } from '../../infrastructure/database/prisma/repositories/prisma-exam-result.repository';
 import { PrismaLevelRepository } from '../../infrastructure/database/prisma/repositories/prisma-level.repository';
 import { PrismaQuestionRepository } from '../../infrastructure/database/prisma/repositories/prisma-question.repository';
@@ -16,15 +19,15 @@ import { PrismaUserRepository } from '../../infrastructure/database/prisma/repos
   controllers: [SimulationsController],
   providers: [
     {
-      provide: 'ExamResultRepository',
+      provide: ExamResultRepository,
       useClass: PrismaExamResultRepository,
     },
     {
-      provide: 'LevelRepository',
+      provide: LevelRepository,
       useClass: PrismaLevelRepository,
     },
     {
-      provide: 'QuestionRepository',
+      provide: QuestionRepository,
       useClass: PrismaQuestionRepository,
     },
     {

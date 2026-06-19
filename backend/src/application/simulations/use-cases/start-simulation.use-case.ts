@@ -1,8 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
-import type { ExamResultRepository } from '../../../domain/simulations/repositories/exam-result.repository';
+import { ExamResultRepository } from '../../../domain/simulations/repositories/exam-result.repository';
 import { ExamResult } from '../../../domain/simulations/entities/exam-result.entity';
-import type { LevelRepository } from '../../../domain/content/repositories/level.repository';
+import { LevelRepository } from '../../../domain/content/repositories/level.repository';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 import { ValidationError } from '../../../shared/core/errors/validation.error';
 
@@ -17,9 +17,7 @@ export class StartSimulationUseCase implements UseCase<
   ExamResult
 > {
   constructor(
-    @Inject('ExamResultRepository')
     private readonly examResultRepository: ExamResultRepository,
-    @Inject('LevelRepository')
     private readonly levelRepository: LevelRepository,
   ) {}
 
