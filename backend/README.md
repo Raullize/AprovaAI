@@ -95,7 +95,8 @@ pnpm run db:seed
 
 Isso cria/atualiza:
 - Admin: `admin@aprovaai.com` / `admin123`
-- Usuários de teste (ranking): `demo@aprovaai.com`, `ana@aprovaai.com`, `bruno@aprovaai.com`, `carla@aprovaai.com`, `diego@aprovaai.com`, `elisa@aprovaai.com` / senha `demo123`
+- Estudante (Demo): `demo@aprovaai.com` / `demo123`
+  *(Para ver a lista completa de perfis de teste e como os dados são gerados, consulte o [Guia de Seeders](../docs/SEEDERS.md))*
 
 ### 7. Inicie o servidor de desenvolvimento
 
@@ -161,7 +162,11 @@ backend/
     └── shared/         # Core e Utils compartilhados (Filtros, Exceções)
 ```
 
-> **Para um aprofundamento na arquitetura e fluxo de dados, consulte:** [BACKEND_ARCHITECTURE.md](../docs/BACKEND_ARCHITECTURE.md)
+**Links Úteis:**
+- [Documentação de Testes](../docs/TESTES.md)
+- [Documentação de Seeders](../docs/SEEDERS.md)
+- [Documentação do Docker](../docs/DOCKER.md)
+- [Arquitetura do Backend](../docs/BACKEND_ARCHITECTURE.md)
 
 ---
 

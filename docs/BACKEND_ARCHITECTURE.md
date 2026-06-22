@@ -92,7 +92,7 @@ As regras de negocio e seus cenarios ficam distribuidos de forma intencional:
 - **Fluxos e cenarios (Dado/Quando/Entao):** dentro do `application/` (Use Cases). Exemplo: ao iniciar um simulado, o Use Case impede iniciar nivel sem questoes e retoma tentativas em andamento.
 - **Contrato com o mundo externo:** `api/` e `infrastructure/` apenas adaptam entrada/saida (HTTP, Prisma, JWT), sem conter regra central.
 
-Para uma visao do comportamento do usuario e dos cenarios esperados, consulte: **[BUSINESS_RULES.md](../BUSINESS_RULES.md)**.
+Para uma visao do comportamento do usuario e dos cenarios esperados, consulte: **[BUSINESS_RULES.md](./BUSINESS_RULES.md)**.
 
 ---
 
