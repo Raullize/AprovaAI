@@ -3,20 +3,20 @@ import { PrismaClient, ExamCategory, ExamStatus, TopicStatus, LevelStatus, Quest
 const prisma = new PrismaClient();
 
 async function upsertQuestions(
-  questions: { id: string; content: string; explanation: string; options: { id: string; text: string; isCorrect: boolean; order: number }[] }[],
+  questions: { id: string; content: string; explanation: string; type?: QuestionType; options: { id: string; text: string; isCorrect: boolean; order: number }[] }[],
   levelId: string,
 ) {
   for (const [i, q] of questions.entries()) {
     const question = await prisma.question.upsert({
       where: { id: q.id },
-      update: { content: q.content, explanation: q.explanation },
+      update: { content: q.content, explanation: q.explanation, type: q.type ?? QuestionType.SINGLE_CHOICE },
       create: {
         id: q.id,
         content: q.content,
         explanation: q.explanation,
         levelId,
         order: i + 1,
-        type: QuestionType.SINGLE_CHOICE,
+        type: q.type ?? QuestionType.SINGLE_CHOICE,
         status: QuestionStatus.ACTIVE,
       },
     });
@@ -478,6 +478,32 @@ export async function seedContent() {
         { id: 'q-t2l1-10-b', text: 'Uma segunda camada de autenticação além da senha para maior segurança', isCorrect: true, order: 2 },
         { id: 'q-t2l1-10-c', text: 'Um serviço de gerenciamento de senhas corporativas', isCorrect: false, order: 3 },
         { id: 'q-t2l1-10-d', text: 'Um tipo de política de acesso do IAM', isCorrect: false, order: 4 },
+      ],
+    },
+    {
+      id: 'q-t2l1-08',
+      content: 'Quais das seguintes tarefas são responsabilidade exclusiva da AWS no modelo de responsabilidade compartilhada? (Selecione DUAS)',
+      explanation: 'No modelo de responsabilidade compartilhada, a AWS é responsável pela "segurança DA nuvem", que inclui a segurança física das instalações, manutenção da infraestrutura de hardware (como descarte seguro de discos) e operação da rede global.',
+      type: QuestionType.MULTIPLE_CHOICE,
+      options: [
+        { id: 'q-t2l1-08-a', text: 'Atualização e patch do sistema operacional (Guest OS) de instâncias EC2', isCorrect: false, order: 1 },
+        { id: 'q-t2l1-08-b', text: 'Manutenção física e segurança dos data centers da AWS', isCorrect: true, order: 2 },
+        { id: 'q-t2l1-08-c', text: 'Configuração de regras de Security Groups', isCorrect: false, order: 3 },
+        { id: 'q-t2l1-08-d', text: 'Descarte seguro de hardware de armazenamento físico', isCorrect: true, order: 4 },
+        { id: 'q-t2l1-08-e', text: 'Gerenciamento de permissões de usuários no IAM', isCorrect: false, order: 5 },
+      ],
+    },
+    {
+      id: 'q-t2l1-09',
+      content: 'Quais das seguintes são práticas recomendadas de segurança para a conta Root da AWS? (Selecione DUAS)',
+      explanation: 'Para proteger a conta Root (que tem acesso irrestrito a todos os recursos e faturamento), você deve ativar MFA e nunca criar/usar Access Keys para ela. O acesso diário deve ser feito por usuários IAM com privilégios limitados.',
+      type: QuestionType.MULTIPLE_CHOICE,
+      options: [
+        { id: 'q-t2l1-09-a', text: 'Compartilhar a senha da conta Root apenas com administradores de TI', isCorrect: false, order: 1 },
+        { id: 'q-t2l1-09-b', text: 'Ativar a Autenticação Multifator (MFA) na conta Root', isCorrect: true, order: 2 },
+        { id: 'q-t2l1-09-c', text: 'Criar Access Keys para a conta Root para uso em scripts de automação', isCorrect: false, order: 3 },
+        { id: 'q-t2l1-09-d', text: 'Usar a conta Root para tarefas de administração diárias', isCorrect: false, order: 4 },
+        { id: 'q-t2l1-09-e', text: 'Excluir as Access Keys da conta Root, se existirem', isCorrect: true, order: 5 },
       ],
     },
   ], lvl3.id);
