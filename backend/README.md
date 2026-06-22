@@ -173,6 +173,13 @@ A API é estaticamente gerida por Controlles injetáveis:
 |---|---|---|
 | `POST` | `/api/auth/login` | Autenticação e geração de JWT |
 | `POST` | `/api/auth/register` | Cadastro de usuário |
+| `GET/PATCH` | `/api/account/profile` | Autoatendimento: visualizar e atualizar o próprio perfil |
+| `PATCH` | `/api/account/password` | Autoatendimento: alterar a própria senha |
+| `GET` | `/api/student/dashboard-stats` | Estatísticas do aluno (XP, streak, etc) |
+| `GET` | `/api/student/leaderboard` | Ranking global de alunos |
+| `POST` | `/api/simulations/start` | Inicia ou retoma um simulado |
+| `POST` | `/api/simulations/:id/answers` | Salva a resposta de uma questão |
+| `POST` | `/api/simulations/:id/finish` | Finaliza o simulado e calcula nota/XP |
 | `GET` | `/api/exams` | Lista todos os exames |
 | `PATCH` | `/api/exams/reorder` | Reordena exames (drag & drop) |
 | `GET` | `/api/topics?examId=:id` | Lista tópicos de um exame |

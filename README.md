@@ -25,7 +25,7 @@ O conteúdo é organizado de forma hierárquica: **Exame → Tópico → Nível 
 ## Características Principais
 
 - **Simulados por Nível** — Estrutura `Exame > Tópico > Nível > Questões` para aprendizado progressivo
-- **Gamificação** — Sistema de medalhas, conquistas e streaks para motivar o estudo contínuo
+- **Gamificação** — Sistema de XP, estrelas e ofensivas (streaks) para motivar o estudo contínuo
 - **Prof. Sabichão** — Mascote e assistente inteligente para tirar dúvidas *(em desenvolvimento)*
 - **Feedback Detalhado** — Explicações específicas para cada alternativa e links de aprofundamento
 - **Drag & Drop** — Reordenação intuitiva de exames, tópicos, níveis e questões pelo admin
@@ -61,19 +61,16 @@ O AprovaAI oferece dois planos para atender às necessidades de estudo:
 ### Para o Usuário (Estudante)
 
 - **Simulados por Nível:** Faça simulados divididos por `Exame > Tópico > Nível > Questões`
+- **Modos de Simulado:** 
+  - **Treino (Practice):** Sem limite de tempo, com feedback imediato de certo/errado a cada resposta.
+  - **Exame (Exam):** Com ou sem limite de tempo, o resultado e as respostas corretas só são exibidos após a finalização.
 - **Níveis de Dificuldade:** Cada nível oferece questões focadas naquele conteúdo
 - **Simulado Diversificado:** O último nível de cada tópico apresenta questões mais variadas para consolidar o aprendizado
 - **Tipos de Questões:** Múltipla escolha com uma ou mais alternativas corretas
-- **Feedback Detalhado:**
-  - Resultado imediato (`Certo/Errado`) após confirmar a resposta
-  - Explicações por alternativa detalhando o motivo de estar certa ou errada
-  - Links opcionais para aprofundamento no tema
-- **Gamificação e Conquistas:** Receba medalhas por marcos como:
-  - "Simulados Perfeitos" (100% de acertos)
-  - "10 Dias Seguidos" (streak de estudos)
-  - "Maratonista de [Matéria]" (completar níveis de um conteúdo)
-  - "Especialista [Exame]" (concluir todos os conteúdos de um exame)
-- **Streak de Dias:** Visualize seu progresso contínuo de estudos
+- **Feedback Detalhado:** Explicações por alternativa detalhando o motivo de estar certa ou errada e links opcionais para aprofundamento.
+- **Autoatendimento:** Gerenciamento do próprio perfil, atualização de dados e alteração de senha de forma centralizada.
+- **Gamificação e Conquistas:** Receba estrelas por marcos (desempenho no nível) e ganhe XP baseado na melhoria contínua.
+- **Streak de Dias:** Visualize seu progresso contínuo de estudos (ofensiva).
 
 ### Para o Administrador
 
@@ -81,8 +78,9 @@ O perfil administrador possui controle total sobre o conteúdo da plataforma:
 
 - **Gerenciamento de Exames:** CRUD completo com controle de status (ativo/inativo) e reordenação
 - **Gerenciamento de Conteúdo:** CRUD de Tópicos, Níveis e Questões com drag & drop para reordenar
-- **Personalização de Níveis:** Definir XP de recompensa e percentual mínimo de aprovação
+- **Personalização de Níveis:** Definir XP de recompensa, percentual mínimo de aprovação, limite de tempo e modo do simulado (Treino/Exame).
 - **Configuração de Feedback:** Adicionar explicações por alternativa e links de aprofundamento
+- **Gerenciamento da Própria Conta:** Utilização do mesmo módulo de autoatendimento para gerenciar perfil e senha.
 - **Gerenciamento de Usuários:** Controlar planos de acesso (Free/Premium), ativar/desativar contas
 - **Upload de Imagens:** Adicionar imagens às questões para contexto visual
 

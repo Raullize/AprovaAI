@@ -22,14 +22,17 @@ O frontend do AprovaAI é uma Single Page Application construída com **React + 
 
 | Tecnologia | Versão | Função |
 |---|---|---|
-| React | 18 | Biblioteca de UI |
-| TypeScript | 5 | Tipagem estática |
-| Vite | 5 | Bundler e dev server |
-| TailwindCSS | 3 | Estilização utilitária |
+| React | 19 | Biblioteca de UI |
+| TypeScript | 5.9 | Tipagem estática |
+| Vite | 7 | Bundler e dev server |
+| TailwindCSS | 3.4 | Estilização utilitária |
 | React Router DOM | 6 | Roteamento client-side |
-| React Hook Form | 7 | Gerenciamento de formulários |
-| Axios | 1 | Cliente HTTP |
-| Lucide React | — | Ícones |
+| React Hook Form | 7.7 | Gerenciamento de formulários |
+| Zod | 4.3 | Validação de schemas e tipagem inferida |
+| Axios | 1.13 | Cliente HTTP |
+| @dnd-kit | 6 / 10 | Drag & Drop para reordenação de itens |
+| Lucide React | — | Ícones SVG |
+| Radix UI / Sonner | — | Componentes de UI acessíveis (Toasts) |
 
 ---
 
@@ -106,7 +109,8 @@ frontend/
     │   └── ui/         # Componentes reutilizáveis (Button, Input, Modal…)
     ├── hooks/          # Custom hooks (useToast, etc.)
     ├── pages/
-    │   ├── auth/       # Login, Register
+    │   ├── login/      # Login
+    │   ├── register/   # Register
     │   └── dashboard/
     │       ├── admin/  # Gerenciamento: Exames, Tópicos, Níveis, Questões
     │       └── student/ # Área do aluno: Simulados, Perfil, Progresso

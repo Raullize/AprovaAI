@@ -92,7 +92,7 @@ O roteamento da aplicação foi centralizado para facilitar a gestão de rotas p
 - **`src/App.tsx`**: Importa e renderiza o `AppRoutes` dentro dos provedores de contexto (`AuthProvider`, `Router`, etc.).
 
 ### Definição de Rotas
-As rotas são definidas utilizando o `react-router-dom`. Rotas que exigem autenticação ou permissões específicas (como Admin) são envolvidas por componentes de Layout ou Guards (como `AuthLayout` ou verificação de role no `Sidebar`).
+As rotas são definidas utilizando o `react-router-dom`. Rotas que exigem autenticação ou permissões específicas (como Admin) são envolvidas por componentes de Layout ou Guards (como `PrivateRoute` ou `AdminRoute`).
 
 **Exemplo (`src/routes/index.tsx`):**
 ```typescript
@@ -138,6 +138,8 @@ frontend/src/
 ├── context/          # Contextos globais (AuthContext)
 ├── hooks/            # Custom Hooks (useToast, useFormValidation)
 ├── pages/            # Componentes de Página (vistas principais)
+│   ├── login/        # Login
+│   ├── register/     # Registro
 │   ├── dashboard/    # Páginas da área logada
 │   └── ...
 ├── routes/           # Configuração de rotas (AppRoutes)
