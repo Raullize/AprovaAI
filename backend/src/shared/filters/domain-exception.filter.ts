@@ -37,6 +37,23 @@ export class DomainExceptionFilter implements ExceptionFilter {
         error: resObj['error'] || exception.name,
       });
     }
+    
+    if (
+      exception &&
+      typeof exception === 'object' &&
+      'code' in exception &&
+      exception.code === 'P2002'
+    ) {
+      const meta = (exception as any).meta;
+      const target = meta?.target;
+      const targetStr = Array.isArray(target) ? target.join(', ') : 'campo único';
+      
+      return response.status(HttpStatus.CONFLICT).json({
+        statusCode: HttpStatus.CONFLICT,
+        message: `Conflito de dados: O valor informado para '${targetStr}' já está em uso.`,
+        error: 'ConflictError',
+      });
+    }
 
     console.error('Unhandled Exception:', exception);
 
