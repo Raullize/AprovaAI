@@ -11,7 +11,7 @@ Originalmente, a aplicacao foi concebida utilizando **Next.js** de maneira unifi
 - **Stack:** Server-Side Rendering e API Routes acoplados no diretorio `/api`.
 - **Autenticacao:** NextAuth.js.
 - **Banco de Dados:** Prisma ORM conectando diretamente na base de codigo frontend.
-- **Desafios:** Maior dificuldade em escalar o backend de forma subjacente as alteracoes do front. Rotas fortemente misturadas com a UI causavam problemas na hora de testar logicas de banco isoladamente e criavam acoplamento excessivo (*vendor lock-in*). A versao original encontra-se restrita na pasta `legacy_nextjs/`.
+- **Desafios:** Maior dificuldade em escalar o backend de forma subjacente as alteracoes do front. Rotas fortemente misturadas com a UI causavam problemas na hora de testar logicas de banco isoladamente e criavam acoplamento excessivo (*vendor lock-in*). A versao original nao faz parte do repositorio atual.
 
 ### 2. Fase Intermediaria: Client-Server Classico (React + Express)
 Para solucionar o acoplamento, o projeto foi segmentado adotando o modelo Client-Server isolado.

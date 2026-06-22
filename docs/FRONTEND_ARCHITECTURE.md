@@ -104,10 +104,19 @@ export function AppRoutes() {
       <Route path="/login" element={<Login />} />
 
       {/* Rotas Protegidas (Dashboard) */}
-      <Route path="/dashboard" element={<DashboardLayout />}>
-        <Route index element={<DashboardHome />} />
-        <Route path="exams" element={<AdminExams />} />
-        {/* ... */}
+      <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
+        <Route index element={<DashboardIndex />} />
+        <Route path="explore" element={<ExploreExams />} />
+        <Route path="explore/:examId" element={<ExamTrail />} />
+        <Route path="simulations" element={<SimulationsHistory />} />
+        <Route path="simulations/engine/:levelId" element={<SimulationEngine />} />
+        <Route path="simulations/results" element={<SimulationResults />} />
+        <Route path="profile" element={<Profile />} />
+
+        <Route path="exams" element={<AdminRoute><AdminExams /></AdminRoute>} />
+        <Route path="admin/exams/:examId/topics" element={<AdminRoute><TopicList /></AdminRoute>} />
+        <Route path="admin/topics/:topicId/levels" element={<AdminRoute><LevelList /></AdminRoute>} />
+        <Route path="admin/levels/:levelId/questions" element={<AdminRoute><QuestionList /></AdminRoute>} />
       </Route>
     </Routes>
   );

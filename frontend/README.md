@@ -109,7 +109,7 @@ frontend/
     │   ├── auth/       # Login, Register
     │   └── dashboard/
     │       ├── admin/  # Gerenciamento: Exames, Tópicos, Níveis, Questões
-    │       └── user/   # Área do aluno: Simulados, Perfil, Conquistas
+    │       └── student/ # Área do aluno: Simulados, Perfil, Progresso
     ├── services/
     │   └── api.ts      # Instância Axios com interceptors JWT
     └── App.tsx         # Roteamento principal

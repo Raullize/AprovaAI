@@ -37,7 +37,7 @@ Dentro de cada contexto, subpastas especificas organizam o dominio:
 - **`entities/` (Aggregate Roots e Entidades)**: Representam os objetos centrais do negocio, dotados de estado e comportamento. Um *Aggregate Root* e o ponto de entrada principal para uma arvore de objetos (ex: `Level`, `User`). Ao inves de usar setters sem controle, nossas entidades possuem metodos que protegem suas invariantes (regras de negocio). Exemplo: usar `user.grantXp(50)` garante que ninguem passe um valor de XP negativo.
 - **`value-objects/`**: Tipos imutaveis criados para encapsular logicas e validacoes de tipos primitivos, combatendo a *Primitive Obsession*. `Email`, `Percentage`, ou `Slug` nao sao strings puras, sao Value Objects que se auto-validam ao serem instanciados (`Percentage.create(50)`).
 - **`repositories/` (Interfaces/Contracts)**: O Dominio define abstracoes para acessar ou persistir Entidades, mas nao implementa o "como". Em `level.repository.ts`, definimos `findById()` ou `save()`. Nenhum import do Prisma/SQL ocorre aqui.
-- **`errors/`**: Os erros de violacoes de negocio nao sao excecoes HTTP. Criamos excecoes como `SlugAlreadyInUseError` ou `ResourceNotFoundError` herdando de `AppError`. Se algo da errado, emitimos este sinal puramente semantico.
+- **`errors/`**: Erros de violacao de regra de negocio sao modelados como excecoes de dominio (ex: `InvalidSlugError`), herdando de `AppError`. Esses erros sao convertidos em respostas HTTP pelo `DomainExceptionFilter`.
 - **`events/` (Domain Events)**: Mecanismos para disparar efeitos colaterais desacoplados. Quando algo importante acontece (`LevelCreatedEvent`), o aggregate despacha na memoria para que Listeners sejam acionados sem amarrar regras de forma sincrona nos Use Cases.
 
 ### 2. Application (Aplicacao - Orquestradora)
@@ -81,6 +81,18 @@ A arquitetura do backend faz uso extensivo de padrões de projeto (Design Patter
 - **Dependency Injection (DI) / Inversion of Control (IoC)**: Delegamos ao framework (NestJS) a responsabilidade de instanciar e injetar as dependências concretas (como repositórios e provedores de criptografia) dentro dos Casos de Uso que exigem apenas as interfaces abstratas (Ports).
 - **Observer / Publisher-Subscriber (Pub/Sub)**: Implementado através do `DomainEvents`. Permite que entidades publiquem eventos (ex: `LevelCreatedEvent`) de forma desacoplada, para que outros módulos possam reagir (assinar) no futuro sem alterar o fluxo principal.
 - **Command Pattern (Use Cases)**: Cada Caso de Uso é implementado como um comando único com um método `execute()`. Eles encapsulam a intenção do usuário em objetos parametrizados (Requests), facilitando o rastreamento, o teste e a adesão ao Single Responsibility Principle (SRP).
+
+---
+
+## Onde ficam as regras de negocio (na pratica)
+
+As regras de negocio e seus cenarios ficam distribuidos de forma intencional:
+
+- **Invariantes (sempre verdade):** dentro do `domain/` (Entidades e Value Objects). Exemplo: `Slug.create(...)` valida o formato do slug.
+- **Fluxos e cenarios (Dado/Quando/Entao):** dentro do `application/` (Use Cases). Exemplo: ao iniciar um simulado, o Use Case impede iniciar nivel sem questoes e retoma tentativas em andamento.
+- **Contrato com o mundo externo:** `api/` e `infrastructure/` apenas adaptam entrada/saida (HTTP, Prisma, JWT), sem conter regra central.
+
+Para uma visao do comportamento do usuario e dos cenarios esperados, consulte: **[BUSINESS_RULES.md](../BUSINESS_RULES.md)**.
 
 ---
 

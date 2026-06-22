@@ -76,7 +76,7 @@ A partir da raiz do projeto (`cd ..`), inicie o ambiente com o container do banc
 docker-compose up -d postgres
 ```
 
-> **Nota:** Não utilize apenas `docker-compose up -d` neste momento, pois a intenção é subir apenas o banco de dados e rodar a API localmente na sua máquina para receber os comandos do Prisma.
+> **Nota:** Este modo sobe apenas o banco em Docker e mantém a API rodando localmente (ideal para desenvolvimento). Se preferir subir tudo em container, use `docker-compose up -d` na raiz do repositório.
 
 ### 5. Aplique o schema ao banco de dados
 
@@ -93,9 +93,9 @@ npx prisma generate
 pnpm run db:seed
 ```
 
-Isso criará:
-- Usuário administrador: `admin@aprovaai.com` / `admin123`
-- Usuário demo: `demo@aprovaai.com` / `demo123`
+Isso cria/atualiza:
+- Admin: `admin@aprovaai.com` / `admin123`
+- Usuários de teste (ranking): `demo@aprovaai.com`, `ana@aprovaai.com`, `bruno@aprovaai.com`, `carla@aprovaai.com`, `diego@aprovaai.com`, `elisa@aprovaai.com` / senha `demo123`
 
 ### 7. Inicie o servidor de desenvolvimento
 
@@ -116,7 +116,7 @@ Crie um arquivo `.env` na raiz de `backend/` baseado no `.env.example`:
 
 | Variável | Exemplo | Descrição |
 |---|---|---|
-| `DATABASE_URL` | `postgresql://user:password@localhost:5432/aprovaai` | Connection string do PostgreSQL |
+| `DATABASE_URL` | `postgresql://user:password@localhost:5433/aprovaai` | Connection string do PostgreSQL (porta 5433 vem do docker-compose) |
 | `NODE_ENV` | `development` | Ambiente (`development` / `production`) |
 | `PORT` | `3001` | Porta HTTP do servidor |
 | `JWT_SECRET` | `your-secret-key` | Chave secreta para assinar tokens JWT |
@@ -151,7 +151,7 @@ O projeto adota a **Clean Architecture (Arquitetura Limpa)** orientada a **Domai
 backend/
 ├── prisma/
 │   ├── schema.prisma   # Modelos do banco de dados (Tabelas)
-│   └── seed.ts         # Script de população inicial (seed db)
+│   └── seeders/        # Seeders (db:seed)
 ├── uploads/            # Imagens salvas isoladas via filesystem
 └── src/
     ├── api/            # Camada de Interface (Controllers, DTOs, Rotas)
@@ -161,7 +161,7 @@ backend/
     └── shared/         # Core e Utils compartilhados (Filtros, Exceções)
 ```
 
-> **Para um aprofundamento na arquitetura e fluxo de dados, consulte a documentação detalhada: [Arquitetura do Backend: Clean Architecture & DDD](../docs/ARCHITECTURE.md)**
+> **Para um aprofundamento na arquitetura e fluxo de dados, consulte:** [BACKEND_ARCHITECTURE.md](../docs/BACKEND_ARCHITECTURE.md)
 
 ---
 
