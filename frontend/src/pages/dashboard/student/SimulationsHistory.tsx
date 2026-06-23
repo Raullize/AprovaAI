@@ -21,6 +21,7 @@ interface HistoryItem {
   id: string;
   levelId: string;
   levelName: string;
+  levelXpReward: number;
   examName: string;
   topicName: string;
   examCategory?: string;
@@ -30,6 +31,7 @@ interface HistoryItem {
   percentage: number;
   passed: boolean;
   stars?: number;
+  xpEarned: number;
   timeSpent: number;
   createdAt: string;
   iconKey?: string;
@@ -65,6 +67,7 @@ interface ApiHistoryItem {
   levelId: string;
   level?: {
     name?: string;
+    xpReward?: number;
     topic?: {
       name?: string;
       exam?: {
@@ -113,6 +116,52 @@ function Stars({ value }: { value: number }) {
   );
 }
 
+function getXpMultiplier(stars: number) {
+  if (stars === 3) return 1.0;
+  if (stars === 2) return 0.5;
+  if (stars === 1) return 0.2;
+  return 0;
+}
+
+function calculateHistoryXp(items: Omit<HistoryItem, 'xpEarned'>[]): HistoryItem[] {
+  const attemptsByLevel = new Map<string, Omit<HistoryItem, 'xpEarned'>[]>();
+
+  items.forEach((item) => {
+    const levelAttempts = attemptsByLevel.get(item.levelId) ?? [];
+    levelAttempts.push(item);
+    attemptsByLevel.set(item.levelId, levelAttempts);
+  });
+
+  const xpByAttemptId = new Map<string, number>();
+
+  attemptsByLevel.forEach((levelAttempts) => {
+    const orderedAttempts = [...levelAttempts].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+    );
+
+    let bestStars = 0;
+
+    orderedAttempts.forEach((attempt) => {
+      const previousMultiplier = getXpMultiplier(bestStars);
+      const currentStars = attempt.stars ?? 0;
+      const currentMultiplier = getXpMultiplier(currentStars);
+      const xpEarned = Math.round(
+        Math.max(0, currentMultiplier - previousMultiplier) *
+          attempt.levelXpReward,
+      );
+
+      xpByAttemptId.set(attempt.id, xpEarned);
+      bestStars = Math.max(bestStars, currentStars);
+    });
+  });
+
+  return items.map((item) => ({
+    ...item,
+    xpEarned: xpByAttemptId.get(item.id) ?? 0,
+  }));
+}
+
 export default function SimulationsHistory() {
   const navigate = useNavigate();
   const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -147,6 +196,7 @@ export default function SimulationsHistory() {
           id: item.id,
           levelId: item.levelId,
           levelName: item.level?.name ?? 'Sem nome',
+          levelXpReward: item.level?.xpReward ?? 0,
           examName: item.level?.topic?.exam?.name ?? 'Outros',
           topicName: item.level?.topic?.name ?? 'Sem tópico',
           examCategory: item.level?.topic?.exam?.category ?? 'OUTROS',
@@ -156,6 +206,7 @@ export default function SimulationsHistory() {
           percentage: item.percentage ?? 0,
           passed: item.passed ?? false,
           stars: item.stars ?? 0,
+          xpEarned: 0,
           timeSpent: item.timeSpent ?? 0,
           createdAt: item.createdAt,
           iconKey: item.level?.topic?.exam?.iconKey ?? 'star',
@@ -167,7 +218,7 @@ export default function SimulationsHistory() {
               correct: ans.isCorrect ?? false,
             })) ?? [],
         }));
-        setHistory(mapped);
+        setHistory(calculateHistoryXp(mapped));
       } catch {
         setHistory([]);
       } finally {
@@ -601,12 +652,7 @@ export default function SimulationsHistory() {
                               total: item.totalQuestions,
                               correct: item.score,
                               timeSpent: item.timeSpent,
-                              xpEarned:
-                                item.totalQuestions > 0
-                                  ? Math.round(
-                                      (item.score / item.totalQuestions) * 60,
-                                    )
-                                  : 0,
+                              xpEarned: item.xpEarned,
                               passingPercentage: 70,
                               levelName: item.levelName,
                               stars: item.stars,
