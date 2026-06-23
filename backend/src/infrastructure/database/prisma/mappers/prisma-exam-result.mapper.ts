@@ -13,6 +13,7 @@ type PrismaExamResultWithRelations = PrismaExamResult & {
   answers?: PrismaExamAnswer[];
   level?: {
     name: string;
+    xpReward?: number;
     topic?: {
       name: string;
       exam?: {
@@ -48,6 +49,7 @@ export class PrismaExamResultMapper {
         level: raw.level
           ? {
               name: raw.level.name,
+              xpReward: raw.level.xpReward,
               topic: raw.level.topic
                 ? {
                     name: raw.level.topic.name,

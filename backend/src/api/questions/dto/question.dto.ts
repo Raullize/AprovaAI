@@ -14,9 +14,11 @@ const createOptionSchema = z.object({
 
 const updateOptionSchema = z.object({
   id: z
-    .string()
+    .uuid('ID da alternativa inválido')
     .optional()
-    .describe('ID da alternativa existente. Omitir para criar uma nova opção.'),
+    .describe(
+      'ID UUID da alternativa existente. Ex: "123e4567-e89b-12d3-a456-426614174000". Omitir para criar uma nova opção.',
+    ),
   text: z
     .string()
     .min(1, 'Texto da opção é obrigatório')
@@ -61,9 +63,10 @@ export const createQuestionSchema = z.object({
     .nullable()
     .describe('Link externo para um material de estudo complementar.'),
   levelId: z
-    .string()
     .uuid('ID do nível inválido')
-    .describe('ID (UUID) do nível ao qual esta questão pertence.'),
+    .describe(
+      'ID UUID do nível ao qual esta questão pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+    ),
   options: z
     .array(createOptionSchema)
     .min(2, 'A questão deve ter pelo menos 2 opções')
@@ -103,10 +106,11 @@ export const updateQuestionSchema = z.object({
     .nullable()
     .describe('Novo link de estudo complementar ou `null` para remover.'),
   levelId: z
-    .string()
     .uuid('ID do nível inválido')
     .optional()
-    .describe('Novo ID (UUID) do nível ao qual a questão pertence.'),
+    .describe(
+      'Novo ID UUID do nível ao qual a questão pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+    ),
   options: z
     .array(updateOptionSchema)
     .optional()

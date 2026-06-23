@@ -55,6 +55,7 @@ export class ExamAnswer extends Entity<ExamAnswerProps> {
 
 export interface ExamResultLevel {
   name: string;
+  xpReward?: number;
   topic?: {
     name: string;
     exam?: {

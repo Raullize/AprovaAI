@@ -42,9 +42,10 @@ export const createLevelSchema = z.object({
     .default('ACTIVE')
     .describe('Status de visibilidade do nível'),
   topicId: z
-    .string()
     .uuid('ID do tópico inválido')
-    .describe('ID (UUID) do tópico ao qual este nível pertence.'),
+    .describe(
+      'ID UUID do tópico ao qual este nível pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+    ),
 });
 
 export class CreateLevelDto extends createZodDto(createLevelSchema) {}
@@ -63,10 +64,11 @@ export const updateLevelSchema = z.object({
     .optional()
     .describe('Novo status de visibilidade do nível.'),
   topicId: z
-    .string()
     .uuid('ID do tópico inválido')
     .optional()
-    .describe('Novo ID (UUID) do tópico ao qual este nível pertence.'),
+    .describe(
+      'Novo ID UUID do tópico ao qual este nível pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+    ),
   xpReward: z
     .number()
     .int()

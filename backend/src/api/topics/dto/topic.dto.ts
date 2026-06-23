@@ -24,9 +24,10 @@ export const createTopicSchema = z.object({
       'Quando ativo, o tópico pode aparecer para o aluno com um indicador de "em breve", mesmo sem níveis públicos.',
     ),
   examId: z
-    .string()
     .uuid('ID do exame inválido')
-    .describe('ID (UUID) da trilha principal a qual pertence. Ex: 123e4567...'),
+    .describe(
+      'ID UUID da trilha principal à qual o tópico pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+    ),
   iconKey: z.string().optional().describe('Chave do ícone. Ex: "book-open"'),
   colorScheme: z.string().optional().describe('Esquema de cor. Ex: "violet"'),
 });
@@ -53,10 +54,11 @@ export const updateTopicSchema = z.object({
       'Define se o tópico deve exibir o indicador de "em breve" para o aluno.',
     ),
   examId: z
-    .string()
     .uuid('ID do exame inválido')
     .optional()
-    .describe('Novo ID (UUID) da trilha principal a qual este tópico pertence.'),
+    .describe(
+      'Novo ID UUID da trilha principal à qual este tópico pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+    ),
   iconKey: z
     .string()
     .nullable()
