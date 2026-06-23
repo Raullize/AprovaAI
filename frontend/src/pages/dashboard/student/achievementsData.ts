@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import { Trophy, Zap, Shield, Target, Clock, Compass } from 'lucide-react';
+import { Trophy, Zap, Shield, Target, Clock, Compass, Calendar } from 'lucide-react';
 
 export interface Achievement {
   id: string;
@@ -56,6 +56,14 @@ export const achievements: Achievement[] = [
     title: 'Desbravador',
     description: 'Conclua todos os tópicos de um exame',
     icon: Compass,
+    color: 'bg-slate-300 text-slate-500',
+    isUnlocked: false,
+  },
+  {
+    id: 'a7',
+    title: 'Veterano',
+    description: 'Completou 1 ano de aprendizado na plataforma',
+    icon: Calendar,
     color: 'bg-slate-300 text-slate-500',
     isUnlocked: false,
   },

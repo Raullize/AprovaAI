@@ -9,6 +9,7 @@ import {
   Flame,
   ChevronLeft,
   ChevronRight,
+  Calendar,
 } from 'lucide-react';
 
 import { cn } from '../../../lib/utils';
@@ -158,6 +159,12 @@ export default function Profile() {
             <p className="text-slate-400 text-sm mt-0.5">
               @{user?.username || 'username'}
             </p>
+            {user?.createdAt && (
+              <p className="text-slate-400 text-xs mt-1.5 flex items-center gap-1.5 justify-center sm:justify-start font-medium">
+                <Calendar className="h-3.5 w-3.5 text-indigo-500 animate-pulse" />
+                Por aqui desde {new Date(user.createdAt).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+              </p>
+            )}
             <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
               <span className="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold border border-indigo-150">
                 {roleLabel}

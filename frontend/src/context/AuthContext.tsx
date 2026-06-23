@@ -12,6 +12,7 @@ interface User {
   bestStreak?: number;
   lastActiveAt?: string | null;
   subscriptionPlan: string;
+  createdAt?: string;
 }
 
 interface LoginCredentials {

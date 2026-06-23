@@ -17,6 +17,7 @@ export interface AccountProfileResponse {
   streakCount: number;
   bestStreak: number;
   lastActiveAt: Date | null | undefined;
+  createdAt?: Date;
 }
 
 @Injectable()
@@ -45,6 +46,7 @@ export class GetAccountProfileUseCase
       streakCount: user.streakCount,
       bestStreak: user.bestStreak,
       lastActiveAt: user.lastActiveAt,
+      createdAt: user.createdAt,
     };
   }
 }
