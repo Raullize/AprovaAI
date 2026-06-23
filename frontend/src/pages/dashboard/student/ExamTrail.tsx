@@ -767,7 +767,7 @@ export default function ExamTrail() {
 
       <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 py-8 pb-32">
         {/* Back Button */}
-        <div className="mb-6">
+        <div className="mb-6 lg:hidden">
           <button
             onClick={() => navigate('/dashboard/explore')}
             className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
@@ -817,6 +817,17 @@ export default function ExamTrail() {
           {/* --- LEFT COLUMN: DESKTOP SIDEBAR --- */}
           <div className="hidden lg:block col-span-4 relative">
             <div className="sticky top-24 space-y-6">
+              {/* Back Button (Desktop) */}
+              <div>
+                <button
+                  onClick={() => navigate('/dashboard/explore')}
+                  className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  Voltar ao Catálogo
+                </button>
+              </div>
+
               {/* Exam Info Card */}
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center">
                 <div className={cn(

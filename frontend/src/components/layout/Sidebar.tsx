@@ -10,6 +10,7 @@ import {
   User,
   Compass,
   History,
+  Trophy,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
@@ -19,6 +20,7 @@ const studentItems = [
   { icon: Home, label: 'Início', href: '/dashboard' },
   { icon: Compass, label: 'Explorar', href: '/dashboard/explore' },
   { icon: History, label: 'Simulados', href: '/dashboard/simulations' },
+  { icon: Trophy, label: 'Ranking', href: '/dashboard/leaderboard' },
   { icon: User, label: 'Perfil', href: '/dashboard/profile' },
 ];
 

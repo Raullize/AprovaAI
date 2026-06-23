@@ -9,6 +9,7 @@ interface User {
   username: string;
   xp: number;
   streakCount?: number;
+  bestStreak?: number;
   lastActiveAt?: string | null;
   subscriptionPlan: string;
 }
