@@ -12,6 +12,7 @@ export interface UserProps {
   role?: 'USER' | 'ADMIN';
   xp?: number;
   streakCount?: number;
+  bestStreak?: number;
   lastActiveAt?: Date | null;
   createdAt?: Date;
   updatedAt?: Date;
@@ -45,6 +46,9 @@ export class User extends AggregateRoot<UserProps> {
   get streakCount(): number {
     return this.props.streakCount ?? 0;
   }
+  get bestStreak(): number {
+    return this.props.bestStreak ?? 0;
+  }
   get lastActiveAt(): Date | null | undefined {
     return this.props.lastActiveAt;
   }
@@ -63,6 +67,7 @@ export class User extends AggregateRoot<UserProps> {
         role: props.role ?? 'USER',
         xp: props.xp ?? 0,
         streakCount: props.streakCount ?? 0,
+        bestStreak: props.bestStreak ?? 0,
         lastActiveAt: props.lastActiveAt ?? null,
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
@@ -73,7 +78,7 @@ export class User extends AggregateRoot<UserProps> {
 
   public updateStreak(today: Date): boolean {
     const lastActive = this.props.lastActiveAt;
-    
+
     // truncate dates to midnight for comparison
     const truncateDate = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const todayTrunc = truncateDate(today);
@@ -82,6 +87,7 @@ export class User extends AggregateRoot<UserProps> {
       this.props.streakCount = 1;
       this.props.lastActiveAt = today;
       this.props.updatedAt = new Date();
+      this._updateBestStreak();
       return true;
     }
 
@@ -93,15 +99,27 @@ export class User extends AggregateRoot<UserProps> {
       this.props.streakCount = (this.props.streakCount ?? 0) + 1;
       this.props.lastActiveAt = today;
       this.props.updatedAt = new Date();
+      this._updateBestStreak();
       return true;
     } else if (diffDays > 1) {
+      // Streak quebrado — persiste bestStreak antes de resetar
       this.props.streakCount = 1;
       this.props.lastActiveAt = today;
       this.props.updatedAt = new Date();
+      this._updateBestStreak();
       return true;
     }
-    
+
     return false;
+  }
+
+  /** Invariante de domínio: bestStreak sempre >= streakCount */
+  private _updateBestStreak(): void {
+    const current = this.props.streakCount ?? 0;
+    const best = this.props.bestStreak ?? 0;
+    if (current > best) {
+      this.props.bestStreak = current;
+    }
   }
 
   public grantXp(amount: number): void {

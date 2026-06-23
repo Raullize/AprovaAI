@@ -101,4 +101,99 @@ describe('User Entity', () => {
 
     expect(user.subscriptionPlan).toBe('PREMIUM');
   });
+
+  describe('streak count and best streak', () => {
+    it('should initialize with default streak stats', () => {
+      const email = Email.create('john.doe@example.com');
+      const user = User.create({
+        fullName: 'John Doe',
+        username: 'johndoe',
+        email,
+        passwordHash: 'hashed-password',
+        dateOfBirth: new Date('1990-01-01'),
+      });
+
+      expect(user.streakCount).toBe(0);
+      expect(user.bestStreak).toBe(0);
+      expect(user.lastActiveAt).toBeNull();
+    });
+
+    it('should initialize with custom streak stats', () => {
+      const email = Email.create('john.doe@example.com');
+      const user = User.create({
+        fullName: 'John Doe',
+        username: 'johndoe',
+        email,
+        passwordHash: 'hashed-password',
+        dateOfBirth: new Date('1990-01-01'),
+        streakCount: 3,
+        bestStreak: 5,
+        lastActiveAt: new Date('2026-06-20'),
+      });
+
+      expect(user.streakCount).toBe(3);
+      expect(user.bestStreak).toBe(5);
+      expect(user.lastActiveAt).toEqual(new Date('2026-06-20'));
+    });
+
+    it('should update bestStreak when streakCount exceeds it', () => {
+      const email = Email.create('john.doe@example.com');
+      const user = User.create({
+        fullName: 'John Doe',
+        username: 'johndoe',
+        email,
+        passwordHash: 'hashed-password',
+        dateOfBirth: new Date('1990-01-01'),
+        streakCount: 2,
+        bestStreak: 2,
+        lastActiveAt: new Date('2026-06-20'),
+      });
+
+      // Atividade no dia seguinte (incrementa streak de 2 para 3)
+      const success = user.updateStreak(new Date('2026-06-21'));
+      expect(success).toBe(true);
+      expect(user.streakCount).toBe(3);
+      expect(user.bestStreak).toBe(3);
+    });
+
+    it('should not update bestStreak if streakCount does not exceed it', () => {
+      const email = Email.create('john.doe@example.com');
+      const user = User.create({
+        fullName: 'John Doe',
+        username: 'johndoe',
+        email,
+        passwordHash: 'hashed-password',
+        dateOfBirth: new Date('1990-01-01'),
+        streakCount: 1,
+        bestStreak: 5,
+        lastActiveAt: new Date('2026-06-20'),
+      });
+
+      // Atividade no dia seguinte (incrementa de 1 para 2)
+      const success = user.updateStreak(new Date('2026-06-21'));
+      expect(success).toBe(true);
+      expect(user.streakCount).toBe(2);
+      expect(user.bestStreak).toBe(5); // Mantém o recorde de 5
+    });
+
+    it('should reset streakCount but preserve/update bestStreak if streak is broken', () => {
+      const email = Email.create('john.doe@example.com');
+      const user = User.create({
+        fullName: 'John Doe',
+        username: 'johndoe',
+        email,
+        passwordHash: 'hashed-password',
+        dateOfBirth: new Date('1990-01-01'),
+        streakCount: 4,
+        bestStreak: 4,
+        lastActiveAt: new Date('2026-06-15'),
+      });
+
+      // Atividade vários dias depois (streak quebrado, reseta pra 1)
+      const success = user.updateStreak(new Date('2026-06-20'));
+      expect(success).toBe(true);
+      expect(user.streakCount).toBe(1);
+      expect(user.bestStreak).toBe(4); // Mantém o recorde antigo
+    });
+  });
 });

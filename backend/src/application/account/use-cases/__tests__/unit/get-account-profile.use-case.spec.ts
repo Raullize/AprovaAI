@@ -21,6 +21,7 @@ describe('GetAccountProfileUseCase', () => {
       dateOfBirth: new Date('1998-01-01'),
       xp: 120,
       streakCount: 3,
+      bestStreak: 4,
     });
 
     userRepository.items.push(user);
@@ -36,6 +37,7 @@ describe('GetAccountProfileUseCase', () => {
       subscriptionPlan: 'FREE',
       xp: 120,
       streakCount: 3,
+      bestStreak: 4,
       lastActiveAt: null,
     });
   });

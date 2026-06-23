@@ -32,6 +32,7 @@ model User {
   role             UserRole         @default(USER) @map("role")
   xp               Int              @default(0) @map("xp")
   streakCount      Int              @default(0) @map("streak_count")
+  bestStreak       Int              @default(0) @map("best_streak")
   lastActiveAt     DateTime?        @map("last_active_at")
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")

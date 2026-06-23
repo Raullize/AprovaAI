@@ -65,6 +65,7 @@ export class UpdateAccountProfileUseCase
       subscriptionPlan: savedUser.subscriptionPlan,
       xp: savedUser.xp,
       streakCount: savedUser.streakCount,
+      bestStreak: savedUser.bestStreak,
       lastActiveAt: savedUser.lastActiveAt,
     };
   }

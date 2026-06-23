@@ -102,18 +102,41 @@ export class PrismaUserRepository implements UserRepository {
 
   async findLeaderboard(limit: number): Promise<User[]> {
     const users = await this.prisma.user.findMany({
-      where: {
-        role: 'USER',
-      },
+      where: { role: 'USER' },
       orderBy: { xp: 'desc' },
       take: limit,
     });
     return users.map((u) => PrismaUserMapper.toDomain(u));
   }
 
-  async delete(id: string): Promise<void> {
-    await this.prisma.user.delete({
-      where: { id },
+  async findStreakLeaderboard(limit: number): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      where: { role: 'USER' },
+      orderBy: { bestStreak: 'desc' },
+      take: limit,
     });
+    return users.map((u) => PrismaUserMapper.toDomain(u));
+  }
+
+  async findUserRankByXp(userId: string): Promise<number> {
+    const target = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!target) return -1;
+    const usersAhead = await this.prisma.user.count({
+      where: { role: 'USER', xp: { gt: target.xp } },
+    });
+    return usersAhead + 1;
+  }
+
+  async findUserRankByStreak(userId: string): Promise<number> {
+    const target = await this.prisma.user.findUnique({ where: { id: userId } });
+    if (!target) return -1;
+    const usersAhead = await this.prisma.user.count({
+      where: { role: 'USER', bestStreak: { gt: target.bestStreak } },
+    });
+    return usersAhead + 1;
+  }
+
+  async delete(id: string): Promise<void> {
+    await this.prisma.user.delete({ where: { id } });
   }
 }

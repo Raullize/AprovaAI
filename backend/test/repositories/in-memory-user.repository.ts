@@ -81,6 +81,33 @@ export class InMemoryUserRepository implements UserRepository {
     return Promise.resolve(users);
   }
 
+  findStreakLeaderboard(limit: number): Promise<User[]> {
+    const users = [...this.items]
+      .filter((user) => user.role === 'USER')
+      .sort((a, b) => b.bestStreak - a.bestStreak)
+      .slice(0, limit);
+
+    return Promise.resolve(users);
+  }
+
+  findUserRankByXp(userId: string): Promise<number> {
+    const target = this.items.find((u) => u.id === userId);
+    if (!target) return Promise.resolve(-1);
+    const rank =
+      this.items.filter((u) => u.role === 'USER' && u.xp > target.xp).length + 1;
+    return Promise.resolve(rank);
+  }
+
+  findUserRankByStreak(userId: string): Promise<number> {
+    const target = this.items.find((u) => u.id === userId);
+    if (!target) return Promise.resolve(-1);
+    const rank =
+      this.items.filter(
+        (u) => u.role === 'USER' && u.bestStreak > target.bestStreak,
+      ).length + 1;
+    return Promise.resolve(rank);
+  }
+
   delete(id: string): Promise<void> {
     this.items = this.items.filter((item) => item.id !== id);
     this.activities = this.activities.filter((activity) => activity.userId !== id);

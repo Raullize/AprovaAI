@@ -1,25 +1,26 @@
-import { GetStudentLeaderboardUseCase } from '../../get-student-leaderboard.use-case';
+import { GetStudentStreakLeaderboardUseCase } from '../../get-student-streak-leaderboard.use-case';
 import { InMemoryUserRepository } from '../../../../../../test/repositories/in-memory-user.repository';
 import { User } from '../../../../../domain/users/entities/user.entity';
 import { Email } from '../../../../../domain/users/value-objects/email';
 
-describe('GetStudentLeaderboardUseCase', () => {
+describe('GetStudentStreakLeaderboardUseCase', () => {
   let userRepository: InMemoryUserRepository;
-  let sut: GetStudentLeaderboardUseCase;
+  let sut: GetStudentStreakLeaderboardUseCase;
 
   beforeEach(() => {
     userRepository = new InMemoryUserRepository();
-    sut = new GetStudentLeaderboardUseCase(userRepository);
+    sut = new GetStudentStreakLeaderboardUseCase(userRepository);
   });
 
-  it('should return the leaderboard ordered by xp and exclude admins', async () => {
+  it('should return the leaderboard ordered by best streak and exclude admins', async () => {
     const userA = User.create({
       fullName: 'User A',
       username: 'user-a',
       email: Email.create('user-a@example.com'),
       passwordHash: 'hashed-password',
       dateOfBirth: new Date('1998-01-01'),
-      xp: 100,
+      streakCount: 2,
+      bestStreak: 2,
     });
 
     const userB = User.create({
@@ -28,7 +29,8 @@ describe('GetStudentLeaderboardUseCase', () => {
       email: Email.create('user-b@example.com'),
       passwordHash: 'hashed-password',
       dateOfBirth: new Date('1998-01-01'),
-      xp: 300,
+      streakCount: 3,
+      bestStreak: 5,
     });
 
     const admin = User.create({
@@ -37,7 +39,7 @@ describe('GetStudentLeaderboardUseCase', () => {
       email: Email.create('admin@example.com'),
       passwordHash: 'hashed-password',
       dateOfBirth: new Date('1998-01-01'),
-      xp: 999,
+      bestStreak: 10,
       role: 'ADMIN',
     });
 
@@ -50,24 +52,27 @@ describe('GetStudentLeaderboardUseCase', () => {
       rank: 1,
       fullName: 'User B',
       username: 'user-b',
-      xp: 300,
+      bestStreak: 5,
+      streakCount: 3,
     });
     expect(result.topUsers[1]).toEqual({
       rank: 2,
       fullName: 'User A',
       username: 'user-a',
-      xp: 100,
+      bestStreak: 2,
+      streakCount: 2,
     });
   });
 
-  it('should return currentUserRank = 1 for the user with highest xp', async () => {
+  it('should return currentUserRank = 1 for the user with highest bestStreak', async () => {
     const userA = User.create({
       fullName: 'User A',
       username: 'user-a',
       email: Email.create('user-a@example.com'),
       passwordHash: 'hashed-password',
       dateOfBirth: new Date('1998-01-01'),
-      xp: 500,
+      bestStreak: 12,
+      streakCount: 12,
     });
 
     const userB = User.create({
@@ -76,7 +81,8 @@ describe('GetStudentLeaderboardUseCase', () => {
       email: Email.create('user-b@example.com'),
       passwordHash: 'hashed-password',
       dateOfBirth: new Date('1998-01-01'),
-      xp: 100,
+      bestStreak: 4,
+      streakCount: 4,
     });
 
     userRepository.items.push(userA, userB);
@@ -87,7 +93,8 @@ describe('GetStudentLeaderboardUseCase', () => {
     expect(result.currentUserEntry).toMatchObject({
       rank: 1,
       username: 'user-a',
-      xp: 500,
+      bestStreak: 12,
+      streakCount: 12,
     });
   });
 
@@ -98,7 +105,8 @@ describe('GetStudentLeaderboardUseCase', () => {
       email: Email.create('top@example.com'),
       passwordHash: 'hashed-password',
       dateOfBirth: new Date('1998-01-01'),
-      xp: 1000,
+      bestStreak: 15,
+      streakCount: 15,
     });
 
     const regularUser = User.create({
@@ -107,7 +115,8 @@ describe('GetStudentLeaderboardUseCase', () => {
       email: Email.create('regular@example.com'),
       passwordHash: 'hashed-password',
       dateOfBirth: new Date('1998-01-01'),
-      xp: 50,
+      bestStreak: 3,
+      streakCount: 2,
     });
 
     userRepository.items.push(topUser, regularUser);

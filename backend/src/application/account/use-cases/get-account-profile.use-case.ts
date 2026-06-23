@@ -15,6 +15,7 @@ export interface AccountProfileResponse {
   subscriptionPlan: string;
   xp: number;
   streakCount: number;
+  bestStreak: number;
   lastActiveAt: Date | null | undefined;
 }
 
@@ -42,6 +43,7 @@ export class GetAccountProfileUseCase
       subscriptionPlan: user.subscriptionPlan,
       xp: user.xp,
       streakCount: user.streakCount,
+      bestStreak: user.bestStreak,
       lastActiveAt: user.lastActiveAt,
     };
   }
