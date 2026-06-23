@@ -19,6 +19,7 @@ const routeLabels: Record<string, string> = {
   '/dashboard/users': 'Usuários',
   '/dashboard/settings': 'Configurações',
   '/dashboard/profile': 'Perfil',
+  '/dashboard/profile/settings': 'Editar Perfil',
   '/dashboard/profile/achievements': 'Minhas Conquistas',
   '/dashboard/leaderboard': 'Ranking Global',
 };
@@ -188,7 +189,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
               </button>
               <button
                 onClick={() => {
-                  navigate('/dashboard/profile?settings=true');
+                  navigate('/dashboard/profile/settings');
                   setIsDropdownOpen(false);
                 }}
                 className="w-full flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors gap-2 text-left"

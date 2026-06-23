@@ -210,7 +210,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               </button>
               <button
                 onClick={() => {
-                  navigate('/dashboard/profile?settings=true');
+                  navigate('/dashboard/profile/settings');
                   setIsUserMenuOpen(false);
                 }}
                 className="w-full flex items-center px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-850 hover:text-white transition-colors gap-2 text-left rounded-lg"
