@@ -317,111 +317,103 @@ export default function Profile() {
 
             {/* User Profile Card */}
             <Card
-              padding="large"
-              className="flex flex-col sm:flex-row items-center gap-6 relative"
+              padding="none"
+              className="bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-650 border-0 shadow-xl shadow-indigo-500/5 overflow-hidden relative text-white rounded-3xl"
             >
-              <button
-                onClick={() => setSearchParams({ settings: 'true' })}
-                className="absolute top-6 right-6 p-2 rounded-xl text-slate-400 hover:text-slate-650 hover:bg-slate-50 active:scale-95 transition-all border border-slate-100"
-                title="Configurações"
-              >
-                <SettingsIcon className="h-5 w-5" />
-              </button>
+              {/* Efeitos de luz de fundo */}
+              <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-80 h-80 bg-indigo-400/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute left-1/4 bottom-0 translate-y-24 w-96 h-96 bg-pink-400/10 rounded-full blur-3xl pointer-events-none" />
 
-              <UserAvatar size="xl" />
-              <div className="text-center sm:text-left flex-1">
-                <h1 className="text-2xl font-bold text-slate-800 font-display">
-                  {user?.fullName || 'Usuário'}
-                </h1>
-                <p className="text-slate-400 text-sm mt-0.5">
-                  @{user?.username || 'username'}
-                </p>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
-                  <span className="px-3 py-1 rounded-xl bg-indigo-50 text-indigo-600 text-xs font-bold border border-indigo-150">
-                    {roleLabel}
-                  </span>
-                  <span className="px-3 py-1 rounded-xl bg-amber-50 text-amber-600 text-xs font-bold border border-amber-150 flex items-center gap-1">
-                    <Zap className="h-3.5 w-3.5 fill-current animate-pulse" />
-                    Nível {currentLevel}
-                  </span>
+              <div className="p-8 relative">
+                {/* Botão de Configurações Integrado */}
+                <button
+                  onClick={() => setSearchParams({ settings: 'true' })}
+                  className="absolute top-6 right-6 p-2.5 rounded-2xl text-white/85 hover:text-white bg-white/10 hover:bg-white/20 active:scale-95 transition-all border border-white/10 shadow-sm"
+                  title="Configurações"
+                >
+                  <SettingsIcon className="h-5 w-5" />
+                </button>
+
+                {/* Perfil (Avatar + Info) */}
+                <div className="flex flex-col sm:flex-row items-center gap-6">
+                  <div className="relative rounded-full ring-4 ring-white/20 shadow-lg shadow-indigo-700/20 shrink-0">
+                    <UserAvatar size="xl" />
+                  </div>
+                  <div className="text-center sm:text-left flex-1">
+                    <h1 className="text-2xl font-black font-display text-white">
+                      {user?.fullName || 'Usuário'}
+                    </h1>
+                    <p className="text-indigo-200 text-sm mt-0.5 font-medium">
+                      @{user?.username || 'username'}
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 mt-3">
+                      <span className="px-3 py-1 rounded-xl bg-white/10 text-white text-xs font-bold border border-white/10">
+                        {roleLabel}
+                      </span>
+                      <span className="px-3 py-1 rounded-xl bg-amber-400/25 text-amber-300 text-xs font-bold border border-amber-400/20 flex items-center gap-1">
+                        <Zap className="h-3.5 w-3.5 fill-current animate-pulse text-amber-300" />
+                        Nível {currentLevel}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stats Grid Integrada (Glassmorphism) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 pt-8 border-t border-white/10">
+                  {/* XP Total */}
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col justify-between backdrop-blur-md">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-white/10 text-white shrink-0">
+                        <Zap className="h-4 w-4 text-amber-300 fill-current animate-pulse" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-indigo-200 font-bold uppercase tracking-wider">XP Total</p>
+                        <p className="font-bold text-white text-sm truncate">{totalXP} XP</p>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <ProgressBar progress={totalXP % 100} colorScheme="indigo" size="sm" className="bg-white/10" />
+                      <p className="text-[9px] text-indigo-200 mt-1">
+                        Faltam {xpNeededForNextLevel} XP para o Nível {currentLevel + 1}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Aproveitamento */}
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col justify-between backdrop-blur-md">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-white/10 text-white shrink-0">
+                        <Award className="h-4 w-4 text-emerald-400" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-indigo-200 font-bold uppercase tracking-wider">Aproveitamento</p>
+                        <p className="font-bold text-white text-sm truncate">{accuracy}% de acertos</p>
+                      </div>
+                    </div>
+                    <div className="mt-3">
+                      <ProgressBar progress={accuracy} colorScheme="emerald" size="sm" className="bg-white/10" />
+                      <p className="text-[9px] text-indigo-200 mt-1">Mapeado de seus simulados</p>
+                    </div>
+                  </div>
+
+                  {/* Plano Atual */}
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col justify-between backdrop-blur-md">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-white/10 text-white shrink-0">
+                        <Shield className="h-4 w-4 text-indigo-300" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-indigo-200 font-bold uppercase tracking-wider">Plano Atual</p>
+                        <p className="font-bold text-white text-sm uppercase tracking-wide truncate">{user?.subscriptionPlan || 'FREE'}</p>
+                      </div>
+                    </div>
+                    <p className="text-[9px] text-indigo-200 mt-3 pt-1">
+                      {user?.subscriptionPlan === 'PREMIUM' ? 'Acesso total liberado' : 'Acesso gratuito'}
+                    </p>
+                  </div>
                 </div>
               </div>
             </Card>
-
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* XP Total Card */}
-              <Card className="flex flex-col justify-between" padding="normal">
-                <div className="flex items-center gap-3">
-                  <IconBox
-                    icon={<Zap className="h-5 w-5 animate-pulse" />}
-                    colorScheme="indigo"
-                    size="md"
-                    shape="square"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                      XP Total
-                    </p>
-                    <p className="font-bold text-slate-700 text-sm">
-                      {totalXP} XP
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <ProgressBar
-                    progress={totalXP % 100}
-                    colorScheme="indigo"
-                    size="md"
-                  />
-                  <p className="text-[10px] text-slate-400 mt-1">
-                    Faltam {xpNeededForNextLevel} XP para o Nível{' '}
-                    {currentLevel + 1}
-                  </p>
-                </div>
-              </Card>
-
-              {/* Accuracy Card */}
-              <Card className="flex flex-col justify-between" padding="normal">
-                <div className="flex items-center gap-3">
-                  <IconBox
-                    icon={<Award className="h-5 w-5" />}
-                    colorScheme="emerald"
-                    size="md"
-                    shape="square"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                      Aproveitamento
-                    </p>
-                    <p className="font-bold text-slate-700 text-sm">
-                      {accuracy}% de acertos
-                    </p>
-                  </div>
-                </div>
-                <div className="mt-3">
-                  <ProgressBar progress={accuracy} colorScheme="emerald" size="md" />
-                  <p className="text-[10px] text-slate-400 mt-1">
-                    Mapeado de todos os seus simulados
-                  </p>
-                </div>
-              </Card>
-
-              <Card className="flex flex-col justify-between" padding="normal">
-                <div>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                    Plano Atual
-                  </p>
-                  <p className="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-1.5 font-display uppercase">
-                    <Shield className="h-5 w-5 text-indigo-500" />
-                    {user?.subscriptionPlan || 'FREE'}
-                  </p>
-                </div>
-                <p className="text-[10px] text-slate-400 mt-2">
-                  {user?.subscriptionPlan === 'PREMIUM' ? 'Plano Premium' : 'Plano Gratuito'}
-                </p>
-              </Card>
-            </div>
 
             {/* Monthly Streak Calendar */}
             <Card padding="large">
