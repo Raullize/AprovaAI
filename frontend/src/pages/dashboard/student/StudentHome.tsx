@@ -101,7 +101,7 @@ export default function StudentHome() {
           ];
         })
     ).values()
-  ).slice(0, 2);
+  ).slice(0, 3);
 
   const getWeeklyActiveState = () => {
     const today = new Date();
@@ -156,7 +156,7 @@ export default function StudentHome() {
                 <p className="text-xs text-orange-700/80 font-bold uppercase tracking-wider">
                   Ofensiva
                 </p>
-                <p className="text-2xl font-black text-orange-950 font-display">
+                <p className="text-2xl font-black text-orange-950 font-display leading-tight">
                   {streakCount} {streakCount === 1 ? 'dia' : 'dias'}
                 </p>
               </div>
@@ -298,7 +298,7 @@ export default function StudentHome() {
               Continue de onde parou
             </h2>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
               {recentExams.map((exam) => {
                 const iconOpt = getIconOption(exam.iconKey);
                 const colorOpt = getColorOption(exam.colorScheme);
@@ -391,7 +391,7 @@ export default function StudentHome() {
             className="group text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-0.5 no-underline"
           >
             <span className="group-hover:underline underline-offset-4">
-              Ver todas
+              Ver mais
             </span>
             <span>&rarr;</span>
           </button>

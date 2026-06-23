@@ -1,22 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, Link } from 'react-router-dom';
 import {
-  Trophy,
   Zap,
   Shield,
-  Target,
-  Clock,
-  Compass,
   Settings as SettingsIcon,
   ArrowLeft,
-  Key,
   Trash2,
   Camera,
   Award,
   Eye,
   EyeOff,
   Flame,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 
 import { cn } from '../../../lib/utils';
@@ -27,34 +24,42 @@ import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
 import api from '../../../services/api';
-
-interface Achievement {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  isUnlocked: boolean;
-}
-
-interface LeaderboardUser {
-  rank: number;
-  fullName: string;
-  username: string;
-  xp: number;
-  isCurrentUser?: boolean;
-}
+import { achievements } from './achievementsData';
 
 export default function Profile() {
   const { user, signOut, refreshUser } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const roleLabel = user?.role === 'ADMIN' ? 'Administrador' : 'Estudante';
 
-  // Generate days for the current month calendar
-  const getMonthCalendar = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
+  // --- Navegação de meses ---
+  const todayRef = new Date();
+  const [selectedYear, setSelectedYear] = useState(todayRef.getFullYear());
+  const [selectedMonth, setSelectedMonth] = useState(todayRef.getMonth()); // 0-indexed
+
+  const isCurrentMonth =
+    selectedYear === todayRef.getFullYear() && selectedMonth === todayRef.getMonth();
+
+  const goToPreviousMonth = () => {
+    if (selectedMonth === 0) {
+      setSelectedMonth(11);
+      setSelectedYear((y) => y - 1);
+    } else {
+      setSelectedMonth((m) => m - 1);
+    }
+  };
+
+  const goToNextMonth = () => {
+    if (isCurrentMonth) return; // não navega além do mês atual
+    if (selectedMonth === 11) {
+      setSelectedMonth(0);
+      setSelectedYear((y) => y + 1);
+    } else {
+      setSelectedMonth((m) => m + 1);
+    }
+  };
+
+  // Gera estrutura do calendário para o mês selecionado
+  const getMonthCalendar = (year: number, month: number) => {
     const firstDay = new Date(year, month, 1);
     const startOffset = firstDay.getDay();
     const totalDays = new Date(year, month + 1, 0).getDate();
@@ -67,57 +72,58 @@ export default function Profile() {
       days.push({ dateNum: i });
     }
 
-    const monthName = now.toLocaleString('pt-BR', { month: 'long' });
-    const capitalizedMonth =
-      monthName.charAt(0).toUpperCase() + monthName.slice(1);
+    const date = new Date(year, month, 1);
+    const monthName = date.toLocaleString('pt-BR', { month: 'long' });
+    const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
 
-    return {
-      days,
-      monthName: capitalizedMonth,
-      currentDay: now.getDate(),
-    };
+    return { days, monthName: capitalizedMonth };
   };
 
-  const {
-    days: monthDays,
-    monthName: currentMonthName,
-    currentDay,
-  } = getMonthCalendar();
+  const { days: monthDays, monthName: currentMonthName } = getMonthCalendar(
+    selectedYear,
+    selectedMonth,
+  );
+  const currentDay = isCurrentMonth ? todayRef.getDate() : -1; // -1 = sem "dia atual" em meses passados
 
   const [activeDays, setActiveDays] = useState<number[]>([]);
   const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
-  const [leaderboard, setLeaderboard] = useState<LeaderboardUser[]>([]);
   const [history, setHistory] = useState<any[]>([]);
 
+  // Busca stats do mês selecionado sempre que o mês/ano mudar
   useEffect(() => {
-    async function loadStats() {
+    async function loadMonthStats() {
+      const monthParam = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
       try {
-        const [statsRes, lbRes, historyRes] = await Promise.all([
-          api.get('/student/dashboard-stats'),
-          api.get('/student/leaderboard'),
-          api.get('/simulations/history'),
-        ]);
+        const statsRes = await api.get(`/student/dashboard-stats?month=${monthParam}`);
         if (statsRes.data) {
           setActiveDays(statsRes.data.activeDays);
-          setStreakCount(statsRes.data.streakCount);
+          if (isCurrentMonth) {
+            setStreakCount(statsRes.data.streakCount);
+          }
         }
-        if (lbRes.data) {
-          setLeaderboard(lbRes.data);
-        }
+      } catch (err) {
+        console.error('Failed to load month stats:', err);
+      }
+    }
+    loadMonthStats();
+  }, [selectedYear, selectedMonth]);
+
+  // Carrega histórico apenas uma vez na montagem
+  useEffect(() => {
+    async function loadProfileData() {
+      try {
+        const historyRes = await api.get('/simulations/history');
         if (historyRes.data) {
           setHistory(historyRes.data);
         }
       } catch (err) {
-        console.error('Failed to load profile stats:', err);
+        console.error('Failed to load profile data:', err);
       }
     }
-    loadStats();
+    loadProfileData();
   }, []);
 
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<'achievements' | 'ranking'>(
-    'achievements',
-  );
   const [showSettings, setShowSettings] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -291,62 +297,7 @@ export default function Profile() {
 
   const passwordStrength = getPasswordStrength(newPassword);
 
-  const achievements: Achievement[] = [
-    {
-      id: 'a1',
-      title: 'Primeiros Passos',
-      description: 'Iniciou a primeira trilha de estudos',
-      icon: Trophy,
-      color: 'bg-amber-500 text-white',
-      isUnlocked: true,
-    },
-    {
-      id: 'a2',
-      title: 'Foco Total',
-      description: 'Estudou por 3 dias seguidos',
-      icon: Zap,
-      color: 'bg-indigo-500 text-white',
-      isUnlocked: true,
-    },
-    {
-      id: 'a3',
-      title: 'Mestre de Nuvem',
-      description: 'Resolva 100 questões de Nuvem',
-      icon: Shield,
-      color: 'bg-slate-300 text-slate-500',
-      isUnlocked: false,
-    },
-    {
-      id: 'a4',
-      title: 'Mira Certeira',
-      description: 'Acerte 10 questões seguidas',
-      icon: Target,
-      color: 'bg-slate-300 text-slate-500',
-      isUnlocked: false,
-    },
-    {
-      id: 'a5',
-      title: 'Maratonista',
-      description: 'Estude por mais de 5 horas',
-      icon: Clock,
-      color: 'bg-slate-300 text-slate-500',
-      isUnlocked: false,
-    },
-    {
-      id: 'a6',
-      title: 'Desbravador',
-      description: 'Conclua todos os tópicos de um exame',
-      icon: Compass,
-      color: 'bg-slate-300 text-slate-500',
-      isUnlocked: false,
-    },
-  ];
-
-  // Sort leaderboard by XP
-  const sortedLeaderboard = leaderboard.map((item) => ({
-    ...item,
-    isCurrentUser: item.username === user?.username,
-  }));
+  // Sem necessidade de definições estáticas locais ou variáveis auxiliares do ranking.
 
   return (
     <div className="min-h-screen bg-slate-50/50 px-4 py-8">
@@ -474,6 +425,7 @@ export default function Profile() {
 
             {/* Monthly Streak Calendar */}
             <Card padding="large">
+              {/* Header com navegação de meses */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center gap-3">
                   <IconBox
@@ -491,14 +443,40 @@ export default function Profile() {
                     </h3>
                     <p className="text-xs text-slate-400">
                       Você estudou{' '}
-                      {activeDays.filter((d) => d <= currentDay).length} dias em{' '}
-                      {currentMonthName}
+                      {isCurrentMonth
+                        ? activeDays.filter((d) => d <= currentDay).length
+                        : activeDays.length}{' '}
+                      dias em {currentMonthName}
                     </p>
                   </div>
                 </div>
-                <div className="flex sm:justify-end">
+
+                {/* Controles de navegação + badge de streak */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={goToPreviousMonth}
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all"
+                    title="Mês anterior"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+
+                  <span className="text-xs font-bold text-slate-600 min-w-[90px] text-center">
+                    {currentMonthName} {selectedYear}
+                  </span>
+
+                  <button
+                    onClick={goToNextMonth}
+                    disabled={isCurrentMonth}
+                    className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    title="Próximo mês"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+
                   <span className="text-xs font-bold text-orange-600 bg-orange-50 border border-orange-150 rounded-xl px-3 py-1.5 flex items-center gap-1">
-                    <Flame className="h-3.5 w-3.5 fill-current" />{streakCount} {streakCount === 1 ? 'dia de ofensiva' : 'dias de ofensiva'}
+                    <Flame className="h-3.5 w-3.5 fill-current" />
+                    {streakCount} {streakCount === 1 ? 'dia' : 'dias'}
                   </span>
                 </div>
               </div>
@@ -520,7 +498,7 @@ export default function Profile() {
                 {monthDays.map((day, idx) => {
                   if (!day) return <div key={idx} className="aspect-square" />;
                   const isActive = activeDays.includes(day.dateNum);
-                  const isCurrentDay = day.dateNum === currentDay;
+                  const isCurrentDay = day.dateNum === currentDay && isCurrentMonth;
                   return (
                     <div
                       key={idx}
@@ -533,7 +511,7 @@ export default function Profile() {
                           !isActive &&
                           'ring-2 ring-indigo-500 ring-offset-2',
                       )}
-                      title={`${day.dateNum} de ${currentMonthName}`}
+                      title={`${day.dateNum} de ${currentMonthName} de ${selectedYear}`}
                     >
                       {day.dateNum}
                       {isCurrentDay && isActive && (
@@ -545,157 +523,63 @@ export default function Profile() {
               </div>
             </Card>
 
-            {/* Tabs for Achievements and Ranking */}
-            <Card padding="none" className="overflow-hidden">
-              <div className="flex border-b border-slate-100 bg-slate-50/50 p-2 gap-1">
-                <button
-                  onClick={() => setActiveTab('achievements')}
-                  className={cn(
-                    'flex-1 py-3 px-4 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2',
-                    activeTab === 'achievements'
-                      ? 'bg-white text-indigo-600 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-white/40',
-                  )}
+            {/* Mural de Conquistas */}
+            <Card padding="large">
+              <div className="flex justify-between items-center mb-6">
+                <div className="flex items-center gap-2">
+                  <Award className="h-5 w-5 text-indigo-500" />
+                  <h3 className="font-bold text-slate-800 text-base font-display">
+                    Mural de Conquistas
+                  </h3>
+                </div>
+                <Link
+                  to="/dashboard/profile/achievements"
+                  className="group text-xs font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-0.5 no-underline"
                 >
-                  <Award className="h-4.5 w-4.5" />
-                  Mural de Conquistas
-                </button>
-                <button
-                  onClick={() => setActiveTab('ranking')}
-                  className={cn(
-                    'flex-1 py-3 px-4 rounded-2xl font-bold text-sm transition-all flex items-center justify-center gap-2',
-                    activeTab === 'ranking'
-                      ? 'bg-white text-indigo-600 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800 hover:bg-white/40',
-                  )}
-                >
-                  <Trophy className="h-4.5 w-4.5" />
-                  Ranking Global
-                </button>
+                  <span className="group-hover:underline underline-offset-4">
+                    Ver todas
+                  </span>
+                  <span>&rarr;</span>
+                </Link>
               </div>
 
-              <div className="p-6">
-                {activeTab === 'achievements' ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {achievements.map((item) => {
-                      const IconComp = item.icon;
-                      return (
-                        <div
-                          key={item.id}
-                          className={cn(
-                            'p-5 rounded-3xl border flex items-center gap-4 transition-all relative',
-                            item.isUnlocked
-                              ? 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md cursor-pointer'
-                              : 'bg-slate-50/50 border-slate-100 opacity-60',
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              'w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-sm',
-                              item.color,
-                            )}
-                          >
-                            <IconComp className="h-6 w-6" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="font-bold text-slate-800 text-sm leading-tight">
-                              {item.title}
-                            </p>
-                            <p className="text-[10px] text-slate-400 mt-1 leading-snug">
-                              {item.description}
-                            </p>
-                          </div>
-                          {!item.isUnlocked && (
-                            <span className="absolute top-3 right-3 text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-lg">
-                              Bloqueado
-                            </span>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  /* Ranking View (Replaced Emojis with Trophy Icons) */
-                  <div className="divide-y divide-slate-100">
-                    {sortedLeaderboard.map((item) => (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {achievements.slice(0, 3).map((item) => {
+                  const IconComp = item.icon;
+                  return (
+                    <div
+                      key={item.id}
+                      className={cn(
+                        'p-5 rounded-3xl border flex items-center gap-4 transition-all relative',
+                        item.isUnlocked
+                          ? 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md cursor-pointer'
+                          : 'bg-slate-50/50 border-slate-100 opacity-60',
+                      )}
+                    >
                       <div
-                        key={item.username}
                         className={cn(
-                          'flex items-center justify-between py-4 px-3 rounded-2xl transition-colors',
-                          item.isCurrentUser
-                            ? 'bg-indigo-50/50 border border-indigo-100/50'
-                            : 'hover:bg-slate-50',
+                          'w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-sm',
+                          item.color,
                         )}
                       >
-                        <div className="flex items-center gap-4">
-                          {/* Rank indicator using Trophy icons instead of Emojis */}
-                          <span
-                            className={cn(
-                              'w-8 h-8 rounded-full flex items-center justify-center font-bold font-display text-sm shrink-0',
-                              item.rank === 1
-                                ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-300/50'
-                                : item.rank === 2
-                                  ? 'bg-slate-100 text-slate-700 ring-2 ring-slate-300/50'
-                                  : item.rank === 3
-                                    ? 'bg-orange-100 text-orange-850 ring-2 ring-orange-300/50'
-                                    : 'text-slate-400',
-                            )}
-                          >
-                            {item.rank === 1 ? (
-                              <Trophy className="h-4.5 w-4.5 text-amber-500 fill-amber-500" />
-                            ) : item.rank === 2 ? (
-                              <Trophy className="h-4.5 w-4.5 text-slate-400 fill-slate-400" />
-                            ) : item.rank === 3 ? (
-                              <Trophy className="h-4.5 w-4.5 text-amber-700 fill-amber-700" />
-                            ) : (
-                              item.rank
-                            )}
-                          </span>
-
-                          {/* Avatar component */}
-                          <UserAvatar
-                            size="xs"
-                            userOverride={
-                              item.isCurrentUser
-                                ? undefined
-                                : {
-                                    fullName: item.fullName,
-                                    username: item.username,
-                                  }
-                            }
-                          />
-
-                          <div>
-                            <span
-                              className={cn(
-                                'font-bold text-sm block',
-                                item.isCurrentUser
-                                  ? 'text-indigo-900'
-                                  : 'text-slate-700',
-                              )}
-                            >
-                              {item.fullName} {item.isCurrentUser && '(Você)'}
-                            </span>
-                            <span className="text-slate-400 text-xs">
-                              @{item.username}
-                            </span>
-                          </div>
-                        </div>
-
-                        <span
-                          className={cn(
-                            'font-bold font-display text-sm shrink-0',
-                            item.isCurrentUser
-                              ? 'text-indigo-600'
-                              : 'text-slate-600',
-                          )}
-                        >
-                          {item.xp} XP
-                        </span>
+                        <IconComp className="h-6 w-6" />
                       </div>
-                    ))}
-                  </div>
-                )}
+                      <div className="min-w-0">
+                        <p className="font-bold text-slate-800 text-sm leading-tight">
+                          {item.title}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-1 leading-snug">
+                          {item.description}
+                        </p>
+                      </div>
+                      {!item.isUnlocked && (
+                        <span className="absolute top-3 right-3 text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-lg">
+                          Bloqueado
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </Card>
           </>
@@ -779,6 +663,7 @@ export default function Profile() {
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
+                      placeholder="Seu nome completo"
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm font-medium"
                     />
                   </div>
@@ -791,6 +676,7 @@ export default function Profile() {
                       type="text"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Nome de usuário único"
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm font-medium"
                     />
                   </div>
@@ -804,6 +690,7 @@ export default function Profile() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    placeholder="seu.email@exemplo.com"
                     className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm font-medium"
                   />
                 </div>
@@ -822,8 +709,7 @@ export default function Profile() {
 
             {/* Change Password Panel */}
             <Card padding="large">
-              <h3 className="font-bold text-slate-850 text-base mb-4 font-display flex items-center gap-2">
-                <Key className="h-5 w-5 text-indigo-500" />
+              <h3 className="font-bold text-slate-850 text-base mb-4 font-display">
                 Alterar Senha
               </h3>
               <form onSubmit={handleChangePassword} className="space-y-4">
@@ -836,6 +722,7 @@ export default function Profile() {
                       type={showCurrentPassword ? 'text' : 'password'}
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
+                      placeholder="••••••••"
                       className="w-full pl-4 pr-11 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm"
                     />
                     <button
@@ -864,6 +751,7 @@ export default function Profile() {
                         type={showNewPassword ? 'text' : 'password'}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="••••••••"
                         className="w-full pl-4 pr-11 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm"
                       />
                       <button
@@ -915,6 +803,7 @@ export default function Profile() {
                         type={showConfirmPassword ? 'text' : 'password'}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="••••••••"
                         className="w-full pl-4 pr-11 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm"
                       />
                       <button

@@ -19,6 +19,8 @@ const routeLabels: Record<string, string> = {
   '/dashboard/users': 'Usuários',
   '/dashboard/settings': 'Configurações',
   '/dashboard/profile': 'Perfil',
+  '/dashboard/profile/achievements': 'Minhas Conquistas',
+  '/dashboard/leaderboard': 'Ranking Global',
 };
 
 function getPageTitle(pathname: string): string {
@@ -105,7 +107,10 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
         {user?.role !== 'ADMIN' ? (
           <>
             {/* Streak */}
-            <div className="flex items-center gap-1.5 sm:gap-2 bg-orange-50 border border-orange-200 rounded-xl sm:rounded-2xl px-2 sm:px-3 py-1 sm:py-1.5">
+            <div
+              className="flex items-center gap-1.5 sm:gap-2 bg-orange-50 border border-orange-200 rounded-xl sm:rounded-2xl px-2 sm:px-3 py-1 sm:py-1.5 cursor-help"
+              title={`Ofensiva atual: ${streakCount} ${streakCount === 1 ? 'dia' : 'dias'}. Recorde histórico: ${user?.bestStreak || 0} ${user?.bestStreak === 1 ? 'dia' : 'dias'}.`}
+            >
               <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 fill-orange-400" />
               <span className="text-xs sm:text-sm font-bold text-orange-600">
                 {streakCount}
@@ -154,9 +159,11 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
         <div className="relative flex items-center gap-2.5" ref={dropdownRef}>
           <div className="hidden md:flex flex-col items-end text-right text-slate-700">
             <span className="text-sm font-semibold leading-tight">
-              {user?.username || user?.fullName || 'Estudante'}
+              {user?.fullName || user?.username || 'Estudante'}
             </span>
-            <span className="text-xs text-slate-400">{user?.email}</span>
+            <span className="text-xs text-slate-400 leading-tight">
+              @{user?.username}
+            </span>
           </div>
 
           <button

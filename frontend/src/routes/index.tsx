@@ -17,7 +17,9 @@ import ExamTrail from '../pages/dashboard/student/ExamTrail';
 import SimulationEngine from '../pages/dashboard/student/SimulationEngine';
 import SimulationResults from '../pages/dashboard/student/SimulationResults';
 import Profile from '../pages/dashboard/student/Profile';
+import Achievements from '../pages/dashboard/student/Achievements';
 import SimulationsHistory from '../pages/dashboard/student/SimulationsHistory';
+import Leaderboard from '../pages/dashboard/student/Leaderboard';
 
 const DashboardIndex = () => {
   const { user } = useAuth();
@@ -88,6 +90,8 @@ export function AppRoutes() {
         <Route path="simulations/results" element={<SimulationResults />} />
 
         <Route path="profile" element={<Profile />} />
+        <Route path="profile/achievements" element={<Achievements />} />
+        <Route path="leaderboard" element={<Leaderboard />} />
         <Route
           path="users"
           element={
