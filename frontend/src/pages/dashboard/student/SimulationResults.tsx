@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { Card } from '../../../components/ui/Card';
+import api from '../../../services/api';
 
 // --- Types ---
 interface AnswerRecord {
@@ -33,18 +34,6 @@ interface ResultsState {
   levelName: string;
   stars?: number;
 }
-
-// --- Default fallback mock (accessed directly, no navigation state) ---
-const FALLBACK: ResultsState = {
-  answers: [],
-  total: 5,
-  correct: 4,
-  timeSpent: 312,
-  xpEarned: 48,
-  passingPercentage: 70,
-  levelName: 'Organização do Estado',
-  stars: 2,
-};
 
 // --- Utility ---
 function formatTime(seconds: number) {
@@ -77,6 +66,10 @@ function useCountUp(target: number, duration = 1200) {
   return count;
 }
 
+function getOptionLabel(index: number) {
+  return ['A', 'B', 'C', 'D', 'E'][index] ?? String(index + 1);
+}
+
 // --- Star display ---
 
 // Confetti colors (CSS-only burst) - generated once statically to remain pure
@@ -101,74 +94,94 @@ interface ReviewQuestion {
   options: ReviewOption[];
 }
 
-const QUESTIONS_LOOKUP: Record<string, ReviewQuestion> = {
-  q1: {
-    id: 'q1',
-    text: 'Qual serviço da AWS fornece uma rede virtual dedicada para a sua conta da AWS?',
-    explanation:
-      'O Amazon Virtual Private Cloud (Amazon VPC) permite provisionar uma seção isolada logicamente da Nuvem AWS onde você pode iniciar recursos da AWS em uma rede virtual definida por você.',
-    options: [
-      { id: 'a', text: 'Amazon VPC', isCorrect: true },
-      { id: 'b', text: 'Amazon EC2', isCorrect: false },
-      { id: 'c', text: 'Amazon Route 53', isCorrect: false },
-      { id: 'd', text: 'AWS Direct Connect', isCorrect: false },
-    ],
-  },
-  q2: {
-    id: 'q2',
-    text: 'No modelo de responsabilidade compartilhada da AWS, o que é de responsabilidade da AWS?',
-    explanation:
-      'A AWS é responsável pela "segurança da nuvem", o que inclui a infraestrutura global (hardware, software, redes e instalações) que executa os serviços.',
-    options: [
-      { id: 'a', text: 'Configuração de Security Groups', isCorrect: false },
-      { id: 'b', text: 'Criptografia de dados de clientes', isCorrect: false },
-      { id: 'c', text: 'Segurança da infraestrutura física', isCorrect: true },
-      { id: 'd', text: 'Gerenciamento de usuários do IAM', isCorrect: false },
-    ],
-  },
-  q3: {
-    id: 'q3',
-    text: 'Qual serviço de banco de dados da AWS é totalmente gerenciado e focado em banco de dados relacional (SQL)?',
-    explanation:
-      'O Amazon Relational Database Service (Amazon RDS) facilita a configuração, operação e escalabilidade de um banco de dados relacional na nuvem.',
-    options: [
-      { id: 'a', text: 'Amazon DynamoDB', isCorrect: false },
-      { id: 'b', text: 'Amazon RDS', isCorrect: true },
-      { id: 'c', text: 'Amazon Redshift', isCorrect: false },
-      { id: 'd', text: 'Amazon ElastiCache', isCorrect: false },
-    ],
-  },
-  q4: {
-    id: 'q4',
-    text: 'Qual serviço AWS é ideal para armazenar objetos de forma altamente durável, como backups e arquivos estáticos (imagens/vídeos)?',
-    explanation:
-      'O Amazon S3 (Simple Storage Service) é um serviço de armazenamento de objetos líder no mercado, oferecendo escalabilidade e durabilidade.',
-    options: [
-      { id: 'a', text: 'Amazon EBS', isCorrect: false },
-      { id: 'b', text: 'Amazon S3', isCorrect: true },
-      { id: 'c', text: 'Amazon EFS', isCorrect: false },
-      { id: 'd', text: 'Amazon Inspector', isCorrect: false },
-    ],
-  },
-  q5: {
-    id: 'q5',
-    text: 'Qual serviço oferece computação serverless que permite executar código sem provisionar ou gerenciar servidores?',
-    explanation:
-      'O AWS Lambda é um serviço de computação serverless e orientado a eventos que permite executar código em resposta a triggers.',
-    options: [
-      { id: 'a', text: 'Amazon EC2', isCorrect: false },
-      { id: 'b', text: 'Amazon ECS', isCorrect: false },
-      { id: 'c', text: 'AWS Beanstalk', isCorrect: false },
-      { id: 'd', text: 'AWS Lambda', isCorrect: true },
-    ],
-  },
-};
-
 // --- Main Component ---
 export default function SimulationResults() {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = (location.state as ResultsState) || FALLBACK;
+  const state = location.state as ResultsState | null;
+  const [resolvedQuestions, setResolvedQuestions] = useState<ReviewQuestion[]>(
+    state?.questions ?? [],
+  );
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+
+  useEffect(() => {
+    if (state?.questions?.length) {
+      setResolvedQuestions(state.questions);
+    }
+  }, [state?.questions]);
+
+  useEffect(() => {
+    if (!state || state.questions?.length || !state.answers?.length) return;
+    const answersToResolve = state.answers;
+
+    async function loadQuestionsForReview() {
+      try {
+        setIsLoadingQuestions(true);
+        const uniqueQuestionIds = Array.from(
+          new Set(answersToResolve.map((answer) => answer.questionId)),
+        );
+
+        const responses = await Promise.all(
+          uniqueQuestionIds.map((questionId) => api.get(`/questions/${questionId}`)),
+        );
+
+        const mappedQuestions = responses.map((response) => ({
+          id: response.data.id,
+          text: response.data.content,
+          explanation:
+            response.data.explanation || 'Sem explicação disponível.',
+          options: [...(response.data.options ?? [])]
+            .sort(
+              (a: { order?: number }, b: { order?: number }) =>
+                (a.order ?? 0) - (b.order ?? 0),
+            )
+            .map(
+              (option: { id: string; text: string; isCorrect: boolean }) => ({
+                id: option.id,
+                text: option.text,
+                isCorrect: option.isCorrect,
+              }),
+            ),
+        }));
+
+        setResolvedQuestions(mappedQuestions);
+      } catch (error) {
+        console.error('Failed to load review questions:', error);
+        setResolvedQuestions([]);
+      } finally {
+        setIsLoadingQuestions(false);
+      }
+    }
+
+    loadQuestionsForReview();
+  }, [state]);
+
+  if (!state) {
+    return (
+      <div className="min-h-screen bg-slate-50 px-4 py-10">
+        <div className="max-w-md mx-auto">
+          <Card padding="normal" className="text-center space-y-4">
+            <Trophy className="h-10 w-10 text-slate-300 mx-auto" />
+            <div>
+              <h1 className="text-lg font-bold text-slate-800">
+                Resultado indisponivel
+              </h1>
+              <p className="text-sm text-slate-500 mt-2">
+                Abra este resultado a partir de um simulado finalizado ou pelo
+                historico para carregar os dados corretos.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/dashboard/simulations')}
+              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-colors"
+            >
+              Ir para historico
+            </button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   const { total, correct, timeSpent, xpEarned, passingPercentage, levelName, stars: stateStars } =
     state;
@@ -201,35 +214,7 @@ export default function SimulationResults() {
   const [filter, setFilter] = useState<'ALL' | 'CORRECT' | 'INCORRECT'>('ALL');
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Generate mock answers if history doesn't provide them
-  const answers = useMemo(() => {
-    if (state.answers && state.answers.length > 0) {
-      return state.answers;
-    }
-
-    const t = state.total || 5;
-    const c = state.correct || 0;
-    const generated: AnswerRecord[] = [];
-    const questionKeys = Object.keys(QUESTIONS_LOOKUP);
-
-    for (let i = 0; i < t; i++) {
-      const qKey = questionKeys[i % questionKeys.length];
-      const isCorrect = i < c;
-      const q = QUESTIONS_LOOKUP[qKey];
-
-      const correctOption = q.options.find((o) => o.isCorrect);
-      const wrongOption = q.options.find((o) => !o.isCorrect);
-
-      generated.push({
-        questionId: q.id,
-        selectedId: isCorrect
-          ? correctOption?.id || 'a'
-          : wrongOption?.id || 'b',
-        correct: isCorrect,
-      });
-    }
-    return generated;
-  }, [state.answers, state.total, state.correct]);
+  const answers = useMemo(() => state.answers ?? [], [state.answers]);
 
   const indexedAnswers = useMemo(
     () =>
@@ -525,13 +510,21 @@ export default function SimulationResults() {
                     const ans = filteredAnswers[activeIndex];
                     if (!ans) return null;
                     const displayIndex = ans.originalIndex;
-                    const q =
-                      state.questions?.find(
-                        (question) => question.id === ans.questionId,
-                      ) ||
-                      QUESTIONS_LOOKUP[ans.questionId] ||
-                      QUESTIONS_LOOKUP['q' + ((displayIndex % 5) + 1)];
-                    if (!q) return null;
+                    const q = resolvedQuestions.find(
+                      (question) => question.id === ans.questionId,
+                    );
+                    if (!q) {
+                      return (
+                        <Card
+                          padding="normal"
+                          className="text-center text-sm text-slate-500"
+                        >
+                          {isLoadingQuestions
+                            ? 'Carregando dados da questao...'
+                            : 'Nao foi possivel carregar os detalhes desta questao.'}
+                        </Card>
+                      );
+                    }
 
                     return (
                       <Card
@@ -557,7 +550,7 @@ export default function SimulationResults() {
 
                         {/* Options List */}
                         <div className="space-y-2 pl-8">
-                          {q.options.map((opt: ReviewOption) => {
+                          {q.options.map((opt: ReviewOption, optionIndex: number) => {
                             const isSelected = opt.id === ans.selectedId;
                             const isCorrect = opt.isCorrect;
 
@@ -580,7 +573,7 @@ export default function SimulationResults() {
                                 )}
                               >
                                 <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0 border border-current">
-                                  {opt.id}
+                                  {getOptionLabel(optionIndex)}
                                 </span>
                                 <span>{opt.text}</span>
                               </div>

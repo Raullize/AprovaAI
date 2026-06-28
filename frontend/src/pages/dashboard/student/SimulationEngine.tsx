@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { X, Clock, CheckCircle2, XCircle, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
@@ -15,6 +15,7 @@ interface Option {
   id: string;
   text: string;
   isCorrect: boolean;
+  order: number;
 }
 
 interface Question {
@@ -22,6 +23,7 @@ interface Question {
   text: string;
   options: Option[];
   explanation: string;
+  order: number;
 }
 
 // --- Mock Data ---
@@ -91,6 +93,29 @@ export default function SimulationEngine() {
   const [wrongMsg] = useState(
     () => WRONG_MESSAGES[Math.floor(Math.random() * WRONG_MESSAGES.length)],
   );
+  const pendingSaveRequestsRef = useRef<Promise<unknown>[]>([]);
+
+  const trackPendingSave = useCallback(<T,>(request: Promise<T>) => {
+    pendingSaveRequestsRef.current = [...pendingSaveRequestsRef.current, request];
+
+    request.finally(() => {
+      pendingSaveRequestsRef.current = pendingSaveRequestsRef.current.filter(
+        (pendingRequest) => pendingRequest !== request,
+      );
+    });
+
+    return request;
+  }, []);
+
+  const waitForPendingSaves = useCallback(async () => {
+    const pendingRequests = [...pendingSaveRequestsRef.current];
+
+    if (pendingRequests.length === 0) {
+      return;
+    }
+
+    await Promise.allSettled(pendingRequests);
+  }, []);
 
   useEffect(() => {
     async function loadSimulation() {
@@ -108,12 +133,14 @@ export default function SimulationEngine() {
           id: q.id,
           text: q.content,
           explanation: q.explanation || 'Sem explicação disponível.',
+          order: q.order,
           options: q.options.map((o: any) => ({
             id: o.id,
             text: o.text,
             isCorrect: o.isCorrect,
-          })).sort((a: any, b: any) => a.order - b.order),
-        })).sort((a: any, b: any) => a.order - b.order);
+            order: o.order,
+          })).sort((a: Option, b: Option) => a.order - b.order),
+        })).sort((a: Question, b: Question) => a.order - b.order);
 
         setQuestions(mappedQuestions);
 
@@ -151,35 +178,43 @@ export default function SimulationEngine() {
     isFlagged: boolean,
   ) => {
     if (!simulationId) return;
-    try {
-      await api.post(`/simulations/${simulationId}/answers`, {
+
+    const request = api
+      .post(`/simulations/${simulationId}/answers`, {
         questionId,
         selectedOptions: selectedOptionId ? [selectedOptionId] : [],
         timeSpent: 0,
         isFlaggedForReview: isFlagged,
+      })
+      .catch((err) => {
+        console.error('Failed to save answer:', err);
       });
-    } catch (err) {
-      console.error('Failed to save answer:', err);
-    }
+
+    await trackPendingSave(request);
   };
 
   const handleFinish = useCallback(async () => {
     if (!simulationId) return;
     try {
       setIsLoading(true);
+      await waitForPendingSaves();
       const finishRes = await api.post(`/simulations/${simulationId}/finish`, {
         timeSpent: mode === 'EXAM' ? (level?.timeLimit || MOCK_TIME_LIMIT) - timeLeft : 0,
       });
       const { examResult, xpGained } = finishRes.data;
+      const resolvedAnswers =
+        examResult.answers && examResult.answers.length > 0
+          ? examResult.answers.map((ans: any) => ({
+              questionId: ans.questionId,
+              selectedId: ans.selectedOptions[0] || '',
+              correct: ans.isCorrect ?? false,
+            }))
+          : answers;
       await refreshUser();
 
       navigate('/dashboard/simulations/results', {
         state: {
-          answers: examResult.answers.map((ans: any) => ({
-            questionId: ans.questionId,
-            selectedId: ans.selectedOptions[0] || '',
-            correct: ans.isCorrect ?? false,
-          })),
+          answers: resolvedAnswers,
           questions,
           total: examResult.totalQuestions,
           correct: examResult.score,
@@ -195,7 +230,19 @@ export default function SimulationEngine() {
     } finally {
       setIsLoading(false);
     }
-  }, [simulationId, mode, level?.timeLimit, timeLeft, refreshUser, navigate, level?.passingPercentage, level?.name]);
+  }, [
+    simulationId,
+    mode,
+    level?.timeLimit,
+    timeLeft,
+    refreshUser,
+    navigate,
+    level?.passingPercentage,
+    level?.name,
+    waitForPendingSaves,
+    answers,
+    questions,
+  ]);
 
   // Timer for EXAM mode
   useEffect(() => {
