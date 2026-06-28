@@ -193,15 +193,15 @@ const LevelNodeTimeline = ({
       {/* Desktop Rich Card (Left or Right) */}
       <div
         className={cn(
-          'hidden lg:block absolute w-[calc(50%-5rem)] xl:w-[calc(50%-6rem)] group transition-all duration-300',
+          'hidden lg:block absolute z-30 w-[calc(50%-7rem)] xl:w-[calc(50%-8rem)] group transition-all duration-300',
           side === 'left'
-            ? 'right-1/2 mr-10 xl:mr-14 text-right'
-            : 'left-1/2 ml-10 xl:ml-14 text-left',
+            ? 'right-1/2 mr-16 xl:mr-20 text-right'
+            : 'left-1/2 ml-16 xl:ml-20 text-left',
         )}
       >
         <div
           className={cn(
-            'p-6 rounded-3xl shadow-sm border transition-all duration-300',
+            'p-4 lg:p-5 rounded-3xl shadow-sm border transition-all duration-300',
             isCurrent
               ? cn(theme.bgLight, theme.borderLight, 'shadow-md scale-105')
               : 'bg-white border-slate-200 hover:shadow-md',
@@ -309,7 +309,7 @@ const LevelNodeTimeline = ({
       </div>
 
       {/* The Central Node */}
-      <div className="relative z-20">
+      <div className="relative z-40">
         {isCompleted && (
           <button
             onClick={() => onStart(level, topic)}
@@ -331,7 +331,7 @@ const LevelNodeTimeline = ({
           <div className="relative flex flex-col items-center gap-3">
             <div
               className={cn(
-                'absolute inset-0 rounded-full animate-ping scale-[1.3] lg:scale-150 opacity-30',
+                'absolute inset-0 rounded-full animate-ping scale-[1.3] lg:scale-150 opacity-30 pointer-events-none',
                 colorOpt.bg,
               )}
             />
@@ -382,8 +382,8 @@ const LevelNodeTimeline = ({
 const ComingSoonNodeTimeline = () => {
   return (
     <div className="relative flex justify-center items-center w-full min-h-[140px] lg:min-h-[180px] py-4">
-      <div className="hidden lg:block absolute left-1/2 ml-10 xl:ml-14 w-[calc(50%-5rem)] xl:w-[calc(50%-6rem)]">
-        <div className="p-6 rounded-3xl border border-dashed border-slate-300 bg-slate-100/80 shadow-sm opacity-80">
+      <div className="hidden lg:block absolute left-1/2 ml-16 xl:ml-20 w-[calc(50%-7rem)] xl:w-[calc(50%-8rem)]">
+        <div className="p-4 lg:p-5 rounded-3xl border border-dashed border-slate-300 bg-slate-100/80 shadow-sm opacity-80">
           <div className="flex flex-col gap-2">
             <h3 className="text-xl font-bold font-display text-slate-600">
               Em breve
