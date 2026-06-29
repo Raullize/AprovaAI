@@ -43,6 +43,11 @@ export const questionsService = {
     return response.data;
   },
 
+  findOne: async (id: string) => {
+    const response = await api.get<Question>(`/questions/${id}`);
+    return response.data;
+  },
+
   create: async (data: CreateQuestionDTO) => {
     const response = await api.post<Question>('/questions', data);
     return response.data;
