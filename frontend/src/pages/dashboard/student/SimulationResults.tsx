@@ -94,7 +94,6 @@ interface ReviewQuestion {
   options: ReviewOption[];
 }
 
-
 export default function SimulationResults() {
   const location = useLocation();
   const navigate = useNavigate();

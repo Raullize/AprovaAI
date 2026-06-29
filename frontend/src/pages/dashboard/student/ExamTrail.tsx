@@ -139,7 +139,6 @@ export default function ExamTrail() {
     }
   }, [examId]);
 
-  // Ensure scroll top on topic change in desktop
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [expandedTopic]);

@@ -21,13 +21,11 @@ export default function ProfileSettings() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Form states for settings
   const [fullName, setFullName] = useState(user?.fullName || '');
   const [email, setEmail] = useState(user?.email || '');
   const [username, setUsername] = useState(user?.username || '');
   const [isSaving, setIsSaving] = useState(false);
 
-  // Avatar existence state
   const [hasAvatar, setHasAvatar] = useState(() => {
     if (user?.id) {
       return !!localStorage.getItem(`@aprovaai:avatarUrl:${user.id}`);
@@ -35,21 +33,15 @@ export default function ProfileSettings() {
     return false;
   });
 
-  // Password states
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  // Password visibility toggles
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-
-  // Delete account modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
-  // Handle avatar upload
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
   };

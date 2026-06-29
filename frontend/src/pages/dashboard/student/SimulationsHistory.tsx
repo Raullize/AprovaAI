@@ -149,7 +149,7 @@ function calculateHistoryXp(items: Omit<HistoryItem, 'xpEarned'>[]): HistoryItem
       const currentMultiplier = getXpMultiplier(currentStars);
       const xpEarned = Math.round(
         Math.max(0, currentMultiplier - previousMultiplier) *
-          attempt.levelXpReward,
+        attempt.levelXpReward,
       );
 
       xpByAttemptId.set(attempt.id, xpEarned);
@@ -167,16 +167,10 @@ export default function SimulationsHistory() {
   const navigate = useNavigate();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Detail view state
   const [selectedExamName, setSelectedExamName] = useState<string | null>(null);
-
-  // Filters for Main Selection View
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [searchExams, setSearchExams] = useState('');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
-
-  // Filters for Detailed view state
   const [search, setSearch] = useState('');
   const [modeFilter, setModeFilter] = useState<'ALL' | 'PRACTICE' | 'EXAM'>(
     'ALL',
@@ -270,22 +264,22 @@ export default function SimulationsHistory() {
   const selectedGroup = examGroups.find((g) => g.examName === selectedExamName);
   const detailItems = selectedGroup
     ? selectedGroup.items
-        .filter((item) => {
-          const matchesSearch = item.levelName
-            .toLowerCase()
-            .includes(search.toLowerCase());
-          const matchesMode = modeFilter === 'ALL' || item.mode === modeFilter;
-          const matchesStatus =
-            statusFilter === 'ALL' ||
-            (statusFilter === 'PASSED' && item.passed) ||
-            (statusFilter === 'FAILED' && !item.passed);
-          return matchesSearch && matchesMode && matchesStatus;
-        })
-        .sort((a, b) => {
-          const dateA = new Date(a.createdAt).getTime();
-          const dateB = new Date(b.createdAt).getTime();
-          return sortOrder === 'NEWEST' ? dateB - dateA : dateA - dateB;
-        })
+      .filter((item) => {
+        const matchesSearch = item.levelName
+          .toLowerCase()
+          .includes(search.toLowerCase());
+        const matchesMode = modeFilter === 'ALL' || item.mode === modeFilter;
+        const matchesStatus =
+          statusFilter === 'ALL' ||
+          (statusFilter === 'PASSED' && item.passed) ||
+          (statusFilter === 'FAILED' && !item.passed);
+        return matchesSearch && matchesMode && matchesStatus;
+      })
+      .sort((a, b) => {
+        const dateA = new Date(a.createdAt).getTime();
+        const dateB = new Date(b.createdAt).getTime();
+        return sortOrder === 'NEWEST' ? dateB - dateA : dateA - dateB;
+      })
     : [];
 
   const formatDuration = (sec: number) => {
