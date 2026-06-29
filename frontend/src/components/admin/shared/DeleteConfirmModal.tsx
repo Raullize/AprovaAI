@@ -9,7 +9,7 @@ interface DeleteConfirmModalProps {
   onClose: () => void;
   onConfirm: () => Promise<void>;
   entityName: string;
-  entityLabel: string; // ex: 'o exame', 'o tópico', 'a questão'
+  entityLabel: string;
 }
 
 export function DeleteConfirmModal({

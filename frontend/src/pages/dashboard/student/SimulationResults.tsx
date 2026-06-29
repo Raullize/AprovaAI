@@ -16,7 +16,7 @@ import { cn } from '../../../lib/utils';
 import { Card } from '../../../components/ui/Card';
 import { questionsService } from '../../../services/questions.service';
 
-// --- Types ---
+
 interface AnswerRecord {
   questionId: string;
   selectedId: string;
@@ -35,7 +35,7 @@ interface ResultsState {
   stars?: number;
 }
 
-// --- Utility ---
+
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
@@ -43,7 +43,7 @@ function formatTime(seconds: number) {
   return `${m}m ${s}s`;
 }
 
-// --- Animated counter hook ---
+
 function useCountUp(target: number, duration = 1200) {
   const [count, setCount] = useState(0);
   useEffect(() => {
@@ -70,7 +70,7 @@ function getOptionLabel(index: number) {
   return ['A', 'B', 'C', 'D', 'E'][index] ?? String(index + 1);
 }
 
-// --- Star display ---
+
 
 // Confetti colors (CSS-only burst) - generated once statically to remain pure
 const STATIC_CONFETTI_ITEMS = Array.from({ length: 20 }).map((_, i) => ({
@@ -94,7 +94,7 @@ interface ReviewQuestion {
   options: ReviewOption[];
 }
 
-// --- Main Component ---
+
 export default function SimulationResults() {
   const location = useLocation();
   const navigate = useNavigate();

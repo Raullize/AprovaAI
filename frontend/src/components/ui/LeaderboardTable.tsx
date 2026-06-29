@@ -7,8 +7,8 @@ export interface LeaderboardRowData {
   rank: number;
   fullName: string;
   username: string;
-  value: number; // XP or bestStreak
-  subValue?: number; // streakCount for streak ranking
+  value: number;
+  subValue?: number;
 }
 
 interface LeaderboardTableProps {
@@ -79,9 +79,9 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                         isCurrentUser
                           ? undefined
                           : {
-                              fullName: row.fullName,
-                              username: row.username,
-                            }
+                            fullName: row.fullName,
+                            username: row.username,
+                          }
                       }
                     />
                     <div>

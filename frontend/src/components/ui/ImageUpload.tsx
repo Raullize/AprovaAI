@@ -43,7 +43,6 @@ export default function ImageUpload({
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files[0]) handleFile(files[0]);
-    // Reset input so the same file can be re-selected
     e.target.value = '';
   };
 
@@ -135,11 +134,10 @@ export default function ImageUpload({
 
   return (
     <div
-      className={`relative border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer ${
-        dragActive
+      className={`relative border-2 border-dashed rounded-lg p-6 transition-colors cursor-pointer ${dragActive
           ? 'border-primary-500 bg-primary-50'
           : 'border-gray-300 hover:border-gray-400 bg-white'
-      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
       onDragEnter={handleDrag}
       onDragLeave={handleDrag}
       onDragOver={handleDrag}

@@ -3,7 +3,6 @@ import { Clock, Flag } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import type { SimulationMode } from '../../types/simulation.types';
 
-// We can define the interfaces locally or import them
 export interface Option {
   id: string;
   text: string;

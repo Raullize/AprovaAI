@@ -89,7 +89,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem('@aprovaai:user', JSON.stringify(user));
 
     setUser(user);
-    // Refresh to get up-to-date stats
     await refreshUser();
   }
 
@@ -107,7 +106,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     localStorage.setItem('@aprovaai:user', JSON.stringify(user));
 
     setUser(user);
-    // Refresh to get up-to-date stats
     await refreshUser();
   }
 
@@ -126,7 +124,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   return useContext(AuthContext);
 }

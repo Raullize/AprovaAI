@@ -140,7 +140,6 @@ export function QuestionFormModal({
 
     setSaving(true);
     try {
-      // Clean up old image if changed
       if (
         question?.imageUrl &&
         question.imageUrl !== form.imageUrl &&
@@ -243,9 +242,8 @@ export function QuestionFormModal({
             onChange={(e) => setField('content', e.target.value)}
             rows={4}
             disabled={saving}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none ${
-              errors.content ? 'border-red-300 bg-red-50' : 'border-gray-300'
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none ${errors.content ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
             placeholder="Digite o enunciado da questão..."
           />
           {errors.content && (
@@ -291,9 +289,8 @@ export function QuestionFormModal({
             value={form.studyLink}
             onChange={(e) => setField('studyLink', e.target.value)}
             disabled={saving}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${
-              errors.studyLink ? 'border-red-300 bg-red-50' : 'border-gray-300'
-            }`}
+            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.studyLink ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              }`}
             placeholder="https://exemplo.com/material-de-estudo"
           />
           {errors.studyLink && (

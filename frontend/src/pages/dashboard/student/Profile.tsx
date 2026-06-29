@@ -25,7 +25,7 @@ export default function Profile() {
   const { user } = useAuth();
   const roleLabel = user?.role === 'ADMIN' ? 'Administrador' : 'Estudante';
 
-  // --- Navegação de meses ---
+
   const todayRef = new Date();
   const [selectedYear, setSelectedYear] = useState(todayRef.getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(todayRef.getMonth()); // 0-indexed
@@ -125,7 +125,7 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-slate-50/50 px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
+
         <div>
           <h1 className="text-2xl font-bold text-slate-800 font-display">
             Meu Perfil
@@ -135,7 +135,7 @@ export default function Profile() {
           </p>
         </div>
 
-        {/* User Profile Card */}
+
         <Card
           padding="large"
           className="flex flex-col sm:flex-row items-center gap-6 relative"
@@ -174,9 +174,9 @@ export default function Profile() {
           </div>
         </Card>
 
-        {/* Stats Grid */}
+
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {/* XP Total Card */}
+
           <Card className="flex flex-col justify-between" padding="normal">
             <div className="flex items-center gap-3">
               <IconBox
@@ -207,7 +207,7 @@ export default function Profile() {
             </div>
           </Card>
 
-          {/* Accuracy Card */}
+
           <Card className="flex flex-col justify-between" padding="normal">
             <div className="flex items-center gap-3">
               <IconBox
@@ -249,9 +249,9 @@ export default function Profile() {
           </Card>
         </div>
 
-        {/* Monthly Streak Calendar */}
+
         <Card padding="large">
-          {/* Header com navegação de meses */}
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
               <IconBox
@@ -277,7 +277,7 @@ export default function Profile() {
               </div>
             </div>
 
-            {/* Controles de navegação + badge de streak */}
+
             <div className="flex items-center gap-2">
               <button
                 onClick={goToPreviousMonth}
@@ -307,7 +307,7 @@ export default function Profile() {
             </div>
           </div>
 
-          {/* Calendar days of the week header */}
+
           <div className="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-400 mb-2">
             {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((d, idx) => (
               <div
@@ -319,7 +319,7 @@ export default function Profile() {
             ))}
           </div>
 
-          {/* Calendar grid slots */}
+
           <div className="grid grid-cols-7 gap-2">
             {monthDays.map((day, idx) => {
               if (!day) return <div key={idx} className="aspect-square" />;
@@ -349,7 +349,7 @@ export default function Profile() {
           </div>
         </Card>
 
-        {/* Mural de Conquistas */}
+
         <Card padding="large">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-2">

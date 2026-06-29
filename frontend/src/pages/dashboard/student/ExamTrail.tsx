@@ -2,9 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Zap,
-  Lock,
-  Star,
-  Trophy,
   ChevronRight,
   PlayCircle,
   ArrowLeft,
@@ -15,12 +12,10 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
-import type { SimulationMode } from '../../../types/simulation.types';
 import api from '../../../services/api';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
 import EmptyState from '../../../components/ui/EmptyState';
-import StarRating from '../../../components/ui/StarRating';
 import LevelNodeTimeline, { type LevelData, type TopicData } from '../../../components/trail/LevelNodeTimeline';
 
 const ComingSoonNodeTimeline = () => {
@@ -75,7 +70,6 @@ function formatDuration(seconds?: number | null) {
   return `${remainingSeconds}s`;
 }
 
-// --- Main Component ---
 export default function ExamTrail() {
   const { examId } = useParams<{ examId: string }>();
   const navigate = useNavigate();
@@ -154,7 +148,6 @@ export default function ExamTrail() {
     return <Loading />;
   }
 
-  // Build lock status map
   const allLevels = topics.flatMap((t) => t.levels);
   const levelStatusMap: Record<
     string,
@@ -222,17 +215,17 @@ export default function ExamTrail() {
   const instructions =
     pendingStart?.level.simulationMode === 'EXAM'
       ? [
-          'Leia cada questão com calma e confirme sua resposta quando estiver seguro.',
-          'O feedback aparece ao final do simulado, junto com seu resultado completo.',
-          pendingStart.level.timeLimit
-            ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
-            : 'Este exame não tem cronômetro, então você pode concluir no seu ritmo.',
-        ]
+        'Leia cada questão com calma e confirme sua resposta quando estiver seguro.',
+        'O feedback aparece ao final do simulado, junto com seu resultado completo.',
+        pendingStart.level.timeLimit
+          ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
+          : 'Este exame não tem cronômetro, então você pode concluir no seu ritmo.',
+      ]
       : [
-          'O modo treino mostra feedback imediato após cada resposta confirmada.',
-          'Use este nível para aprender com mais leveza e reforçar os pontos principais.',
-          'Ao concluir, seu desempenho atualiza XP, progresso e histórico normalmente.',
-        ];
+        'O modo treino mostra feedback imediato após cada resposta confirmada.',
+        'Use este nível para aprender com mais leveza e reforçar os pontos principais.',
+        'Ao concluir, seu desempenho atualiza XP, progresso e histórico normalmente.',
+      ];
 
   const handleStartLevel = (level: LevelData, topic: TopicData) => {
     setPendingStart({ level, topic });

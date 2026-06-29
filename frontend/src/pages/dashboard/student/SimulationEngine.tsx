@@ -11,7 +11,7 @@ import { useAuth } from '../../../context/AuthContext';
 import type { SimulationMode } from '../../../types/simulation.types';
 import SimulationSummary from '../../../components/simulation/SimulationSummary';
 
-// --- Types ---
+
 type FeedbackState = 'correct' | 'wrong' | null;
 
 export interface Option {
@@ -35,11 +35,11 @@ interface Level {
   passingPercentage: number;
 }
 
-// --- Fallback Data ---
+
 const DEFAULT_TIME_LIMIT = 10 * 60; // 10 min in seconds (EXAM mode)
 
 
-// --- Encouragement messages ---
+
 const CORRECT_MESSAGES = [
   { title: 'Excelente!', subtitle: 'Continue assim, você está arrasando!' },
   { title: 'Correto!', subtitle: 'Sua dedicação está fazendo a diferença.' },
@@ -62,7 +62,7 @@ const WRONG_MESSAGES = [
   },
 ];
 
-// --- Utility ---
+
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60)
     .toString()
@@ -71,7 +71,7 @@ function formatTime(seconds: number) {
   return `${m}:${s}`;
 }
 
-// --- Main Component ---
+
 export default function SimulationEngine() {
   const { levelId } = useParams<{ levelId: string }>();
   const navigate = useNavigate();
