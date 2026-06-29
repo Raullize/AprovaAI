@@ -16,7 +16,7 @@ import {
   registerSchema,
   type RegisterFormData,
 } from '../../validations/auth.schema';
-import { calculatePasswordStrength } from '../../utils/password';
+import { calculatePasswordStrength } from '../../utils/password.utils';
 
 export default function Register() {
   usePageTitle('Criar Conta');

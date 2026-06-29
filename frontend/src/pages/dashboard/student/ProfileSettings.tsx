@@ -15,7 +15,8 @@ import { cn } from '../../../lib/utils';
 import UserAvatar from '../../../components/ui/UserAvatar';
 import Modal from '../../../components/ui/Modal';
 import { Card } from '../../../components/ui/Card';
-import { calculatePasswordStrength } from '../../../utils/password';
+import { calculatePasswordStrength } from '../../../utils/password.utils';
+import api from '../../../services/api';
 
 export default function ProfileSettings() {
   const { user, signOut, refreshUser } = useAuth();
@@ -27,12 +28,8 @@ export default function ProfileSettings() {
   const [username, setUsername] = useState(user?.username || '');
   const [isSaving, setIsSaving] = useState(false);
 
-  const [hasAvatar, setHasAvatar] = useState(() => {
-    if (user?.id) {
-      return !!localStorage.getItem(`@aprovaai:avatarUrl:${user.id}`);
-    }
-    return false;
-  });
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl || null);
+  const [hasAvatar, setHasAvatar] = useState(!!user?.avatarUrl);
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -47,39 +44,47 @@ export default function ProfileSettings() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && user?.id) {
       if (file.size > 2 * 1024 * 1024) {
         toast.error('A imagem deve ter no máximo 2MB.');
         return;
       }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        localStorage.setItem(`@aprovaai:avatarUrl:${user.id}`, base64String);
-        window.dispatchEvent(new Event('avatar-update'));
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', 'avatars');
+
+      try {
+        setIsSaving(true);
+        const response = await api.post('/upload', formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        const uploadedUrl = response.data.url;
+        setAvatarUrl(uploadedUrl);
         setHasAvatar(true);
-        toast.success('Foto de perfil atualizada!');
-      };
-      reader.readAsDataURL(file);
+        toast.success('Foto carregada! Clique em Salvar para aplicar.');
+      } catch (error) {
+        console.error('Erro ao fazer upload:', error);
+        toast.error('Erro ao fazer upload da imagem.');
+      } finally {
+        setIsSaving(false);
+      }
     }
   };
 
   const handleRemoveAvatar = () => {
-    if (user?.id) {
-      localStorage.removeItem(`@aprovaai:avatarUrl:${user.id}`);
-      window.dispatchEvent(new Event('avatar-update'));
-      setHasAvatar(false);
-      toast.success('Foto de perfil removida!');
-    }
+    setAvatarUrl(null);
+    setHasAvatar(false);
+    toast.success('Foto removida! Clique em Salvar para aplicar.');
   };
 
   const handleSaveSettings = async (e: FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await accountService.updateProfile({ fullName, email, username });
+      await accountService.updateProfile({ fullName, email, username, avatarUrl });
       await refreshUser();
       toast.success('Configurações atualizadas com sucesso!');
       navigate('/dashboard/profile');
@@ -161,7 +166,7 @@ export default function ProfileSettings() {
             className="relative group cursor-pointer"
             onClick={handleAvatarClick}
           >
-            <UserAvatar size="xl" />
+            <UserAvatar size="xl" userOverride={user ? { ...user, avatarUrl } : undefined} />
             <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
               <Camera className="h-6 w-6" />
             </div>
