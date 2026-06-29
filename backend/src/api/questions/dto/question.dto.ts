@@ -37,7 +37,6 @@ export const createQuestionSchema = z.object({
     ),
   imageUrl: z
     .string()
-    .url('URL inválida')
     .optional()
     .nullable()
     .describe('Link opcional para uma imagem ilustrativa da questão.'),
@@ -82,7 +81,6 @@ export const updateQuestionSchema = z.object({
     .describe('Novo enunciado da questão.'),
   imageUrl: z
     .string()
-    .url('URL inválida')
     .optional()
     .nullable()
     .describe('Nova URL da imagem ilustrativa ou `null` para remover.'),
