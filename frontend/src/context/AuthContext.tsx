@@ -1,7 +1,7 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../services/api';
 
-interface User {
+export interface User {
   id: string;
   fullName: string;
   email: string;
@@ -112,7 +112,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }
 
   function signOut() {
-    localStorage.clear();
+    localStorage.removeItem('@aprovaai:token');
+    localStorage.removeItem('@aprovaai:user');
     setUser(null);
   }
 

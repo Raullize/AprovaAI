@@ -39,6 +39,7 @@ describe('GetAccountProfileUseCase', () => {
       streakCount: 3,
       bestStreak: 4,
       lastActiveAt: null,
+      createdAt: user.createdAt,
     });
   });
 
