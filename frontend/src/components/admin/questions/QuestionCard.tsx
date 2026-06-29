@@ -3,7 +3,7 @@ import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
 import { type Question } from '@/services/questions.service';
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const BACKEND_URL = import.meta.env.VITE_STATIC_URL || 'http://localhost:3001';
 
 interface QuestionCardProps {
   question: Question;
@@ -128,6 +128,22 @@ export function QuestionCard({
             </li>
           ))}
         </ul>
+
+        {/* Explanation & Link */}
+        {(question.explanation || question.studyLink) && (
+          <div className="mt-4 pt-3 border-t border-slate-100/50 space-y-2">
+            {question.explanation && (
+              <p className="text-xs text-slate-500 line-clamp-2">
+                <strong className="text-slate-700">Explicação:</strong> {question.explanation}
+              </p>
+            )}
+            {question.studyLink && (
+              <p className="text-xs text-indigo-500 line-clamp-1">
+                <strong className="text-slate-700">Link:</strong> <a href={question.studyLink} target="_blank" rel="noreferrer" className="hover:underline">{question.studyLink}</a>
+              </p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Footer */}
