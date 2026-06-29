@@ -27,15 +27,23 @@ export const ICON_OPTIONS: { key: string; label: string; Icon: LucideIcon }[] =
     { key: 'globe', label: 'Global', Icon: Globe },
   ];
 
-// --- Color registry ---
-export const COLOR_OPTIONS: {
+export interface ColorThemeOptions {
   key: string;
   label: string;
   gradient: string;
   bg: string;
   ring: string;
   text: string;
-}[] = [
+  hex: string;
+  bgLight: string;
+  borderLight: string;
+  textDark: string;
+  buttonBg: string;
+  buttonBorder: string;
+}
+
+// --- Color registry ---
+export const COLOR_OPTIONS: ColorThemeOptions[] = [
   {
     key: 'indigo',
     label: 'Índigo',
@@ -43,6 +51,12 @@ export const COLOR_OPTIONS: {
     bg: 'bg-indigo-100',
     ring: 'ring-indigo-200',
     text: 'text-indigo-600',
+    hex: '#4f46e5',
+    bgLight: 'bg-indigo-50/80',
+    borderLight: 'border-indigo-150',
+    textDark: 'text-indigo-750',
+    buttonBg: 'bg-indigo-600 hover:bg-indigo-700',
+    buttonBorder: 'border-indigo-800',
   },
   {
     key: 'emerald',
@@ -51,6 +65,12 @@ export const COLOR_OPTIONS: {
     bg: 'bg-emerald-100',
     ring: 'ring-emerald-200',
     text: 'text-emerald-600',
+    hex: '#10b981',
+    bgLight: 'bg-emerald-50/80',
+    borderLight: 'border-emerald-150',
+    textDark: 'text-emerald-700',
+    buttonBg: 'bg-emerald-600 hover:bg-emerald-700',
+    buttonBorder: 'border-emerald-800',
   },
   {
     key: 'orange',
@@ -59,6 +79,12 @@ export const COLOR_OPTIONS: {
     bg: 'bg-orange-100',
     ring: 'ring-orange-200',
     text: 'text-orange-600',
+    hex: '#f97316',
+    bgLight: 'bg-orange-50/80',
+    borderLight: 'border-orange-150',
+    textDark: 'text-orange-700',
+    buttonBg: 'bg-orange-600 hover:bg-orange-700',
+    buttonBorder: 'border-orange-800',
   },
   {
     key: 'sky',
@@ -67,6 +93,12 @@ export const COLOR_OPTIONS: {
     bg: 'bg-sky-100',
     ring: 'ring-sky-200',
     text: 'text-sky-600',
+    hex: '#0ea5e9',
+    bgLight: 'bg-sky-50/80',
+    borderLight: 'border-sky-150',
+    textDark: 'text-sky-700',
+    buttonBg: 'bg-sky-600 hover:bg-sky-700',
+    buttonBorder: 'border-sky-800',
   },
   {
     key: 'violet',
@@ -75,6 +107,12 @@ export const COLOR_OPTIONS: {
     bg: 'bg-violet-100',
     ring: 'ring-violet-200',
     text: 'text-violet-600',
+    hex: '#8b5cf6',
+    bgLight: 'bg-violet-50/80',
+    borderLight: 'border-violet-150',
+    textDark: 'text-violet-750',
+    buttonBg: 'bg-violet-600 hover:bg-violet-700',
+    buttonBorder: 'border-violet-800',
   },
   {
     key: 'rose',
@@ -83,6 +121,12 @@ export const COLOR_OPTIONS: {
     bg: 'bg-rose-100',
     ring: 'ring-rose-200',
     text: 'text-rose-600',
+    hex: '#f43f5e',
+    bgLight: 'bg-rose-50/80',
+    borderLight: 'border-rose-150',
+    textDark: 'text-rose-700',
+    buttonBg: 'bg-rose-600 hover:bg-rose-700',
+    buttonBorder: 'border-rose-800',
   },
   {
     key: 'amber',
@@ -91,6 +135,12 @@ export const COLOR_OPTIONS: {
     bg: 'bg-amber-100',
     ring: 'ring-amber-200',
     text: 'text-amber-600',
+    hex: '#f59e0b',
+    bgLight: 'bg-amber-50/80',
+    borderLight: 'border-amber-150',
+    textDark: 'text-amber-705',
+    buttonBg: 'bg-amber-600 hover:bg-amber-700',
+    buttonBorder: 'border-amber-800',
   },
   {
     key: 'slate',
@@ -99,6 +149,12 @@ export const COLOR_OPTIONS: {
     bg: 'bg-slate-100',
     ring: 'ring-slate-200',
     text: 'text-slate-600',
+    hex: '#475569',
+    bgLight: 'bg-slate-100/80',
+    borderLight: 'border-slate-300',
+    textDark: 'text-slate-800',
+    buttonBg: 'bg-slate-700 hover:bg-slate-800',
+    buttonBorder: 'border-slate-900',
   },
 ];
 
@@ -110,6 +166,6 @@ export function getIconOption(key?: string | null) {
   return ICON_OPTIONS.find((o) => o.key === key) ?? DEFAULT_ICON;
 }
 
-export function getColorOption(key?: string | null) {
+export function getColorOption(key?: string | null): ColorThemeOptions {
   return COLOR_OPTIONS.find((o) => o.key === key) ?? DEFAULT_COLOR;
 }
