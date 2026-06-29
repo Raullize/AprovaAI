@@ -3,12 +3,14 @@ import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { X, Clock, CheckCircle2, XCircle, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import Modal from '../../../components/ui/Modal';
-import api from '../../../services/api';
+import { simulationsService } from '../../../services/simulations.service';
+import { levelsService } from '../../../services/levels.service';
+import { questionsService } from '../../../services/questions.service';
 import Loading from '../../../components/ui/Loading';
 import { useAuth } from '../../../context/AuthContext';
+import type { SimulationMode } from '../../../types/simulation.types';
 
 // --- Types ---
-type SimulationMode = 'PRACTICE' | 'EXAM';
 type FeedbackState = 'correct' | 'wrong' | null;
 
 interface Option {
@@ -26,8 +28,14 @@ interface Question {
   order: number;
 }
 
-// --- Mock Data ---
-const MOCK_TIME_LIMIT = 10 * 60; // 10 min in seconds (EXAM mode)
+interface Level {
+  name: string;
+  timeLimit: number | null;
+  passingPercentage: number;
+}
+
+// --- Fallback Data ---
+const DEFAULT_TIME_LIMIT = 10 * 60; // 10 min in seconds (EXAM mode)
 
 
 // --- Encouragement messages ---
@@ -71,7 +79,7 @@ export default function SimulationEngine() {
   const [searchParams] = useSearchParams();
   const mode = (searchParams.get('mode') as SimulationMode) || 'PRACTICE';
 
-  const [level, setLevel] = useState<any>(null);
+  const [level, setLevel] = useState<Level | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [simulationId, setSimulationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -79,7 +87,7 @@ export default function SimulationEngine() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
-  const [timeLeft, setTimeLeft] = useState(MOCK_TIME_LIMIT);
+  const [timeLeft, setTimeLeft] = useState(DEFAULT_TIME_LIMIT);
   const [showExit, setShowExit] = useState(false);
   const [answers, setAnswers] = useState<
     { questionId: string; selectedId: string; correct: boolean }[]
@@ -121,21 +129,21 @@ export default function SimulationEngine() {
     async function loadSimulation() {
       try {
         setIsLoading(true);
-        const lvlRes = await api.get(`/levels/${levelId}`);
-        setLevel(lvlRes.data);
-        setTimeLeft(lvlRes.data.timeLimit || MOCK_TIME_LIMIT);
+        const lvlData = await levelsService.findOne(levelId!);
+        setLevel(lvlData);
+        setTimeLeft(lvlData.timeLimit || DEFAULT_TIME_LIMIT);
 
-        const startRes = await api.post('/simulations/start', { levelId });
-        setSimulationId(startRes.data.id);
+        const startData = await simulationsService.start(levelId!);
+        setSimulationId(startData.id);
 
-        const qRes = await api.get(`/questions/level/${levelId}`);
-        const mappedQuestions = qRes.data.map((q: any) => ({
+        const questionsData = await questionsService.findAll(levelId!);
+        const mappedQuestions = questionsData.map((q) => ({
           id: q.id,
           text: q.content,
           explanation: q.explanation || 'Sem explicação disponível.',
           order: q.order,
-          options: q.options.map((o: any) => ({
-            id: o.id,
+          options: q.options.map((o) => ({
+            id: o.id ?? '',
             text: o.text,
             isCorrect: o.isCorrect,
             order: o.order,
@@ -144,8 +152,8 @@ export default function SimulationEngine() {
 
         setQuestions(mappedQuestions);
 
-        if (startRes.data.answers && startRes.data.answers.length > 0) {
-          const mappedAnswers = startRes.data.answers.map((ans: any) => ({
+        if (startData.answers && startData.answers.length > 0) {
+          const mappedAnswers = startData.answers.map((ans) => ({
             questionId: ans.questionId,
             selectedId: ans.selectedOptions[0] || '',
             correct: ans.isCorrect ?? false,
@@ -153,7 +161,7 @@ export default function SimulationEngine() {
           setAnswers(mappedAnswers);
 
           const mappedFlagged: Record<string, boolean> = {};
-          startRes.data.answers.forEach((ans: any) => {
+          startData.answers.forEach((ans) => {
             if (ans.isFlaggedForReview) {
               mappedFlagged[ans.questionId] = true;
             }
@@ -179,8 +187,8 @@ export default function SimulationEngine() {
   ) => {
     if (!simulationId) return;
 
-    const request = api
-      .post(`/simulations/${simulationId}/answers`, {
+    const request = simulationsService
+      .saveAnswer(simulationId, {
         questionId,
         selectedOptions: selectedOptionId ? [selectedOptionId] : [],
         timeSpent: 0,
@@ -198,13 +206,13 @@ export default function SimulationEngine() {
     try {
       setIsLoading(true);
       await waitForPendingSaves();
-      const finishRes = await api.post(`/simulations/${simulationId}/finish`, {
-        timeSpent: mode === 'EXAM' ? (level?.timeLimit || MOCK_TIME_LIMIT) - timeLeft : 0,
+      const finishData = await simulationsService.finish(simulationId, {
+        timeSpent: mode === 'EXAM' ? (level?.timeLimit || DEFAULT_TIME_LIMIT) - timeLeft : 0,
       });
-      const { examResult, xpGained } = finishRes.data;
+      const { examResult, xpGained } = finishData;
       const resolvedAnswers =
         examResult.answers && examResult.answers.length > 0
-          ? examResult.answers.map((ans: any) => ({
+          ? examResult.answers.map((ans) => ({
               questionId: ans.questionId,
               selectedId: ans.selectedOptions[0] || '',
               correct: ans.isCorrect ?? false,

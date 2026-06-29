@@ -11,11 +11,12 @@ import {
   Star,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import api from '../../../services/api';
+import { simulationsService } from '../../../services/simulations.service';
 import Loading from '../../../components/ui/Loading';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import EmptyState from '../../../components/ui/EmptyState';
 import { Card } from '../../../components/ui/Card';
+import type { SimulationMode } from '../../../types/simulation.types';
 
 interface HistoryItem {
   id: string;
@@ -25,7 +26,7 @@ interface HistoryItem {
   examName: string;
   topicName: string;
   examCategory?: string;
-  mode: 'PRACTICE' | 'EXAM';
+  mode: SimulationMode;
   score: number;
   totalQuestions: number;
   percentage: number;
@@ -78,7 +79,7 @@ interface ApiHistoryItem {
       };
     };
   };
-  mode: 'PRACTICE' | 'EXAM';
+  mode: SimulationMode;
   score?: number;
   totalQuestions?: number;
   percentage?: number;
@@ -188,10 +189,7 @@ export default function SimulationsHistory() {
   useEffect(() => {
     async function load() {
       try {
-        const response = await api.get('/simulations/history');
-        const data: ApiHistoryItem[] = Array.isArray(response.data)
-          ? response.data
-          : [];
+        const data = await simulationsService.getHistory();
         const mapped = data.map((item) => ({
           id: item.id,
           levelId: item.levelId,

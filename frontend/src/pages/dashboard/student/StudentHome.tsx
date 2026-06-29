@@ -16,7 +16,9 @@ import { getIconOption, getColorOption } from '../../../config/examThemes';
 import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
-import api from '../../../services/api';
+import { studentService } from '../../../services/student.service';
+import { simulationsService, type ApiSimulationHistoryItem } from '../../../services/simulations.service';
+import { getRecentExamsFromHistory } from '../../../utils/student.utils';
 
 export default function StudentHome() {
   const { user } = useAuth();
@@ -24,24 +26,19 @@ export default function StudentHome() {
 
   const [activeDays, setActiveDays] = useState<number[]>([]);
   const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<ApiSimulationHistoryItem[]>([]);
 
   useEffect(() => {
     async function loadData() {
       try {
-        const [statsRes, historyRes] = await Promise.all([
-          api.get('/student/dashboard-stats'),
-          api.get('/simulations/history'),
+        const [stats, historyData] = await Promise.all([
+          studentService.getDashboardStats(),
+          simulationsService.getHistory(),
         ]);
 
-        if (statsRes.data) {
-          setActiveDays(statsRes.data.activeDays);
-          setStreakCount(statsRes.data.streakCount);
-        }
-
-        if (historyRes.data) {
-          setHistory(historyRes.data);
-        }
+        setActiveDays(stats.activeDays);
+        setStreakCount(stats.streakCount);
+        setHistory(historyData);
       } catch (err) {
         console.error('Failed to load dashboard data:', err);
       }
@@ -59,49 +56,7 @@ export default function StudentHome() {
   const totalQuest = completedAttempts.reduce((sum, h) => sum + (h.totalQuestions || 0), 0);
   const accuracy = totalQuest > 0 ? Math.round((totalCorrect / totalQuest) * 100) : 0;
 
-  // Extract unique recent exams from history
-  const recentExams = Array.from(
-    new Map(
-      history
-        .filter(
-          (h) =>
-            h.level?.topic?.exam?.name &&
-            (h.level?.topic?.exam?.slug || h.level?.topic?.exam?.id),
-        )
-        .map((h) => {
-          const examKey =
-            h.level?.topic?.exam?.id ??
-            h.level?.topic?.exam?.slug ??
-            h.level?.topic?.exam?.name ??
-            'unknown-exam';
-          const examHistory = history.filter(
-            (item) =>
-              (item.level?.topic?.exam?.id ??
-                item.level?.topic?.exam?.slug ??
-                item.level?.topic?.exam?.name) === examKey &&
-              item.status === 'COMPLETED',
-          );
-          const completedLevels = new Set(examHistory.map((item) => item.levelId));
-          const totalEstimated = 10;
-          const progress = Math.min(100, Math.round((completedLevels.size / totalEstimated) * 100));
-          return [
-            examKey,
-            {
-              id: examKey,
-              routeId:
-                h.level.topic.exam.slug ||
-                h.level.topic.exam.id ||
-                examKey,
-              title: h.level.topic.exam.name,
-              iconKey: h.level.topic.exam.iconKey || 'cpu',
-              colorScheme: h.level.topic.exam.colorScheme || 'orange',
-              lastTopic: h.level.name,
-              progress,
-            },
-          ];
-        })
-    ).values()
-  ).slice(0, 3);
+  const recentExams = getRecentExamsFromHistory(history);
 
   const getWeeklyActiveState = () => {
     const today = new Date();

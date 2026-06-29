@@ -10,7 +10,7 @@ import {
   EyeOff,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import api from '../../../services/api';
+import { accountService } from '../../../services/account.service';
 import { cn } from '../../../lib/utils';
 import UserAvatar from '../../../components/ui/UserAvatar';
 import Modal from '../../../components/ui/Modal';
@@ -86,11 +86,7 @@ export default function ProfileSettings() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await api.patch('/account/profile', {
-        fullName,
-        email,
-        username,
-      });
+      await accountService.updateProfile({ fullName, email, username });
       await refreshUser();
       toast.success('Configurações atualizadas com sucesso!');
       navigate('/dashboard/profile');
@@ -109,10 +105,7 @@ export default function ProfileSettings() {
       return;
     }
     try {
-      await api.patch('/account/password', {
-        currentPassword,
-        newPassword,
-      });
+      await accountService.updatePassword({ currentPassword, newPassword });
       toast.success('Senha atualizada com sucesso!');
       setCurrentPassword('');
       setNewPassword('');
@@ -125,7 +118,7 @@ export default function ProfileSettings() {
 
   const handleDeleteAccount = async () => {
     try {
-      await api.delete('/account');
+      await accountService.deleteAccount();
       setShowDeleteModal(false);
       toast.success('Conta excluída com sucesso.');
       signOut();

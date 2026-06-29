@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { Card } from '../../../components/ui/Card';
-import api from '../../../services/api';
+import { questionsService } from '../../../services/questions.service';
 
 // --- Types ---
 interface AnswerRecord {
@@ -122,22 +122,22 @@ export default function SimulationResults() {
         );
 
         const responses = await Promise.all(
-          uniqueQuestionIds.map((questionId) => api.get(`/questions/${questionId}`)),
+          uniqueQuestionIds.map((questionId) => questionsService.findOne(questionId)),
         );
 
-        const mappedQuestions = responses.map((response) => ({
-          id: response.data.id,
-          text: response.data.content,
+        const mappedQuestions = responses.map((data) => ({
+          id: data.id,
+          text: data.content,
           explanation:
-            response.data.explanation || 'Sem explicação disponível.',
-          options: [...(response.data.options ?? [])]
+            data.explanation || 'Sem explicação disponível.',
+          options: [...(data.options ?? [])]
             .sort(
               (a: { order?: number }, b: { order?: number }) =>
                 (a.order ?? 0) - (b.order ?? 0),
             )
             .map(
-              (option: { id: string; text: string; isCorrect: boolean }) => ({
-                id: option.id,
+              (option: { id?: string; text: string; isCorrect: boolean }) => ({
+                id: option.id ?? '',
                 text: option.text,
                 isCorrect: option.isCorrect,
               }),

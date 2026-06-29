@@ -4,35 +4,9 @@ import { Flame, Zap, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { LeaderboardTable, type LeaderboardRowData } from '../../../components/ui/LeaderboardTable';
 import UserAvatar from '../../../components/ui/UserAvatar';
-import api from '../../../services/api';
+import { studentService, type LeaderboardResponse, type StreakLeaderboardResponse } from '../../../services/student.service';
 import { cn } from '../../../lib/utils';
 
-interface LeaderboardUser {
-  rank: number;
-  fullName: string;
-  username: string;
-  xp: number;
-}
-
-interface LeaderboardResponse {
-  topUsers: LeaderboardUser[];
-  currentUserRank: number;
-  currentUserEntry: LeaderboardUser | null;
-}
-
-interface StreakLeaderboardUser {
-  rank: number;
-  fullName: string;
-  username: string;
-  bestStreak: number;
-  streakCount: number;
-}
-
-interface StreakLeaderboardResponse {
-  topUsers: StreakLeaderboardUser[];
-  currentUserRank: number;
-  currentUserEntry: StreakLeaderboardUser | null;
-}
 
 export default function Leaderboard() {
   const { user } = useAuth();
@@ -56,16 +30,12 @@ export default function Leaderboard() {
   useEffect(() => {
     async function loadData() {
       try {
-        const [lbRes, streakLbRes] = await Promise.all([
-          api.get('/student/leaderboard'),
-          api.get('/student/streak-leaderboard'),
+        const [lbData, streakLbData] = await Promise.all([
+          studentService.getLeaderboard(),
+          studentService.getStreakLeaderboard(),
         ]);
-        if (lbRes.data) {
-          setLeaderboardData(lbRes.data);
-        }
-        if (streakLbRes.data) {
-          setStreakLeaderboardData(streakLbRes.data);
-        }
+        setLeaderboardData(lbData);
+        setStreakLeaderboardData(streakLbData);
       } catch (err) {
         console.error('Failed to load leaderboard data:', err);
       }
