@@ -29,6 +29,7 @@ interface SimulationSummaryProps {
   setCurrentIndex: (idx: number) => void;
   setView: (view: 'QUESTION' | 'SUMMARY') => void;
   handleFinish: () => void;
+  hasTimeLimit?: boolean;
 }
 
 const SimulationSummary: React.FC<SimulationSummaryProps> = ({
@@ -42,6 +43,7 @@ const SimulationSummary: React.FC<SimulationSummaryProps> = ({
   setCurrentIndex,
   setView,
   handleFinish,
+  hasTimeLimit,
 }) => {
   const totalQuestions = questions.length;
   const answeredCount = answers.filter((a) => a.selectedId !== '').length;
@@ -53,7 +55,7 @@ const SimulationSummary: React.FC<SimulationSummaryProps> = ({
         <h2 className="text-lg font-bold text-slate-800 font-display">
           Revisão do Simulado
         </h2>
-        {mode === 'EXAM' && (
+        {(mode === 'EXAM' || hasTimeLimit) && (
           <div
             className={cn(
               'flex items-center gap-1.5 font-bold text-sm tabular-nums',

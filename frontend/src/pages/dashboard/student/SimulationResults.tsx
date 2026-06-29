@@ -20,6 +20,7 @@ import { questionsService } from '../../../services/questions.service';
 interface AnswerRecord {
   questionId: string;
   selectedId: string;
+  selectedIds?: string[];
   correct: boolean;
 }
 
@@ -86,12 +87,14 @@ interface ReviewOption {
   text: string;
   isCorrect: boolean;
 }
-
 interface ReviewQuestion {
   id: string;
   text: string;
   explanation: string;
   options: ReviewOption[];
+  studyLink?: string;
+  imageUrl?: string | null;
+  type?: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
 }
 
 export default function SimulationResults() {
@@ -127,8 +130,11 @@ export default function SimulationResults() {
         const mappedQuestions = responses.map((data) => ({
           id: data.id,
           text: data.content,
+          imageUrl: data.imageUrl,
+          type: data.type,
           explanation:
             data.explanation || 'Sem explicação disponível.',
+          studyLink: data.studyLink,
           options: [...(data.options ?? [])]
             .sort(
               (a: { order?: number }, b: { order?: number }) =>
@@ -213,7 +219,23 @@ export default function SimulationResults() {
   const [filter, setFilter] = useState<'ALL' | 'CORRECT' | 'INCORRECT'>('ALL');
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const answers = useMemo(() => state.answers ?? [], [state.answers]);
+  const answers = useMemo(() => {
+    const rawAnswers = state?.answers ?? [];
+    if (!resolvedQuestions.length) return rawAnswers;
+
+    const answersMap = new Map(rawAnswers.map((a) => [a.questionId, a]));
+
+    return resolvedQuestions.map((q) => {
+      const existing = answersMap.get(q.id);
+      if (existing) return existing;
+      return {
+        questionId: q.id,
+        selectedId: '',
+        selectedIds: [],
+        correct: false,
+      };
+    });
+  }, [state?.answers, resolvedQuestions]);
 
   const indexedAnswers = useMemo(
     () =>
@@ -538,55 +560,104 @@ export default function SimulationResults() {
                             <XCircle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />
                           )}
                           <div>
-                            <h4 className="font-bold text-slate-800 text-sm">
+                            <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2">
                               Questão {displayIndex + 1}
                             </h4>
                             <p className="text-slate-650 text-xs mt-1 leading-relaxed">
                               {q.text}
                             </p>
+
+                            {q.imageUrl && (
+                              <div className="my-3 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center max-h-[220px]">
+                                <img
+                                  src={
+                                    q.imageUrl.startsWith('http')
+                                      ? q.imageUrl
+                                      : `${import.meta.env.VITE_STATIC_URL || 'http://localhost:3001'}${q.imageUrl.startsWith('/') ? q.imageUrl : `/${q.imageUrl}`}`
+                                  }
+                                  alt="Imagem da questão"
+                                  className="max-h-[220px] object-contain"
+                                />
+                              </div>
+                            )}
                           </div>
                         </div>
 
                         {/* Options List */}
                         <div className="space-y-2 pl-8">
-                          {q.options.map((opt: ReviewOption, optionIndex: number) => {
-                            const isSelected = opt.id === ans.selectedId;
-                            const isCorrect = opt.isCorrect;
+                           {q.options.map((opt: ReviewOption, optionIndex: number) => {
+                             const isSelected = ans.selectedIds
+                               ? ans.selectedIds.includes(opt.id)
+                               : opt.id === ans.selectedId;
+                             const isCorrect = opt.isCorrect;
 
-                            let optionStyle =
-                              'border-slate-100 bg-slate-50/50 text-slate-600';
-                            if (isCorrect) {
-                              optionStyle =
-                                'border-emerald-250 bg-emerald-50/60 text-emerald-800 font-semibold';
-                            } else if (isSelected && !isCorrect) {
-                              optionStyle =
-                                'border-rose-250 bg-rose-50/60 text-rose-800 font-semibold';
-                            }
+                             let optionStyle = 'border-slate-100 bg-slate-50/50 text-slate-400 opacity-60';
+                             let badge = null;
 
-                            return (
-                              <div
-                                key={opt.id}
-                                className={cn(
-                                  'flex items-center gap-2.5 p-3 rounded-2xl border text-xs leading-relaxed transition-all',
-                                  optionStyle,
-                                )}
-                              >
-                                <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0 border border-current">
-                                  {getOptionLabel(optionIndex)}
-                                </span>
-                                <span>{opt.text}</span>
-                              </div>
-                            );
-                          })}
+                             if (isSelected && isCorrect) {
+                               optionStyle = 'border-emerald-500 bg-emerald-50 text-emerald-955 font-medium shadow-sm';
+                               badge = (
+                                 <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full shrink-0">
+                                   Você acertou
+                                 </span>
+                               );
+                             } else if (!isSelected && isCorrect) {
+                               optionStyle = 'border-dashed border-emerald-400 bg-emerald-50/30 text-emerald-800 font-medium';
+                               badge = (
+                                 <span className="text-[10px] font-semibold bg-slate-100 text-emerald-700 px-2 py-0.5 rounded-full shrink-0 border border-emerald-200">
+                                   Gabarito (Não selecionada)
+                                 </span>
+                               );
+                             } else if (isSelected && !isCorrect) {
+                               optionStyle = 'border-rose-400 bg-rose-50 text-rose-900 font-medium';
+                               badge = (
+                                 <span className="text-[10px] font-semibold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full shrink-0">
+                                   Você marcou (Incorreta)
+                                 </span>
+                               );
+                             }
+
+                             return (
+                               <div
+                                 key={opt.id}
+                                 className={cn(
+                                   'flex items-start justify-between gap-2.5 p-3 rounded-2xl border text-xs leading-relaxed transition-all',
+                                   optionStyle,
+                                 )}
+                               >
+                                 <div className="flex items-start gap-2.5 flex-1">
+                                   <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0 border border-current mt-0.5">
+                                     {getOptionLabel(optionIndex)}
+                                   </span>
+                                   <span className="text-slate-700 font-medium">{opt.text}</span>
+                                 </div>
+                                 {badge}
+                               </div>
+                             );
+                           })}
                         </div>
 
-                        {/* Explanation */}
-                        <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[10px] text-slate-500 pl-8 leading-relaxed">
-                          <span className="font-bold text-slate-700 block mb-1">
-                            Explicação:
-                          </span>
-                          {q.explanation}
-                        </div>
+                         <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[11px] text-slate-500 pl-8 leading-relaxed space-y-2">
+                           <div>
+                             <span className="font-bold text-slate-700 block mb-1">
+                               Explicação:
+                             </span>
+                             {q.explanation}
+                           </div>
+                           {q.studyLink && (
+                             <div className="pt-2 border-t border-slate-150">
+                               <span className="font-bold text-slate-700">Link de Aprofundamento:</span>{' '}
+                               <a
+                                 href={q.studyLink}
+                                 target="_blank"
+                                 rel="noreferrer"
+                                 className="text-indigo-600 hover:text-indigo-800 underline font-medium"
+                               >
+                                 {q.studyLink}
+                               </a>
+                             </div>
+                           )}
+                         </div>
                       </Card>
                     );
                   })()}

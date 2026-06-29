@@ -26,7 +26,10 @@ export interface Question {
   text: string;
   options: Option[];
   explanation: string;
+  studyLink?: string;
   order: number;
+  imageUrl?: string | null;
+  type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
 }
 
 interface Level {
@@ -86,12 +89,12 @@ export default function SimulationEngine() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [feedback, setFeedback] = useState<FeedbackState>(null);
   const [timeLeft, setTimeLeft] = useState(DEFAULT_TIME_LIMIT);
   const [showExit, setShowExit] = useState(false);
   const [answers, setAnswers] = useState<
-    { questionId: string; selectedId: string; correct: boolean }[]
+    { questionId: string; selectedId: string; selectedIds?: string[]; correct: boolean }[]
   >([]);
   const [flagged, setFlagged] = useState<Record<string, boolean>>({});
   const [view, setView] = useState<'QUESTION' | 'SUMMARY'>('QUESTION');
@@ -141,7 +144,10 @@ export default function SimulationEngine() {
         const mappedQuestions = questionsData.map((q) => ({
           id: q.id,
           text: q.content,
+          imageUrl: q.imageUrl,
+          type: q.type,
           explanation: q.explanation || 'Sem explicação disponível.',
+          studyLink: q.studyLink,
           order: q.order,
           options: q.options.map((o) => ({
             id: o.id ?? '',
@@ -183,7 +189,7 @@ export default function SimulationEngine() {
 
   const saveAnswerToBackend = async (
     questionId: string,
-    selectedOptionId: string,
+    selectedOptionIds: string[],
     isFlagged: boolean,
   ) => {
     if (!simulationId) return;
@@ -191,7 +197,7 @@ export default function SimulationEngine() {
     const request = simulationsService
       .saveAnswer(simulationId, {
         questionId,
-        selectedOptions: selectedOptionId ? [selectedOptionId] : [],
+        selectedOptions: selectedOptionIds,
         timeSpent: 0,
         isFlaggedForReview: isFlagged,
       })
@@ -211,14 +217,26 @@ export default function SimulationEngine() {
         timeSpent: mode === 'EXAM' ? (level?.timeLimit || DEFAULT_TIME_LIMIT) - timeLeft : 0,
       });
       const { examResult, xpGained } = finishData;
-      const resolvedAnswers =
+      const rawResolved =
         examResult.answers && examResult.answers.length > 0
-          ? examResult.answers.map((ans) => ({
+          ? examResult.answers.map((ans: any) => ({
               questionId: ans.questionId,
               selectedId: ans.selectedOptions[0] || '',
+              selectedIds: ans.selectedOptions || [],
               correct: ans.isCorrect ?? false,
             }))
           : answers;
+
+      const resolvedAnswers = questions.map((q) => {
+        const existing = rawResolved.find((a) => a.questionId === q.id);
+        if (existing) return existing;
+        return {
+          questionId: q.id,
+          selectedId: '',
+          selectedIds: [],
+          correct: false,
+        };
+      });
       await refreshUser();
 
       navigate('/dashboard/simulations/results', {
@@ -253,16 +271,17 @@ export default function SimulationEngine() {
     questions,
   ]);
 
-  // Timer for EXAM mode
+  // Timer for EXAM mode, or PRACTICE mode if level has timeLimit
   useEffect(() => {
-    if (mode !== 'EXAM') return;
+    const hasTimeLimit = level?.timeLimit && level.timeLimit > 0;
+    if (mode !== 'EXAM' && !hasTimeLimit) return;
     if (timeLeft <= 0) {
       handleFinish();
       return;
     }
     const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearInterval(timer);
-  }, [mode, timeLeft, handleFinish]);
+  }, [mode, timeLeft, handleFinish, level?.timeLimit]);
 
   const currentQuestion = questions[currentIndex];
   const totalQuestions = questions.length;
@@ -279,7 +298,7 @@ export default function SimulationEngine() {
   useEffect(() => {
     if (mode === 'EXAM' && currentQuestion) {
       const existing = answers.find((a) => a.questionId === currentQuestion.id);
-      setSelectedOption(existing ? existing.selectedId : null);
+      setSelectedOptions(existing ? (existing.selectedIds || (existing.selectedId ? [existing.selectedId] : [])) : []);
     }
   }, [currentIndex, answers, currentQuestion, mode]);
 
@@ -288,54 +307,106 @@ export default function SimulationEngine() {
   }
 
   const handleVerify = () => {
-    if (!selectedOption) return;
-    const correct =
-      currentQuestion.options.find((o) => o.id === selectedOption)?.isCorrect ??
-      false;
+    if (selectedOptions.length === 0) return;
+
+    const isMultiple = currentQuestion.type === 'MULTIPLE_CHOICE';
+    let correct = false;
+
+    if (isMultiple) {
+      const correctOptionIds = currentQuestion.options
+        .filter((o) => o.isCorrect)
+        .map((o) => o.id);
+      
+      correct =
+        correctOptionIds.length === selectedOptions.length &&
+        correctOptionIds.every((id) => selectedOptions.includes(id));
+    } else {
+      const selectedOption = selectedOptions[0];
+      correct =
+        currentQuestion.options.find((o) => o.id === selectedOption)?.isCorrect ??
+        false;
+    }
+
     setFeedback(correct ? 'correct' : 'wrong');
     setAnswers((prev) => [
       ...prev,
-      { questionId: currentQuestion.id, selectedId: selectedOption, correct },
+      {
+        questionId: currentQuestion.id,
+        selectedId: selectedOptions[0] || '',
+        selectedIds: selectedOptions,
+        correct,
+      },
     ]);
-    saveAnswerToBackend(currentQuestion.id, selectedOption, !!flagged[currentQuestion.id]);
+    saveAnswerToBackend(currentQuestion.id, selectedOptions, !!flagged[currentQuestion.id]);
   };
 
   const handleSelectOption = (optionId: string) => {
     if (feedback !== null) return;
 
-    if (selectedOption === optionId) {
-      setSelectedOption(null);
-      if (mode === 'EXAM') {
-        setAnswers((prev) =>
-          prev.filter((a) => a.questionId !== currentQuestion.id),
-        );
-        saveAnswerToBackend(currentQuestion.id, '', !!flagged[currentQuestion.id]);
-      }
-      return;
-    }
+    const isMultiple = currentQuestion.type === 'MULTIPLE_CHOICE';
 
-    setSelectedOption(optionId);
-    if (mode === 'EXAM') {
-      const correct =
-        currentQuestion.options.find((o) => o.id === optionId)?.isCorrect ??
-        false;
-      setAnswers((prev) => {
-        const existingIdx = prev.findIndex(
-          (a) => a.questionId === currentQuestion.id,
-        );
-        const newAns = {
-          questionId: currentQuestion.id,
-          selectedId: optionId,
-          correct,
-        };
-        if (existingIdx >= 0) {
-          const next = [...prev];
-          next[existingIdx] = newAns;
-          return next;
+    if (isMultiple) {
+      setSelectedOptions((prev) => {
+        const exists = prev.includes(optionId);
+        const next = exists ? prev.filter((id) => id !== optionId) : [...prev, optionId];
+        
+        if (mode === 'EXAM') {
+          setAnswers((prevAnswers) => {
+            const existingIdx = prevAnswers.findIndex(
+              (a) => a.questionId === currentQuestion.id,
+            );
+            const newAns = {
+              questionId: currentQuestion.id,
+              selectedId: next[0] || '',
+              selectedIds: next,
+              correct: false,
+            };
+            if (existingIdx >= 0) {
+              const updated = [...prevAnswers];
+              updated[existingIdx] = newAns;
+              return updated;
+            }
+            return [...prevAnswers, newAns];
+          });
+          saveAnswerToBackend(currentQuestion.id, next, !!flagged[currentQuestion.id]);
         }
-        return [...prev, newAns];
+        return next;
       });
-      saveAnswerToBackend(currentQuestion.id, optionId, !!flagged[currentQuestion.id]);
+    } else {
+      setSelectedOptions((prev) => {
+        const isAlreadySelected = prev.includes(optionId);
+        const next = isAlreadySelected ? [] : [optionId];
+
+        if (mode === 'EXAM') {
+          if (isAlreadySelected) {
+            setAnswers((prevAnswers) => prevAnswers.filter((a) => a.questionId !== currentQuestion.id));
+            saveAnswerToBackend(currentQuestion.id, [], !!flagged[currentQuestion.id]);
+          } else {
+            const correct =
+              currentQuestion.options.find((o) => o.id === optionId)?.isCorrect ??
+              false;
+            setAnswers((prevAnswers) => {
+              const existingIdx = prevAnswers.findIndex(
+                (a) => a.questionId === currentQuestion.id,
+              );
+              const newAns = {
+                questionId: currentQuestion.id,
+                selectedId: optionId,
+                selectedIds: [optionId],
+                correct,
+              };
+              if (existingIdx >= 0) {
+                const updated = [...prevAnswers];
+                updated[existingIdx] = newAns;
+                return updated;
+              }
+              return [...prevAnswers, newAns];
+            });
+            saveAnswerToBackend(currentQuestion.id, [optionId], !!flagged[currentQuestion.id]);
+          }
+        }
+        return next;
+      });
     }
   };
 
@@ -345,11 +416,10 @@ export default function SimulationEngine() {
       return;
     }
     setCurrentIndex((i) => i + 1);
-    setSelectedOption(null);
+    setSelectedOptions([]);
     setFeedback(null);
   };
 
-  const correctOptionId = currentQuestion.options.find((o) => o.isCorrect)?.id;
   const isLastQuestion = currentIndex + 1 === totalQuestions;
 
   // Timer color
@@ -401,6 +471,7 @@ export default function SimulationEngine() {
           setCurrentIndex={setCurrentIndex}
           setView={setView}
           handleFinish={handleFinish}
+          hasTimeLimit={!!(level?.timeLimit && level.timeLimit > 0)}
         />
       ) : (
         <>
@@ -422,8 +493,8 @@ export default function SimulationEngine() {
               />
             </div>
 
-            {/* Timer (EXAM only) */}
-            {mode === 'EXAM' && (
+            {/* Timer (EXAM mode, or PRACTICE mode if level has timeLimit) */}
+            {(mode === 'EXAM' || !!(level?.timeLimit && level.timeLimit > 0)) && (
               <div
                 className={`flex items-center gap-1.5 font-bold text-sm tabular-nums ${timerColor}`}
               >
@@ -457,7 +528,7 @@ export default function SimulationEngine() {
                             ...prev,
                             [currentQuestion.id]: newFlag,
                           }));
-                          saveAnswerToBackend(currentQuestion.id, selectedOption || '', newFlag);
+                          saveAnswerToBackend(currentQuestion.id, selectedOptions, newFlag);
                         }}
                         className={cn(
                           'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border',
@@ -481,92 +552,141 @@ export default function SimulationEngine() {
                   <p className="text-slate-800 text-base sm:text-lg font-medium leading-relaxed">
                     {currentQuestion.text}
                   </p>
+
+                  {currentQuestion.imageUrl && (
+                    <div className="my-4 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center max-h-[300px]">
+                      <img
+                        src={
+                          currentQuestion.imageUrl.startsWith('http')
+                            ? currentQuestion.imageUrl
+                            : `${import.meta.env.VITE_STATIC_URL || 'http://localhost:3001'}${currentQuestion.imageUrl.startsWith('/') ? currentQuestion.imageUrl : `/${currentQuestion.imageUrl}`}`
+                        }
+                        alt="Imagem da questão"
+                        className="max-h-[300px] object-contain"
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Options */}
                 <div className="space-y-3">
                   {currentQuestion.options.map((option) => {
-                    const isSelected = selectedOption === option.id;
-                    const isCorrectOption = option.id === correctOptionId;
+                    const isSelected = selectedOptions.includes(option.id);
+                    const isCorrectOption = option.isCorrect;
 
-                    let borderClass =
-                      'border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50';
-                    let bgClass = 'bg-white';
-                    let labelClass = 'bg-slate-100 text-slate-500';
+                     let borderClass =
+                       'border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50';
+                     let bgClass = 'bg-white';
+                     let labelClass = 'bg-slate-100 text-slate-500';
+                     let badge = null;
 
-                    if (feedback !== null) {
-                      if (isCorrectOption) {
-                        borderClass = 'border-green-400';
-                        bgClass = 'bg-green-50';
-                        labelClass = 'bg-green-505 text-white';
-                      } else if (isSelected && !isCorrectOption) {
-                        borderClass = 'border-red-400';
-                        bgClass = 'bg-red-50';
-                        labelClass = 'bg-red-505 text-white';
-                      } else {
-                        borderClass = 'border-slate-200 opacity-60';
-                      }
-                    } else if (isSelected) {
-                      borderClass = 'border-indigo-500';
-                      bgClass = 'bg-indigo-50';
-                      labelClass = 'bg-indigo-600 text-white';
-                    }
+                     if (feedback !== null) {
+                       if (isSelected && isCorrectOption) {
+                         borderClass = 'border-green-500';
+                         bgClass = 'bg-green-50';
+                         labelClass = 'bg-green-500 text-white';
+                         badge = (
+                           <span className="text-[10px] font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded-full shrink-0 ml-auto self-center">
+                             Você acertou
+                           </span>
+                         );
+                       } else if (!isSelected && isCorrectOption) {
+                         borderClass = 'border-dashed border-green-400';
+                         bgClass = 'bg-green-50/30';
+                         labelClass = 'border border-dashed border-green-400 text-green-600 bg-green-50';
+                         badge = (
+                           <span className="text-[10px] font-semibold bg-slate-100 text-green-700 px-2 py-0.5 rounded-full shrink-0 border border-green-200 ml-auto self-center">
+                             Gabarito (Não selecionada)
+                           </span>
+                         );
+                       } else if (isSelected && !isCorrectOption) {
+                         borderClass = 'border-red-400';
+                         bgClass = 'bg-red-50';
+                         labelClass = 'bg-red-500 text-white';
+                         badge = (
+                           <span className="text-[10px] font-semibold bg-red-100 text-red-800 px-2 py-0.5 rounded-full shrink-0 ml-auto self-center">
+                             Você marcou (Incorreta)
+                           </span>
+                         );
+                       } else {
+                         borderClass = 'border-slate-200 opacity-60';
+                       }
+                     } else if (isSelected) {
+                       borderClass = 'border-indigo-500';
+                       bgClass = 'bg-indigo-50';
+                       labelClass = 'bg-indigo-600 text-white';
+                     }
 
-                    const optionLabel = ['A', 'B', 'C', 'D', 'E'][
-                      currentQuestion.options.indexOf(option)
-                    ];
+                     const optionLabel = ['A', 'B', 'C', 'D', 'E'][
+                       currentQuestion.options.indexOf(option)
+                     ];
 
-                    return (
-                      <button
-                        key={option.id}
-                        disabled={feedback !== null}
-                        onClick={() => handleSelectOption(option.id)}
-                        className={cn(
-                          'w-full text-left flex items-start gap-3 p-4 rounded-2xl border-2 transition-all duration-200',
-                          borderClass,
-                          bgClass,
-                          feedback === null &&
-                            'cursor-pointer active:scale-[0.99]',
-                        )}
-                      >
-                        <span
-                          className={cn(
-                            'w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 transition-colors',
-                            labelClass,
-                          )}
-                        >
-                          {optionLabel}
-                        </span>
-                        <span className="text-sm sm:text-base text-slate-700 font-medium leading-snug pt-0.5">
-                          {option.text}
-                        </span>
-                        {feedback !== null && isCorrectOption && (
-                          <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 ml-auto mt-0.5" />
-                        )}
-                        {feedback !== null &&
-                          isSelected &&
-                          !isCorrectOption && (
-                            <XCircle className="h-5 w-5 text-red-500 shrink-0 ml-auto mt-0.5" />
-                          )}
-                      </button>
-                    );
+                     return (
+                       <button
+                         key={option.id}
+                         disabled={feedback !== null}
+                         onClick={() => handleSelectOption(option.id)}
+                         className={cn(
+                           'w-full text-left flex items-start justify-between gap-3 p-4 rounded-2xl border-2 transition-all duration-200',
+                           borderClass,
+                           bgClass,
+                           feedback === null &&
+                             'cursor-pointer active:scale-[0.99]',
+                         )}
+                       >
+                         <div className="flex items-start gap-3 flex-1">
+                           <span
+                             className={cn(
+                               'w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 transition-colors',
+                               labelClass,
+                             )}
+                           >
+                             {optionLabel}
+                           </span>
+                           <span className="text-sm sm:text-base text-slate-700 font-medium leading-snug pt-0.5">
+                             {option.text}
+                           </span>
+                         </div>
+                         {badge}
+                       </button>
+                     );
                   })}
                 </div>
 
-                {/* Explanation (PRACTICE mode after answer) */}
-                {feedback !== null && mode === 'PRACTICE' && (
-                  <div
-                    className={cn(
-                      'mt-4 p-4 rounded-2xl text-sm leading-relaxed',
-                      feedback === 'correct'
-                        ? 'bg-green-50 border border-green-200 text-green-800'
-                        : 'bg-orange-50 border border-orange-200 text-orange-800',
-                    )}
-                  >
-                    <p className="font-semibold mb-1">Explicação</p>
-                    <p>{currentQuestion.explanation}</p>
-                  </div>
-                )}
+                 {/* Explanation (PRACTICE mode after answer) */}
+                 {feedback !== null && mode === 'PRACTICE' && (
+                   <div
+                     className={cn(
+                       'mt-4 p-4 rounded-2xl text-sm leading-relaxed space-y-2',
+                       feedback === 'correct'
+                         ? 'bg-green-50 border border-green-200 text-green-800'
+                         : 'bg-orange-50 border border-orange-200 text-orange-800',
+                     )}
+                   >
+                     <div>
+                       <p className="font-semibold mb-1">Explicação</p>
+                       <p>{currentQuestion.explanation}</p>
+                     </div>
+                     {currentQuestion.studyLink && (
+                       <div className="pt-2 border-t border-slate-200/50">
+                         <span className="font-semibold">Link de Aprofundamento:</span>{' '}
+                         <a
+                           href={currentQuestion.studyLink}
+                           target="_blank"
+                           rel="noreferrer"
+                           className={cn(
+                             'underline font-medium',
+                             feedback === 'correct'
+                               ? 'text-green-700 hover:text-green-900'
+                               : 'text-orange-700 hover:text-orange-900',
+                           )}
+                         >
+                           {currentQuestion.studyLink}
+                         </a>
+                       </div>
+                     )}
+                   </div>
+                 )}
               </div>
             </div>
           </div>
@@ -667,10 +787,10 @@ export default function SimulationEngine() {
                 ) : feedback === null ? (
                   <button
                     onClick={handleVerify}
-                    disabled={!selectedOption}
+                    disabled={selectedOptions.length === 0}
                     className={cn(
                       'w-full py-4 rounded-2xl font-bold text-base transition-all border-b-4',
-                      selectedOption
+                      selectedOptions.length > 0
                         ? 'bg-indigo-600 hover:bg-indigo-700 text-white border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 shadow-md'
                         : 'bg-slate-200 text-slate-400 border-slate-300 cursor-not-allowed',
                     )}
