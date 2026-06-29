@@ -11,6 +11,7 @@ export interface Topic {
   levelsCount?: number;
   iconKey?: string | null;
   colorScheme?: string | null;
+  order: number;
 }
 
 export interface CreateTopicDTO {

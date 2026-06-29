@@ -12,6 +12,7 @@ export interface Level {
   timeLimit: number | null;
   simulationMode: SimulationMode;
   questionsCount?: number;
+  order: number;
 }
 
 export interface CreateLevelDTO {

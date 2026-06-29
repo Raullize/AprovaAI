@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../services/api';
+import { accountService } from '../services/account.service';
 
 export interface User {
   id: string;
@@ -47,8 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   async function refreshUser() {
     try {
-      const response = await api.get('/account/profile');
-      const updatedUser = response.data;
+      const updatedUser = await accountService.getProfile();
       if (updatedUser) {
         localStorage.setItem('@aprovaai:user', JSON.stringify(updatedUser));
         setUser(updatedUser);
@@ -65,12 +65,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (storedToken && storedUser) {
         setUser(JSON.parse(storedUser));
-        // Refresh profile in background
-        api.get('/account/profile')
-          .then((response) => {
-            if (response.data) {
-              localStorage.setItem('@aprovaai:user', JSON.stringify(response.data));
-              setUser(response.data);
+        accountService.getProfile()
+          .then((updatedUser) => {
+            if (updatedUser) {
+              localStorage.setItem('@aprovaai:user', JSON.stringify(updatedUser));
+              setUser(updatedUser);
             }
           })
           .catch((err) => console.error(err));

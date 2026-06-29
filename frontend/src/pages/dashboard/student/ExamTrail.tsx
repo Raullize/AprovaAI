@@ -12,7 +12,10 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
-import api from '../../../services/api';
+import { examsService } from '../../../services/exams.service';
+import { topicsService } from '../../../services/topics.service';
+import { levelsService } from '../../../services/levels.service';
+import { simulationsService } from '../../../services/simulations.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
 import EmptyState from '../../../components/ui/EmptyState';
@@ -89,20 +92,20 @@ export default function ExamTrail() {
     async function loadTrail() {
       try {
         setIsLoading(true);
-        const examRes = await api.get(`/exams/${examId}`);
-        setExam(examRes.data);
+        const examData = await examsService.findOne(examId!);
+        setExam(examData);
 
-        const topicsRes = await api.get(`/topics/exam/${examRes.data.id}`);
-        const topicsData = topicsRes.data.filter(
-          (topic: any) => topic.status === 'ACTIVE',
+        const topicsDataAll = await topicsService.findAll(examData.id);
+        const topicsData = topicsDataAll.filter(
+          (topic) => topic.status === 'ACTIVE',
         );
 
         const topicsWithLevels = await Promise.all(
-          topicsData.map(async (topic: any) => {
-            const levelsRes = await api.get(`/levels/topic/${topic.id}`);
-            const publicLevels = levelsRes.data
-              .filter((level: any) => level.status === 'ACTIVE')
-              .sort((a: any, b: any) => a.order - b.order);
+          topicsData.map(async (topic) => {
+            const levelsData = await levelsService.findAll(topic.id);
+            const publicLevels = levelsData
+              .filter((level) => level.status === 'ACTIVE')
+              .sort((a, b) => a.order - b.order);
 
             return {
               ...topic,
@@ -113,10 +116,10 @@ export default function ExamTrail() {
 
         const visibleTopics = topicsWithLevels
           .filter(
-            (topic: any) =>
+            (topic) =>
               topic.levels.length > 0 || topic.showComingSoon === true,
           )
-          .sort((a: any, b: any) => a.order - b.order);
+          .sort((a, b) => a.order - b.order);
 
         setTopics(visibleTopics);
         if (visibleTopics.length > 0) {
@@ -125,8 +128,8 @@ export default function ExamTrail() {
           setExpandedTopic(null);
         }
 
-        const historyRes = await api.get('/simulations/history');
-        setHistory(historyRes.data || []);
+        const historyData = await simulationsService.getHistory();
+        setHistory(historyData);
       } catch (err) {
         console.error('Failed to load trail:', err);
       } finally {

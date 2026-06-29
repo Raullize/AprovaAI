@@ -15,6 +15,7 @@ import { cn } from '../../../lib/utils';
 import UserAvatar from '../../../components/ui/UserAvatar';
 import Modal from '../../../components/ui/Modal';
 import { Card } from '../../../components/ui/Card';
+import { calculatePasswordStrength } from '../../../utils/password';
 
 export default function ProfileSettings() {
   const { user, signOut, refreshUser } = useAuth();
@@ -120,49 +121,20 @@ export default function ProfileSettings() {
     }
   };
 
-  // Helper for password strength calculation
-  const getPasswordStrength = (pwd: string) => {
-    if (!pwd)
-      return {
-        score: 0,
-        label: '',
-        color: 'bg-slate-200',
-        textColor: 'text-slate-400',
-        width: 'w-0',
-      };
-    let score = 0;
-    if (pwd.length >= 6) score += 1;
-    if (pwd.length >= 10) score += 1;
-    if (/[A-Z]/.test(pwd)) score += 1;
-    if (/[0-9]/.test(pwd)) score += 1;
-    if (/[^A-Za-z0-9]/.test(pwd)) score += 1;
-
-    if (score <= 2)
-      return {
-        score,
-        label: 'Fraca',
-        color: 'bg-red-500',
-        textColor: 'text-red-500',
-        width: 'w-1/3',
-      };
-    if (score <= 4)
-      return {
-        score,
-        label: 'Média',
-        color: 'bg-amber-500',
-        textColor: 'text-amber-500',
-        width: 'w-2/3',
-      };
-    return {
-      score,
-      label: 'Forte',
-      color: 'bg-emerald-500',
-      textColor: 'text-emerald-500',
-      width: 'w-full',
-    };
+  const strengthResult = calculatePasswordStrength(newPassword);
+  const passwordStrength = {
+    score: strengthResult.score,
+    label: strengthResult.label,
+    color: strengthResult.color,
+    textColor: strengthResult.color ? strengthResult.color.replace('bg-', 'text-') : 'text-slate-400',
+    width: strengthResult.score === 0
+      ? 'w-0'
+      : strengthResult.score <= 3
+        ? 'w-1/3'
+        : strengthResult.score <= 5
+          ? 'w-2/3'
+          : 'w-full',
   };
-
-  const passwordStrength = getPasswordStrength(newPassword);
 
   return (
     <div className="min-h-screen bg-slate-50/50 px-4 py-8">

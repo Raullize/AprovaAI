@@ -3,7 +3,7 @@ import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
 import { type Question } from '@/services/questions.service';
 
-const BACKEND_URL = 'http://localhost:3001';
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 interface QuestionCardProps {
   question: Question;
