@@ -1,3 +1,7 @@
+/**
+ * Mock data for achievements — intentionally hardcoded.
+ * Will be replaced by achievementsService once the logic is defined.
+ */
 import type { ComponentType } from 'react';
 import { Trophy, Zap, Shield, Target, Clock, Compass, Calendar } from 'lucide-react';
 

@@ -17,8 +17,9 @@ import UserAvatar from '../../../components/ui/UserAvatar';
 import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
-import api from '../../../services/api';
-import { achievements } from './achievementsData';
+import { studentService } from '../../../services/student.service';
+import { simulationsService, type ApiSimulationHistoryItem } from '../../../services/simulations.service';
+import { achievements } from '../../../mocks/achievements.mock';
 
 export default function Profile() {
   const { user } = useAuth();
@@ -80,19 +81,17 @@ export default function Profile() {
 
   const [activeDays, setActiveDays] = useState<number[]>([]);
   const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<ApiSimulationHistoryItem[]>([]);
 
   // Busca stats do mês selecionado sempre que o mês/ano mudar
   useEffect(() => {
     async function loadMonthStats() {
       const monthParam = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
       try {
-        const statsRes = await api.get(`/student/dashboard-stats?month=${monthParam}`);
-        if (statsRes.data) {
-          setActiveDays(statsRes.data.activeDays);
-          if (isCurrentMonth) {
-            setStreakCount(statsRes.data.streakCount);
-          }
+        const stats = await studentService.getDashboardStats(monthParam);
+        setActiveDays(stats.activeDays);
+        if (isCurrentMonth) {
+          setStreakCount(stats.streakCount);
         }
       } catch (err) {
         console.error('Failed to load month stats:', err);
@@ -105,10 +104,8 @@ export default function Profile() {
   useEffect(() => {
     async function loadProfileData() {
       try {
-        const historyRes = await api.get('/simulations/history');
-        if (historyRes.data) {
-          setHistory(historyRes.data);
-        }
+        const historyData = await simulationsService.getHistory();
+        setHistory(historyData);
       } catch (err) {
         console.error('Failed to load profile data:', err);
       }

@@ -2,7 +2,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../../components/ui/Card';
 import { cn } from '../../../lib/utils';
-import { achievements } from './achievementsData';
+import { achievements } from '../../../mocks/achievements.mock';
 
 export default function Achievements() {
   const navigate = useNavigate();
