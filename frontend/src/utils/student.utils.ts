@@ -16,6 +16,7 @@ export interface RecentExam {
  */
 export function getRecentExamsFromHistory(
   history: ApiSimulationHistoryItem[],
+  levelsCountPerExam: Record<string, number> = {},
   limit = 3,
 ): RecentExam[] {
   return Array.from(
@@ -42,7 +43,7 @@ export function getRecentExamsFromHistory(
           );
 
           const completedLevels = new Set(examHistory.map((item) => item.levelId));
-          const totalEstimated = 10;
+          const totalEstimated = levelsCountPerExam[examKey] || 10;
           const progress = Math.min(
             100,
             Math.round((completedLevels.size / totalEstimated) * 100),

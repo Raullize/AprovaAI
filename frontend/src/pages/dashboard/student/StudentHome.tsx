@@ -19,6 +19,8 @@ import { IconBox } from '../../../components/ui/IconBox';
 import { studentService } from '../../../services/student.service';
 import { simulationsService, type ApiSimulationHistoryItem } from '../../../services/simulations.service';
 import { getRecentExamsFromHistory } from '../../../utils/student.utils';
+import { topicsService } from '../../../services/topics.service';
+import { levelsService } from '../../../services/levels.service';
 
 export default function StudentHome() {
   const { user } = useAuth();
@@ -27,6 +29,45 @@ export default function StudentHome() {
   const [activeDays, setActiveDays] = useState<number[]>([]);
   const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
   const [history, setHistory] = useState<ApiSimulationHistoryItem[]>([]);
+  const [levelsCountMap, setLevelsCountMap] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    if (history.length === 0) return;
+
+    const recentExamIds = Array.from(
+      new Set(
+        history
+          .map((h) => h.level?.topic?.exam?.id)
+          .filter(Boolean) as string[]
+      )
+    ).slice(0, 3);
+
+    async function loadLevelsCounts() {
+      const counts: Record<string, number> = {};
+      await Promise.all(
+        recentExamIds.map(async (examId) => {
+          try {
+            const topicsData = await topicsService.findAll(examId);
+            const activeTopics = topicsData.filter((t) => t.status === 'ACTIVE');
+            let total = 0;
+            await Promise.all(
+              activeTopics.map(async (topic) => {
+                const levelsData = await levelsService.findAll(topic.id);
+                const activeLevels = levelsData.filter((l) => l.status === 'ACTIVE');
+                total += activeLevels.length;
+              })
+            );
+            counts[examId] = total;
+          } catch (err) {
+            console.error(`Failed to load levels count for exam ${examId}:`, err);
+          }
+        })
+      );
+      setLevelsCountMap(counts);
+    }
+
+    loadLevelsCounts();
+  }, [history]);
 
   useEffect(() => {
     async function loadData() {
@@ -56,7 +97,7 @@ export default function StudentHome() {
   const totalQuest = completedAttempts.reduce((sum, h) => sum + (h.totalQuestions || 0), 0);
   const accuracy = totalQuest > 0 ? Math.round((totalCorrect / totalQuest) * 100) : 0;
 
-  const recentExams = getRecentExamsFromHistory(history);
+  const recentExams = getRecentExamsFromHistory(history, levelsCountMap);
 
   const getWeeklyActiveState = () => {
     const today = new Date();
