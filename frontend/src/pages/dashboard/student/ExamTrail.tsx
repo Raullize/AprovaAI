@@ -226,7 +226,9 @@ export default function ExamTrail() {
       : [
         'O modo treino mostra feedback imediato após cada resposta confirmada.',
         'Use este nível para aprender com mais leveza e reforçar os pontos principais.',
-        'Ao concluir, seu desempenho atualiza XP, progresso e histórico normalmente.',
+        pendingStart?.level.timeLimit
+          ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
+          : 'Este treino não tem cronômetro, então você pode concluir no seu ritmo.',
       ];
 
   const handleStartLevel = (level: LevelData, topic: TopicData) => {
@@ -317,7 +319,7 @@ export default function ExamTrail() {
                   </span>
                 </div>
                 <p className="text-base font-bold text-slate-800">
-                  {pendingStart.level.simulationMode === 'EXAM'
+                  {pendingStart.level.timeLimit && pendingStart.level.timeLimit > 0
                     ? formatDuration(pendingStart.level.timeLimit)
                     : 'Sem cronômetro'}
                 </p>

@@ -13,7 +13,9 @@ interface LevelFormData {
   name: string;
   xpReward: number;
   passingPercentage: number;
-  timeLimit?: number;
+  timeLimitHours?: number;
+  timeLimitMinutes?: number;
+  timeLimitSeconds?: number;
   simulationMode: SimulationMode;
   topicId: string;
   status: 'ACTIVE' | 'INACTIVE';
@@ -51,6 +53,9 @@ export function LevelFormModal({
   });
 
   const statusValue = watch('status');
+  const timeLimitHoursVal = watch('timeLimitHours');
+  const timeLimitMinutesVal = watch('timeLimitMinutes');
+  const timeLimitSecondsVal = watch('timeLimitSeconds');
 
   useEffect(() => {
     if (!isOpen) return;
@@ -60,11 +65,21 @@ export function LevelFormModal({
         try {
           setIsLoading(true);
           const level = await levelsService.findOne(levelId);
+          let h = 0;
+          let m = 0;
+          let s = 0;
+          if (level.timeLimit) {
+            h = Math.floor(level.timeLimit / 3600);
+            m = Math.floor((level.timeLimit % 3600) / 60);
+            s = level.timeLimit % 60;
+          }
           reset({
             name: level.name,
             xpReward: level.xpReward,
             passingPercentage: level.passingPercentage,
-            timeLimit: level.timeLimit ?? undefined,
+            timeLimitHours: h || undefined,
+            timeLimitMinutes: m || undefined,
+            timeLimitSeconds: s || undefined,
             simulationMode: level.simulationMode || 'PRACTICE',
             status: level.status,
             topicId,
@@ -83,7 +98,9 @@ export function LevelFormModal({
         name: '',
         xpReward: 0,
         passingPercentage: 70,
-        timeLimit: undefined,
+        timeLimitHours: undefined,
+        timeLimitMinutes: undefined,
+        timeLimitSeconds: undefined,
         simulationMode: 'PRACTICE',
       });
     }
@@ -92,18 +109,31 @@ export function LevelFormModal({
   const onSubmit = async (data: LevelFormData) => {
     try {
       setIsSaving(true);
-      const payload = {
-        ...data,
+      const h = Number(data.timeLimitHours || 0);
+      const m = Number(data.timeLimitMinutes || 0);
+      const s = Number(data.timeLimitSeconds || 0);
+      const totalSeconds = (h * 3600) + (m * 60) + s;
+
+      const { timeLimitHours, timeLimitMinutes, timeLimitSeconds, ...rest } = data;
+      const basePayload = {
+        ...rest,
         xpReward: Number(data.xpReward),
         passingPercentage: Number(data.passingPercentage),
-        timeLimit: data.timeLimit ? Number(data.timeLimit) : undefined,
         simulationMode: data.simulationMode,
       };
+
       if (isEditing && levelId) {
-        await levelsService.update(levelId, payload);
+        await levelsService.update(levelId, {
+          ...basePayload,
+          timeLimit: totalSeconds > 0 ? totalSeconds : null,
+        });
         toast({ title: 'Nível atualizado!', variant: 'success' });
       } else {
-        await levelsService.create({ ...payload, topicId });
+        await levelsService.create({ 
+          ...basePayload, 
+          topicId,
+          timeLimit: totalSeconds > 0 ? totalSeconds : undefined,
+        });
         toast({ title: 'Nível criado!', variant: 'success' });
       }
       onSuccess();
@@ -156,18 +186,66 @@ export function LevelFormModal({
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="Tempo Limite (minutos)"
-              type="number"
-              placeholder="Opcional"
-              {...register('timeLimit', {
-                min: {
-                  value: 1,
-                  message: 'O tempo deve ser no mínimo 1 minuto',
-                },
-              })}
-              error={errors.timeLimit?.message}
-            />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-gray-700">
+                Tempo Limite
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <Input
+                    type="number"
+                    placeholder="00"
+                    {...register('timeLimitHours', {
+                      min: { value: 0, message: 'Mínimo 0' }
+                    })}
+                    error={errors.timeLimitHours?.message}
+                    className="text-center"
+                  />
+                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center">horas</span>
+                </div>
+                <div>
+                  <Input
+                    type="number"
+                    placeholder="00"
+                    {...register('timeLimitMinutes', {
+                      min: { value: 0, message: 'Mínimo 0' },
+                      max: { value: 59, message: 'Máximo 59' }
+                    })}
+                    error={errors.timeLimitMinutes?.message}
+                    className="text-center"
+                  />
+                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center">minutos</span>
+                </div>
+                <div>
+                  <Input
+                    type="number"
+                    placeholder="00"
+                    {...register('timeLimitSeconds', {
+                      min: { value: 0, message: 'Mínimo 0' },
+                      max: { value: 59, message: 'Máximo 59' }
+                    })}
+                    error={errors.timeLimitSeconds?.message}
+                    className="text-center"
+                  />
+                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center">segundos</span>
+                </div>
+              </div>
+              {(() => {
+                const hours = Number(timeLimitHoursVal || 0);
+                const mins = Number(timeLimitMinutesVal || 0);
+                const secs = Number(timeLimitSecondsVal || 0);
+                if (hours > 0 || mins > 0 || secs > 0) {
+                  const pad = (num: number) => String(num).padStart(2, '0');
+                  const hms = `${pad(hours)}:${pad(mins)}:${pad(secs)}`;
+                  return (
+                    <span className="text-[10px] text-slate-500 mt-0.5 block">
+                      Visualização: <strong className="text-indigo-650">{hms}</strong>
+                    </span>
+                  );
+                }
+                return null;
+              })()}
+            </div>
 
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700">

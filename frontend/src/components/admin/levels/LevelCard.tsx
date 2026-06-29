@@ -1,13 +1,15 @@
-import { Target, ChevronRight, GripVertical } from 'lucide-react';
+import { ChevronRight, GripVertical, Clock } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
 import { type Level } from '@/services/levels.service';
 import { cn } from '@/lib/utils';
+import { getIconOption } from '@/config/examThemes';
 
 interface LevelCardProps {
   level: Level;
   colorScheme?: string;
+  iconKey?: string;
   onEdit: (id: string) => void;
   onDelete: (level: Level) => void;
   onToggleStatus: (level: Level) => void;
@@ -107,6 +109,7 @@ const CARD_THEMES: Record<
 export function LevelCard({
   level,
   colorScheme = 'indigo',
+  iconKey = 'target',
   onEdit,
   onDelete,
   onToggleStatus,
@@ -117,6 +120,8 @@ export function LevelCard({
   onDrop,
 }: LevelCardProps) {
   const theme = CARD_THEMES[colorScheme] || CARD_THEMES.indigo;
+  const iconOpt = getIconOption(iconKey || 'target');
+  const Icon = iconOpt.Icon;
 
   return (
     <div
@@ -143,7 +148,7 @@ export function LevelCard({
                 theme.iconBg,
               )}
             >
-              <Target className={cn('h-5 w-5', theme.iconText)} />
+              <Icon className={cn('h-5 w-5', theme.iconText)} />
             </div>
             <StatusBadge status={level.status} />
           </div>
@@ -163,12 +168,12 @@ export function LevelCard({
         </h3>
 
         {/* Info Grid */}
-        <div className="grid grid-cols-2 gap-2 mt-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
+        <div className="grid grid-cols-3 gap-2 mt-4 bg-slate-50 p-3 rounded-xl border border-slate-100">
           <div className="flex flex-col">
             <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400">
               Recompensa
             </span>
-            <span className="text-sm font-semibold text-amber-600">
+            <span className="text-sm font-semibold text-amber-600 truncate">
               {level.xpReward} XP
             </span>
           </div>
@@ -176,8 +181,32 @@ export function LevelCard({
             <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400">
               Aprovação
             </span>
-            <span className="text-sm font-semibold text-slate-700">
+            <span className="text-sm font-semibold text-slate-700 truncate">
               {level.passingPercentage}%
+            </span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[10px] uppercase font-semibold tracking-wider text-slate-400">
+              Tempo
+            </span>
+            <span className="text-sm font-semibold text-slate-700 flex items-center gap-1 truncate">
+              {level.timeLimit ? (
+                <>
+                  <Clock className="h-3 w-3 text-slate-400 shrink-0" />
+                  {(() => {
+                    const h = Math.floor(level.timeLimit / 3600);
+                    const m = Math.floor((level.timeLimit % 3600) / 60);
+                    const s = level.timeLimit % 60;
+                    const parts = [];
+                    if (h > 0) parts.push(`${h}h`);
+                    if (m > 0) parts.push(`${m}m`);
+                    if (s > 0) parts.push(`${s}s`);
+                    return parts.join(' ');
+                  })()}
+                </>
+              ) : (
+                <span className="text-slate-400 italic text-xs">N/A</span>
+              )}
             </span>
           </div>
         </div>

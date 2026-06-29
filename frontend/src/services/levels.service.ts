@@ -25,7 +25,9 @@ export interface CreateLevelDTO {
   simulationMode: SimulationMode;
 }
 
-export type UpdateLevelDTO = Partial<Omit<CreateLevelDTO, 'topicId'>>;
+export type UpdateLevelDTO = Partial<Omit<CreateLevelDTO, 'topicId' | 'timeLimit'>> & {
+  timeLimit?: number | null;
+};
 
 export const levelsService = {
   findAll: async (topicId?: string) => {

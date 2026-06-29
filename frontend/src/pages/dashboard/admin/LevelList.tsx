@@ -18,6 +18,7 @@ export default function LevelList() {
   const [levels, setLevels] = useState<Level[]>([]);
   const [topicName, setTopicName] = useState('');
   const [topicColorScheme, setTopicColorScheme] = useState('indigo');
+  const [topicIconKey, setTopicIconKey] = useState('target');
   const [examName, setExamName] = useState('');
   const [examId, setExamId] = useState('');
   const [resolvedTopicId, setResolvedTopicId] = useState<string>(topicId ?? '');
@@ -40,6 +41,7 @@ export default function LevelList() {
         const topic = await topicsService.findOne(topicId);
         setTopicName(topic.name);
         setTopicColorScheme(topic.colorScheme || 'indigo');
+        setTopicIconKey(topic.iconKey || 'target');
         setResolvedTopicId(topic.id);
         const exam = await examsService.findOne(topic.examId);
         setExamName(exam.name);
@@ -202,6 +204,7 @@ export default function LevelList() {
               key={level.id}
               level={level}
               colorScheme={topicColorScheme}
+              iconKey={topicIconKey}
               isDragging={draggedId === level.id}
               onDragStart={() => setDraggedId(level.id)}
               onDragOver={handleDragOver}
