@@ -8,7 +8,7 @@ import { levelsService } from '@/services/levels.service';
 import { topicsService } from '@/services/topics.service';
 import { examsService } from '@/services/exams.service';
 import { uploadService } from '@/services/upload.service';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 import { SearchInput } from '@/components/admin/shared/SearchInput';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';

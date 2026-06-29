@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import { topicsService, type Topic } from '@/services/topics.service';
 import { examsService } from '@/services/exams.service';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 import { SearchInput } from '@/components/admin/shared/SearchInput';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';

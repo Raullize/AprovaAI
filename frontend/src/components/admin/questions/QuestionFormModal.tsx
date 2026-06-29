@@ -12,7 +12,7 @@ import {
   type Option,
 } from '@/services/questions.service';
 import { uploadService } from '@/services/upload.service';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 
 type FormData = {
   content: string;

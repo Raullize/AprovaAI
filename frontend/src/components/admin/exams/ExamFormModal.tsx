@@ -6,7 +6,7 @@ import Input from '@/components/ui/Input';
 import Loading from '@/components/ui/Loading';
 import { StatusToggle } from '@/components/admin/shared/StatusToggle';
 import { examsService } from '@/services/exams.service';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
 import { useState } from 'react';
 import {
   ICON_OPTIONS,

@@ -6,14 +6,15 @@ import Input from '@/components/ui/Input';
 import Loading from '@/components/ui/Loading';
 import { StatusToggle } from '@/components/admin/shared/StatusToggle';
 import { levelsService } from '@/services/levels.service';
-import { useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/useToast';
+import type { SimulationMode } from '@/types/simulation.types';
 
 interface LevelFormData {
   name: string;
   xpReward: number;
   passingPercentage: number;
   timeLimit?: number;
-  simulationMode: 'PRACTICE' | 'EXAM';
+  simulationMode: SimulationMode;
   topicId: string;
   status: 'ACTIVE' | 'INACTIVE';
 }

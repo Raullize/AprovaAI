@@ -5,7 +5,7 @@ import AuthLayout from '../../components/auth/AuthLayout';
 import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import GoogleButton from '../../components/ui/GoogleButton';
-import { useToast } from '../../hooks/use-toast';
+import { useToast } from '../../hooks/useToast';
 import Loading from '../../components/ui/Loading';
 import { AxiosError } from 'axios';
 import { usePageTitle } from '../../hooks/usePageTitle';
