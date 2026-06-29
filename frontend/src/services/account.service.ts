@@ -5,6 +5,7 @@ export interface UpdateProfileDTO {
   fullName?: string;
   email?: string;
   username?: string;
+  avatarUrl?: string | null;
 }
 
 export interface UpdatePasswordDTO {

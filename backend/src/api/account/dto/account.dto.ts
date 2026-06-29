@@ -18,6 +18,11 @@ export const updateAccountProfileSchema = z
       .min(1, 'Nome de usuario nao pode ser vazio.')
       .optional()
       .describe('Novo nome de usuario unico da conta. Ex: raullize'),
+    avatarUrl: z
+      .string()
+      .nullable()
+      .optional()
+      .describe('URL ou caminho do novo avatar do usuario.'),
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: 'Informe ao menos um campo para atualizar o perfil.',

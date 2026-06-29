@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 import { User as UserIcon } from 'lucide-react';
@@ -6,7 +6,7 @@ import { User as UserIcon } from 'lucide-react';
 interface UserAvatarProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
-  userOverride?: { id?: string; fullName?: string; username?: string };
+  userOverride?: { id?: string; fullName?: string; username?: string; avatarUrl?: string | null };
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({
@@ -16,27 +16,15 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 }) => {
   const { user: authUser } = useAuth();
   const user = userOverride || authUser;
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  // Listen to profile updates (triggered via custom event or localStorage sync)
-  useEffect(() => {
-    function loadAvatar() {
-      if (user?.id) {
-        const stored = localStorage.getItem(`@aprovaai:avatarUrl:${user.id}`);
-        setAvatarUrl(stored);
-      } else {
-        setAvatarUrl(null);
-      }
-    }
-    loadAvatar();
+  const rawAvatarUrl = user?.avatarUrl;
+  const BACKEND_URL = import.meta.env.VITE_STATIC_URL || 'http://localhost:3001';
 
-    window.addEventListener('storage', loadAvatar);
-    window.addEventListener('avatar-update', loadAvatar);
-    return () => {
-      window.removeEventListener('storage', loadAvatar);
-      window.removeEventListener('avatar-update', loadAvatar);
-    };
-  }, [user]);
+  const avatarUrl = rawAvatarUrl
+    ? rawAvatarUrl.startsWith('http')
+      ? rawAvatarUrl
+      : `${BACKEND_URL}${rawAvatarUrl.startsWith('/') ? rawAvatarUrl : `/${rawAvatarUrl}`}`
+    : null;
 
   const initials = user?.fullName
     ? user.fullName

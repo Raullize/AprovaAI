@@ -11,6 +11,7 @@ export interface UpdateAccountProfileRequest {
   fullName?: string;
   email?: string;
   username?: string;
+  avatarUrl?: string | null;
 }
 
 @Injectable()
@@ -54,6 +55,10 @@ export class UpdateAccountProfileUseCase
       user.changeFullName(request.fullName);
     }
 
+    if (request.avatarUrl !== undefined) {
+      user.changeAvatarUrl(request.avatarUrl);
+    }
+
     const savedUser = await this.userRepository.save(user);
 
     return {
@@ -67,6 +72,8 @@ export class UpdateAccountProfileUseCase
       streakCount: savedUser.streakCount,
       bestStreak: savedUser.bestStreak,
       lastActiveAt: savedUser.lastActiveAt,
+      avatarUrl: savedUser.avatarUrl,
+      createdAt: savedUser.createdAt,
     };
   }
 }

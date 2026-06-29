@@ -61,6 +61,7 @@ export class AccountController {
       fullName: dto.fullName,
       email: dto.email,
       username: dto.username,
+      avatarUrl: dto.avatarUrl,
     });
   }
 

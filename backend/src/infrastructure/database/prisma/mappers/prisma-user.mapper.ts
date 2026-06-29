@@ -17,6 +17,7 @@ export class PrismaUserMapper {
         streakCount: raw.streakCount,
         bestStreak: raw.bestStreak,
         lastActiveAt: raw.lastActiveAt,
+        avatarUrl: raw.avatarUrl,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -38,6 +39,7 @@ export class PrismaUserMapper {
       streakCount: user.streakCount,
       bestStreak: user.bestStreak,
       lastActiveAt: user.lastActiveAt ?? null,
+      avatarUrl: user.avatarUrl ?? null,
       createdAt: user.createdAt ?? new Date(),
       updatedAt: user.updatedAt ?? new Date(),
     };

@@ -100,4 +100,25 @@ describe('UpdateAccountProfileUseCase', () => {
       }),
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
+
+  it('should be able to update the student avatar url', async () => {
+    const user = User.create({
+      fullName: 'Name',
+      username: 'username',
+      email: Email.create('user@example.com'),
+      passwordHash: 'hashed-password',
+      dateOfBirth: new Date('1998-01-01'),
+      avatarUrl: 'old-avatar.png',
+    });
+
+    userRepository.items.push(user);
+
+    const result = await sut.execute({
+      userId: user.id,
+      avatarUrl: 'new-avatar.png',
+    });
+
+    expect(result.avatarUrl).toBe('new-avatar.png');
+    expect(userRepository.items[0].avatarUrl).toBe('new-avatar.png');
+  });
 });

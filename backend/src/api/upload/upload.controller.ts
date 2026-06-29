@@ -29,7 +29,6 @@ export class UploadController {
   ) {}
 
   @Post()
-  @Roles(UserRole.ADMIN)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {

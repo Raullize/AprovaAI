@@ -14,6 +14,7 @@ export interface UserProps {
   streakCount?: number;
   bestStreak?: number;
   lastActiveAt?: Date | null;
+  avatarUrl?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -52,6 +53,9 @@ export class User extends AggregateRoot<UserProps> {
   get lastActiveAt(): Date | null | undefined {
     return this.props.lastActiveAt;
   }
+  get avatarUrl(): string | null | undefined {
+    return this.props.avatarUrl;
+  }
   get createdAt(): Date | undefined {
     return this.props.createdAt;
   }
@@ -69,6 +73,7 @@ export class User extends AggregateRoot<UserProps> {
         streakCount: props.streakCount ?? 0,
         bestStreak: props.bestStreak ?? 0,
         lastActiveAt: props.lastActiveAt ?? null,
+        avatarUrl: props.avatarUrl ?? null,
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
       },
@@ -158,6 +163,11 @@ export class User extends AggregateRoot<UserProps> {
       throw new ValidationError('Nome de usuário não pode ser vazio.');
     }
     this.props.username = username;
+    this.props.updatedAt = new Date();
+  }
+
+  public changeAvatarUrl(avatarUrl: string | null): void {
+    this.props.avatarUrl = avatarUrl;
     this.props.updatedAt = new Date();
   }
 }

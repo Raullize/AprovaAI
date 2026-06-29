@@ -17,6 +17,7 @@ export interface AccountProfileResponse {
   streakCount: number;
   bestStreak: number;
   lastActiveAt: Date | null | undefined;
+  avatarUrl: string | null | undefined;
   createdAt?: Date;
 }
 
@@ -46,6 +47,7 @@ export class GetAccountProfileUseCase
       streakCount: user.streakCount,
       bestStreak: user.bestStreak,
       lastActiveAt: user.lastActiveAt,
+      avatarUrl: user.avatarUrl,
       createdAt: user.createdAt,
     };
   }

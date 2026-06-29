@@ -13,6 +13,7 @@ export interface User {
   bestStreak?: number;
   lastActiveAt?: string | null;
   subscriptionPlan: string;
+  avatarUrl?: string | null;
   createdAt?: string;
 }
 
