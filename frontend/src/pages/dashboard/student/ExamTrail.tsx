@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
+import type { SimulationMode } from '../../../types/simulation.types';
 
 import api from '../../../services/api';
 import Loading from '../../../components/ui/Loading';
@@ -129,7 +130,7 @@ interface LevelData {
   status: 'COMPLETED' | 'CURRENT' | 'LOCKED';
   stars?: number;
   attempted?: boolean;
-  simulationMode: 'PRACTICE' | 'EXAM';
+  simulationMode: SimulationMode;
   timeLimit?: number | null;
   passingPercentage?: number;
 }

@@ -1,4 +1,5 @@
 import api from './api';
+import type { SimulationMode } from '../types/simulation.types';
 
 export interface Level {
   id: string;
@@ -9,7 +10,7 @@ export interface Level {
   status: 'ACTIVE' | 'INACTIVE';
   topicId: string;
   timeLimit: number | null;
-  simulationMode: 'PRACTICE' | 'EXAM';
+  simulationMode: SimulationMode;
   questionsCount?: number;
 }
 
@@ -20,7 +21,7 @@ export interface CreateLevelDTO {
   status: 'ACTIVE' | 'INACTIVE';
   topicId: string;
   timeLimit?: number;
-  simulationMode: 'PRACTICE' | 'EXAM';
+  simulationMode: SimulationMode;
 }
 
 export type UpdateLevelDTO = Partial<Omit<CreateLevelDTO, 'topicId'>>;
