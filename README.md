@@ -107,7 +107,7 @@ Para compreender a fundo as decisões técnicas e arquiteturais deste projeto, c
 - [**Backend Architecture (Clean Arch & DDD)**](docs/BACKEND_ARCHITECTURE.md) - Manual completo de como o código do backend está organizado, detalhando Mappers, Aggregate Roots, Repositórios em Memória e o fluxo de dados.
 - [**Frontend Architecture**](docs/FRONTEND_ARCHITECTURE.md) - Padrões de organização, gerenciamento de estado e bibliotecas usadas no cliente React.
 - [**Guia de Seeders**](docs/SEEDERS.md) - Como popular o banco com dados de teste.
-- [**Estratégia de Testes**](docs/TESTES.md) - Como os testes unitários foram estruturados.
+- [**Estratégia de Testes**](docs/TESTS.md) - Como os testes unitários foram estruturados.
 - [**Guia do Docker**](docs/DOCKER.md) - Entendendo a infraestrutura local em containers.
 - [**Regras de Negócio (BDD)**](./docs/BUSINESS_RULES.md) - Fluxos e comportamentos do usuário descritos em cenários (Dado/Quando/Então), servindo como guia e base para testes.
 - [**Arquitetura B2B (Futuro)**](docs/FUTURE_B2B_ARCHITECTURE.md) - Proposta de evolução para multi-tenancy e contas organizacionais.

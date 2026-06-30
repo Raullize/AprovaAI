@@ -163,7 +163,7 @@ backend/
 ```
 
 **Links Úteis:**
-- [Documentação de Testes](../docs/TESTES.md)
+- [Documentação de Testes](../docs/TESTS.md)
 - [Documentação de Seeders](../docs/SEEDERS.md)
 - [Documentação do Docker](../docs/DOCKER.md)
 - [Arquitetura do Backend](../docs/BACKEND_ARCHITECTURE.md)
