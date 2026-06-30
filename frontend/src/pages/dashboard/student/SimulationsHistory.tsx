@@ -341,11 +341,16 @@ export default function SimulationsHistory() {
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
-    return d.toLocaleDateString('pt-BR', {
+    const dateStr = d.toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
     });
+    const timeStr = d.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    return `${dateStr} às ${timeStr}`;
   };
 
   return (
