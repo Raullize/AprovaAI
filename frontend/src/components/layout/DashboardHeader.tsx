@@ -177,19 +177,25 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
 
           {isDropdownOpen && (
             <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-slate-200 rounded-xl shadow-lg py-1 z-30 animate-in fade-in slide-in-from-top-1 duration-100">
+              {user?.role !== 'ADMIN' && (
+                <button
+                  onClick={() => {
+                    navigate('/dashboard/profile');
+                    setIsDropdownOpen(false);
+                  }}
+                  className="w-full flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors gap-2 text-left"
+                >
+                  <UserIcon className="h-4 w-4 text-slate-400" />
+                  <span>Perfil</span>
+                </button>
+              )}
               <button
                 onClick={() => {
-                  navigate('/dashboard/profile');
-                  setIsDropdownOpen(false);
-                }}
-                className="w-full flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors gap-2 text-left"
-              >
-                <UserIcon className="h-4 w-4 text-slate-400" />
-                <span>Perfil</span>
-              </button>
-              <button
-                onClick={() => {
-                  navigate('/dashboard/profile/settings');
+                  navigate(
+                    user?.role === 'ADMIN'
+                      ? '/dashboard/settings'
+                      : '/dashboard/profile/settings'
+                  );
                   setIsDropdownOpen(false);
                 }}
                 className="w-full flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors gap-2 text-left"

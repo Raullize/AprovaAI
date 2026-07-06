@@ -198,19 +198,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                   : 'left-3 right-3 bottom-16 w-auto',
               )}
             >
+              {user?.role !== 'ADMIN' && (
+                <button
+                  onClick={() => {
+                    navigate('/dashboard/profile');
+                    setIsUserMenuOpen(false);
+                  }}
+                  className="w-full flex items-center px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-850 hover:text-white transition-colors gap-2 text-left rounded-lg"
+                >
+                  <User className="h-4 w-4 text-slate-500" />
+                  <span>Perfil</span>
+                </button>
+              )}
               <button
                 onClick={() => {
-                  navigate('/dashboard/profile');
-                  setIsUserMenuOpen(false);
-                }}
-                className="w-full flex items-center px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-850 hover:text-white transition-colors gap-2 text-left rounded-lg"
-              >
-                <User className="h-4 w-4 text-slate-500" />
-                <span>Perfil</span>
-              </button>
-              <button
-                onClick={() => {
-                  navigate('/dashboard/profile/settings');
+                  navigate(
+                    user?.role === 'ADMIN'
+                      ? '/dashboard/settings'
+                      : '/dashboard/profile/settings'
+                  );
                   setIsUserMenuOpen(false);
                 }}
                 className="w-full flex items-center px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-850 hover:text-white transition-colors gap-2 text-left rounded-lg"

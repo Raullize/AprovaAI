@@ -11,6 +11,7 @@ import AdminExams from '../pages/dashboard/admin/AdminExams';
 import TopicList from '../pages/dashboard/admin/TopicList';
 import LevelList from '../pages/dashboard/admin/LevelList';
 import QuestionList from '../pages/dashboard/admin/QuestionList';
+import AdminSettings from '../pages/dashboard/admin/AdminSettings';
 import StudentHome from '../pages/dashboard/student/StudentHome';
 import ExploreExams from '../pages/dashboard/student/ExploreExams';
 import ExamTrail from '../pages/dashboard/student/ExamTrail';
@@ -94,6 +95,14 @@ export function AppRoutes() {
         <Route path="profile/settings" element={<ProfileSettings />} />
         <Route path="profile/achievements" element={<Achievements />} />
         <Route path="leaderboard" element={<Leaderboard />} />
+        <Route
+          path="settings"
+          element={
+            <AdminRoute>
+              <AdminSettings />
+            </AdminRoute>
+          }
+        />
         <Route
           path="users"
           element={

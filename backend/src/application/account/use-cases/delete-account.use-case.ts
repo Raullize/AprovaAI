@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { UserRepository } from '../../../domain/users/repositories/user.repository';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
+import { ActionNotAllowedError } from '../../../shared/core/errors/action-not-allowed.error';
 
 export interface DeleteAccountRequest {
   userId: string;
@@ -24,6 +25,10 @@ export class DeleteAccountUseCase
 
     if (!user) {
       throw new ResourceNotFoundError('User', request.userId);
+    }
+
+    if (user.role === 'ADMIN') {
+      throw new ActionNotAllowedError('Administradores não podem excluir suas próprias contas.');
     }
 
     await this.userRepository.delete(user.id);
