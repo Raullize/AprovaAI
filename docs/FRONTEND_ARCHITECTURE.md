@@ -147,3 +147,21 @@ frontend/src/
 ├── types/            # Tipos globais (se necessário)
 └── App.tsx           # Ponto de entrada principal
 ```
+
+---
+
+## 5. Design Responsivo e Layouts de Tela Larga
+
+A aplicação AprovaAI adota uma estratégia responsiva híbrida projetada para acomodar fluxos focados e fluxos analíticos/gerenciais de alta produtividade.
+
+### 5.1 Largura Focada (`max-w-4xl` / `max-w-md`)
+Utilizada em visualizações individuais, configurações e telas de entrada de dados específicas:
+- **Telas de Configuração e Perfil** (`ProfileSettings.tsx`, `AdminSettings.tsx`).
+- **Modais de Formulário** (`ExamFormModal.tsx`, `QuestionFormModal.tsx`).
+- *Objetivo*: Manter o tamanho de linha de leitura confortável e evitar a dispersão visual em formulários.
+
+### 5.2 Largura Expandida (`max-w-[1600px]`)
+Utilizada em telas complexas que exigem alta produtividade, grids de múltiplos cartões ou painéis informativos paralelos:
+- **Trilha de Exame do Estudante** (`ExamTrail.tsx`): Em telas maiores (desktops e notebooks), o container de até `1600px` permite que o mapa linear e o painel fixo lateral de progresso e estatísticas fiquem posicionados lado a lado de forma harmônica.
+- **Painéis de Gerenciamento do Admin** (`AdminExams.tsx`, `TopicList.tsx`, `LevelList.tsx`, `QuestionList.tsx`): Garante espaço horizontal para visualização em grid de até 4 colunas de cartões, diminuindo a rolagem vertical de conteúdo e dando maior legibilidade às informações gerenciais.
+
