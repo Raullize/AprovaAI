@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Plus, HelpCircle } from 'lucide-react';
-import Button from '@/components/ui/Button';
+import { Plus, HelpCircle, Search } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
 import { questionsService, type Question } from '@/services/questions.service';
 import { levelsService } from '@/services/levels.service';
@@ -9,7 +8,6 @@ import { topicsService } from '@/services/topics.service';
 import { examsService } from '@/services/exams.service';
 import { uploadService } from '@/services/upload.service';
 import { useToast } from '@/hooks/useToast';
-import { SearchInput } from '@/components/admin/shared/SearchInput';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
 import { QuestionCard } from '@/components/admin/questions/QuestionCard';
@@ -146,7 +144,7 @@ export default function QuestionList() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-[1600px] mx-auto px-4 lg:px-8 py-8 space-y-6">
       <PageHeader
         title="Questões"
         subtitle={`Nível: ${breadcrumb.levelName}${!isLoading ? ` (${questions.length} quest${questions.length !== 1 ? 'ões' : 'ão'})` : ''}`}
@@ -173,35 +171,28 @@ export default function QuestionList() {
             : '/dashboard/exams'
         }
         action={
-          <Button
-            className="hidden md:flex"
+          <button
             onClick={() => {
               setEditingQuestion(null);
               setIsFormOpen(true);
             }}
+            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all text-sm shadow-md shadow-indigo-600/20 flex items-center gap-2"
           >
-            <Plus className="h-5 w-5 mr-2" /> Nova Questão
-          </Button>
+            <Plus className="h-5 w-5" /> Nova Questão
+          </button>
         }
       />
 
-      <div className="flex gap-2">
-        <div className="flex-1">
-          <SearchInput
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder="Buscar questões por conteúdo ou alternativa..."
-          />
-        </div>
-        <Button
-          className="md:hidden shrink-0 px-3.5"
-          onClick={() => {
-            setEditingQuestion(null);
-            setIsFormOpen(true);
-          }}
-        >
-          <Plus className="h-5 w-5" />
-        </Button>
+      {/* Search Input Section */}
+      <div className="relative">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Buscar questões por conteúdo ou alternativa..."
+          className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm bg-white text-slate-800"
+        />
       </div>
 
       {isLoading ? (
@@ -209,29 +200,30 @@ export default function QuestionList() {
           <Loading size="lg" />
         </div>
       ) : filteredQuestions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="bg-gray-50 p-4 rounded-full mb-4">
-            <HelpCircle className="h-8 w-8 text-gray-400" />
+        <div className="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+          <div className="bg-indigo-50 p-5 rounded-2xl mb-4">
+            <HelpCircle className="h-10 w-10 text-indigo-400" />
           </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-1">
+          <h3 className="text-base font-semibold text-slate-900 mb-1">
             {searchTerm
               ? 'Nenhuma questão encontrada'
               : 'Nenhuma questão cadastrada'}
           </h3>
-          <p className="text-gray-500 mb-6 max-w-sm">
+          <p className="text-slate-500 text-sm mb-6 max-w-sm">
             {searchTerm
               ? `Não encontramos questões com "${searchTerm}".`
               : 'Crie questões para este nível e comece a avaliar o conhecimento dos alunos.'}
           </p>
           {!searchTerm && (
-            <Button
+            <button
               onClick={() => {
                 setEditingQuestion(null);
                 setIsFormOpen(true);
               }}
+              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm flex items-center gap-2"
             >
-              <Plus className="h-5 w-5 mr-2" /> Criar Primeira Questão
-            </Button>
+              <Plus className="h-5 w-5" /> Criar Primeira Questão
+            </button>
           )}
         </div>
       ) : (

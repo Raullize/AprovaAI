@@ -22,7 +22,7 @@ export function PageHeader({
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col space-y-4 md:flex-row md:items-start md:justify-between md:space-y-0 pb-5 mb-2 border-b border-slate-200">
+    <div className="flex flex-col space-y-4 md:flex-row md:items-start md:justify-between md:space-y-0 pb-3 mb-2">
       <div className="flex flex-col gap-2">
         {breadcrumbItems && breadcrumbItems.length > 0 && (
           <Breadcrumb items={breadcrumbItems} />

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { HelpCircle, Link } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
-import Button from '@/components/ui/Button';
 import Loading from '@/components/ui/Loading';
 import ImageUpload from '@/components/ui/ImageUpload';
 import { StatusToggle } from '@/components/admin/shared/StatusToggle';
@@ -185,6 +184,11 @@ export function QuestionFormModal({
     }
   };
 
+  const fieldLabel =
+    'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5';
+  const fieldInput =
+    'w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all bg-white text-slate-800 text-sm font-medium resize-none';
+
   return (
     <Modal
       isOpen={isOpen}
@@ -192,12 +196,10 @@ export function QuestionFormModal({
       title={question ? 'Editar Questão' : 'Nova Questão'}
       size="lg"
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         {/* Image */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Imagem da Questão (opcional)
-          </label>
+        <div className="space-y-1.5">
+          <label className={fieldLabel}>Imagem da Questão (opcional)</label>
           <ImageUpload
             value={form.imageUrl || undefined}
             onChange={(url) => setField('imageUrl', url)}
@@ -207,10 +209,8 @@ export function QuestionFormModal({
         </div>
 
         {/* Type */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Tipo da Questão
-          </label>
+        <div className="space-y-1.5">
+          <label className={fieldLabel}>Tipo da Questão</label>
           <select
             value={form.type}
             onChange={(e) =>
@@ -220,12 +220,12 @@ export function QuestionFormModal({
               }))
             }
             disabled={saving}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
+            className={fieldInput}
           >
             <option value="SINGLE_CHOICE">Única Escolha</option>
             <option value="MULTIPLE_CHOICE">Múltipla Escolha</option>
           </select>
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="text-xs text-slate-400 mt-1">
             {form.type === 'SINGLE_CHOICE'
               ? 'Apenas uma alternativa correta.'
               : 'Uma ou mais alternativas corretas.'}
@@ -233,21 +233,25 @@ export function QuestionFormModal({
         </div>
 
         {/* Content */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Conteúdo da Questão <span className="text-red-500">*</span>
+        <div className="space-y-1.5">
+          <label className={fieldLabel}>
+            Conteúdo da Questão{' '}
+            <span className="text-rose-500">*</span>
           </label>
           <textarea
             value={form.content}
             onChange={(e) => setField('content', e.target.value)}
             rows={4}
             disabled={saving}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none ${errors.content ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              }`}
+            className={`${fieldInput} ${
+              errors.content
+                ? 'border-rose-300 bg-rose-50 focus:ring-rose-500/20 focus:border-rose-400'
+                : ''
+            }`}
             placeholder="Digite o enunciado da questão..."
           />
           {errors.content && (
-            <p className="mt-1 text-sm text-red-600">{errors.content}</p>
+            <p className="text-sm text-rose-600 font-medium">{errors.content}</p>
           )}
         </div>
 
@@ -263,9 +267,9 @@ export function QuestionFormModal({
         />
 
         {/* Explanation */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <HelpCircle className="inline h-4 w-4 mr-1 text-gray-400" />
+        <div className="space-y-1.5">
+          <label className={fieldLabel}>
+            <HelpCircle className="inline h-3.5 w-3.5 mr-1 text-slate-400" />
             Explicação (opcional)
           </label>
           <textarea
@@ -273,15 +277,15 @@ export function QuestionFormModal({
             onChange={(e) => setField('explanation', e.target.value)}
             rows={3}
             disabled={saving}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
+            className={fieldInput}
             placeholder="Explique por que esta é a resposta correta..."
           />
         </div>
 
         {/* Study Link */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <Link className="inline h-4 w-4 mr-1 text-gray-400" />
+        <div className="space-y-1.5">
+          <label className={fieldLabel}>
+            <Link className="inline h-3.5 w-3.5 mr-1 text-slate-400" />
             Link de Aprofundamento (opcional)
           </label>
           <input
@@ -289,14 +293,17 @@ export function QuestionFormModal({
             value={form.studyLink}
             onChange={(e) => setField('studyLink', e.target.value)}
             disabled={saving}
-            className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent ${errors.studyLink ? 'border-red-300 bg-red-50' : 'border-gray-300'
-              }`}
+            className={`${fieldInput} ${
+              errors.studyLink
+                ? 'border-rose-300 bg-rose-50 focus:ring-rose-500/20 focus:border-rose-400'
+                : ''
+            }`}
             placeholder="https://exemplo.com/material-de-estudo"
           />
           {errors.studyLink && (
-            <p className="mt-1 text-sm text-red-600">{errors.studyLink}</p>
+            <p className="text-sm text-rose-600 font-medium">{errors.studyLink}</p>
           )}
-          <p className="mt-1 text-xs text-gray-500">
+          <p className="text-xs text-slate-400">
             Link para material complementar sobre o tema da questão
           </p>
         </div>
@@ -308,16 +315,20 @@ export function QuestionFormModal({
           disabled={saving}
         />
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-200">
-          <Button
+        <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
+          <button
             type="button"
-            variant="outline"
             onClick={onClose}
             disabled={saving}
+            className="px-5 py-2.5 rounded-2xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all text-sm disabled:opacity-50"
           >
             Cancelar
-          </Button>
-          <Button type="submit" disabled={saving}>
+          </button>
+          <button
+            type="submit"
+            disabled={saving}
+            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm shadow-md shadow-indigo-600/20 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+          >
             {saving ? (
               <Loading size="sm" />
             ) : question ? (
@@ -325,7 +336,7 @@ export function QuestionFormModal({
             ) : (
               'Criar Questão'
             )}
-          </Button>
+          </button>
         </div>
       </form>
     </Modal>

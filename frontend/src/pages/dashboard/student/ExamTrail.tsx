@@ -246,7 +246,7 @@ export default function ExamTrail() {
   if (mappedTopics.length === 0 || !activeTopicObj) {
     return (
       <div className="min-h-screen bg-slate-50/50">
-        <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 py-8 pb-32">
+        <div className="max-w-[1600px] mx-auto px-4 lg:px-8 py-8 pb-32">
           <div className="mb-6">
             <button
               onClick={() => navigate('/dashboard/explore')}
@@ -406,7 +406,7 @@ export default function ExamTrail() {
         )}
       </Modal>
 
-      <div className="max-w-7xl xl:max-w-[1400px] mx-auto px-4 py-8 pb-32">
+      <div className="max-w-[1600px] mx-auto px-4 lg:px-8 py-8 pb-32">
         {/* Back Button */}
         <div className="mb-6 lg:hidden">
           <button

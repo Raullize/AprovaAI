@@ -1,5 +1,4 @@
 import { Plus, Trash2 } from 'lucide-react';
-import Button from '@/components/ui/Button';
 import { type Option } from '@/services/questions.service';
 
 interface OptionListProps {
@@ -40,31 +39,34 @@ export function OptionList({
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <label className="block text-sm font-medium text-gray-700">
-          Alternativas <span className="text-red-500">*</span>
+        <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider">
+          Alternativas <span className="text-rose-500">*</span>
         </label>
-        <Button
+        <button
           type="button"
-          variant="outline"
-          size="sm"
           onClick={onAdd}
           disabled={disabled}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all disabled:opacity-50"
         >
-          <Plus className="h-4 w-4 mr-1" /> Adicionar
-        </Button>
+          <Plus className="h-3.5 w-3.5" /> Adicionar
+        </button>
       </div>
 
       {errors.options && (
-        <p className="mb-3 text-sm text-red-600">{errors.options}</p>
+        <p className="mb-3 text-sm text-rose-600 font-medium">{errors.options}</p>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-2.5">
         {options.map((option, index) => (
           <div
             key={index}
-            className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg bg-gray-50"
+            className={`flex items-start gap-3 p-3.5 border rounded-2xl transition-all ${
+              option.isCorrect
+                ? 'border-emerald-200 bg-emerald-50/50'
+                : 'border-slate-200 bg-slate-50/50'
+            }`}
           >
-            <div className="flex items-center gap-2 mt-2.5 shrink-0">
+            <div className="flex flex-col items-center gap-1 mt-2.5 shrink-0">
               <input
                 type="checkbox"
                 checked={option.isCorrect}
@@ -72,10 +74,14 @@ export function OptionList({
                   handleOptionChange(index, 'isCorrect', e.target.checked)
                 }
                 disabled={disabled}
-                className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+                className="w-4 h-4 text-emerald-600 border-slate-300 rounded focus:ring-emerald-500/30"
               />
-              <span className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                Correta
+              <span
+                className={`text-[9px] font-bold uppercase tracking-wide ${
+                  option.isCorrect ? 'text-emerald-600' : 'text-slate-400'
+                }`}
+              >
+                {option.isCorrect ? 'Correta' : 'Errada'}
               </span>
             </div>
 
@@ -87,15 +93,17 @@ export function OptionList({
                   handleOptionChange(index, 'text', e.target.value)
                 }
                 disabled={disabled}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm ${
+                className={`w-full px-3.5 py-2.5 border rounded-xl text-sm font-medium transition-all focus:outline-none focus:ring-2 ${
                   errors[`option_${index}`]
-                    ? 'border-red-300 bg-red-50'
-                    : 'border-gray-300 bg-white'
+                    ? 'border-rose-300 bg-rose-50 focus:ring-rose-500/20 focus:border-rose-400 text-rose-800'
+                    : option.isCorrect
+                    ? 'border-emerald-200 bg-white focus:ring-emerald-500/20 focus:border-emerald-400 text-slate-800'
+                    : 'border-slate-200 bg-white focus:ring-indigo-500/20 focus:border-indigo-400 text-slate-700'
                 }`}
                 placeholder={`Alternativa ${String.fromCharCode(65 + index)}`}
               />
               {errors[`option_${index}`] && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-rose-600 font-medium">
                   {errors[`option_${index}`]}
                 </p>
               )}
@@ -106,10 +114,10 @@ export function OptionList({
                 type="button"
                 onClick={() => onRemove(index)}
                 disabled={disabled}
-                className="p-2 text-gray-400 hover:text-red-600 transition-colors mt-1 shrink-0"
+                className="p-1.5 text-slate-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all mt-1.5 shrink-0"
                 title="Remover alternativa"
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" />
               </button>
             )}
           </div>

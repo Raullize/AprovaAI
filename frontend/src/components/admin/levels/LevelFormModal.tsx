@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Modal from '@/components/ui/Modal';
-import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Loading from '@/components/ui/Loading';
 import { StatusToggle } from '@/components/admin/shared/StatusToggle';
@@ -129,8 +128,8 @@ export function LevelFormModal({
         });
         toast({ title: 'Nível atualizado!', variant: 'success' });
       } else {
-        await levelsService.create({ 
-          ...basePayload, 
+        await levelsService.create({
+          ...basePayload,
           topicId,
           timeLimit: totalSeconds > 0 ? totalSeconds : undefined,
         });
@@ -144,6 +143,11 @@ export function LevelFormModal({
     }
   };
 
+  const fieldLabel =
+    'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5';
+  const fieldInput =
+    'w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all bg-white text-slate-800 text-sm font-medium';
+
   return (
     <Modal
       isOpen={isOpen}
@@ -155,7 +159,7 @@ export function LevelFormModal({
           <Loading size="md" />
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Input
             label="Nome do Nível"
             placeholder="Ex: Fácil, Médio, Difícil"
@@ -187,21 +191,21 @@ export function LevelFormModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-700">
-                Tempo Limite
-              </label>
+              <label className={fieldLabel}>Tempo Limite</label>
               <div className="grid grid-cols-3 gap-2">
                 <div>
                   <Input
                     type="number"
                     placeholder="00"
                     {...register('timeLimitHours', {
-                      min: { value: 0, message: 'Mínimo 0' }
+                      min: { value: 0, message: 'Mínimo 0' },
                     })}
                     error={errors.timeLimitHours?.message}
                     className="text-center"
                   />
-                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center">horas</span>
+                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center font-medium">
+                    horas
+                  </span>
                 </div>
                 <div>
                   <Input
@@ -209,12 +213,14 @@ export function LevelFormModal({
                     placeholder="00"
                     {...register('timeLimitMinutes', {
                       min: { value: 0, message: 'Mínimo 0' },
-                      max: { value: 59, message: 'Máximo 59' }
+                      max: { value: 59, message: 'Máximo 59' },
                     })}
                     error={errors.timeLimitMinutes?.message}
                     className="text-center"
                   />
-                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center">minutos</span>
+                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center font-medium">
+                    minutos
+                  </span>
                 </div>
                 <div>
                   <Input
@@ -222,12 +228,14 @@ export function LevelFormModal({
                     placeholder="00"
                     {...register('timeLimitSeconds', {
                       min: { value: 0, message: 'Mínimo 0' },
-                      max: { value: 59, message: 'Máximo 59' }
+                      max: { value: 59, message: 'Máximo 59' },
                     })}
                     error={errors.timeLimitSeconds?.message}
                     className="text-center"
                   />
-                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center">segundos</span>
+                  <span className="text-[9px] text-slate-400 mt-0.5 block text-center font-medium">
+                    segundos
+                  </span>
                 </div>
               </div>
               {(() => {
@@ -239,7 +247,8 @@ export function LevelFormModal({
                   const hms = `${pad(hours)}:${pad(mins)}:${pad(secs)}`;
                   return (
                     <span className="text-[10px] text-slate-500 mt-0.5 block">
-                      Visualização: <strong className="text-indigo-650">{hms}</strong>
+                      Visualização:{' '}
+                      <strong className="text-indigo-600">{hms}</strong>
                     </span>
                   );
                 }
@@ -247,13 +256,11 @@ export function LevelFormModal({
               })()}
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">
-                Modo de Simulação
-              </label>
+            <div className="flex flex-col gap-1.5">
+              <label className={fieldLabel}>Modo de Simulação</label>
               <select
                 {...register('simulationMode')}
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+                className={fieldInput}
               >
                 <option value="PRACTICE">Prática</option>
                 <option value="EXAM">Exame</option>
@@ -268,19 +275,27 @@ export function LevelFormModal({
           />
           <input type="hidden" {...register('status')} />
 
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-2xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all text-sm"
+            >
               Cancelar
-            </Button>
-            <Button type="submit" disabled={isSaving}>
+            </button>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm shadow-md shadow-indigo-600/20 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+            >
               {isSaving ? (
                 <Loading size="sm" />
               ) : isEditing ? (
                 'Salvar'
               ) : (
-                'Criar'
+                'Criar Nível'
               )}
-            </Button>
+            </button>
           </div>
         </form>
       )}

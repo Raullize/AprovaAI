@@ -123,6 +123,9 @@ export function ExamFormModal({
     }
   };
 
+  const fieldLabel = 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5';
+  const fieldInput = 'w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all bg-white text-slate-800 text-sm font-medium';
+
   return (
     <Modal
       isOpen={isOpen}
@@ -135,7 +138,7 @@ export function ExamFormModal({
           <Loading size="md" />
         </div>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Input
             label="Nome do Exame"
             placeholder="Ex: ENEM 2026"
@@ -143,26 +146,23 @@ export function ExamFormModal({
             error={errors.name?.message}
           />
 
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Descrição
-            </label>
+          <div className="space-y-1.5">
+            <label className={fieldLabel}>Descrição</label>
             <textarea
               {...register('description')}
               rows={3}
               disabled={isSaving}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
+              placeholder="Descreva brevemente o exame..."
+              className={`${fieldInput} resize-none`}
             />
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">
-              Categoria
-            </label>
+          <div className="space-y-1.5">
+            <label className={fieldLabel}>Categoria</label>
             <select
               {...register('category')}
               disabled={isSaving}
-              className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+              className={fieldInput}
             >
               <option value="CONCURSOS">Concursos</option>
               <option value="CERTIFICACOES">Certificações</option>
@@ -183,7 +183,7 @@ export function ExamFormModal({
               <SelectedIcon className="h-7 w-7 text-white" />
             </div>
             <div>
-              <p className="text-xs text-slate-400 font-medium uppercase tracking-wide mb-0.5">
+              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-0.5">
                 Preview
               </p>
               <p className="font-bold text-slate-800">
@@ -193,10 +193,8 @@ export function ExamFormModal({
           </div>
 
           {/* Icon picker */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Ícone
-            </label>
+          <div className="space-y-1.5">
+            <label className={fieldLabel}>Ícone</label>
             <input type="hidden" {...register('iconKey')} />
             <div className="grid grid-cols-5 gap-2">
               {ICON_OPTIONS.map(({ key, label, Icon }) => (
@@ -208,7 +206,7 @@ export function ExamFormModal({
                     setValue('iconKey', key, { shouldDirty: true })
                   }
                   className={cn(
-                    'flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all text-xs font-medium',
+                    'flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all text-xs font-semibold',
                     iconKeyValue === key
                       ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
                       : 'border-slate-200 text-slate-500 hover:border-indigo-300 hover:bg-indigo-50/50',
@@ -222,12 +220,10 @@ export function ExamFormModal({
           </div>
 
           {/* Color picker */}
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Cor
-            </label>
+          <div className="space-y-1.5">
+            <label className={fieldLabel}>Cor do Tema</label>
             <input type="hidden" {...register('colorScheme')} />
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-wrap gap-3">
               {COLOR_OPTIONS.map(({ key, label, gradient }) => (
                 <button
                   key={key}
@@ -255,22 +251,25 @@ export function ExamFormModal({
           />
           <input type="hidden" {...register('status')} />
 
-          <div className="flex justify-end space-x-3 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 rounded-2xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all text-sm"
+            >
               Cancelar
-            </Button>
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? (
-                <Loading size="sm" />
-              ) : isEditing ? (
-                'Salvar'
-              ) : (
-                'Criar'
-              )}
-            </Button>
+            </button>
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm shadow-md shadow-indigo-600/20 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {isSaving ? <Loading size="sm" /> : isEditing ? 'Salvar' : 'Criar Exame'}
+            </button>
           </div>
         </form>
       )}
     </Modal>
   );
 }
+

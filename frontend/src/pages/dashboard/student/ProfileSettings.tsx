@@ -199,6 +199,7 @@ export default function ProfileSettings() {
                   onClick={handleRemoveAvatar}
                   className="inline-flex items-center gap-1.5 text-xs font-bold text-red-650 hover:text-red-750 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-all border border-red-100"
                 >
+                  <Trash2 className="h-3.5 w-3.5" />
                   Remover Imagem
                 </button>
               )}
