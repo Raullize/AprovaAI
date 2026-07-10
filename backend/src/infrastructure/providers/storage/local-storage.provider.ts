@@ -17,7 +17,6 @@ export class LocalStorageProvider implements StorageProvider {
   private readonly uploadDir = process.env.UPLOAD_DIR || 'uploads';
 
   constructor() {
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     this.ensureUploadDirExists();
   }
 

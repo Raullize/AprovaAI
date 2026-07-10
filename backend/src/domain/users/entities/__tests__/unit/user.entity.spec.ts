@@ -149,7 +149,6 @@ describe('User Entity', () => {
         lastActiveAt: new Date('2026-06-20'),
       });
 
-      // Atividade no dia seguinte (incrementa streak de 2 para 3)
       const success = user.updateStreak(new Date('2026-06-21'));
       expect(success).toBe(true);
       expect(user.streakCount).toBe(3);
@@ -169,11 +168,10 @@ describe('User Entity', () => {
         lastActiveAt: new Date('2026-06-20'),
       });
 
-      // Atividade no dia seguinte (incrementa de 1 para 2)
       const success = user.updateStreak(new Date('2026-06-21'));
       expect(success).toBe(true);
       expect(user.streakCount).toBe(2);
-      expect(user.bestStreak).toBe(5); // Mantém o recorde de 5
+      expect(user.bestStreak).toBe(5);
     });
 
     it('should reset streakCount but preserve/update bestStreak if streak is broken', () => {
@@ -189,11 +187,10 @@ describe('User Entity', () => {
         lastActiveAt: new Date('2026-06-15'),
       });
 
-      // Atividade vários dias depois (streak quebrado, reseta pra 1)
       const success = user.updateStreak(new Date('2026-06-20'));
       expect(success).toBe(true);
       expect(user.streakCount).toBe(1);
-      expect(user.bestStreak).toBe(4); // Mantém o recorde antigo
+      expect(user.bestStreak).toBe(4);
     });
   });
 });
