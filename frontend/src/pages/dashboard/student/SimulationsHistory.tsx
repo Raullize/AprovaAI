@@ -64,36 +64,6 @@ const CATEGORIES = [
   { key: 'OUTROS', label: 'Outros' },
 ];
 
-interface ApiHistoryItem {
-  id: string;
-  levelId: string;
-  level?: {
-    name?: string;
-    xpReward?: number;
-    topic?: {
-      name?: string;
-      exam?: {
-        name?: string;
-        category?: string;
-        iconKey?: string;
-        colorScheme?: string;
-      };
-    };
-  };
-  mode: SimulationMode;
-  score?: number;
-  totalQuestions?: number;
-  percentage?: number;
-  passed?: boolean;
-  stars?: number;
-  timeSpent?: number;
-  createdAt: string;
-  answers?: {
-    questionId: string;
-    selectedOptions: string[];
-    isCorrect: boolean | null;
-  }[];
-}
 
 function formatCategoryLabel(category?: string) {
   const found = CATEGORIES.find((c) => c.key === category);
