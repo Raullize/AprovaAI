@@ -24,6 +24,7 @@ interface HistoryItem {
   levelName: string;
   levelXpReward: number;
   examName: string;
+  examId: string;
   topicName: string;
   examCategory?: string;
   mode: SimulationMode;
@@ -208,6 +209,7 @@ export default function SimulationsHistory() {
           levelName: item.level?.name ?? 'Sem nome',
           levelXpReward: item.level?.xpReward ?? 0,
           examName: item.level?.topic?.exam?.name ?? 'Outros',
+          examId: item.level?.topic?.exam?.id ?? '',
           topicName: item.level?.topic?.name ?? 'Sem tópico',
           examCategory: item.level?.topic?.exam?.category ?? 'OUTROS',
           mode: item.mode,
@@ -695,6 +697,7 @@ export default function SimulationsHistory() {
                               passingPercentage: 70,
                               levelName: item.levelName,
                               stars: item.stars,
+                              examId: item.examId,
                             },
                           });
                         }}

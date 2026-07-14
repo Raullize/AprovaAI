@@ -239,7 +239,7 @@ export default function ExamTrail() {
     if (!pendingStart) return;
 
     navigate(
-      `/dashboard/simulations/engine/${pendingStart.level.id}?mode=${pendingStart.level.simulationMode}`,
+      `/dashboard/simulations/engine/${pendingStart.level.id}?mode=${pendingStart.level.simulationMode}&examId=${examId}`,
     );
   };
 

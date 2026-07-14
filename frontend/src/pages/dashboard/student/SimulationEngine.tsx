@@ -82,6 +82,7 @@ export default function SimulationEngine() {
 
   const [searchParams] = useSearchParams();
   const mode = (searchParams.get('mode') as SimulationMode) || 'PRACTICE';
+  const examId = searchParams.get('examId');
 
   const [level, setLevel] = useState<Level | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -250,6 +251,7 @@ export default function SimulationEngine() {
           stars: examResult.stars ?? 0,
           passingPercentage: level?.passingPercentage || 70,
           levelName: level?.name || 'Simulado',
+          examId,
         },
       });
     } catch (err) {
@@ -451,7 +453,7 @@ export default function SimulationEngine() {
             CANCELAR
           </button>
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(examId ? `/dashboard/explore/${examId}` : '/dashboard')}
             className="flex-1 py-3 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 border-b-4 border-red-700 active:border-b-0 active:translate-y-1 transition-all"
           >
             SAIR
