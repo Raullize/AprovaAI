@@ -109,7 +109,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
           <>
             {/* Streak */}
             <div
-              className="flex items-center gap-1.5 sm:gap-2 bg-orange-50 border border-orange-200 rounded-xl sm:rounded-2xl px-2 sm:px-3 py-1 sm:py-1.5 cursor-help"
+              className="flex items-center gap-1.5 sm:gap-2 bg-orange-50 border border-orange-200 rounded-xl sm:rounded-2xl px-2 sm:px-3 py-1 sm:py-1.5"
               title={`Ofensiva atual: ${streakCount} ${streakCount === 1 ? 'dia' : 'dias'}. Recorde histórico: ${user?.bestStreak || 0} ${user?.bestStreak === 1 ? 'dia' : 'dias'}.`}
             >
               <Flame className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-orange-500 fill-orange-400" />
