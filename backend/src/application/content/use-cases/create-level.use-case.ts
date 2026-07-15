@@ -13,6 +13,8 @@ export interface CreateLevelRequest {
   topicId: string;
   xpReward?: number;
   passingPercentage?: number;
+  timeLimit?: number;
+  simulationMode?: 'PRACTICE' | 'EXAM';
 }
 
 @Injectable()
@@ -44,6 +46,8 @@ export class CreateLevelUseCase implements UseCase<CreateLevelRequest, Level> {
         request.passingPercentage !== undefined
           ? Percentage.create(request.passingPercentage)
           : undefined,
+      timeLimit: request.timeLimit,
+      simulationMode: request.simulationMode,
       order: count,
     });
 
