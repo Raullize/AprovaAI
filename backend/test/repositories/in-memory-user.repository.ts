@@ -74,7 +74,7 @@ export class InMemoryUserRepository implements UserRepository {
 
   findLeaderboard(limit: number): Promise<User[]> {
     const users = [...this.items]
-      .filter((user) => user.role === 'USER')
+      .filter((user) => user.role === 'STUDENT')
       .sort((a, b) => b.xp - a.xp)
       .slice(0, limit);
 
@@ -83,7 +83,7 @@ export class InMemoryUserRepository implements UserRepository {
 
   findStreakLeaderboard(limit: number): Promise<User[]> {
     const users = [...this.items]
-      .filter((user) => user.role === 'USER')
+      .filter((user) => user.role === 'STUDENT')
       .sort((a, b) => b.bestStreak - a.bestStreak)
       .slice(0, limit);
 
@@ -94,7 +94,7 @@ export class InMemoryUserRepository implements UserRepository {
     const target = this.items.find((u) => u.id === userId);
     if (!target) return Promise.resolve(-1);
     const rank =
-      this.items.filter((u) => u.role === 'USER' && u.xp > target.xp).length + 1;
+      this.items.filter((u) => u.role === 'STUDENT' && u.xp > target.xp).length + 1;
     return Promise.resolve(rank);
   }
 
@@ -103,7 +103,7 @@ export class InMemoryUserRepository implements UserRepository {
     if (!target) return Promise.resolve(-1);
     const rank =
       this.items.filter(
-        (u) => u.role === 'USER' && u.bestStreak > target.bestStreak,
+        (u) => u.role === 'STUDENT' && u.bestStreak > target.bestStreak,
       ).length + 1;
     return Promise.resolve(rank);
   }

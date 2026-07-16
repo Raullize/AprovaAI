@@ -8,7 +8,7 @@ datasource db {
 }
 
 enum UserRole {
-  USER
+  STUDENT
   ADMIN
 
   @@map("user_role")
@@ -29,7 +29,7 @@ model User {
   email            String           @unique @map("email")
   passwordHash     String           @map("password_hash")
   subscriptionPlan SubscriptionPlan @default(FREE) @map("subscription_plan")
-  role             UserRole         @default(USER) @map("role")
+  role             UserRole         @default(STUDENT) @map("role")
   xp               Int              @default(0) @map("xp")
   streakCount      Int              @default(0) @map("streak_count")
   bestStreak       Int              @default(0) @map("best_streak")

@@ -21,7 +21,7 @@ describe('DeleteAccountUseCase', () => {
       email: Email.create('raul@example.com'),
       passwordHash: 'hashed-password',
       dateOfBirth: new Date('1998-01-01'),
-      role: 'USER',
+      role: 'STUDENT',
     });
 
     userRepository.items.push(user);

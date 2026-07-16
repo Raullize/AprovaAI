@@ -102,7 +102,7 @@ export class PrismaUserRepository implements UserRepository {
 
   async findLeaderboard(limit: number): Promise<User[]> {
     const users = await this.prisma.user.findMany({
-      where: { role: 'USER' },
+      where: { role: 'STUDENT' },
       orderBy: { xp: 'desc' },
       take: limit,
     });
@@ -111,7 +111,7 @@ export class PrismaUserRepository implements UserRepository {
 
   async findStreakLeaderboard(limit: number): Promise<User[]> {
     const users = await this.prisma.user.findMany({
-      where: { role: 'USER' },
+      where: { role: 'STUDENT' },
       orderBy: { bestStreak: 'desc' },
       take: limit,
     });
@@ -122,7 +122,7 @@ export class PrismaUserRepository implements UserRepository {
     const target = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!target) return -1;
     const usersAhead = await this.prisma.user.count({
-      where: { role: 'USER', xp: { gt: target.xp } },
+      where: { role: 'STUDENT', xp: { gt: target.xp } },
     });
     return usersAhead + 1;
   }
@@ -131,7 +131,7 @@ export class PrismaUserRepository implements UserRepository {
     const target = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!target) return -1;
     const usersAhead = await this.prisma.user.count({
-      where: { role: 'USER', bestStreak: { gt: target.bestStreak } },
+      where: { role: 'STUDENT', bestStreak: { gt: target.bestStreak } },
     });
     return usersAhead + 1;
   }

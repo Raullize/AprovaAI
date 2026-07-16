@@ -9,7 +9,7 @@ export interface UserProps {
   passwordHash: string;
   dateOfBirth: Date;
   subscriptionPlan?: 'FREE' | 'PREMIUM';
-  role?: 'USER' | 'ADMIN';
+  role?: 'STUDENT' | 'ADMIN';
   xp?: number;
   streakCount?: number;
   bestStreak?: number;
@@ -38,8 +38,8 @@ export class User extends AggregateRoot<UserProps> {
   get subscriptionPlan(): 'FREE' | 'PREMIUM' {
     return this.props.subscriptionPlan ?? 'FREE';
   }
-  get role(): 'USER' | 'ADMIN' {
-    return this.props.role ?? 'USER';
+  get role(): 'STUDENT' | 'ADMIN' {
+    return this.props.role ?? 'STUDENT';
   }
   get xp(): number {
     return this.props.xp ?? 0;
@@ -68,7 +68,7 @@ export class User extends AggregateRoot<UserProps> {
       {
         ...props,
         subscriptionPlan: props.subscriptionPlan ?? 'FREE',
-        role: props.role ?? 'USER',
+        role: props.role ?? 'STUDENT',
         xp: props.xp ?? 0,
         streakCount: props.streakCount ?? 0,
         bestStreak: props.bestStreak ?? 0,

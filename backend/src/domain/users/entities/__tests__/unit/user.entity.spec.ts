@@ -17,7 +17,7 @@ describe('User Entity', () => {
     expect(user.fullName).toBe('John Doe');
     expect(user.email.value).toBe('john.doe@example.com');
     expect(user.subscriptionPlan).toBe('FREE');
-    expect(user.role).toBe('USER');
+    expect(user.role).toBe('STUDENT');
     expect(user.xp).toBe(0);
   });
 

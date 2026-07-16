@@ -33,7 +33,7 @@ describe('GetAccountProfileUseCase', () => {
       fullName: 'Raul Lize',
       username: 'raullize',
       email: 'raul@example.com',
-      role: 'USER',
+      role: 'STUDENT',
       subscriptionPlan: 'FREE',
       xp: 120,
       streakCount: 3,
