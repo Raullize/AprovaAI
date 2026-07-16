@@ -104,7 +104,7 @@ export default function ExamTrail() {
           topicsData.map(async (topic) => {
             const levelsData = await levelsService.findAll(topic.id);
             const publicLevels = levelsData
-              .filter((level) => level.status === 'ACTIVE')
+              .filter((level) => level.status === 'ACTIVE' && (level.questionsCount ?? 0) > 0)
               .sort((a, b) => a.order - b.order);
 
             return {
@@ -239,7 +239,7 @@ export default function ExamTrail() {
     if (!pendingStart) return;
 
     navigate(
-      `/dashboard/simulations/engine/${pendingStart.level.id}?mode=${pendingStart.level.simulationMode}`,
+      `/dashboard/simulations/engine/${pendingStart.level.id}?mode=${pendingStart.level.simulationMode}&examId=${examId}`,
     );
   };
 

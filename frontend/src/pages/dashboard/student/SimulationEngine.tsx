@@ -82,11 +82,13 @@ export default function SimulationEngine() {
 
   const [searchParams] = useSearchParams();
   const mode = (searchParams.get('mode') as SimulationMode) || 'PRACTICE';
+  const examId = searchParams.get('examId');
 
   const [level, setLevel] = useState<Level | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [simulationId, setSimulationId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [initError, setInitError] = useState<string | null>(null);
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
@@ -175,8 +177,12 @@ export default function SimulationEngine() {
           });
           setFlagged(mappedFlagged);
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error('Failed to initialize simulation:', err);
+        const msg =
+          err?.response?.data?.message ||
+          'Nao foi possivel iniciar o simulado. Verifique se o nivel possui questoes cadastradas.';
+        setInitError(msg);
       } finally {
         setIsLoading(false);
       }
@@ -213,18 +219,22 @@ export default function SimulationEngine() {
     try {
       setIsLoading(true);
       await waitForPendingSaves();
+
+      const baseLimit = level?.timeLimit && level.timeLimit > 0 ? level.timeLimit : (mode === 'EXAM' ? DEFAULT_TIME_LIMIT : 0);
+      const computedTimeSpent = baseLimit > 0 ? Math.max(0, baseLimit - timeLeft) : 0;
+
       const finishData = await simulationsService.finish(simulationId, {
-        timeSpent: mode === 'EXAM' ? (level?.timeLimit || DEFAULT_TIME_LIMIT) - timeLeft : 0,
+        timeSpent: computedTimeSpent,
       });
       const { examResult, xpGained } = finishData;
       const rawResolved =
         examResult.answers && examResult.answers.length > 0
           ? examResult.answers.map((ans: any) => ({
-              questionId: ans.questionId,
-              selectedId: ans.selectedOptions[0] || '',
-              selectedIds: ans.selectedOptions || [],
-              correct: ans.isCorrect ?? false,
-            }))
+            questionId: ans.questionId,
+            selectedId: ans.selectedOptions[0] || '',
+            selectedIds: ans.selectedOptions || [],
+            correct: ans.isCorrect ?? false,
+          }))
           : answers;
 
       const resolvedAnswers = questions.map((q) => {
@@ -250,6 +260,7 @@ export default function SimulationEngine() {
           stars: examResult.stars ?? 0,
           passingPercentage: level?.passingPercentage || 70,
           levelName: level?.name || 'Simulado',
+          examId,
         },
       });
     } catch (err) {
@@ -302,8 +313,30 @@ export default function SimulationEngine() {
     }
   }, [currentIndex, answers, currentQuestion, mode]);
 
-  if (isLoading || !currentQuestion) {
+  if (isLoading || (!currentQuestion && !initError)) {
     return <Loading />;
+  }
+
+  if (initError) {
+    return (
+      <div className="fixed inset-0 bg-white flex flex-col items-center justify-center gap-6 px-6 text-center z-50">
+        <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+          <svg className="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 4a8 8 0 100 16A8 8 0 0012 4z" />
+          </svg>
+        </div>
+        <div>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">Nao foi possivel iniciar</h2>
+          <p className="text-sm text-slate-500 max-w-xs">{initError}</p>
+        </div>
+        <button
+          onClick={() => navigate(examId ? `/dashboard/explore/${examId}` : '/dashboard/explore')}
+          className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 transition-all shadow-md"
+        >
+          Voltar para a Trilha
+        </button>
+      </div>
+    );
   }
 
   const handleVerify = () => {
@@ -316,7 +349,7 @@ export default function SimulationEngine() {
       const correctOptionIds = currentQuestion.options
         .filter((o) => o.isCorrect)
         .map((o) => o.id);
-      
+
       correct =
         correctOptionIds.length === selectedOptions.length &&
         correctOptionIds.every((id) => selectedOptions.includes(id));
@@ -349,7 +382,7 @@ export default function SimulationEngine() {
       setSelectedOptions((prev) => {
         const exists = prev.includes(optionId);
         const next = exists ? prev.filter((id) => id !== optionId) : [...prev, optionId];
-        
+
         if (mode === 'EXAM') {
           setAnswers((prevAnswers) => {
             const existingIdx = prevAnswers.findIndex(
@@ -380,7 +413,6 @@ export default function SimulationEngine() {
         if (mode === 'EXAM') {
           if (isAlreadySelected) {
             setAnswers((prevAnswers) => prevAnswers.filter((a) => a.questionId !== currentQuestion.id));
-            saveAnswerToBackend(currentQuestion.id, [], !!flagged[currentQuestion.id]);
           } else {
             const correct =
               currentQuestion.options.find((o) => o.id === optionId)?.isCorrect ??
@@ -451,7 +483,7 @@ export default function SimulationEngine() {
             CANCELAR
           </button>
           <button
-            onClick={() => navigate('/dashboard')}
+            onClick={() => navigate(examId ? `/dashboard/explore/${examId}` : '/dashboard')}
             className="flex-1 py-3 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 border-b-4 border-red-700 active:border-b-0 active:translate-y-1 transition-all"
           >
             SAIR
@@ -528,7 +560,9 @@ export default function SimulationEngine() {
                             ...prev,
                             [currentQuestion.id]: newFlag,
                           }));
-                          saveAnswerToBackend(currentQuestion.id, selectedOptions, newFlag);
+                          if (selectedOptions.length > 0) {
+                            saveAnswerToBackend(currentQuestion.id, selectedOptions, newFlag);
+                          }
                         }}
                         className={cn(
                           'flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all border',
@@ -574,119 +608,119 @@ export default function SimulationEngine() {
                     const isSelected = selectedOptions.includes(option.id);
                     const isCorrectOption = option.isCorrect;
 
-                     let borderClass =
-                       'border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50';
-                     let bgClass = 'bg-white';
-                     let labelClass = 'bg-slate-100 text-slate-500';
-                     let badge = null;
+                    let borderClass =
+                      'border-slate-200 hover:border-indigo-300 hover:bg-indigo-50/50';
+                    let bgClass = 'bg-white';
+                    let labelClass = 'bg-slate-100 text-slate-500';
+                    let badge = null;
 
-                     if (feedback !== null) {
-                       if (isSelected && isCorrectOption) {
-                         borderClass = 'border-green-500';
-                         bgClass = 'bg-green-50';
-                         labelClass = 'bg-green-500 text-white';
-                         badge = (
-                           <span className="text-[10px] font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded-full shrink-0 ml-auto self-center">
-                             Você acertou
-                           </span>
-                         );
-                       } else if (!isSelected && isCorrectOption) {
-                         borderClass = 'border-dashed border-green-400';
-                         bgClass = 'bg-green-50/30';
-                         labelClass = 'border border-dashed border-green-400 text-green-600 bg-green-50';
-                         badge = (
-                           <span className="text-[10px] font-semibold bg-slate-100 text-green-700 px-2 py-0.5 rounded-full shrink-0 border border-green-200 ml-auto self-center">
-                             Gabarito (Não selecionada)
-                           </span>
-                         );
-                       } else if (isSelected && !isCorrectOption) {
-                         borderClass = 'border-red-400';
-                         bgClass = 'bg-red-50';
-                         labelClass = 'bg-red-500 text-white';
-                         badge = (
-                           <span className="text-[10px] font-semibold bg-red-100 text-red-800 px-2 py-0.5 rounded-full shrink-0 ml-auto self-center">
-                             Você marcou (Incorreta)
-                           </span>
-                         );
-                       } else {
-                         borderClass = 'border-slate-200 opacity-60';
-                       }
-                     } else if (isSelected) {
-                       borderClass = 'border-indigo-500';
-                       bgClass = 'bg-indigo-50';
-                       labelClass = 'bg-indigo-600 text-white';
-                     }
+                    if (feedback !== null) {
+                      if (isSelected && isCorrectOption) {
+                        borderClass = 'border-green-500';
+                        bgClass = 'bg-green-50';
+                        labelClass = 'bg-green-500 text-white';
+                        badge = (
+                          <span className="text-[10px] font-semibold bg-green-100 text-green-800 px-2 py-0.5 rounded-full shrink-0 ml-auto self-center">
+                            Você acertou
+                          </span>
+                        );
+                      } else if (!isSelected && isCorrectOption) {
+                        borderClass = 'border-dashed border-green-400';
+                        bgClass = 'bg-green-50/30';
+                        labelClass = 'border border-dashed border-green-400 text-green-600 bg-green-50';
+                        badge = (
+                          <span className="text-[10px] font-semibold bg-slate-100 text-green-700 px-2 py-0.5 rounded-full shrink-0 border border-green-200 ml-auto self-center">
+                            Gabarito (Não selecionada)
+                          </span>
+                        );
+                      } else if (isSelected && !isCorrectOption) {
+                        borderClass = 'border-red-400';
+                        bgClass = 'bg-red-50';
+                        labelClass = 'bg-red-500 text-white';
+                        badge = (
+                          <span className="text-[10px] font-semibold bg-red-100 text-red-800 px-2 py-0.5 rounded-full shrink-0 ml-auto self-center">
+                            Você marcou (Incorreta)
+                          </span>
+                        );
+                      } else {
+                        borderClass = 'border-slate-200 opacity-60';
+                      }
+                    } else if (isSelected) {
+                      borderClass = 'border-indigo-500';
+                      bgClass = 'bg-indigo-50';
+                      labelClass = 'bg-indigo-600 text-white';
+                    }
 
-                     const optionLabel = ['A', 'B', 'C', 'D', 'E'][
-                       currentQuestion.options.indexOf(option)
-                     ];
+                    const optionLabel = ['A', 'B', 'C', 'D', 'E'][
+                      currentQuestion.options.indexOf(option)
+                    ];
 
-                     return (
-                       <button
-                         key={option.id}
-                         disabled={feedback !== null}
-                         onClick={() => handleSelectOption(option.id)}
-                         className={cn(
-                           'w-full text-left flex items-start justify-between gap-3 p-4 rounded-2xl border-2 transition-all duration-200',
-                           borderClass,
-                           bgClass,
-                           feedback === null &&
-                             'cursor-pointer active:scale-[0.99]',
-                         )}
-                       >
-                         <div className="flex items-start gap-3 flex-1">
-                           <span
-                             className={cn(
-                               'w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 transition-colors',
-                               labelClass,
-                             )}
-                           >
-                             {optionLabel}
-                           </span>
-                           <span className="text-sm sm:text-base text-slate-700 font-medium leading-snug pt-0.5">
-                             {option.text}
-                           </span>
-                         </div>
-                         {badge}
-                       </button>
-                     );
+                    return (
+                      <button
+                        key={option.id}
+                        disabled={feedback !== null}
+                        onClick={() => handleSelectOption(option.id)}
+                        className={cn(
+                          'w-full text-left flex items-start justify-between gap-3 p-4 rounded-2xl border-2 transition-all duration-200',
+                          borderClass,
+                          bgClass,
+                          feedback === null &&
+                          'cursor-pointer active:scale-[0.99]',
+                        )}
+                      >
+                        <div className="flex items-start gap-3 flex-1">
+                          <span
+                            className={cn(
+                              'w-7 h-7 rounded-xl flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 transition-colors',
+                              labelClass,
+                            )}
+                          >
+                            {optionLabel}
+                          </span>
+                          <span className="text-sm sm:text-base text-slate-700 font-medium leading-snug pt-0.5">
+                            {option.text}
+                          </span>
+                        </div>
+                        {badge}
+                      </button>
+                    );
                   })}
                 </div>
 
-                 {/* Explanation (PRACTICE mode after answer) */}
-                 {feedback !== null && mode === 'PRACTICE' && (
-                   <div
-                     className={cn(
-                       'mt-4 p-4 rounded-2xl text-sm leading-relaxed space-y-2',
-                       feedback === 'correct'
-                         ? 'bg-green-50 border border-green-200 text-green-800'
-                         : 'bg-orange-50 border border-orange-200 text-orange-800',
-                     )}
-                   >
-                     <div>
-                       <p className="font-semibold mb-1">Explicação</p>
-                       <p>{currentQuestion.explanation}</p>
-                     </div>
-                     {currentQuestion.studyLink && (
-                       <div className="pt-2 border-t border-slate-200/50">
-                         <span className="font-semibold">Link de Aprofundamento:</span>{' '}
-                         <a
-                           href={currentQuestion.studyLink}
-                           target="_blank"
-                           rel="noreferrer"
-                           className={cn(
-                             'underline font-medium',
-                             feedback === 'correct'
-                               ? 'text-green-700 hover:text-green-900'
-                               : 'text-orange-700 hover:text-orange-900',
-                           )}
-                         >
-                           {currentQuestion.studyLink}
-                         </a>
-                       </div>
-                     )}
-                   </div>
-                 )}
+                {/* Explanation (PRACTICE mode after answer) */}
+                {feedback !== null && mode === 'PRACTICE' && (
+                  <div
+                    className={cn(
+                      'mt-4 p-4 rounded-2xl text-sm leading-relaxed space-y-2',
+                      feedback === 'correct'
+                        ? 'bg-green-50 border border-green-200 text-green-800'
+                        : 'bg-orange-50 border border-orange-200 text-orange-800',
+                    )}
+                  >
+                    <div>
+                      <p className="font-semibold mb-1">Explicação</p>
+                      <p>{currentQuestion.explanation}</p>
+                    </div>
+                    {currentQuestion.studyLink && (
+                      <div className="pt-2 border-t border-slate-200/50">
+                        <span className="font-semibold">Link de Aprofundamento:</span>{' '}
+                        <a
+                          href={currentQuestion.studyLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className={cn(
+                            'underline font-medium',
+                            feedback === 'correct'
+                              ? 'text-green-700 hover:text-green-900'
+                              : 'text-orange-700 hover:text-orange-900',
+                          )}
+                        >
+                          {currentQuestion.studyLink}
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>

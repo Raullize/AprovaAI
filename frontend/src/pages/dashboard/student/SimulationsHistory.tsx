@@ -24,6 +24,7 @@ interface HistoryItem {
   levelName: string;
   levelXpReward: number;
   examName: string;
+  examId: string;
   topicName: string;
   examCategory?: string;
   mode: SimulationMode;
@@ -63,36 +64,6 @@ const CATEGORIES = [
   { key: 'OUTROS', label: 'Outros' },
 ];
 
-interface ApiHistoryItem {
-  id: string;
-  levelId: string;
-  level?: {
-    name?: string;
-    xpReward?: number;
-    topic?: {
-      name?: string;
-      exam?: {
-        name?: string;
-        category?: string;
-        iconKey?: string;
-        colorScheme?: string;
-      };
-    };
-  };
-  mode: SimulationMode;
-  score?: number;
-  totalQuestions?: number;
-  percentage?: number;
-  passed?: boolean;
-  stars?: number;
-  timeSpent?: number;
-  createdAt: string;
-  answers?: {
-    questionId: string;
-    selectedOptions: string[];
-    isCorrect: boolean | null;
-  }[];
-}
 
 function formatCategoryLabel(category?: string) {
   const found = CATEGORIES.find((c) => c.key === category);
@@ -208,6 +179,7 @@ export default function SimulationsHistory() {
           levelName: item.level?.name ?? 'Sem nome',
           levelXpReward: item.level?.xpReward ?? 0,
           examName: item.level?.topic?.exam?.name ?? 'Outros',
+          examId: item.level?.topic?.exam?.id ?? '',
           topicName: item.level?.topic?.name ?? 'Sem tópico',
           examCategory: item.level?.topic?.exam?.category ?? 'OUTROS',
           mode: item.mode,
@@ -695,6 +667,7 @@ export default function SimulationsHistory() {
                               passingPercentage: 70,
                               levelName: item.levelName,
                               stars: item.stars,
+                              examId: item.examId,
                             },
                           });
                         }}

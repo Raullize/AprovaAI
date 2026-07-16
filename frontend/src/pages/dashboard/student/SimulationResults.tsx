@@ -34,6 +34,7 @@ interface ResultsState {
   passingPercentage: number;
   levelName: string;
   stars?: number;
+  examId?: string;
 }
 
 
@@ -188,7 +189,7 @@ export default function SimulationResults() {
     );
   }
 
-  const { total, correct, timeSpent, xpEarned, passingPercentage, levelName, stars: stateStars } =
+  const { total, correct, timeSpent, xpEarned, passingPercentage, levelName, stars: stateStars, examId } =
     state;
 
   const percentage = Math.round((correct / total) * 100);
@@ -260,7 +261,7 @@ export default function SimulationResults() {
     <div
       className={cn(
         'min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30',
-        passed ? 'pb-48 md:pb-32' : 'pb-72 md:pb-52',
+        'pb-40 sm:pb-32',
       )}
     >
       {/* Hero section */}
@@ -714,25 +715,22 @@ export default function SimulationResults() {
       </div>
 
       {/* CTA buttons */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 space-y-3 z-40">
-        <div className="max-w-md mx-auto space-y-3">
+      <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 z-45 shadow-lg shrink-0">
+        <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
           <button
-            onClick={() => navigate('/dashboard')}
-            className="w-full py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 transition-all shadow-md flex items-center justify-center gap-2"
+            onClick={() => navigate(examId ? `/dashboard/explore/${examId}` : '/dashboard/explore')}
+            className="flex-1 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 transition-all shadow-md flex items-center justify-center gap-2"
           >
-            <Home className="h-5 w-5" />
-            Continuar Trilha
+            Voltar para a Trilha
           </button>
 
-          {!passed && (
-            <button
-              onClick={() => navigate(-1)}
-              className="w-full py-3.5 rounded-2xl border-2 border-slate-200 text-slate-600 font-bold text-base hover:bg-slate-50 transition-colors flex items-center justify-center gap-2"
-            >
-              <RotateCcw className="h-4 w-4" />
-              Tentar Novamente
-            </button>
-          )}
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex-1 py-4 rounded-2xl border-2 border-slate-200 text-slate-650 hover:bg-slate-50 font-bold text-base transition-colors flex items-center justify-center gap-2"
+          >
+            <Home className="h-5 w-5" />
+            Ir para o Início
+          </button>
         </div>
       </div>
     </div>

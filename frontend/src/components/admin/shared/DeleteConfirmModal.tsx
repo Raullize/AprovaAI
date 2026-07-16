@@ -85,7 +85,7 @@ export function DeleteConfirmModal({
           />
         </div>
 
-        <div className="flex justify-end gap-2.5 bg-red-50 -mx-6 -mb-5 px-6 py-4 rounded-b-2xl mt-2 border-t border-red-100">
+        <div className="flex justify-end gap-3 pt-4">
           <Button variant="outline" onClick={handleClose} disabled={isDeleting}>
             Cancelar
           </Button>

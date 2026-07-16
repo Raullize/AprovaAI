@@ -5,6 +5,7 @@ import Home from '../pages/home/Home';
 import Login from '../pages/login/Login';
 import Register from '../pages/register/Register';
 import { DashboardLayout } from '../components/layout/DashboardLayout';
+import { FocusLayout } from '../components/layout/FocusLayout';
 import UnderConstruction from '../components/ui/UnderConstruction';
 
 import AdminExams from '../pages/dashboard/admin/AdminExams';
@@ -85,11 +86,6 @@ export function AppRoutes() {
 
         <Route path="explore" element={<ExploreExams />} />
         <Route path="explore/:examId" element={<ExamTrail />} />
-        <Route
-          path="simulations/engine/:levelId"
-          element={<SimulationEngine />}
-        />
-        <Route path="simulations/results" element={<SimulationResults />} />
 
         <Route path="profile" element={<Profile />} />
         <Route path="profile/settings" element={<ProfileSettings />} />
@@ -149,6 +145,21 @@ export function AppRoutes() {
             </AdminRoute>
           }
         />
+      </Route>
+
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <FocusLayout />
+          </PrivateRoute>
+        }
+      >
+        <Route
+          path="simulations/engine/:levelId"
+          element={<SimulationEngine />}
+        />
+        <Route path="simulations/results" element={<SimulationResults />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />
