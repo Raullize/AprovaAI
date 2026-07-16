@@ -219,8 +219,12 @@ export default function SimulationEngine() {
     try {
       setIsLoading(true);
       await waitForPendingSaves();
+
+      const baseLimit = level?.timeLimit && level.timeLimit > 0 ? level.timeLimit : (mode === 'EXAM' ? DEFAULT_TIME_LIMIT : 0);
+      const computedTimeSpent = baseLimit > 0 ? Math.max(0, baseLimit - timeLeft) : 0;
+
       const finishData = await simulationsService.finish(simulationId, {
-        timeSpent: mode === 'EXAM' ? (level?.timeLimit || DEFAULT_TIME_LIMIT) - timeLeft : 0,
+        timeSpent: computedTimeSpent,
       });
       const { examResult, xpGained } = finishData;
       const rawResolved =
