@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
-import { LevelRepository } from '../../../domain/content/repositories/level.repository';
-import { Level } from '../../../domain/content/entities/level.entity';
+import { SimulationRepository } from '../../../domain/content/repositories/simulation.repository';
+import { Simulation } from '../../../domain/content/entities/simulation.entity';
 import { Slug } from '../../../domain/content/value-objects/slug';
 import { Percentage } from '../../../domain/content/value-objects/percentage';
 import { generateUniqueSlug } from '../../../shared/utils/slugify';
 
-export interface CreateLevelRequest {
+export interface CreateSimulationRequest {
   name: string;
   description?: string;
   status?: 'PUBLISHED' | 'DRAFT';
@@ -18,16 +18,16 @@ export interface CreateLevelRequest {
 }
 
 @Injectable()
-export class CreateLevelUseCase implements UseCase<CreateLevelRequest, Level> {
-  constructor(private readonly levelRepository: LevelRepository) {}
+export class CreateSimulationUseCase implements UseCase<CreateSimulationRequest, Simulation> {
+  constructor(private readonly simulationRepository: SimulationRepository) {}
 
-  async execute(request: CreateLevelRequest): Promise<Level> {
-    const count = await this.levelRepository.countByTopicId(request.topicId);
+  async execute(request: CreateSimulationRequest): Promise<Simulation> {
+    const count = await this.simulationRepository.countByTopicId(request.topicId);
 
     const slug = await generateUniqueSlug(
       request.name,
       async (testSlug: string) => {
-        const existing = await this.levelRepository.findBySlugAndTopicId(
+        const existing = await this.simulationRepository.findBySlugAndTopicId(
           testSlug,
           request.topicId,
         );
@@ -35,7 +35,7 @@ export class CreateLevelUseCase implements UseCase<CreateLevelRequest, Level> {
       },
     );
 
-    const level = Level.create({
+    const simulation = Simulation.create({
       name: request.name,
       slug: Slug.create(slug),
       description: request.description,
@@ -51,6 +51,6 @@ export class CreateLevelUseCase implements UseCase<CreateLevelRequest, Level> {
       order: count,
     });
 
-    return this.levelRepository.create(level);
+    return this.simulationRepository.create(simulation);
   }
 }

@@ -1,11 +1,11 @@
 import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Entity } from '../../../shared/core/entity';
 
-export type SimulationStatus = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED';
+export type AttemptStatus = 'IN_PROGRESS' | 'COMPLETED' | 'ABANDONED';
 export type SimulationMode = 'PRACTICE' | 'EXAM';
 
-export interface ExamAnswerProps {
-  examResultId: string;
+export interface AttemptAnswerProps {
+  simulationAttemptId: string;
   questionId: string;
   selectedOptions: string[];
   isCorrect?: boolean | null;
@@ -15,9 +15,9 @@ export interface ExamAnswerProps {
   updatedAt?: Date;
 }
 
-export class ExamAnswer extends Entity<ExamAnswerProps> {
-  get examResultId(): string {
-    return this.props.examResultId;
+export class AttemptAnswer extends Entity<AttemptAnswerProps> {
+  get simulationAttemptId(): string {
+    return this.props.simulationAttemptId;
   }
   get questionId(): string {
     return this.props.questionId;
@@ -41,8 +41,8 @@ export class ExamAnswer extends Entity<ExamAnswerProps> {
     return this.props.updatedAt;
   }
 
-  static create(props: ExamAnswerProps, id?: string): ExamAnswer {
-    return new ExamAnswer(
+  static create(props: AttemptAnswerProps, id?: string): AttemptAnswer {
+    return new AttemptAnswer(
       {
         ...props,
         createdAt: props.createdAt ?? new Date(),
@@ -53,7 +53,7 @@ export class ExamAnswer extends Entity<ExamAnswerProps> {
   }
 }
 
-export interface ExamResultLevel {
+export interface AttemptSimulation {
   name: string;
   xpReward?: number;
   topic?: {
@@ -69,10 +69,10 @@ export interface ExamResultLevel {
   };
 }
 
-export interface ExamResultProps {
+export interface SimulationAttemptProps {
   userId: string;
-  levelId: string;
-  status?: SimulationStatus;
+  simulationId: string;
+  status?: AttemptStatus;
   mode?: SimulationMode;
   score?: number | null;
   totalQuestions: number;
@@ -80,20 +80,20 @@ export interface ExamResultProps {
   passed?: boolean | null;
   stars?: number | null;
   timeSpent?: number | null;
-  answers?: ExamAnswer[];
-  level?: ExamResultLevel | null;
+  answers?: AttemptAnswer[];
+  simulation?: AttemptSimulation | null;
   createdAt?: Date;
   updatedAt?: Date;
 }
 
-export class ExamResult extends AggregateRoot<ExamResultProps> {
+export class SimulationAttempt extends AggregateRoot<SimulationAttemptProps> {
   get userId(): string {
     return this.props.userId;
   }
-  get levelId(): string {
-    return this.props.levelId;
+  get simulationId(): string {
+    return this.props.simulationId;
   }
-  get status(): SimulationStatus {
+  get status(): AttemptStatus {
     return this.props.status ?? 'IN_PROGRESS';
   }
   get mode(): SimulationMode {
@@ -117,11 +117,11 @@ export class ExamResult extends AggregateRoot<ExamResultProps> {
   get timeSpent(): number | null | undefined {
     return this.props.timeSpent;
   }
-  get answers(): ExamAnswer[] {
+  get answers(): AttemptAnswer[] {
     return this.props.answers ?? [];
   }
-  get level(): ExamResultLevel | null | undefined {
-    return this.props.level;
+  get simulation(): AttemptSimulation | null | undefined {
+    return this.props.simulation;
   }
   get createdAt(): Date | undefined {
     return this.props.createdAt;
@@ -130,8 +130,8 @@ export class ExamResult extends AggregateRoot<ExamResultProps> {
     return this.props.updatedAt;
   }
 
-  static create(props: ExamResultProps, id?: string): ExamResult {
-    return new ExamResult(
+  static create(props: SimulationAttemptProps, id?: string): SimulationAttempt {
+    return new SimulationAttempt(
       {
         ...props,
         status: props.status ?? 'IN_PROGRESS',

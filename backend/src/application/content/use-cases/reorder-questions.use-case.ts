@@ -27,7 +27,7 @@ export class ReorderQuestionsUseCase implements UseCase<
       throw new InvalidReorderError(`A questão com ID ${request.ids[0]} não foi encontrada.`);
     }
 
-    const allQuestionsInScope = await this.questionRepository.findByLevelId(referenceQuestion.levelId);
+    const allQuestionsInScope = await this.questionRepository.findBySimulationId(referenceQuestion.simulationId);
     const scopeIds = allQuestionsInScope.map((q) => q.id);
 
     if (request.ids.length !== scopeIds.length) {

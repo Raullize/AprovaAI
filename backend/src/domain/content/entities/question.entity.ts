@@ -16,7 +16,7 @@ export interface QuestionProps {
   order: number;
   explanation?: string | null;
   studyLink?: string | null;
-  levelId: string;
+  simulationId: string;
   options?: OptionProps[];
   createdAt?: Date;
   updatedAt?: Date;
@@ -44,8 +44,8 @@ export class Question extends AggregateRoot<QuestionProps> {
   get studyLink(): string | null | undefined {
     return this.props.studyLink;
   }
-  get levelId(): string {
-    return this.props.levelId;
+  get simulationId(): string {
+    return this.props.simulationId;
   }
   get options(): OptionProps[] {
     return this.props.options ?? [];
@@ -87,14 +87,14 @@ export class Question extends AggregateRoot<QuestionProps> {
     type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
     explanation: string | null | undefined;
     studyLink: string | null | undefined;
-    levelId: string;
+    simulationId: string;
   }): void {
     this.props.content = details.content;
     this.props.imageUrl = details.imageUrl;
     this.props.type = details.type;
     this.props.explanation = details.explanation;
     this.props.studyLink = details.studyLink;
-    this.props.levelId = details.levelId;
+    this.props.simulationId = details.simulationId;
     this.props.updatedAt = new Date();
   }
 

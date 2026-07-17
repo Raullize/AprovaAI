@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
-import { ExamResultRepository } from '../../../domain/simulations/repositories/exam-result.repository';
+import { SimulationAttemptRepository } from '../../../domain/simulations/repositories/simulation-attempt.repository';
 import { QuestionRepository } from '../../../domain/content/repositories/question.repository';
-import { ExamAnswer } from '../../../domain/simulations/entities/exam-result.entity';
+import { AttemptAnswer } from '../../../domain/simulations/entities/simulation-attempt.entity';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 import { ValidationError } from '../../../shared/core/errors/validation.error';
 
 export interface SaveAnswerRequest {
   userId: string;
-  examResultId: string;
+  simulationAttemptId: string;
   questionId: string;
   selectedOptions: string[];
   timeSpent?: number;
@@ -18,30 +18,30 @@ export interface SaveAnswerRequest {
 @Injectable()
 export class SaveAnswerUseCase implements UseCase<
   SaveAnswerRequest,
-  ExamAnswer
+  AttemptAnswer
 > {
   constructor(
-    private readonly examResultRepository: ExamResultRepository,
+    private readonly simulationAttemptRepository: SimulationAttemptRepository,
     private readonly questionRepository: QuestionRepository,
   ) {}
 
-  async execute(request: SaveAnswerRequest): Promise<ExamAnswer> {
+  async execute(request: SaveAnswerRequest): Promise<AttemptAnswer> {
     // 1. Fetch simulation
-    const examResult = await this.examResultRepository.findById(
-      request.examResultId,
+    const simulationAttempt = await this.simulationAttemptRepository.findById(
+      request.simulationAttemptId,
     );
-    if (!examResult) {
-      throw new ResourceNotFoundError('ExamResult', request.examResultId);
+    if (!simulationAttempt) {
+      throw new ResourceNotFoundError('SimulationAttempt', request.simulationAttemptId);
     }
 
     // 2. Validate simulation belongs to user and is in progress
-    if (examResult.userId !== request.userId) {
+    if (simulationAttempt.userId !== request.userId) {
       throw new ValidationError(
         'You do not have permission to answer this simulation',
       );
     }
 
-    if (examResult.status !== 'IN_PROGRESS') {
+    if (simulationAttempt.status !== 'IN_PROGRESS') {
       throw new ValidationError(
         'Cannot answer a simulation that is not in progress',
       );
@@ -53,10 +53,10 @@ export class SaveAnswerUseCase implements UseCase<
       throw new ResourceNotFoundError('Question', request.questionId);
     }
 
-    // Validate question belongs to the level being tested
-    if (question.levelId !== examResult.levelId) {
+    // Validate question belongs to the simulation being tested
+    if (question.simulationId !== simulationAttempt.simulationId) {
       throw new ValidationError(
-        'This question does not belong to the current simulation level',
+        'This question does not belong to the current simulation simulation',
       );
     }
 
@@ -81,8 +81,8 @@ export class SaveAnswerUseCase implements UseCase<
     }
 
     // 5. Save answer
-    const newAnswer = ExamAnswer.create({
-      examResultId: examResult.id,
+    const newAnswer = AttemptAnswer.create({
+      simulationAttemptId: simulationAttempt.id,
       questionId: question.id,
       selectedOptions: request.selectedOptions,
       isCorrect,
@@ -90,13 +90,13 @@ export class SaveAnswerUseCase implements UseCase<
       isFlaggedForReview: request.isFlaggedForReview ?? false,
     });
 
-    const savedAnswer = await this.examResultRepository.saveAnswer(newAnswer);
+    const savedAnswer = await this.simulationAttemptRepository.saveAnswer(newAnswer);
 
     // 6. Anti-Cheat: If mode is EXAM, don't return the correctness of the answer
-    if (examResult.mode === 'EXAM') {
-      return ExamAnswer.create(
+    if (simulationAttempt.mode === 'EXAM') {
+      return AttemptAnswer.create(
         {
-          examResultId: savedAnswer.examResultId,
+          simulationAttemptId: savedAnswer.simulationAttemptId,
           questionId: savedAnswer.questionId,
           selectedOptions: savedAnswer.selectedOptions,
           timeSpent: savedAnswer.timeSpent,

@@ -9,7 +9,7 @@ export interface TopicProps {
   showComingSoon?: boolean;
   examId: string;
   order?: number;
-  levelsCount?: number;
+  simulationsCount?: number;
   iconKey?: string | null;
   colorScheme?: string | null;
   createdAt?: Date;
@@ -44,8 +44,8 @@ export class Topic extends AggregateRoot<TopicProps> {
   get updatedAt(): Date | undefined {
     return this.props.updatedAt;
   }
-  get levelsCount(): number {
-    return this.props.levelsCount ?? 0;
+  get simulationsCount(): number {
+    return this.props.simulationsCount ?? 0;
   }
   get iconKey(): string | null | undefined {
     return this.props.iconKey;

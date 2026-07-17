@@ -4,7 +4,7 @@ describe('Question Entity', () => {
   it('should be able to create a question', () => {
     const question = Question.create({
       content: 'Test Question',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 1,
     });
 
@@ -19,7 +19,7 @@ describe('Question Entity', () => {
   it('should activate a question', () => {
     const question = Question.create({
       content: 'Test Question',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 1,
       status: 'DRAFT',
     });
@@ -33,7 +33,7 @@ describe('Question Entity', () => {
   it('should deactivate a question', () => {
     const question = Question.create({
       content: 'Test Question',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 1,
     });
 
@@ -45,7 +45,7 @@ describe('Question Entity', () => {
   it('should update question details', () => {
     const question = Question.create({
       content: 'Test Question',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 1,
     });
 
@@ -55,7 +55,7 @@ describe('Question Entity', () => {
       type: 'SINGLE_CHOICE',
       explanation: 'Explanation',
       studyLink: 'link.com',
-      levelId: 'level-2',
+      simulationId: 'simulation-2',
     });
 
     expect(question.content).toBe('Updated Question');
@@ -63,13 +63,13 @@ describe('Question Entity', () => {
     expect(question.type).toBe('SINGLE_CHOICE');
     expect(question.explanation).toBe('Explanation');
     expect(question.studyLink).toBe('link.com');
-    expect(question.levelId).toBe('level-2');
+    expect(question.simulationId).toBe('simulation-2');
   });
 
   it('should update question order', () => {
     const question = Question.create({
       content: 'Test Question',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 1,
     });
 
@@ -81,7 +81,7 @@ describe('Question Entity', () => {
   it('should update question options', () => {
     const question = Question.create({
       content: 'Test Question',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 1,
     });
 
@@ -97,7 +97,7 @@ describe('Question Entity', () => {
   it('should throw error when updating options with empty array', () => {
     const question = Question.create({
       content: 'Test Question',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 1,
     });
 

@@ -9,8 +9,8 @@ export class InMemoryQuestionRepository implements QuestionRepository {
     return Promise.resolve(this.items);
   }
 
-  findByLevelId(levelId: string): Promise<Question[]> {
-    const questions = this.items.filter((item) => item.levelId === levelId);
+  findBySimulationId(simulationId: string): Promise<Question[]> {
+    const questions = this.items.filter((item) => item.simulationId === simulationId);
     return Promise.resolve(questions.sort((a, b) => a.order - b.order));
   }
 
@@ -56,8 +56,8 @@ export class InMemoryQuestionRepository implements QuestionRepository {
     return Promise.resolve();
   }
 
-  countByLevelId(levelId: string): Promise<number> {
-    const count = this.items.filter((item) => item.levelId === levelId).length;
+  countBySimulationId(simulationId: string): Promise<number> {
+    const count = this.items.filter((item) => item.simulationId === simulationId).length;
     return Promise.resolve(count);
   }
 }

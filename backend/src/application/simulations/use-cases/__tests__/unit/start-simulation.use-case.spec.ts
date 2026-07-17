@@ -1,26 +1,26 @@
 import { StartSimulationUseCase } from '../../start-simulation.use-case';
-import { InMemoryExamResultRepository } from '../../../../../../test/repositories/in-memory-exam-result.repository';
-import { InMemoryLevelRepository } from '../../../../../../test/repositories/in-memory-level.repository';
-import { Level } from '../../../../../domain/content/entities/level.entity';
+import { InMemorySimulationAttemptRepository } from '../../../../../../test/repositories/in-memory-simulation-attempt.repository';
+import { InMemorySimulationRepository } from '../../../../../../test/repositories/in-memory-simulation.repository';
+import { Simulation } from '../../../../../domain/content/entities/simulation.entity';
 import { Slug } from '../../../../../domain/content/value-objects/slug';
 import { Percentage } from '../../../../../domain/content/value-objects/percentage';
 import { ResourceNotFoundError } from '../../../../../shared/core/errors/resource-not-found.error';
 import { ValidationError } from '../../../../../shared/core/errors/validation.error';
-import { ExamResult } from '../../../../../domain/simulations/entities/exam-result.entity';
+import { SimulationAttempt } from '../../../../../domain/simulations/entities/simulation-attempt.entity';
 
 describe('StartSimulationUseCase', () => {
-  let examResultRepository: InMemoryExamResultRepository;
-  let levelRepository: InMemoryLevelRepository;
+  let simulationAttemptRepository: InMemorySimulationAttemptRepository;
+  let simulationRepository: InMemorySimulationRepository;
   let sut: StartSimulationUseCase;
 
   beforeEach(() => {
-    examResultRepository = new InMemoryExamResultRepository();
-    levelRepository = new InMemoryLevelRepository();
-    sut = new StartSimulationUseCase(examResultRepository, levelRepository);
+    simulationAttemptRepository = new InMemorySimulationAttemptRepository();
+    simulationRepository = new InMemorySimulationRepository();
+    sut = new StartSimulationUseCase(simulationAttemptRepository, simulationRepository);
   });
 
-  it('should create a new simulation using level mode and questions count', async () => {
-    const level = Level.create({
+  it('should create a new simulation using simulation mode and questions count', async () => {
+    const simulation = Simulation.create({
       name: 'Nivel 1',
       slug: Slug.create('nivel-1'),
       topicId: 'topic-1',
@@ -31,21 +31,21 @@ describe('StartSimulationUseCase', () => {
       questionsCount: 10,
     });
 
-    await levelRepository.create(level);
+    await simulationRepository.create(simulation);
 
     const result = await sut.execute({
       userId: 'user-1',
-      levelId: level.id,
+      simulationId: simulation.id,
     });
 
     expect(result.status).toBe('IN_PROGRESS');
     expect(result.mode).toBe('EXAM');
     expect(result.totalQuestions).toBe(10);
-    expect(examResultRepository.items).toHaveLength(1);
+    expect(simulationAttemptRepository.items).toHaveLength(1);
   });
 
   it('should resume an active simulation when one already exists', async () => {
-    const level = Level.create({
+    const simulation = Simulation.create({
       name: 'Nivel 2',
       slug: Slug.create('nivel-2'),
       topicId: 'topic-1',
@@ -56,38 +56,38 @@ describe('StartSimulationUseCase', () => {
       questionsCount: 5,
     });
 
-    const existingSimulation = ExamResult.create({
+    const existingSimulation = SimulationAttempt.create({
       userId: 'user-1',
-      levelId: level.id,
+      simulationId: simulation.id,
       status: 'IN_PROGRESS',
       mode: 'PRACTICE',
       totalQuestions: 5,
       answers: [],
     });
 
-    await levelRepository.create(level);
-    await examResultRepository.create(existingSimulation);
+    await simulationRepository.create(simulation);
+    await simulationAttemptRepository.create(existingSimulation);
 
     const result = await sut.execute({
       userId: 'user-1',
-      levelId: level.id,
+      simulationId: simulation.id,
     });
 
     expect(result.id).toBe(existingSimulation.id);
-    expect(examResultRepository.items).toHaveLength(1);
+    expect(simulationAttemptRepository.items).toHaveLength(1);
   });
 
-  it('should throw ResourceNotFoundError when level does not exist', async () => {
+  it('should throw ResourceNotFoundError when simulation does not exist', async () => {
     await expect(
       sut.execute({
         userId: 'user-1',
-        levelId: 'missing-level',
+        simulationId: 'missing-simulation',
       }),
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
-  it('should throw ValidationError when level has no questions', async () => {
-    const level = Level.create({
+  it('should throw ValidationError when simulation has no questions', async () => {
+    const simulation = Simulation.create({
       name: 'Nivel vazio',
       slug: Slug.create('nivel-vazio'),
       topicId: 'topic-1',
@@ -97,12 +97,12 @@ describe('StartSimulationUseCase', () => {
       questionsCount: 0,
     });
 
-    await levelRepository.create(level);
+    await simulationRepository.create(simulation);
 
     await expect(
       sut.execute({
         userId: 'user-1',
-        levelId: level.id,
+        simulationId: simulation.id,
       }),
     ).rejects.toBeInstanceOf(ValidationError);
   });

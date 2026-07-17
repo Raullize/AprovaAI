@@ -1,26 +1,26 @@
 import { SaveAnswerUseCase } from '../../save-answer.use-case';
-import { InMemoryExamResultRepository } from '../../../../../../test/repositories/in-memory-exam-result.repository';
+import { InMemorySimulationAttemptRepository } from '../../../../../../test/repositories/in-memory-simulation-attempt.repository';
 import { InMemoryQuestionRepository } from '../../../../../../test/repositories/in-memory-question.repository';
-import { ExamResult } from '../../../../../domain/simulations/entities/exam-result.entity';
+import { SimulationAttempt } from '../../../../../domain/simulations/entities/simulation-attempt.entity';
 import { Question } from '../../../../../domain/content/entities/question.entity';
 import { ResourceNotFoundError } from '../../../../../shared/core/errors/resource-not-found.error';
 import { ValidationError } from '../../../../../shared/core/errors/validation.error';
 
 describe('SaveAnswerUseCase', () => {
-  let examResultRepository: InMemoryExamResultRepository;
+  let simulationAttemptRepository: InMemorySimulationAttemptRepository;
   let questionRepository: InMemoryQuestionRepository;
   let sut: SaveAnswerUseCase;
 
   beforeEach(() => {
-    examResultRepository = new InMemoryExamResultRepository();
+    simulationAttemptRepository = new InMemorySimulationAttemptRepository();
     questionRepository = new InMemoryQuestionRepository();
-    sut = new SaveAnswerUseCase(examResultRepository, questionRepository);
+    sut = new SaveAnswerUseCase(simulationAttemptRepository, questionRepository);
   });
 
   it('should save a correct single choice answer in practice mode', async () => {
-    const examResult = ExamResult.create({
+    const simulationAttempt = SimulationAttempt.create({
       userId: 'user-1',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       status: 'IN_PROGRESS',
       mode: 'PRACTICE',
       totalQuestions: 1,
@@ -29,7 +29,7 @@ describe('SaveAnswerUseCase', () => {
 
     const question = Question.create({
       content: 'Qual e a capital do Brasil?',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 0,
       type: 'SINGLE_CHOICE',
       options: [
@@ -38,25 +38,25 @@ describe('SaveAnswerUseCase', () => {
       ],
     });
 
-    await examResultRepository.create(examResult);
+    await simulationAttemptRepository.create(simulationAttempt);
     await questionRepository.create(question);
 
     const result = await sut.execute({
       userId: 'user-1',
-      examResultId: examResult.id,
+      simulationAttemptId: simulationAttempt.id,
       questionId: question.id,
       selectedOptions: ['b'],
       timeSpent: 12,
     });
 
     expect(result.isCorrect).toBe(true);
-    expect(examResultRepository.answers).toHaveLength(1);
+    expect(simulationAttemptRepository.answers).toHaveLength(1);
   });
 
   it('should hide correctness in exam mode', async () => {
-    const examResult = ExamResult.create({
+    const simulationAttempt = SimulationAttempt.create({
       userId: 'user-1',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       status: 'IN_PROGRESS',
       mode: 'EXAM',
       totalQuestions: 1,
@@ -65,7 +65,7 @@ describe('SaveAnswerUseCase', () => {
 
     const question = Question.create({
       content: 'Selecione as corretas',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       order: 0,
       type: 'MULTIPLE_CHOICE',
       options: [
@@ -75,24 +75,24 @@ describe('SaveAnswerUseCase', () => {
       ],
     });
 
-    await examResultRepository.create(examResult);
+    await simulationAttemptRepository.create(simulationAttempt);
     await questionRepository.create(question);
 
     const result = await sut.execute({
       userId: 'user-1',
-      examResultId: examResult.id,
+      simulationAttemptId: simulationAttempt.id,
       questionId: question.id,
       selectedOptions: ['a', 'b'],
     });
 
     expect(result.isCorrect).toBeNull();
-    expect(examResultRepository.answers[0].isCorrect).toBe(true);
+    expect(simulationAttemptRepository.answers[0].isCorrect).toBe(true);
   });
 
-  it('should throw ValidationError when question belongs to another level', async () => {
-    const examResult = ExamResult.create({
+  it('should throw ValidationError when question belongs to another simulation', async () => {
+    const simulationAttempt = SimulationAttempt.create({
       userId: 'user-1',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       status: 'IN_PROGRESS',
       mode: 'PRACTICE',
       totalQuestions: 1,
@@ -101,18 +101,18 @@ describe('SaveAnswerUseCase', () => {
 
     const question = Question.create({
       content: 'Pergunta',
-      levelId: 'level-2',
+      simulationId: 'simulation-2',
       order: 0,
       options: [{ id: 'a', text: 'Opcao', isCorrect: true, order: 0 }],
     });
 
-    await examResultRepository.create(examResult);
+    await simulationAttemptRepository.create(simulationAttempt);
     await questionRepository.create(question);
 
     await expect(
       sut.execute({
         userId: 'user-1',
-        examResultId: examResult.id,
+        simulationAttemptId: simulationAttempt.id,
         questionId: question.id,
         selectedOptions: ['a'],
       }),
@@ -120,21 +120,21 @@ describe('SaveAnswerUseCase', () => {
   });
 
   it('should throw ResourceNotFoundError when question does not exist', async () => {
-    const examResult = ExamResult.create({
+    const simulationAttempt = SimulationAttempt.create({
       userId: 'user-1',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       status: 'IN_PROGRESS',
       mode: 'PRACTICE',
       totalQuestions: 1,
       answers: [],
     });
 
-    await examResultRepository.create(examResult);
+    await simulationAttemptRepository.create(simulationAttempt);
 
     await expect(
       sut.execute({
         userId: 'user-1',
-        examResultId: examResult.id,
+        simulationAttemptId: simulationAttempt.id,
         questionId: 'missing-question',
         selectedOptions: ['a'],
       }),

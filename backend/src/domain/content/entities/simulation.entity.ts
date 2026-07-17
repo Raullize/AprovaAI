@@ -1,17 +1,17 @@
 import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Slug } from '../value-objects/slug';
 import { Percentage } from '../value-objects/percentage';
-import { LevelCreatedEvent } from '../events/level-created.event';
+import { SimulationCreatedEvent } from '../events/simulation-created.event';
 
-export type LevelStatus = 'PUBLISHED' | 'DRAFT';
+export type AttemptStatus = 'PUBLISHED' | 'DRAFT';
 
-export interface LevelProps {
+export interface SimulationProps {
   name: string;
   slug: Slug;
   description?: string | null;
   order: number;
   topicId: string;
-  status?: LevelStatus;
+  status?: AttemptStatus;
   xpReward?: number;
   passingPercentage?: Percentage;
   timeLimit?: number | null;
@@ -21,7 +21,7 @@ export interface LevelProps {
   updatedAt?: Date;
 }
 
-export class Level extends AggregateRoot<LevelProps> {
+export class Simulation extends AggregateRoot<SimulationProps> {
   get name(): string {
     return this.props.name;
   }
@@ -65,8 +65,8 @@ export class Level extends AggregateRoot<LevelProps> {
     return this.props.questionsCount ?? 0;
   }
 
-  static create(props: LevelProps, id?: string): Level {
-    const level = new Level(
+  static create(props: SimulationProps, id?: string): Simulation {
+    const simulation = new Simulation(
       {
         ...props,
         status: props.status ?? 'PUBLISHED',
@@ -78,12 +78,12 @@ export class Level extends AggregateRoot<LevelProps> {
       id,
     );
 
-    const isNewLevel = !id;
-    if (isNewLevel) {
-      level.addDomainEvent(new LevelCreatedEvent(level));
+    const isNewSimulation = !id;
+    if (isNewSimulation) {
+      simulation.addDomainEvent(new SimulationCreatedEvent(simulation));
     }
 
-    return level;
+    return simulation;
   }
 
   public activate(): void {

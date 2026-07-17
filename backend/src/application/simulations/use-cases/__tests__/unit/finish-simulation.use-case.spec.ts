@@ -1,9 +1,9 @@
 import { FinishSimulationUseCase } from '../../finish-simulation.use-case';
-import { InMemoryExamResultRepository } from '../../../../../../test/repositories/in-memory-exam-result.repository';
-import { InMemoryLevelRepository } from '../../../../../../test/repositories/in-memory-level.repository';
+import { InMemorySimulationAttemptRepository } from '../../../../../../test/repositories/in-memory-simulation-attempt.repository';
+import { InMemorySimulationRepository } from '../../../../../../test/repositories/in-memory-simulation.repository';
 import { InMemoryUserRepository } from '../../../../../../test/repositories/in-memory-user.repository';
-import { ExamAnswer, ExamResult } from '../../../../../domain/simulations/entities/exam-result.entity';
-import { Level } from '../../../../../domain/content/entities/level.entity';
+import { AttemptAnswer, SimulationAttempt } from '../../../../../domain/simulations/entities/simulation-attempt.entity';
+import { Simulation } from '../../../../../domain/content/entities/simulation.entity';
 import { User } from '../../../../../domain/users/entities/user.entity';
 import { Slug } from '../../../../../domain/content/value-objects/slug';
 import { Percentage } from '../../../../../domain/content/value-objects/percentage';
@@ -12,18 +12,18 @@ import { ResourceNotFoundError } from '../../../../../shared/core/errors/resourc
 import { ValidationError } from '../../../../../shared/core/errors/validation.error';
 
 describe('FinishSimulationUseCase', () => {
-  let examResultRepository: InMemoryExamResultRepository;
-  let levelRepository: InMemoryLevelRepository;
+  let simulationAttemptRepository: InMemorySimulationAttemptRepository;
+  let simulationRepository: InMemorySimulationRepository;
   let userRepository: InMemoryUserRepository;
   let sut: FinishSimulationUseCase;
 
   beforeEach(() => {
-    examResultRepository = new InMemoryExamResultRepository();
-    levelRepository = new InMemoryLevelRepository();
+    simulationAttemptRepository = new InMemorySimulationAttemptRepository();
+    simulationRepository = new InMemorySimulationRepository();
     userRepository = new InMemoryUserRepository();
     sut = new FinishSimulationUseCase(
-      examResultRepository,
-      levelRepository,
+      simulationAttemptRepository,
+      simulationRepository,
       userRepository,
     );
   });
@@ -38,7 +38,7 @@ describe('FinishSimulationUseCase', () => {
       xp: 0,
     });
 
-    const level = Level.create({
+    const simulation = Simulation.create({
       name: 'Nivel 1',
       slug: Slug.create('nivel-1'),
       topicId: 'topic-1',
@@ -48,47 +48,47 @@ describe('FinishSimulationUseCase', () => {
       questionsCount: 5,
     });
 
-    const previousAttempt = ExamResult.create({
+    const previousAttempt = SimulationAttempt.create({
       userId: user.id,
-      levelId: level.id,
+      simulationId: simulation.id,
       status: 'COMPLETED',
       totalQuestions: 5,
       stars: 1,
       answers: [],
     });
 
-    const currentAttempt = ExamResult.create({
+    const currentAttempt = SimulationAttempt.create({
       userId: user.id,
-      levelId: level.id,
+      simulationId: simulation.id,
       status: 'IN_PROGRESS',
       totalQuestions: 5,
       answers: [
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q1',
           selectedOptions: ['a'],
           isCorrect: true,
         }),
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q2',
           selectedOptions: ['a'],
           isCorrect: true,
         }),
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q3',
           selectedOptions: ['a'],
           isCorrect: true,
         }),
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q4',
           selectedOptions: ['a'],
           isCorrect: true,
         }),
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q5',
           selectedOptions: ['a'],
           isCorrect: false,
@@ -97,19 +97,19 @@ describe('FinishSimulationUseCase', () => {
     });
 
     await userRepository.create(user);
-    await levelRepository.create(level);
-    await examResultRepository.create(previousAttempt);
-    await examResultRepository.create(currentAttempt);
+    await simulationRepository.create(simulation);
+    await simulationAttemptRepository.create(previousAttempt);
+    await simulationAttemptRepository.create(currentAttempt);
 
     const result = await sut.execute({
       userId: user.id,
-      examResultId: currentAttempt.id,
+      simulationAttemptId: currentAttempt.id,
       timeSpent: 300,
     });
 
-    expect(result.examResult.status).toBe('COMPLETED');
-    expect(result.examResult.passed).toBe(true);
-    expect(result.examResult.stars).toBe(2);
+    expect(result.simulationAttempt.status).toBe('COMPLETED');
+    expect(result.simulationAttempt.passed).toBe(true);
+    expect(result.simulationAttempt.stars).toBe(2);
     expect(result.xpGained).toBe(30);
     expect(userRepository.items[0].xp).toBe(30);
     expect(userRepository.activities).toHaveLength(1);
@@ -125,7 +125,7 @@ describe('FinishSimulationUseCase', () => {
       xp: 50,
     });
 
-    const level = Level.create({
+    const simulation = Simulation.create({
       name: 'Nivel 2',
       slug: Slug.create('nivel-2'),
       topicId: 'topic-1',
@@ -135,47 +135,47 @@ describe('FinishSimulationUseCase', () => {
       questionsCount: 5,
     });
 
-    const previousAttempt = ExamResult.create({
+    const previousAttempt = SimulationAttempt.create({
       userId: user.id,
-      levelId: level.id,
+      simulationId: simulation.id,
       status: 'COMPLETED',
       totalQuestions: 5,
       stars: 3,
       answers: [],
     });
 
-    const currentAttempt = ExamResult.create({
+    const currentAttempt = SimulationAttempt.create({
       userId: user.id,
-      levelId: level.id,
+      simulationId: simulation.id,
       status: 'IN_PROGRESS',
       totalQuestions: 5,
       answers: [
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q1',
           selectedOptions: ['a'],
           isCorrect: true,
         }),
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q2',
           selectedOptions: ['a'],
           isCorrect: true,
         }),
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q3',
           selectedOptions: ['a'],
           isCorrect: true,
         }),
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q4',
           selectedOptions: ['a'],
           isCorrect: true,
         }),
-        ExamAnswer.create({
-          examResultId: 'attempt',
+        AttemptAnswer.create({
+          simulationAttemptId: 'attempt',
           questionId: 'q5',
           selectedOptions: ['a'],
           isCorrect: true,
@@ -184,16 +184,16 @@ describe('FinishSimulationUseCase', () => {
     });
 
     await userRepository.create(user);
-    await levelRepository.create(level);
-    await examResultRepository.create(previousAttempt);
-    await examResultRepository.create(currentAttempt);
+    await simulationRepository.create(simulation);
+    await simulationAttemptRepository.create(previousAttempt);
+    await simulationAttemptRepository.create(currentAttempt);
 
     const result = await sut.execute({
       userId: user.id,
-      examResultId: currentAttempt.id,
+      simulationAttemptId: currentAttempt.id,
     });
 
-    expect(result.examResult.stars).toBe(3);
+    expect(result.simulationAttempt.stars).toBe(3);
     expect(result.xpGained).toBe(0);
     expect(userRepository.items[0].xp).toBe(50);
   });
@@ -207,7 +207,7 @@ describe('FinishSimulationUseCase', () => {
       dateOfBirth: new Date('1998-01-01'),
     });
 
-    const level = Level.create({
+    const simulation = Simulation.create({
       name: 'Nivel 3',
       slug: Slug.create('nivel-3'),
       topicId: 'topic-1',
@@ -217,28 +217,28 @@ describe('FinishSimulationUseCase', () => {
       questionsCount: 5,
     });
 
-    const currentAttempt = ExamResult.create({
+    const currentAttempt = SimulationAttempt.create({
       userId: 'another-user',
-      levelId: level.id,
+      simulationId: simulation.id,
       status: 'IN_PROGRESS',
       totalQuestions: 5,
       answers: [],
     });
 
     await userRepository.create(user);
-    await levelRepository.create(level);
-    await examResultRepository.create(currentAttempt);
+    await simulationRepository.create(simulation);
+    await simulationAttemptRepository.create(currentAttempt);
 
     await expect(
       sut.execute({
         userId: user.id,
-        examResultId: currentAttempt.id,
+        simulationAttemptId: currentAttempt.id,
       }),
     ).rejects.toBeInstanceOf(ValidationError);
   });
 
   it('should throw ResourceNotFoundError when user does not exist', async () => {
-    const level = Level.create({
+    const simulation = Simulation.create({
       name: 'Nivel 4',
       slug: Slug.create('nivel-4'),
       topicId: 'topic-1',
@@ -248,21 +248,21 @@ describe('FinishSimulationUseCase', () => {
       questionsCount: 5,
     });
 
-    const currentAttempt = ExamResult.create({
+    const currentAttempt = SimulationAttempt.create({
       userId: 'missing-user',
-      levelId: level.id,
+      simulationId: simulation.id,
       status: 'IN_PROGRESS',
       totalQuestions: 5,
       answers: [],
     });
 
-    await levelRepository.create(level);
-    await examResultRepository.create(currentAttempt);
+    await simulationRepository.create(simulation);
+    await simulationAttemptRepository.create(currentAttempt);
 
     await expect(
       sut.execute({
         userId: 'missing-user',
-        examResultId: currentAttempt.id,
+        simulationAttemptId: currentAttempt.id,
       }),
     ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });

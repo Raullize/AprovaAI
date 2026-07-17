@@ -8,7 +8,7 @@ export interface CreateQuestionRequest {
   imageUrl?: string | null;
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
   status?: 'PUBLISHED' | 'DRAFT';
-  levelId: string;
+  simulationId: string;
   explanation?: string | null;
   studyLink?: string | null;
   options?: Array<{
@@ -25,7 +25,7 @@ export class CreateQuestionUseCase implements UseCase<
   constructor(private readonly questionRepository: QuestionRepository) {}
 
   async execute(request: CreateQuestionRequest): Promise<Question> {
-    const count = await this.questionRepository.countByLevelId(request.levelId);
+    const count = await this.questionRepository.countBySimulationId(request.simulationId);
 
     const options =
       request.options?.map((opt, index) => ({
@@ -38,7 +38,7 @@ export class CreateQuestionUseCase implements UseCase<
       imageUrl: request.imageUrl,
       type: request.type,
       status: request.status,
-      levelId: request.levelId,
+      simulationId: request.simulationId,
       explanation: request.explanation,
       studyLink: request.studyLink,
       options,

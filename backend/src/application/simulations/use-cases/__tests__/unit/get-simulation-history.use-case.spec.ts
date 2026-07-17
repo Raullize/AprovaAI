@@ -1,35 +1,35 @@
 import { GetSimulationHistoryUseCase } from '../../get-simulation-history.use-case';
-import { InMemoryExamResultRepository } from '../../../../../../test/repositories/in-memory-exam-result.repository';
-import { ExamResult } from '../../../../../domain/simulations/entities/exam-result.entity';
+import { InMemorySimulationAttemptRepository } from '../../../../../../test/repositories/in-memory-simulation-attempt.repository';
+import { SimulationAttempt } from '../../../../../domain/simulations/entities/simulation-attempt.entity';
 
 describe('GetSimulationHistoryUseCase', () => {
-  let examResultRepository: InMemoryExamResultRepository;
+  let simulationAttemptRepository: InMemorySimulationAttemptRepository;
   let sut: GetSimulationHistoryUseCase;
 
   beforeEach(() => {
-    examResultRepository = new InMemoryExamResultRepository();
-    sut = new GetSimulationHistoryUseCase(examResultRepository);
+    simulationAttemptRepository = new InMemorySimulationAttemptRepository();
+    sut = new GetSimulationHistoryUseCase(simulationAttemptRepository);
   });
 
   it('should return the history for the requested user', async () => {
-    const userAttempt = ExamResult.create({
+    const userAttempt = SimulationAttempt.create({
       userId: 'user-1',
-      levelId: 'level-1',
+      simulationId: 'simulation-1',
       status: 'COMPLETED',
       totalQuestions: 5,
       answers: [],
     });
 
-    const anotherAttempt = ExamResult.create({
+    const anotherAttempt = SimulationAttempt.create({
       userId: 'user-2',
-      levelId: 'level-2',
+      simulationId: 'simulation-2',
       status: 'COMPLETED',
       totalQuestions: 5,
       answers: [],
     });
 
-    await examResultRepository.create(userAttempt);
-    await examResultRepository.create(anotherAttempt);
+    await simulationAttemptRepository.create(userAttempt);
+    await simulationAttemptRepository.create(anotherAttempt);
 
     const result = await sut.execute({ userId: 'user-1' });
 

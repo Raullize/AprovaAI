@@ -15,7 +15,7 @@ describe('DeleteQuestionUseCase', () => {
     const question = Question.create({
       content: 'Question to delete?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
     });
     await repository.create(question);
@@ -35,13 +35,13 @@ describe('DeleteQuestionUseCase', () => {
     const questionA = Question.create({
       content: 'Question A?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
     });
     const questionB = Question.create({
       content: 'Question B?',
       type: 'MULTIPLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 1,
     });
     await repository.create(questionA);

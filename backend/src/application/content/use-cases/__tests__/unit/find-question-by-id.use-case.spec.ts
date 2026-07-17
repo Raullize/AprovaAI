@@ -16,7 +16,7 @@ describe('FindQuestionByIdUseCase', () => {
     const question = Question.create({
       content: 'What is TypeScript?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
       options: [
         { text: 'A typed JavaScript superset', isCorrect: true, order: 0 },

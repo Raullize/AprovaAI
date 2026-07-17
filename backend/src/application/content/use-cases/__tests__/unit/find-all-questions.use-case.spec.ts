@@ -15,13 +15,13 @@ describe('FindAllQuestionsUseCase', () => {
     const qA = Question.create({
       content: 'Question A?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
     });
     const qB = Question.create({
       content: 'Question B?',
       type: 'MULTIPLE_CHOICE',
-      levelId: 'level-02',
+      simulationId: 'simulation-02',
       order: 0,
     });
 

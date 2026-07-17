@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
-import { ExamResultRepository } from '../../../domain/simulations/repositories/exam-result.repository';
-import { ExamResult } from '../../../domain/simulations/entities/exam-result.entity';
-import { LevelRepository } from '../../../domain/content/repositories/level.repository';
+import { SimulationAttemptRepository } from '../../../domain/simulations/repositories/simulation-attempt.repository';
+import { SimulationAttempt } from '../../../domain/simulations/entities/simulation-attempt.entity';
+import { SimulationRepository } from '../../../domain/content/repositories/simulation.repository';
 import { UserRepository } from '../../../domain/users/repositories/user.repository';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 import { ValidationError } from '../../../shared/core/errors/validation.error';
 
 export interface FinishSimulationRequest {
   userId: string;
-  examResultId: string;
+  simulationAttemptId: string;
   timeSpent?: number;
 }
 
 export interface FinishSimulationResponse {
-  examResult: ExamResult;
+  simulationAttempt: SimulationAttempt;
   xpGained: number;
 }
 
@@ -24,52 +24,52 @@ export class FinishSimulationUseCase implements UseCase<
   FinishSimulationResponse
 > {
   constructor(
-    private readonly examResultRepository: ExamResultRepository,
-    private readonly levelRepository: LevelRepository,
+    private readonly simulationAttemptRepository: SimulationAttemptRepository,
+    private readonly simulationRepository: SimulationRepository,
     private readonly userRepository: UserRepository,
   ) {}
 
   async execute(request: FinishSimulationRequest): Promise<FinishSimulationResponse> {
     // 1. Fetch simulation with answers
-    const examResult = await this.examResultRepository.findById(
-      request.examResultId,
+    const simulationAttempt = await this.simulationAttemptRepository.findById(
+      request.simulationAttemptId,
     );
-    if (!examResult) {
-      throw new ResourceNotFoundError('ExamResult', request.examResultId);
+    if (!simulationAttempt) {
+      throw new ResourceNotFoundError('SimulationAttempt', request.simulationAttemptId);
     }
 
-    if (examResult.userId !== request.userId) {
+    if (simulationAttempt.userId !== request.userId) {
       throw new ValidationError(
         'You do not have permission to finish this simulation',
       );
     }
 
-    if (examResult.status !== 'IN_PROGRESS') {
+    if (simulationAttempt.status !== 'IN_PROGRESS') {
       throw new ValidationError(
         'This simulation is already finished or abandoned',
       );
     }
 
-    // 2. Fetch level to know passing criteria
-    const level = await this.levelRepository.findById(examResult.levelId);
-    if (!level) {
-      throw new ResourceNotFoundError('Level', examResult.levelId);
+    // 2. Fetch simulation to know passing criteria
+    const simulation = await this.simulationRepository.findById(simulationAttempt.simulationId);
+    if (!simulation) {
+      throw new ResourceNotFoundError('Simulation', simulationAttempt.simulationId);
     }
 
     // 3. Calculate score
-    const totalQuestions = examResult.totalQuestions;
-    const correctAnswersCount = examResult.answers.filter(
+    const totalQuestions = simulationAttempt.totalQuestions;
+    const correctAnswersCount = simulationAttempt.answers.filter(
       (ans) => ans.isCorrect,
     ).length;
     const percentage =
       totalQuestions > 0 ? (correctAnswersCount / totalQuestions) * 100 : 0;
 
     // 4. Determine pass/fail
-    const passed = percentage >= level.passingPercentage;
+    const passed = percentage >= simulation.passingPercentage;
 
-    // 5. Calculate stars dynamically based on level.passingPercentage
+    // 5. Calculate stars dynamically based on simulation.passingPercentage
     let stars = 0;
-    const P = level.passingPercentage;
+    const P = simulation.passingPercentage;
     if (percentage >= Math.max(90, P)) {
       stars = 3;
     } else if (passed) {
@@ -84,14 +84,14 @@ export class FinishSimulationUseCase implements UseCase<
       throw new ResourceNotFoundError('User', request.userId);
     }
 
-    const userAttempts = await this.examResultRepository.findHistoryByUserId(request.userId);
-    const completedAttemptsForLevel = userAttempts.filter(
+    const userAttempts = await this.simulationAttemptRepository.findHistoryByUserId(request.userId);
+    const completedAttemptsForSimulation = userAttempts.filter(
       (attempt) =>
-        attempt.levelId === examResult.levelId &&
+        attempt.simulationId === simulationAttempt.simulationId &&
         attempt.status === 'COMPLETED' &&
-        attempt.id !== examResult.id,
+        attempt.id !== simulationAttempt.id,
     );
-    const maxPrevStars = completedAttemptsForLevel.reduce((max, attempt) => {
+    const maxPrevStars = completedAttemptsForSimulation.reduce((max, attempt) => {
       const attemptStars = attempt.stars ?? 0;
       return attemptStars > max ? attemptStars : max;
     }, 0);
@@ -106,7 +106,7 @@ export class FinishSimulationUseCase implements UseCase<
     const prevMultiplier = getMultiplier(maxPrevStars);
     const newMultiplier = getMultiplier(stars);
     const multiplierDiff = Math.max(0, newMultiplier - prevMultiplier);
-    const xpGained = Math.round(multiplierDiff * level.xpReward);
+    const xpGained = Math.round(multiplierDiff * simulation.xpReward);
 
     if (xpGained > 0) {
       user.grantXp(xpGained);
@@ -119,28 +119,28 @@ export class FinishSimulationUseCase implements UseCase<
     await this.userRepository.save(user);
 
     // 7. Update and save
-    const updatedSimulation = ExamResult.create(
+    const updatedSimulation = SimulationAttempt.create(
       {
-        userId: examResult.userId,
-        levelId: examResult.levelId,
+        userId: simulationAttempt.userId,
+        simulationId: simulationAttempt.simulationId,
         status: 'COMPLETED',
         score: correctAnswersCount,
         totalQuestions: totalQuestions,
         percentage,
         passed,
         stars,
-        timeSpent: request.timeSpent ?? examResult.timeSpent,
-        answers: examResult.answers,
-        createdAt: examResult.createdAt,
+        timeSpent: request.timeSpent ?? simulationAttempt.timeSpent,
+        answers: simulationAttempt.answers,
+        createdAt: simulationAttempt.createdAt,
         updatedAt: new Date(),
       },
-      examResult.id,
+      simulationAttempt.id,
     );
 
-    const savedResult = await this.examResultRepository.save(updatedSimulation);
+    const savedResult = await this.simulationAttemptRepository.save(updatedSimulation);
 
     return {
-      examResult: savedResult,
+      simulationAttempt: savedResult,
       xpGained,
     };
   }

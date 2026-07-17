@@ -14,7 +14,7 @@ describe('CreateQuestionUseCase', () => {
     const question = await useCase.execute({
       content: 'What is 2 + 2?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       options: [
         { text: '3', isCorrect: false },
         { text: '4', isCorrect: true },
@@ -24,7 +24,7 @@ describe('CreateQuestionUseCase', () => {
     expect(question.id).toBeDefined();
     expect(question.content).toBe('What is 2 + 2?');
     expect(question.type).toBe('SINGLE_CHOICE');
-    expect(question.levelId).toBe('level-01');
+    expect(question.simulationId).toBe('simulation-01');
     expect(question.status).toBe('PUBLISHED');
     expect(question.order).toBe(0);
 
@@ -36,7 +36,7 @@ describe('CreateQuestionUseCase', () => {
     const question = await useCase.execute({
       content: 'Which is a primary color?',
       type: 'MULTIPLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       options: [
         { text: 'Red', isCorrect: true },
         { text: 'Green', isCorrect: false },
@@ -52,47 +52,47 @@ describe('CreateQuestionUseCase', () => {
     expect(question.options[0].isCorrect).toBe(true);
   });
 
-  it('should set order based on the count of existing questions in that level', async () => {
+  it('should set order based on the count of existing questions in that simulation', async () => {
     await useCase.execute({
       content: 'Question 1',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
     });
     await useCase.execute({
       content: 'Question 2',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
     });
     const third = await useCase.execute({
       content: 'Question 3',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
     });
 
     expect(third.order).toBe(2);
     expect(repository.items).toHaveLength(3);
   });
 
-  it('should not share order counter across different levels', async () => {
+  it('should not share order counter across different simulations', async () => {
     await useCase.execute({
-      content: 'Q level-01',
+      content: 'Q simulation-01',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
     });
-    const firstOfLevel2 = await useCase.execute({
-      content: 'Q level-02',
+    const firstOfSimulation2 = await useCase.execute({
+      content: 'Q simulation-02',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-02',
+      simulationId: 'simulation-02',
     });
 
-    expect(firstOfLevel2.order).toBe(0);
+    expect(firstOfSimulation2.order).toBe(0);
   });
 
   it('should create a question with DRAFT status', async () => {
     const question = await useCase.execute({
       content: 'Inactive question',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       status: 'DRAFT',
     });
 
@@ -103,7 +103,7 @@ describe('CreateQuestionUseCase', () => {
     const question = await useCase.execute({
       content: 'Question with extras',
       type: 'MULTIPLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       imageUrl: 'https://example.com/image.png',
       explanation: 'This is the reason.',
       studyLink: 'https://docs.example.com',
@@ -118,7 +118,7 @@ describe('CreateQuestionUseCase', () => {
     const question = await useCase.execute({
       content: 'No options question',
       type: 'MULTIPLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
     });
 
     expect(question.options).toHaveLength(0);

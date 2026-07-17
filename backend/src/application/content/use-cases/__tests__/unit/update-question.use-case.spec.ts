@@ -16,7 +16,7 @@ describe('UpdateQuestionUseCase', () => {
     const question = Question.create({
       content: 'Old content?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
       options: [{ text: 'Option A', isCorrect: true, order: 0 }],
     });
@@ -39,7 +39,7 @@ describe('UpdateQuestionUseCase', () => {
     const question = Question.create({
       content: 'How many sides does a triangle have?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
       options: [
         { text: '2', isCorrect: false, order: 0 },
@@ -70,7 +70,7 @@ describe('UpdateQuestionUseCase', () => {
     const question = Question.create({
       content: 'Status test?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
     });
     await repository.create(question);
@@ -86,7 +86,7 @@ describe('UpdateQuestionUseCase', () => {
     const question = Question.create({
       content: 'Original?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
       explanation: 'Original explanation',
     });
@@ -106,7 +106,7 @@ describe('UpdateQuestionUseCase', () => {
     const question = Question.create({
       content: 'Question with image?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
     });
     await repository.create(question);
@@ -127,7 +127,7 @@ describe('UpdateQuestionUseCase', () => {
     const question = Question.create({
       content: 'Q?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
       imageUrl: 'https://example.com/image.png',
     });
@@ -151,7 +151,7 @@ describe('UpdateQuestionUseCase', () => {
     const question = Question.create({
       content: 'Before?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
     });
     await repository.create(question);

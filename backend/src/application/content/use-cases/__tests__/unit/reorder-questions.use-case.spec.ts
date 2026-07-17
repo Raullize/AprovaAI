@@ -15,19 +15,19 @@ describe('ReorderQuestionsUseCase', () => {
     const qA = Question.create({
       content: 'Question A?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
     });
     const qB = Question.create({
       content: 'Question B?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 1,
     });
     const qC = Question.create({
       content: 'Question C?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 2,
     });
 
@@ -38,7 +38,7 @@ describe('ReorderQuestionsUseCase', () => {
     // Reverse: C, A, B
     await useCase.execute({ ids: [qC.id, qA.id, qB.id] });
 
-    const reordered = await repository.findByLevelId('level-01');
+    const reordered = await repository.findBySimulationId('simulation-01');
 
     expect(reordered[0].id).toBe(qC.id);
     expect(reordered[1].id).toBe(qA.id);
@@ -49,13 +49,13 @@ describe('ReorderQuestionsUseCase', () => {
     const qA = Question.create({
       content: 'Q A?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 0,
     });
     const qB = Question.create({
       content: 'Q B?',
       type: 'SINGLE_CHOICE',
-      levelId: 'level-01',
+      simulationId: 'simulation-01',
       order: 1,
     });
 

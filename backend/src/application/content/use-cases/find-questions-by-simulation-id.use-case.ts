@@ -4,13 +4,13 @@ import { QuestionRepository } from '../../../domain/content/repositories/questio
 import { Question } from '../../../domain/content/entities/question.entity';
 
 @Injectable()
-export class FindQuestionsByLevelIdUseCase implements UseCase<
+export class FindQuestionsBySimulationIdUseCase implements UseCase<
   string,
   Question[]
 > {
   constructor(private readonly questionRepository: QuestionRepository) {}
 
-  async execute(levelId: string): Promise<Question[]> {
-    return this.questionRepository.findByLevelId(levelId);
+  async execute(simulationId: string): Promise<Question[]> {
+    return this.questionRepository.findBySimulationId(simulationId);
   }
 }

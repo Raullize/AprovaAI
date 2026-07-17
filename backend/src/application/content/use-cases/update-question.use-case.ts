@@ -11,7 +11,7 @@ export interface UpdateQuestionRequest {
     imageUrl?: string | null;
     type?: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
     status?: 'PUBLISHED' | 'DRAFT';
-    levelId?: string;
+    simulationId?: string;
     explanation?: string | null;
     studyLink?: string | null;
     options?: Array<{
@@ -44,7 +44,7 @@ export class UpdateQuestionUseCase implements UseCase<
       request.data.type !== undefined ||
       request.data.explanation !== undefined ||
       request.data.studyLink !== undefined ||
-      request.data.levelId !== undefined
+      request.data.simulationId !== undefined
     ) {
       question.updateDetails({
         content: request.data.content ?? question.content,
@@ -61,7 +61,7 @@ export class UpdateQuestionUseCase implements UseCase<
           request.data.studyLink !== undefined
             ? request.data.studyLink
             : question.studyLink,
-        levelId: request.data.levelId ?? question.levelId,
+        simulationId: request.data.simulationId ?? question.simulationId,
       });
     }
 

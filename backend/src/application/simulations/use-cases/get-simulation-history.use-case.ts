@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
-import { ExamResultRepository } from '../../../domain/simulations/repositories/exam-result.repository';
-import { ExamResult } from '../../../domain/simulations/entities/exam-result.entity';
+import { SimulationAttemptRepository } from '../../../domain/simulations/repositories/simulation-attempt.repository';
+import { SimulationAttempt } from '../../../domain/simulations/entities/simulation-attempt.entity';
 
 export interface GetSimulationHistoryRequest {
   userId: string;
@@ -10,11 +10,11 @@ export interface GetSimulationHistoryRequest {
 @Injectable()
 export class GetSimulationHistoryUseCase implements UseCase<
   GetSimulationHistoryRequest,
-  ExamResult[]
+  SimulationAttempt[]
 > {
-  constructor(private readonly examResultRepository: ExamResultRepository) {}
+  constructor(private readonly simulationAttemptRepository: SimulationAttemptRepository) {}
 
-  async execute(request: GetSimulationHistoryRequest): Promise<ExamResult[]> {
-    return this.examResultRepository.findHistoryByUserId(request.userId);
+  async execute(request: GetSimulationHistoryRequest): Promise<SimulationAttempt[]> {
+    return this.simulationAttemptRepository.findHistoryByUserId(request.userId);
   }
 }
