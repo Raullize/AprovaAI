@@ -12,13 +12,13 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 
 ## Linguagem do dominio
 
-- **Content (Conteudo):** Exam, Topic, Level, Question
+- **Content (Conteudo):** Exam, Topic, Simulation, Question
 - **Exam (Trilha):** Agrupador principal (ex.: "AWS Cloud Practitioner")
 - **Topic (Topico):** Subdivisao do Exam
-- **Level (Nivel):** Unidade executavel de simulado (possui modo, tempo e regras de aprovacao)
+- **Simulation (Simulado):** Unidade executavel de simulado (possui modo, tempo e regras de aprovação)
 - **Question (Questao):** Item respondido durante o simulado
-- **Simulation (Simulado):** Execucao de um Level por um usuario
-- **ExamResult (Resultado):** Registro do simulado (IN_PROGRESS/COMPLETED) com respostas e metricas
+- **Simulation (Simulado):** Execucao de um Simulation por um usuario
+- **SimulationAttempt (Resultado):** Registro do simulado (IN_PROGRESS/COMPLETED) com respostas e metricas
 
 ---
 
@@ -70,10 +70,10 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 - Um slug deve conter apenas letras minusculas, numeros e hifen, sem espacos
 - Se um slug for invalido, o backend deve rejeitar a operacao
 
-### Cenario: Criar Exam/Topic/Level gerando slug automaticamente
+### Cenario: Criar Exam/Topic/Simulation gerando slug automaticamente
 **Status:** Implementado
 
-- Dado que um admin envia um nome para criar um Exam/Topic/Level
+- Dado que um admin envia um nome para criar um Exam/Topic/Simulation
 - Quando o nome e recebido pelo backend
 - Entao o sistema deve gerar um slug a partir do nome
 - E se ja existir conflito, deve gerar um slug unico (ex.: `meu-exame`, `meu-exame-1`, `meu-exame-2`)
@@ -81,7 +81,7 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 ### Cenario: Atualizar nome e regenerar slug de forma segura
 **Status:** Implementado
 
-- Dado que existe um Exam/Topic/Level
+- Dado que existe um Exam/Topic/Simulation
 - Quando o admin altera o nome
 - Entao o sistema deve recalcular o slug a partir do novo nome
 - E deve evitar colisao com slugs de outros registros do mesmo escopo
@@ -98,7 +98,7 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 
 ## Admin: Reordenacao (Drag & Drop)
 
-### Cenario: Reordenar Exams/Topics/Levels/Questions
+### Cenario: Reordenar Exams/Topics/Simulations/Questions
 **Status:** Implementado (caminho feliz)
 
 - Dado que existem itens com uma ordem atual
@@ -117,32 +117,32 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 
 ## Aluno: Execucao de Simulados
 
-### Cenario: Iniciar simulado em um Level sem questoes
+### Cenario: Iniciar simulado em um Simulation sem questões
 **Status:** Implementado
 
-- Dado que existe um Level com 0 questoes
-- Quando o aluno tenta iniciar um simulado desse Level
+- Dado que existe um Simulation com 0 questões
+- Quando o aluno tenta iniciar um simulado desse Simulation
 - Entao o sistema deve rejeitar a operacao
 
 ### Cenario: Retomar simulado em andamento
 **Status:** Implementado
 
-- Dado que o aluno ja possui um simulado IN_PROGRESS para um Level
-- Quando ele tenta iniciar novamente o simulado do mesmo Level
+- Dado que o aluno ja possui um simulado IN_PROGRESS para um Simulation
+- Quando ele tenta iniciar novamente o simulado do mesmo Simulation
 - Entao o sistema deve retornar o simulado existente (retomar)
 
 ### Cenario: Salvar resposta em simulado de outro usuario
 **Status:** Implementado
 
-- Dado que existe um ExamResult que pertence a outro usuario
-- Quando um usuario tenta salvar resposta nesse ExamResult
+- Dado que existe um SimulationAttempt que pertence a outro usuario
+- Quando um usuario tenta salvar resposta nesse SimulationAttempt
 - Entao o sistema deve rejeitar a operacao
 
-### Cenario: Salvar resposta de questao fora do Level do simulado
+### Cenario: Salvar resposta de questao fora do Simulation do simulado
 **Status:** Implementado
 
-- Dado que o simulado esta associado ao Level X
-- Quando o aluno tenta responder uma questao do Level Y
+- Dado que o simulado esta associado ao Simulation X
+- Quando o aluno tenta responder uma questao do Simulation Y
 - Entao o sistema deve rejeitar a operacao
 
 ### Cenario: Feedback imediato (modo PRACTICE)
@@ -169,12 +169,12 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
   - percentual
   - aprovado/reprovado (comparando com `passingPercentage`)
   - estrelas (0 a 3)
-- E deve persistir o ExamResult como COMPLETED
+- E deve persistir o SimulationAttempt como COMPLETED
 
 ### Regra: XP ganho por melhoria em relacao ao melhor desempenho anterior
 **Status:** Implementado
 
-- Dado que o aluno ja possui tentativas COMPLETED para o mesmo Level
+- Dado que o aluno ja possui tentativas COMPLETED para o mesmo Simulation
 - Quando ele finaliza uma nova tentativa
 - Entao o XP ganho deve considerar apenas o delta de estrelas (melhoria) sobre a melhor tentativa anterior
 - E se nao houver melhoria, o XP ganho deve ser 0

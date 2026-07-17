@@ -7,8 +7,8 @@ No desenvolvimento de software, *Seeders* (Semeadores) são scripts responsávei
 Os seeders estão localizados na pasta `backend/prisma/seeders/` e são divididos em arquivos específicos para facilitar a manutenção:
 
 1. **`adminSeeder.ts`**: Garante que sempre exista um usuário Administrador principal (`admin@aprovaai.com` / `admin123`) para que possamos logar e gerenciar a plataforma assim que ela subir.
-2. **`usersSeeder.ts`**: Cria uma lista de usuários estudantes fictícios. Eles recebem níveis variados de XP e Streak, o que é essencial para testarmos a visualização correta do **Ranking Global (Leaderboard)**.
-3. **`contentSeeder.ts`**: Este é o seeder mais rico. Ele limpa os exames anteriores e popula o banco com a trilha de **AWS Cloud Practitioner**. Ele cria os Exames, os Tópicos (ex: *Introdução à Cloud*, *Segurança e Conformidade*), os Níveis com recompensas em XP e dezenas de Questões reais de múltipla escolha.
+2. **`usersSeeder.ts`**: Cria uma lista de usuários estudantes fictícios. Eles recebem simulados variados de XP e Streak, o que é essencial para testarmos a visualização correta do **Ranking Global (Leaderboard)**.
+3. **`contentSeeder.ts`**: Este é o seeder mais rico. Ele limpa os exames anteriores e popula o banco com a trilha de **AWS Cloud Practitioner**. Ele cria os Exames, os Tópicos (ex: *Introdução à Cloud*, *Segurança e Conformidade*), os Simulados com recompensas em XP e dezenas de Questões reais de múltipla escolha.
 4. **`demoHistorySeeder.ts`**: Simula que o usuário "Demo" já realizou algumas provas, preenchendo o histórico de simulados concluídos dele.
 
 ## Como Executar

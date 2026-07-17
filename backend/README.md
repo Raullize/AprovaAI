@@ -16,7 +16,7 @@
 
 ## Descrição
 
-O backend do AprovaAI é uma API REST construída com **Node.js + NestJS + TypeScript**, utilizando **Prisma ORM** para acesso ao banco de dados **PostgreSQL**. Fornece endpoints para autenticação, gerenciamento de conteúdo (exames, tópicos, níveis, questões) e upload de imagens.
+O backend do AprovaAI é uma API REST construída com **Node.js + NestJS + TypeScript**, utilizando **Prisma ORM** para acesso ao banco de dados **PostgreSQL**. Fornece endpoints para autenticação, gerenciamento de conteúdo (exames, tópicos, simulados, questões) e upload de imagens.
 
 ---
 
@@ -182,16 +182,16 @@ A API é estaticamente gerida por Controlles injetáveis:
 | `PATCH` | `/api/account/password` | Autoatendimento: alterar a própria senha |
 | `GET` | `/api/student/dashboard-stats` | Estatísticas do aluno (XP, streak, etc) |
 | `GET` | `/api/student/leaderboard` | Ranking global de alunos |
-| `POST` | `/api/simulations/start` | Inicia ou retoma um simulado |
-| `POST` | `/api/simulations/:id/answers` | Salva a resposta de uma questão |
-| `POST` | `/api/simulations/:id/finish` | Finaliza o simulado e calcula nota/XP |
+| `POST` | `/api/simulation-attempts/start` | Inicia ou retoma um simulado |
+| `POST` | `/api/simulation-attempts/:id/answers` | Salva a resposta de uma questão |
+| `POST` | `/api/simulation-attempts/:id/finish` | Finaliza o simulado e calcula nota/XP |
 | `GET` | `/api/exams` | Lista todos os exames |
 | `PATCH` | `/api/exams/reorder` | Reordena exames (drag & drop) |
 | `GET` | `/api/topics?examId=:id` | Lista tópicos de um exame |
 | `PATCH` | `/api/topics/reorder` | Reordena tópicos |
-| `GET` | `/api/levels?topicId=:id` | Lista níveis de um tópico |
-| `PATCH` | `/api/levels/reorder` | Reordena níveis |
-| `GET` | `/api/questions?levelId=:id` | Lista questões de um nível |
+| `GET` | `/api/simulations?topicId=:id` | Lista simulados de um tópico |
+| `PATCH` | `/api/simulations/reorder` | Reordena simulados |
+| `GET` | `/api/questions/simulation/:simulationId` | Lista questões de um simulado |
 | `PATCH` | `/api/questions/reorder` | Reordena questões |
 | `POST` | `/api/upload` | Upload local de imagem gerenciado pelo Nest |
 

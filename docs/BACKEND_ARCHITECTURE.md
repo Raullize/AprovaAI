@@ -34,17 +34,17 @@ Essa e camada central. Nao possui **nenhuma** dependencia de framework web (como
 
 Dentro de cada contexto, subpastas especificas organizam o dominio:
 
-- **`entities/` (Aggregate Roots e Entidades)**: Representam os objetos centrais do negocio, dotados de estado e comportamento. Um *Aggregate Root* e o ponto de entrada principal para uma arvore de objetos (ex: `Level`, `User`). Ao inves de usar setters sem controle, nossas entidades possuem metodos que protegem suas invariantes (regras de negocio). Exemplo: usar `user.grantXp(50)` garante que ninguem passe um valor de XP negativo.
+- **`entities/` (Aggregate Roots e Entidades)**: Representam os objetos centrais do negocio, dotados de estado e comportamento. Um *Aggregate Root* e o ponto de entrada principal para uma arvore de objetos (ex: `Simulation`, `User`). Ao inves de usar setters sem controle, nossas entidades possuem metodos que protegem suas invariantes (regras de negocio). Exemplo: usar `user.grantXp(50)` garante que ninguem passe um valor de XP negativo.
 - **`value-objects/`**: Tipos imutaveis criados para encapsular logicas e validacoes de tipos primitivos, combatendo a *Primitive Obsession*. `Email`, `Percentage`, ou `Slug` nao sao strings puras, sao Value Objects que se auto-validam ao serem instanciados (`Percentage.create(50)`).
-- **`repositories/` (Interfaces/Contracts)**: O Dominio define abstracoes para acessar ou persistir Entidades, mas nao implementa o "como". Em `level.repository.ts`, definimos `findById()` ou `save()`. Nenhum import do Prisma/SQL ocorre aqui.
+- **`repositories/` (Interfaces/Contracts)**: O Dominio define abstracoes para acessar ou persistir Entidades, mas nao implementa o "como". Em `simulation.repository.ts`, definimos `findById()` ou `save()`. Nenhum import do Prisma/SQL ocorre aqui.
 - **`errors/`**: Erros de violacao de regra de negocio sao modelados como excecoes de dominio (ex: `InvalidSlugError`), herdando de `AppError`. Esses erros sao convertidos em respostas HTTP pelo `DomainExceptionFilter`.
-- **`events/` (Domain Events)**: Mecanismos para disparar efeitos colaterais desacoplados. Quando algo importante acontece (`LevelCreatedEvent`), o aggregate despacha na memoria para que Listeners sejam acionados sem amarrar regras de forma sincrona nos Use Cases.
+- **`events/` (Domain Events)**: Mecanismos para disparar efeitos colaterais desacoplados. Quando algo importante acontece (`SimulationCreatedEvent`), o aggregate despacha na memoria para que Listeners sejam acionados sem amarrar regras de forma sincrona nos Use Cases.
 
 ### 2. Application (Aplicacao - Orquestradora)
 
 Essa camada orquestra a logica de negocio contida no `Domain`. Os Casos de Uso guiam o fluxo, da requisicao inicial a resposta final. Nao sabe qual e o BD, tampouco a rota HTTP acionada.
 
-- **`use-cases/`**: Classes com um unico metodo `execute()` que representam acoes funcionais estritas. Cada Caso de Uso possui um arquivo isolado (ex: `find-level-by-slug.use-case.ts`), respeitando SRP. O Use Case injeta contratos via inversao de controle (`constructor(private repo: LevelRepository)`), interage com regras da entidade do Domain e salva no repositorio (`repo.save(level)`).
+- **`use-cases/`**: Classes com um unico metodo `execute()` que representam acoes funcionais estritas. Cada Caso de Uso possui um arquivo isolado (ex: `find-simulation-by-slug.use-case.ts`), respeitando SRP. O Use Case injeta contratos via inversao de controle (`constructor(private repo: SimulationRepository)`), interage com regras da entidade do Domain e salva no repositorio (`repo.save(simulation)`).
 - **`ports/`**: Interfaces adicionais para servicos externos que a aplicacao precisa (ex: `HashProvider`, `TokenProvider`).
 
 ### 3. Infrastructure (Infraestrutura)
@@ -52,8 +52,8 @@ Essa camada orquestra a logica de negocio contida no `Domain`. Os Casos de Uso g
 A camada mais externa conectada ao "Mundo Externo". Aqui os "contratos" definidos nas outras partes ganham implementacoes tecnicas reais utilizando injecao de dependencias.
 
 - **Database (`database/prisma/`)**: 
-  - **Repositorios (`repositories/`)**: Classes concretas que acessam efetivamente o banco, aplicando chamadas brutas a infra (ex: `this.prisma.level.findMany(...)`) satisfazendo as interfaces do Dominio.
-  - **Mappers (`mappers/`)**: Classes estritamente necessarias para nao vazar o ORM para o sistema. Traduzem os dados crus da tabela Prisma para as "Entidades" ricas do Dominio (`PrismaLevelMapper.toDomain(raw)` devolve uma arvore Aggregate Root isolada) e vice-versa.
+  - **Repositorios (`repositories/`)**: Classes concretas que acessam efetivamente o banco, aplicando chamadas brutas a infra (ex: `this.prisma.simulation.findMany(...)`) satisfazendo as interfaces do Dominio.
+  - **Mappers (`mappers/`)**: Classes estritamente necessarias para nao vazar o ORM para o sistema. Traduzem os dados crus da tabela Prisma para as "Entidades" ricas do Dominio (`PrismaSimulationMapper.toDomain(raw)` devolve uma arvore Aggregate Root isolada) e vice-versa.
 - **Providers (`providers/`)**: Implementacoes reais de servicos utilitarios. Exemplo: `BcryptHashProvider` implementa regras de criptografia satisfazendo a porta `HashProvider` requerida pela Application.
 
 ### 4. API (Apresentacao / Interface)
@@ -61,7 +61,7 @@ A camada mais externa conectada ao "Mundo Externo". Aqui os "contratos" definido
 A porta de entrada HTTP da aplicacao. Profundamente acoplada ao ecossistema NestJS, Zod e a Web. Extrai os bytes da internet e os passa para o formato compreendido pela Application.
 
 - **Controllers**: Ouvem rotas (`@Get()`, `@Post()`), extraem o `body` ou `params` e delegam o trabalho de execucao ao Use Case apropriado. Nao possuem instrucoes complexas de "if/else" contendo regras cruciais de negocio.
-- **DTOs (Data Transfer Objects)**: Validam formato dos inputs vindo da web usando `Zod` (`createLevelSchema`) assegurando consistencia de tipos antes mesmo da solicitacao avancar.
+- **DTOs (Data Transfer Objects)**: Validam formato dos inputs vindo da web usando `Zod` (`createSimulationSchema`) assegurando consistencia de tipos antes mesmo da solicitacao avancar.
 - **Guards/Decorators**: Lidam com protecao de rotas (`JwtAuthGuard`, `RolesGuard`), validando token e missoes de identidade.
 
 ### 5. Shared (Core Support)
@@ -79,7 +79,7 @@ A arquitetura do backend faz uso extensivo de padrões de projeto (Design Patter
 - **Factory Method**: Usado intensamente na criação de Entidades e Value Objects (ex: `Exam.create(...)`, `Slug.create(...)`). Garante que nenhum objeto seja instanciado em um estado inválido e esconde a complexidade de inicialização (como a geração automática de UUIDs ou datas de criação).
 - **Data Mapper Pattern**: Presente na camada de infraestrutura (`PrismaExamMapper`), atua como uma barreira bidirecional que converte os dados "burros" do banco de dados para objetos ricos do domínio (Entidades), mantendo as duas partes independentes.
 - **Dependency Injection (DI) / Inversion of Control (IoC)**: Delegamos ao framework (NestJS) a responsabilidade de instanciar e injetar as dependências concretas (como repositórios e provedores de criptografia) dentro dos Casos de Uso que exigem apenas as interfaces abstratas (Ports).
-- **Observer / Publisher-Subscriber (Pub/Sub)**: A infraestrutura-base existe através do `DomainEvents`, permitindo que Entidades registrem eventos de domínio (ex: `LevelCreatedEvent`) de forma desacoplada. No estado atual do projeto, esse mecanismo deve ser entendido como **infraestrutura preparada para evolução futura**, e não como uma engrenagem amplamente integrada aos fluxos principais do produto.
+- **Observer / Publisher-Subscriber (Pub/Sub)**: A infraestrutura-base existe através do `DomainEvents`, permitindo que Entidades registrem eventos de domínio (ex: `SimulationCreatedEvent`) de forma desacoplada. No estado atual do projeto, esse mecanismo deve ser entendido como **infraestrutura preparada para evolução futura**, e não como uma engrenagem amplamente integrada aos fluxos principais do produto.
 - **Command Pattern (Use Cases)**: Cada Caso de Uso é implementado como um comando único com um método `execute()`. Eles encapsulam a intenção do usuário em objetos parametrizados (Requests), facilitando o rastreamento, o teste e a adesão ao Single Responsibility Principle (SRP).
 
 Observacao importante: no caso dos eventos de dominio, a decisao arquitetural atual prioriza manter a base pronta para futuras necessidades de auditoria, notificacoes, gamificacao desacoplada ou reacoes assincronas. Isso evita vender o mecanismo como parte ativa do comportamento atual da aplicacao quando, na pratica, ele ainda nao e protagonista dos casos de uso principais.
@@ -91,7 +91,7 @@ Observacao importante: no caso dos eventos de dominio, a decisao arquitetural at
 As regras de negocio e seus cenarios ficam distribuidos de forma intencional:
 
 - **Invariantes (sempre verdade):** dentro do `domain/` (Entidades e Value Objects). Exemplo: `Slug.create(...)` valida o formato do slug.
-- **Fluxos e cenarios (Dado/Quando/Entao):** dentro do `application/` (Use Cases). Exemplo: ao iniciar um simulado, o Use Case impede iniciar nivel sem questoes e retoma tentativas em andamento.
+- **Fluxos e cenarios (Dado/Quando/Entao):** dentro do `application/` (Use Cases). Exemplo: ao iniciar um simulado, o Use Case impede iniciar simulado sem questões e retoma tentativas em andamento.
 - **Contrato com o mundo externo:** `api/` e `infrastructure/` apenas adaptam entrada/saida (HTTP, Prisma, JWT), sem conter regra central.
 
 Para uma visao do comportamento do usuario e dos cenarios esperados, consulte: **[BUSINESS_RULES.md](./BUSINESS_RULES.md)**.
@@ -100,15 +100,15 @@ Para uma visao do comportamento do usuario e dos cenarios esperados, consulte: *
 
 ## Fluxo de Dados Pratico (Data Flow Exemplo)
 
-Observe aqui um Update de Fase (Level) atuando na pratica ponta-a-ponta:
+Observe aqui um Update de Fase (Simulation) atuando na pratica ponta-a-ponta:
 
-1. **API (`LevelsController`)**: O usuario solicita `PATCH /levels/123`. A rota aciona validadores do `Zod` atraves do DTO.
-2. **API -> Application**: Controller engatilha informacoes na chamada para `UpdateLevelUseCase.execute({ id, data })`.
-3. **Application -> Infrastructure**: O Use Case orquestra enviando ao Repositorium `this.levelRepository.findById(id)`.
-4. **Infrastructure (Database)**: O objeto ORM faz a request no SQL (PostgreSQL via Prisma), extrai chaves em banco de dados para a arvore interna e o `PrismaLevelMapper` processa e materializa uma base pronta carregada na classe `Level`.
-5. **Application -> Domain**: Repositorio devolve este `AggregateRoot` da memoria limpo ao Use Case. O Use Case dispara o comportamento: `level.updateDetails({ name, slug: Slug.create(novoSlug) })`. As operacoes de checagem do ValueObjects processam limpas e restritas. Nenhuma interferencia real ao banco de dados e tocada aqui.
-6. **Persistencia (Application -> Infra)**: Regras devidamente checadas, Use Case encerra sua orquestracao emitindo `repository.save(level)`.
-7. **Infrastructure -> Database**: O Repositorio, ciente, traduz essa rica Entidade ao schema puro pelo inversor `toPrisma(level)` e executa a acao base `UPDATE` selando a alteracao definitiva.
+1. **API (`SimulationsController`)**: O usuario solicita `PATCH /simulations/123`. A rota aciona validadores do `Zod` atraves do DTO.
+2. **API -> Application**: Controller engatilha informacoes na chamada para `UpdateSimulationUseCase.execute({ id, data })`.
+3. **Application -> Infrastructure**: O Use Case orquestra enviando ao Repositorium `this.simulationRepository.findById(id)`.
+4. **Infrastructure (Database)**: O objeto ORM faz a request no SQL (PostgreSQL via Prisma), extrai chaves em banco de dados para a arvore interna e o `PrismaSimulationMapper` processa e materializa uma base pronta carregada na classe `Simulation`.
+5. **Application -> Domain**: Repositorio devolve este `AggregateRoot` da memoria limpo ao Use Case. O Use Case dispara o comportamento: `simulation.updateDetails({ name, slug: Slug.create(novoSlug) })`. As operacoes de checagem do ValueObjects processam limpas e restritas. Nenhuma interferencia real ao banco de dados e tocada aqui.
+6. **Persistencia (Application -> Infra)**: Regras devidamente checadas, Use Case encerra sua orquestracao emitindo `repository.save(simulation)`.
+7. **Infrastructure -> Database**: O Repositorio, ciente, traduz essa rica Entidade ao schema puro pelo inversor `toPrisma(simulation)` e executa a acao base `UPDATE` selando a alteracao definitiva.
 8. **Application -> API**: O Use Case finaliza e devolve o fluxo seguro devolta para a camada estrita web fechar o request HTTP com a versao `toJSON()`.
 
 ---

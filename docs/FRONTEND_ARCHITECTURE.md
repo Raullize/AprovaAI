@@ -109,14 +109,14 @@ export function AppRoutes() {
         <Route path="explore" element={<ExploreExams />} />
         <Route path="explore/:examId" element={<ExamTrail />} />
         <Route path="simulations" element={<SimulationsHistory />} />
-        <Route path="simulations/engine/:levelId" element={<SimulationEngine />} />
+        <Route path="simulations/engine/:simulationId" element={<SimulationEngine />} />
         <Route path="simulations/results" element={<SimulationResults />} />
         <Route path="profile" element={<Profile />} />
 
         <Route path="exams" element={<AdminRoute><AdminExams /></AdminRoute>} />
         <Route path="admin/exams/:examId/topics" element={<AdminRoute><TopicList /></AdminRoute>} />
-        <Route path="admin/topics/:topicId/levels" element={<AdminRoute><LevelList /></AdminRoute>} />
-        <Route path="admin/levels/:levelId/questions" element={<AdminRoute><QuestionList /></AdminRoute>} />
+        <Route path="admin/topics/:topicId/simulations" element={<AdminRoute><SimulationList /></AdminRoute>} />
+        <Route path="admin/simulations/:simulationId/questions" element={<AdminRoute><QuestionList /></AdminRoute>} />
       </Route>
     </Routes>
   );
@@ -163,5 +163,5 @@ Utilizada em visualizações individuais, configurações e telas de entrada de 
 ### 5.2 Largura Expandida (`max-w-[1600px]`)
 Utilizada em telas complexas que exigem alta produtividade, grids de múltiplos cartões ou painéis informativos paralelos:
 - **Trilha de Exame do Estudante** (`ExamTrail.tsx`): Em telas maiores (desktops e notebooks), o container de até `1600px` permite que o mapa linear e o painel fixo lateral de progresso e estatísticas fiquem posicionados lado a lado de forma harmônica.
-- **Painéis de Gerenciamento do Admin** (`AdminExams.tsx`, `TopicList.tsx`, `LevelList.tsx`, `QuestionList.tsx`): Garante espaço horizontal para visualização em grid de até 4 colunas de cartões, diminuindo a rolagem vertical de conteúdo e dando maior legibilidade às informações gerenciais.
+- **Painéis de Gerenciamento do Admin** (`AdminExams.tsx`, `TopicList.tsx`, `SimulationList.tsx`, `QuestionList.tsx`): Garante espaço horizontal para visualização em grid de até 4 colunas de cartões, diminuindo a rolagem vertical de conteúdo e dando maior legibilidade às informações gerenciais.
 

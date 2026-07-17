@@ -65,23 +65,23 @@ sequenceDiagram
     
     rect rgb(245, 245, 245)
         note over Test: Fase 2: Preparação dos dados (Seed/Arrange)
-        Test->>InMemory: Adiciona mocks necessários (ex: cria um Level válido no array)
+        Test->>InMemory: Adiciona mocks necessários (ex: cria um Simulation válido no array)
     end
     
     rect rgb(255, 253, 240)
         note over Test: Fase 3: Execução (Act)
-        Test->>UseCase: sut.execute({ userId, levelId })
-        UseCase->>InMemory: findById(levelId) (Busca no array)
-        InMemory-->>UseCase: Retorna nível mockado
-        UseCase->>UseCase: Valida regras (ex: level tem questões?)
+        Test->>UseCase: sut.execute({ userId, simulationId })
+        UseCase->>InMemory: findById(simulationId) (Busca no array)
+        InMemory-->>UseCase: Retorna simulado mockado
+        UseCase->>UseCase: Valida regras (ex: simulation tem questões?)
         UseCase->>InMemory: create(newSimulation) (Dá push no array)
-        UseCase-->>Test: Retorna Simulado Criado (ExamResult)
+        UseCase-->>Test: Retorna Simulado Criado (SimulationAttempt)
     end
     
     rect rgb(240, 255, 240)
         note over Test: Fase 4: Asserções (Assert)
         Test->>Test: expect(result.status).toBe('IN_PROGRESS') (Valida retorno)
-        Test->>InMemory: expect(examResultRepository.items).toHaveLength(1) (Valida persistência)
+        Test->>InMemory: expect(simulationAttemptRepository.items).toHaveLength(1) (Valida persistência)
     end
 ```
 
