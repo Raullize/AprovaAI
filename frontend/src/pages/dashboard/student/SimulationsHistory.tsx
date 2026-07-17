@@ -96,17 +96,17 @@ function getXpMultiplier(stars: number) {
 }
 
 function calculateHistoryXp(items: Omit<HistoryItem, 'xpEarned'>[]): HistoryItem[] {
-  const attemptsByLevel = new Map<string, Omit<HistoryItem, 'xpEarned'>[]>();
+  const attemptsBySimulation = new Map<string, Omit<HistoryItem, 'xpEarned'>[]>();
 
   items.forEach((item) => {
-    const simulationAttempts = attemptsByLevel.get(item.simulationId) ?? [];
+    const simulationAttempts = attemptsBySimulation.get(item.simulationId) ?? [];
     simulationAttempts.push(item);
-    attemptsByLevel.set(item.simulationId, simulationAttempts);
+    attemptsBySimulation.set(item.simulationId, simulationAttempts);
   });
 
   const xpByAttemptId = new Map<string, number>();
 
-  attemptsByLevel.forEach((simulationAttempts) => {
+  attemptsBySimulation.forEach((simulationAttempts) => {
     const orderedAttempts = [...simulationAttempts].sort(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),

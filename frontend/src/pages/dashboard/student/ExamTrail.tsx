@@ -100,21 +100,21 @@ export default function ExamTrail() {
           (topic) => topic.status === 'PUBLISHED',
         );
 
-        const topicsWithLevels = await Promise.all(
+        const topicsWithSimulations = await Promise.all(
           topicsData.map(async (topic) => {
-            const levelsData = await simulationsService.findAll(topic.id);
-            const publicLevels = levelsData
-              .filter((level) => level.status === 'PUBLISHED' && (level.questionsCount ?? 0) > 0)
+            const simulationsData = await simulationsService.findAll(topic.id);
+            const publicSimulations = simulationsData
+              .filter((sim) => sim.status === 'PUBLISHED' && (sim.questionsCount ?? 0) > 0)
               .sort((a, b) => a.order - b.order);
 
             return {
               ...topic,
-              simulations: publicLevels,
+              simulations: publicSimulations,
             };
           }),
         );
 
-        const visibleTopics = topicsWithLevels
+        const visibleTopics = topicsWithSimulations
           .filter(
             (topic) =>
               topic.simulations.length > 0 || topic.showComingSoon === true,
@@ -150,21 +150,21 @@ export default function ExamTrail() {
     return <Loading />;
   }
 
-  const allLevels = topics.flatMap((t) => t.simulations);
-  const levelStatusMap: Record<
+  const allSimulations = topics.flatMap((t) => t.simulations);
+  const simulationStatusMap: Record<
     string,
     { stars: number; passed: boolean; attempted: boolean; status: 'COMPLETED' | 'CURRENT' | 'LOCKED' }
   > = {};
 
   let previousPassed = true;
 
-  allLevels.forEach((lvl) => {
-    const lvlHistory = history.filter(
-      (h) => h.simulationId === lvl.id && h.status === 'COMPLETED',
+  allSimulations.forEach((sim) => {
+    const simHistory = history.filter(
+      (h) => h.simulationId === sim.id && h.status === 'COMPLETED',
     );
-    const passed = lvlHistory.some((h) => h.passed);
-    const attempted = lvlHistory.length > 0;
-    const maxStars = lvlHistory.reduce((max, h) => {
+    const passed = simHistory.some((h) => h.passed);
+    const attempted = simHistory.length > 0;
+    const maxStars = simHistory.reduce((max, h) => {
       const s = h.stars ?? 0;
       return s > max ? s : max;
     }, 0);
@@ -176,7 +176,7 @@ export default function ExamTrail() {
       status = 'CURRENT';
     }
 
-    levelStatusMap[lvl.id] = {
+    simulationStatusMap[sim.id] = {
       stars: maxStars,
       passed,
       attempted,
@@ -189,25 +189,25 @@ export default function ExamTrail() {
   const mappedTopics: TopicData[] = topics.map((t) => ({
     ...t,
     showComingSoon: t.showComingSoon ?? false,
-    simulations: t.simulations.map((l: any) => ({
-      ...l,
-      status: levelStatusMap[l.id]?.status || 'LOCKED',
-      stars: levelStatusMap[l.id]?.stars || 0,
-      attempted: levelStatusMap[l.id]?.attempted || false,
-      questionsCount: l.questionsCount || 10,
-      timeLimit: l.timeLimit ?? null,
-      passingPercentage: l.passingPercentage ?? 70,
+    simulations: t.simulations.map((sim: any) => ({
+      ...sim,
+      status: simulationStatusMap[sim.id]?.status || 'LOCKED',
+      stars: simulationStatusMap[sim.id]?.stars || 0,
+      attempted: simulationStatusMap[sim.id]?.attempted || false,
+      questionsCount: sim.questionsCount || 10,
+      timeLimit: sim.timeLimit ?? null,
+      passingPercentage: sim.passingPercentage ?? 70,
     })),
   }));
 
   const activeTopicObj: TopicData | undefined =
     mappedTopics.find((t) => t.id === expandedTopic) || mappedTopics[0];
   const totalCompleted = mappedTopics.reduce(
-    (acc: number, t: TopicData) => acc + t.simulations.filter((l: SimulationData) => l.status === 'COMPLETED').length,
+    (acc: number, t: TopicData) => acc + t.simulations.filter((sim: SimulationData) => sim.status === 'COMPLETED').length,
     0,
   );
-  const totalLevels = mappedTopics.reduce((acc: number, t: TopicData) => acc + t.simulations.length, 0);
-  const globalProgress = totalLevels > 0 ? (totalCompleted / totalLevels) * 100 : 0;
+  const totalSimulations = mappedTopics.reduce((acc: number, t: TopicData) => acc + t.simulations.length, 0);
+  const globalProgress = totalSimulations > 0 ? (totalCompleted / totalSimulations) * 100 : 0;
   const pendingTheme = pendingStart
     ? getColorOption(pendingStart.topic.colorScheme)
     : getColorOption('indigo');
@@ -440,7 +440,7 @@ export default function ExamTrail() {
                 Progresso
               </span>
               <span className="text-sm font-bold text-indigo-600 leading-tight block mt-0.5">
-                {totalCompleted}/{totalLevels}
+                {totalCompleted}/{totalSimulations}
               </span>
             </div>
           </div>
@@ -490,7 +490,7 @@ export default function ExamTrail() {
                       Progresso Global
                     </span>
                     <span className="text-sm font-bold text-indigo-600">
-                      {totalCompleted}/{totalLevels}
+                      {totalCompleted}/{totalSimulations}
                     </span>
                   </div>
                   <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">

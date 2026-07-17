@@ -29,7 +29,7 @@ export default function StudentHome() {
   const [activeDays, setActiveDays] = useState<number[]>([]);
   const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
   const [history, setHistory] = useState<ApiSimulationHistoryItem[]>([]);
-  const [simulationsCountMap, setLevelsCountMap] = useState<Record<string, number>>({});
+  const [simulationsCountMap, setSimulationsCountMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (history.length === 0) return;
@@ -42,7 +42,7 @@ export default function StudentHome() {
       )
     ).slice(0, 3);
 
-    async function loadLevelsCounts() {
+    async function loadSimulationsCounts() {
       const counts: Record<string, number> = {};
       await Promise.all(
         recentExamIds.map(async (examId) => {
@@ -52,21 +52,21 @@ export default function StudentHome() {
             let total = 0;
             await Promise.all(
               activeTopics.map(async (topic) => {
-                const levelsData = await simulationsService.findAll(topic.id);
-                const activeLevels = levelsData.filter((l: Simulation) => l.status === 'PUBLISHED');
-                total += activeLevels.length;
+                const simulationsData = await simulationsService.findAll(topic.id);
+                const activeSimulations = simulationsData.filter((l: Simulation) => l.status === 'PUBLISHED');
+                total += activeSimulations.length;
               })
             );
             counts[examId] = total;
           } catch (err) {
-            console.error(`Failed to load levels count for exam ${examId}:`, err);
+            console.error(`Failed to load simulations count for exam ${examId}:`, err);
           }
         })
       );
-      setLevelsCountMap(counts);
+      setSimulationsCountMap(counts);
     }
 
-    loadLevelsCounts();
+    loadSimulationsCounts();
   }, [history]);
 
   useEffect(() => {

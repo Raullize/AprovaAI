@@ -3,7 +3,7 @@ import { Slug } from '../value-objects/slug';
 import { Percentage } from '../value-objects/percentage';
 import { SimulationCreatedEvent } from '../events/simulation-created.event';
 
-export type AttemptStatus = 'PUBLISHED' | 'DRAFT';
+export type SimulationStatus = 'PUBLISHED' | 'DRAFT';
 
 export interface SimulationProps {
   name: string;
@@ -11,7 +11,7 @@ export interface SimulationProps {
   description?: string | null;
   order: number;
   topicId: string;
-  status?: AttemptStatus;
+  status?: SimulationStatus;
   xpReward?: number;
   passingPercentage?: Percentage;
   timeLimit?: number | null;
