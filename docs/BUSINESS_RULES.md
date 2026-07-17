@@ -15,10 +15,9 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 - **Content (Conteudo):** Exam, Topic, Simulation, Question
 - **Exam (Trilha):** Agrupador principal (ex.: "AWS Cloud Practitioner")
 - **Topic (Topico):** Subdivisao do Exam
-- **Simulation (Simulado):** Unidade executavel de simulado (possui modo, tempo e regras de aprovação)
+- **Simulation (Simulado):** Unidade de conteúdo executável dentro de um Tópico (possui modo, tempo e regras de aprovação)
 - **Question (Questao):** Item respondido durante o simulado
-- **Simulation (Simulado):** Execucao de um Simulation por um usuario
-- **SimulationAttempt (Resultado):** Registro do simulado (IN_PROGRESS/COMPLETED) com respostas e metricas
+- **SimulationAttempt (Tentativa de Simulado):** Registro de execução do simulado pelo aluno (IN_PROGRESS/COMPLETED) com respostas e métricas
 
 ---
 

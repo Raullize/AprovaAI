@@ -64,7 +64,7 @@ O AprovaAI oferece dois planos para atender às necessidades de estudo:
 - **Modos de Simulado:** 
   - **Treino (Practice):** Sem limite de tempo, com feedback imediato de certo/errado a cada resposta.
   - **Exame (Exam):** Com ou sem limite de tempo, o resultado e as respostas corretas só são exibidos após a finalização.
-- **Níveis de Dificuldade:** Cada nível oferece questões focadas naquele conteúdo
+- **Simulados por Conteúdo:** Cada simulado oferece questões focadas naquele tema
 - **Simulado Diversificado:** O último simulado de cada tópico apresenta questões mais variadas para consolidar o aprendizado
 - **Tipos de Questões:** Múltipla escolha com uma ou mais alternativas corretas
 - **Feedback Detalhado:** Explicações por alternativa detalhando o motivo de estar certa ou errada e links opcionais para aprofundamento.
