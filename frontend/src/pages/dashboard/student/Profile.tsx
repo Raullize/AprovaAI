@@ -11,7 +11,6 @@ import {
   ChevronRight,
   Calendar,
   Lock,
-  Trophy,
   History,
 } from 'lucide-react';
 
@@ -530,17 +529,37 @@ export default function Profile() {
                   </p>
                 </div>
                 
-                <div className="flex items-center gap-4 shrink-0 bg-white/15 backdrop-blur-md px-6 py-4.5 rounded-3xl border border-white/20 shadow-md">
-                  <div className="w-11 h-11 rounded-2xl bg-amber-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                    <Trophy className="h-5.5 w-5.5 text-white fill-current" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-[10px] uppercase font-extrabold text-indigo-100 tracking-wider">
-                      Desbloqueadas
-                    </p>
-                    <p className="text-2xl font-black font-display text-white leading-tight mt-0.5">
-                      {achievements.filter(a => a.isUnlocked).length} de {achievements.length}
-                    </p>
+                <div className="relative w-20 h-20 shrink-0 flex items-center justify-center bg-white/10 backdrop-blur-md rounded-full border border-white/10 shadow-lg self-center md:self-auto">
+                  <svg className="w-full h-full transform -rotate-90">
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="32"
+                      className="text-white/15"
+                      strokeWidth="5"
+                      stroke="currentColor"
+                      fill="transparent"
+                    />
+                    <circle
+                      cx="40"
+                      cy="40"
+                      r="32"
+                      className="text-white"
+                      strokeWidth="5"
+                      stroke="currentColor"
+                      fill="transparent"
+                      strokeDasharray={201}
+                      strokeDashoffset={201 * (1 - achievements.filter(a => a.isUnlocked).length / achievements.length)}
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+                    <span className="text-base font-black font-display text-white leading-none">
+                      {achievements.filter(a => a.isUnlocked).length}/{achievements.length}
+                    </span>
+                    <span className="text-[7.5px] uppercase font-black text-indigo-150 tracking-wider mt-1">
+                      Conquistas
+                    </span>
                   </div>
                 </div>
               </div>
