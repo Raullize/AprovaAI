@@ -52,7 +52,7 @@ export default function ProfileSettings() {
         toast.error('A imagem deve ter no máximo 2MB.');
         return;
       }
-      
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folder', 'avatars');
@@ -209,61 +209,61 @@ export default function ProfileSettings() {
         {/* Tab content panels */}
         {activeTab === 'profile' && (
           <div className="space-y-6 animate-fadeIn">
-            {/* Profile image change and removal option */}
-            <Card
-              padding="large"
-              className="flex flex-col sm:flex-row items-center gap-6"
-            >
-              <div
-                className="relative group cursor-pointer"
-                onClick={handleAvatarClick}
-              >
-                <UserAvatar size="xl" userOverride={user ? { ...user, avatarUrl } : undefined} />
-                <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-                  <Camera className="h-6 w-6" />
-                </div>
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  className="hidden"
-                />
-              </div>
-              <div className="text-center sm:text-left">
-                <h3 className="font-bold text-slate-700 text-base">
-                  Foto de Perfil
-                </h3>
-                <p className="text-slate-400 text-xs mt-1 leading-normal max-w-xs">
-                  Carregue uma imagem em formato JPG ou PNG de até 2MB. Ela
-                  ficará visível no header e sidebar.
-                </p>
-                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-3">
-                  <button
-                    onClick={handleAvatarClick}
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-655 hover:text-indigo-755 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl transition-all border border-indigo-100"
-                  >
-                    <Camera className="h-3.5 w-3.5" />
-                    Alterar Imagem
-                  </button>
-                  {hasAvatar && (
-                    <button
-                      onClick={handleRemoveAvatar}
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-red-655 hover:text-red-755 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-all border border-red-100"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      Remover Imagem
-                    </button>
-                  )}
-                </div>
-              </div>
-            </Card>
-
-            {/* Form edit personal info */}
             <Card padding="large">
-              <h3 className="font-bold text-slate-855 text-base mb-4 font-display">
+              <h3 className="font-bold text-slate-855 text-base mb-6 font-display">
                 Dados Cadastrais
               </h3>
+
+              {/* Profile image change and removal option */}
+              <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
+                <div
+                  className="relative group cursor-pointer"
+                  onClick={handleAvatarClick}
+                >
+                  <UserAvatar size="xl" userOverride={user ? { ...user, avatarUrl } : undefined} />
+                  <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
+                    <Camera className="h-6 w-6" />
+                  </div>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+                <div className="text-center sm:text-left">
+                  <h4 className="font-bold text-slate-700 text-sm">
+                    Foto de Perfil
+                  </h4>
+                  <p className="text-slate-400 text-xs mt-1 leading-normal max-w-xs">
+                    Carregue uma imagem em formato JPG ou PNG de até 2MB. Ela
+                    ficará visível no header e sidebar.
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 mt-3">
+                    <button
+                      onClick={handleAvatarClick}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-655 hover:text-indigo-755 bg-indigo-50 hover:bg-indigo-100 px-3.5 py-2 rounded-xl transition-all border border-indigo-100"
+                    >
+                      <Camera className="h-3.5 w-3.5" />
+                      Alterar Imagem
+                    </button>
+                    {hasAvatar && (
+                      <button
+                        onClick={handleRemoveAvatar}
+                        className="inline-flex items-center gap-1.5 text-xs font-bold text-red-655 hover:text-red-755 bg-red-50 hover:bg-red-100 px-3.5 py-2 rounded-xl transition-all border border-red-100"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Remover Imagem
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+
+
+              {/* Form edit personal info */}
               <form onSubmit={handleSaveSettings} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { GraduationCap, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -22,9 +22,9 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         <div className="mb-6 flex justify-center">
           <Link
             to="/"
-            className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-2xl shadow-lg shadow-indigo-500/30 text-white hover:scale-105 transition-transform"
+            className="inline-flex items-center justify-center w-14 h-14 bg-white rounded-2xl shadow-md border border-slate-100 hover:scale-105 transition-transform overflow-hidden"
           >
-            <GraduationCap className="h-7 w-7" />
+            <img src="/images/prof-sabichao.png" alt="Prof. Sabichão" className="h-10 w-10 object-contain" />
           </Link>
         </div>
 

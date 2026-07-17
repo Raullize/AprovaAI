@@ -6,7 +6,6 @@ import Input from '../../components/ui/Input';
 import Button from '../../components/ui/Button';
 import GoogleButton from '../../components/ui/GoogleButton';
 import { useToast } from '../../hooks/useToast';
-import Loading from '../../components/ui/Loading';
 import { AxiosError } from 'axios';
 import { usePageTitle } from '../../hooks/usePageTitle';
 import { useForm } from 'react-hook-form';
@@ -117,12 +116,13 @@ export default function Login() {
           </div>
         </div>
 
-        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+        <Button type="submit" size="lg" className="w-full h-11" disabled={isLoading}>
           {isLoading ? (
-            <>
-              <Loading size="xs" className="mr-2" />
-              Entrando...
-            </>
+            <div className="flex items-center justify-center gap-1.5 py-0.5">
+              <span className="w-2 h-2 rounded-full bg-white/90 animate-bounce" style={{ animationDelay: '0ms' }} />
+              <span className="w-2 h-2 rounded-full bg-white/90 animate-bounce" style={{ animationDelay: '150ms' }} />
+              <span className="w-2 h-2 rounded-full bg-white/90 animate-bounce" style={{ animationDelay: '300ms' }} />
+            </div>
           ) : (
             'Entrar'
           )}

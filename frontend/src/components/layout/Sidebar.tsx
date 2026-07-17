@@ -6,7 +6,6 @@ import {
   Users,
   Settings,
   LogOut,
-  GraduationCap,
   User,
   Compass,
   History,
@@ -124,8 +123,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
               isCollapsed ? 'justify-center' : 'space-x-2.5 w-full',
             )}
           >
-            <div className="w-8 h-8 rounded-xl flex shrink-0 items-center justify-center bg-gradient-to-br from-indigo-500 to-violet-600 shadow-lg shadow-indigo-500/30">
-              <GraduationCap className="h-5 w-5 text-white" />
+            <div className="w-8 h-8 rounded-xl flex shrink-0 items-center justify-center bg-white shadow-md overflow-hidden">
+              <img src="/images/prof-sabichao.png" alt="Prof. Sabichão" className="h-6 w-6 object-contain" />
             </div>
             {!isCollapsed && (
               <span className="text-lg font-bold font-display text-white tracking-tight truncate">
