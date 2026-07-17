@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
         currentPath === href ||
         currentPath.startsWith('/dashboard/admin/exams') ||
         currentPath.startsWith('/dashboard/admin/topics') ||
-        currentPath.startsWith('/dashboard/admin/levels')
+        currentPath.startsWith('/dashboard/admin/simulations')
       );
     }
 

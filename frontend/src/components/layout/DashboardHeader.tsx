@@ -27,7 +27,7 @@ const routeLabels: Record<string, string> = {
 function getPageTitle(pathname: string): string {
   if (routeLabels[pathname]) return routeLabels[pathname];
   if (pathname.includes('/topics')) return 'Tópicos';
-  if (pathname.includes('/levels')) return 'Níveis';
+  if (pathname.includes('/simulations')) return 'Simulados';
   if (pathname.includes('/questions')) return 'Questões';
   return 'Dashboard';
 }
@@ -69,7 +69,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
       try {
         const [statsRes, historyRes] = await Promise.all([
           api.get('/student/dashboard-stats'),
-          api.get('/simulations/history'),
+          api.get('/simulation-attempts/history'),
         ]);
 
         if (statsRes.data) {

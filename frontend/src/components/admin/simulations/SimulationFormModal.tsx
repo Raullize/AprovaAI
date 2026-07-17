@@ -4,11 +4,11 @@ import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';
 import Loading from '@/components/ui/Loading';
 import { StatusToggle } from '@/components/admin/shared/StatusToggle';
-import { levelsService } from '@/services/levels.service';
+import { simulationsService } from '@/services/simulations.service';
 import { useToast } from '@/hooks/useToast';
 import type { SimulationMode } from '@/types/simulation.types';
 
-interface LevelFormData {
+interface SimulationFormData {
   name: string;
   xpReward: number;
   passingPercentage: number;
@@ -20,22 +20,22 @@ interface LevelFormData {
   status: 'PUBLISHED' | 'DRAFT';
 }
 
-interface LevelFormModalProps {
+interface SimulationFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   topicId: string;
-  levelId?: string;
+  simulationId?: string;
 }
 
-export function LevelFormModal({
+export function SimulationFormModal({
   isOpen,
   onClose,
   onSuccess,
   topicId,
-  levelId,
-}: LevelFormModalProps) {
-  const isEditing = !!levelId;
+  simulationId,
+}: SimulationFormModalProps) {
+  const isEditing = !!simulationId;
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -47,7 +47,7 @@ export function LevelFormModal({
     reset,
     watch,
     setValue,
-  } = useForm<LevelFormData>({
+  } = useForm<SimulationFormData>({
     defaultValues: { status: 'PUBLISHED', topicId, simulationMode: 'PRACTICE' },
   });
 
@@ -59,28 +59,28 @@ export function LevelFormModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    if (isEditing && levelId) {
+    if (isEditing && simulationId) {
       const load = async () => {
         try {
           setIsLoading(true);
-          const level = await levelsService.findOne(levelId);
+          const simulation = await simulationsService.findOne(simulationId);
           let h = 0;
           let m = 0;
           let s = 0;
-          if (level.timeLimit) {
-            h = Math.floor(level.timeLimit / 3600);
-            m = Math.floor((level.timeLimit % 3600) / 60);
-            s = level.timeLimit % 60;
+          if (simulation.timeLimit) {
+            h = Math.floor(simulation.timeLimit / 3600);
+            m = Math.floor((simulation.timeLimit % 3600) / 60);
+            s = simulation.timeLimit % 60;
           }
           reset({
-            name: level.name,
-            xpReward: level.xpReward,
-            passingPercentage: level.passingPercentage,
+            name: simulation.name,
+            xpReward: simulation.xpReward,
+            passingPercentage: simulation.passingPercentage,
             timeLimitHours: h || undefined,
             timeLimitMinutes: m || undefined,
             timeLimitSeconds: s || undefined,
-            simulationMode: level.simulationMode || 'PRACTICE',
-            status: level.status,
+            simulationMode: simulation.simulationMode || 'PRACTICE',
+            status: simulation.status,
             topicId,
           });
         } catch {
@@ -103,9 +103,9 @@ export function LevelFormModal({
         simulationMode: 'PRACTICE',
       });
     }
-  }, [isOpen, levelId, isEditing, topicId, reset, toast]);
+  }, [isOpen, simulationId, isEditing, topicId, reset, toast]);
 
-  const onSubmit = async (data: LevelFormData) => {
+  const onSubmit = async (data: SimulationFormData) => {
     try {
       setIsSaving(true);
       const h = Number(data.timeLimitHours || 0);
@@ -121,19 +121,19 @@ export function LevelFormModal({
         simulationMode: data.simulationMode,
       };
 
-      if (isEditing && levelId) {
-        await levelsService.update(levelId, {
+      if (isEditing && simulationId) {
+        await simulationsService.update(simulationId, {
           ...basePayload,
           timeLimit: totalSeconds > 0 ? totalSeconds : null,
         });
-        toast({ title: 'Nível atualizado!', variant: 'success' });
+        toast({ title: 'Simulado atualizado!', variant: 'success' });
       } else {
-        await levelsService.create({
+        await simulationsService.create({
           ...basePayload,
           topicId,
           timeLimit: totalSeconds > 0 ? totalSeconds : undefined,
         });
-        toast({ title: 'Nível criado!', variant: 'success' });
+        toast({ title: 'Simulado criado!', variant: 'success' });
       }
       onSuccess();
     } catch {
@@ -152,7 +152,7 @@ export function LevelFormModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Editar Nível' : 'Novo Nível'}
+      title={isEditing ? 'Editar Simulado' : 'Novo Simulado'}
     >
       {isLoading ? (
         <div className="py-8 flex justify-center">
@@ -161,7 +161,7 @@ export function LevelFormModal({
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           <Input
-            label="Nome do Nível"
+            label="Nome do Simulado"
             placeholder="Ex: Fácil, Médio, Difícil"
             {...register('name', { required: 'Nome é obrigatório' })}
             error={errors.name?.message}
@@ -293,7 +293,7 @@ export function LevelFormModal({
               ) : isEditing ? (
                 'Salvar'
               ) : (
-                'Criar Nível'
+                'Criar Simulado'
               )}
             </button>
           </div>

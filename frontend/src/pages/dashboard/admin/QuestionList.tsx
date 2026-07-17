@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, HelpCircle, Search } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
 import { questionsService, type Question } from '@/services/questions.service';
-import { levelsService } from '@/services/levels.service';
+import { simulationsService } from '@/services/simulations.service';
 import { topicsService } from '@/services/topics.service';
 import { examsService } from '@/services/exams.service';
 import { uploadService } from '@/services/upload.service';
@@ -18,22 +18,22 @@ interface BreadcrumbData {
   examName: string;
   topicId: string;
   topicName: string;
-  levelName: string;
+  simulationName: string;
 }
 
 export default function QuestionList() {
-  const { levelId: levelIdParam } = useParams();
+  const { simulationId: simulationIdParam } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [levelId, setLevelId] = useState<string>(levelIdParam ?? '');
+  const [simulationId, setLevelId] = useState<string>(simulationIdParam ?? '');
   const [breadcrumb, setBreadcrumb] = useState<BreadcrumbData>({
     examId: '',
     examName: '',
     topicId: '',
     topicName: '',
-    levelName: '',
+    simulationName: '',
   });
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,8 +47,8 @@ export default function QuestionList() {
   const loadData = useCallback(async () => {
     try {
       setIsLoading(true);
-      if (levelIdParam) {
-        const level = await levelsService.findOne(levelIdParam);
+      if (simulationIdParam) {
+        const level = await simulationsService.findOne(simulationIdParam);
         setLevelId(level.id);
         const topic = await topicsService.findOne(level.topicId);
         const exam = await examsService.findOne(topic.examId);
@@ -57,7 +57,7 @@ export default function QuestionList() {
           examName: exam.name,
           topicId: topic.id,
           topicName: topic.name,
-          levelName: level.name,
+          simulationName: level.name,
         });
         setQuestions(await questionsService.findAll(level.id));
       }
@@ -67,7 +67,7 @@ export default function QuestionList() {
     } finally {
       setIsLoading(false);
     }
-  }, [levelIdParam, toast, navigate]);
+  }, [simulationIdParam, toast, navigate]);
 
   useEffect(() => {
     loadData();
@@ -147,7 +147,7 @@ export default function QuestionList() {
     <div className="max-w-[1600px] mx-auto px-4 lg:px-8 py-8 space-y-6">
       <PageHeader
         title="Questões"
-        subtitle={`Nível: ${breadcrumb.levelName}${!isLoading ? ` (${questions.length} quest${questions.length !== 1 ? 'ões' : 'ão'})` : ''}`}
+        subtitle={`Simulado: ${breadcrumb.simulationName}${!isLoading ? ` (${questions.length} quest${questions.length !== 1 ? 'ões' : 'ão'})` : ''}`}
         breadcrumbItems={[
           { label: 'Exames', href: '/dashboard/exams' },
           {
@@ -159,15 +159,15 @@ export default function QuestionList() {
           {
             label: breadcrumb.topicName || 'Carregando...',
             href: breadcrumb.topicId
-              ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
+              ? `/dashboard/admin/topics/${breadcrumb.topicId}/simulations`
               : '#',
           },
-          { label: breadcrumb.levelName || 'Carregando...', href: '#' },
+          { label: breadcrumb.simulationName || 'Carregando...', href: '#' },
           { label: 'Questões' },
         ]}
         backHref={
           breadcrumb.topicId
-            ? `/dashboard/admin/topics/${breadcrumb.topicId}/levels`
+            ? `/dashboard/admin/topics/${breadcrumb.topicId}/simulations`
             : '/dashboard/exams'
         }
         action={
@@ -212,7 +212,7 @@ export default function QuestionList() {
           <p className="text-slate-500 text-sm mb-6 max-w-sm">
             {searchTerm
               ? `Não encontramos questões com "${searchTerm}".`
-              : 'Crie questões para este nível e comece a avaliar o conhecimento dos alunos.'}
+              : 'Crie questões para este simulado e comece a avaliar o conhecimento dos alunos.'}
           </p>
           {!searchTerm && (
             <button
@@ -255,7 +255,7 @@ export default function QuestionList() {
           setIsFormOpen(false);
           loadData();
         }}
-        levelId={levelId}
+        simulationId={simulationId}
         question={editingQuestion}
       />
 

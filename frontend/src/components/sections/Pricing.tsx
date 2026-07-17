@@ -24,7 +24,7 @@ const plans: Plan[] = [
       'Acesso limitado a conteúdos iniciais',
       'Simulados com intervalo de 6 horas',
       'Feedback básico das questões',
-      'Progresso por níveis',
+      'Progresso por simulados',
       'Acesso limitado ao Prof. Sabichão*',
       'Anúncios discretos',
     ],

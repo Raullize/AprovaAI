@@ -27,7 +27,7 @@ export const Hero: React.FC = () => {
             </h1>
 
             <p className="text-xl text-slate-600 mb-8 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              Plataforma inovadora de estudos com simulados por níveis,
+              Plataforma inovadora de estudos com simulados por simulados,
               gamificação e feedback detalhado. Prepare-se para vestibulares,
               ENEM e certificações profissionais com inteligência artificial.
             </p>
@@ -54,7 +54,7 @@ export const Hero: React.FC = () => {
             <div className="flex flex-wrap justify-center lg:justify-start gap-8 text-sm font-medium text-slate-600">
               <div className="flex items-center bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
                 <Target className="h-5 w-5 text-indigo-500 mr-2" />
-                <span>Simulados por Níveis</span>
+                <span>Simulados por Simulados</span>
               </div>
               <div className="flex items-center bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
                 <Zap className="h-5 w-5 text-amber-500 mr-2" />

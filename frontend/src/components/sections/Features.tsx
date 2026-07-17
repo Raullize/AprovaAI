@@ -11,9 +11,9 @@ interface Feature {
 const features: Feature[] = [
   {
     id: '1',
-    title: 'Aprendizado por Níveis',
+    title: 'Aprendizado por Simulados',
     description:
-      'Progresso estruturado através de Exame > Tópico > Nível > Questões, garantindo aprendizado consistente e evolutivo.',
+      'Progresso estruturado através de Exame > Tópico > Simulado > Questões, garantindo aprendizado consistente e evolutivo.',
     icon: 'BarChart3',
   },
   {

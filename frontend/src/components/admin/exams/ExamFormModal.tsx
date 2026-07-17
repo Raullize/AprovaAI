@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Modal from '@/components/ui/Modal';
-import Button from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import Loading from '@/components/ui/Loading';
 import { StatusToggle } from '@/components/admin/shared/StatusToggle';

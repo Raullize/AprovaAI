@@ -18,7 +18,7 @@ import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
 import { studentService } from '../../../services/student.service';
-import { simulationsService, type ApiSimulationHistoryItem } from '../../../services/simulations.service';
+import { simulationAttemptsService, type ApiSimulationHistoryItem } from '../../../services/simulation-attempts.service';
 import { achievements } from '../../../mocks/achievements.mock';
 
 export default function Profile() {
@@ -103,7 +103,7 @@ export default function Profile() {
   useEffect(() => {
     async function loadProfileData() {
       try {
-        const historyData = await simulationsService.getHistory();
+        const historyData = await simulationAttemptsService.getHistory();
         setHistory(historyData);
       } catch (err) {
         console.error('Failed to load profile data:', err);
@@ -167,7 +167,7 @@ export default function Profile() {
               </span>
               <span className="px-3 py-1 rounded-xl bg-amber-50 text-amber-600 text-xs font-bold border border-amber-150 flex items-center gap-1">
                 <Zap className="h-3.5 w-3.5 fill-current animate-pulse" />
-                Nível {currentLevel}
+                Simulado {currentLevel}
               </span>
             </div>
           </div>
@@ -200,7 +200,7 @@ export default function Profile() {
                 size="md"
               />
               <p className="text-[10px] text-slate-400 mt-1">
-                Faltam {xpNeededForNextLevel} XP para o Nível{' '}
+                Faltam {xpNeededForNextLevel} XP para o Simulado{' '}
                 {currentLevel + 1}
               </p>
             </div>

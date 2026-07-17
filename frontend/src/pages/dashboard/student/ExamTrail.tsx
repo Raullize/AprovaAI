@@ -14,12 +14,12 @@ import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import { examsService } from '../../../services/exams.service';
 import { topicsService } from '../../../services/topics.service';
-import { levelsService } from '../../../services/levels.service';
+import { simulationAttemptsService } from '../../../services/simulation-attempts.service';
 import { simulationsService } from '../../../services/simulations.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
 import EmptyState from '../../../components/ui/EmptyState';
-import LevelNodeTimeline, { type LevelData, type TopicData } from '../../../components/trail/LevelNodeTimeline';
+import SimulationNodeTimeline, { type SimulationData, type TopicData } from '../../../components/trail/SimulationNodeTimeline';
 
 const ComingSoonNodeTimeline = () => {
   return (
@@ -31,7 +31,7 @@ const ComingSoonNodeTimeline = () => {
               Em breve
             </h3>
             <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
-              Este tópico ainda vai receber novos níveis. Continue acompanhando a
+              Este tópico ainda vai receber novos simulados. Continue acompanhando a
               trilha para liberar o próximo desafio.
             </p>
           </div>
@@ -44,7 +44,7 @@ const ComingSoonNodeTimeline = () => {
             Em breve
           </p>
           <p className="text-slate-500 leading-relaxed">
-            Novos níveis serão adicionados aqui.
+            Novos simulados serão adicionados aqui.
           </p>
         </div>
       </div>
@@ -83,7 +83,7 @@ export default function ExamTrail() {
   const [isLoading, setIsLoading] = useState(true);
   const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
   const [pendingStart, setPendingStart] = useState<{
-    level: LevelData;
+    simulation: SimulationData;
     topic: TopicData;
   } | null>(null);
 
@@ -102,14 +102,14 @@ export default function ExamTrail() {
 
         const topicsWithLevels = await Promise.all(
           topicsData.map(async (topic) => {
-            const levelsData = await levelsService.findAll(topic.id);
+            const levelsData = await simulationsService.findAll(topic.id);
             const publicLevels = levelsData
               .filter((level) => level.status === 'PUBLISHED' && (level.questionsCount ?? 0) > 0)
               .sort((a, b) => a.order - b.order);
 
             return {
               ...topic,
-              levels: publicLevels,
+              simulations: publicLevels,
             };
           }),
         );
@@ -117,7 +117,7 @@ export default function ExamTrail() {
         const visibleTopics = topicsWithLevels
           .filter(
             (topic) =>
-              topic.levels.length > 0 || topic.showComingSoon === true,
+              topic.simulations.length > 0 || topic.showComingSoon === true,
           )
           .sort((a, b) => a.order - b.order);
 
@@ -128,7 +128,7 @@ export default function ExamTrail() {
           setExpandedTopic(null);
         }
 
-        const historyData = await simulationsService.getHistory();
+        const historyData = await simulationAttemptsService.getHistory();
         setHistory(historyData);
       } catch (err) {
         console.error('Failed to load trail:', err);
@@ -150,7 +150,7 @@ export default function ExamTrail() {
     return <Loading />;
   }
 
-  const allLevels = topics.flatMap((t) => t.levels);
+  const allLevels = topics.flatMap((t) => t.simulations);
   const levelStatusMap: Record<
     string,
     { stars: number; passed: boolean; attempted: boolean; status: 'COMPLETED' | 'CURRENT' | 'LOCKED' }
@@ -160,7 +160,7 @@ export default function ExamTrail() {
 
   allLevels.forEach((lvl) => {
     const lvlHistory = history.filter(
-      (h) => h.levelId === lvl.id && h.status === 'COMPLETED',
+      (h) => h.simulationId === lvl.id && h.status === 'COMPLETED',
     );
     const passed = lvlHistory.some((h) => h.passed);
     const attempted = lvlHistory.length > 0;
@@ -189,7 +189,7 @@ export default function ExamTrail() {
   const mappedTopics: TopicData[] = topics.map((t) => ({
     ...t,
     showComingSoon: t.showComingSoon ?? false,
-    levels: t.levels.map((l: any) => ({
+    simulations: t.simulations.map((l: any) => ({
       ...l,
       status: levelStatusMap[l.id]?.status || 'LOCKED',
       stars: levelStatusMap[l.id]?.stars || 0,
@@ -203,10 +203,10 @@ export default function ExamTrail() {
   const activeTopicObj: TopicData | undefined =
     mappedTopics.find((t) => t.id === expandedTopic) || mappedTopics[0];
   const totalCompleted = mappedTopics.reduce(
-    (acc: number, t: TopicData) => acc + t.levels.filter((l: LevelData) => l.status === 'COMPLETED').length,
+    (acc: number, t: TopicData) => acc + t.simulations.filter((l: SimulationData) => l.status === 'COMPLETED').length,
     0,
   );
-  const totalLevels = mappedTopics.reduce((acc: number, t: TopicData) => acc + t.levels.length, 0);
+  const totalLevels = mappedTopics.reduce((acc: number, t: TopicData) => acc + t.simulations.length, 0);
   const globalProgress = totalLevels > 0 ? (totalCompleted / totalLevels) * 100 : 0;
   const pendingTheme = pendingStart
     ? getColorOption(pendingStart.topic.colorScheme)
@@ -215,31 +215,31 @@ export default function ExamTrail() {
     ? getIconOption(pendingStart.topic.iconKey).Icon
     : PlayCircle;
   const instructions =
-    pendingStart?.level.simulationMode === 'EXAM'
+    pendingStart?.simulation.simulationMode === 'EXAM'
       ? [
         'Leia cada questão com calma e confirme sua resposta quando estiver seguro.',
         'O feedback aparece ao final do simulado, junto com seu resultado completo.',
-        pendingStart.level.timeLimit
+        pendingStart.simulation.timeLimit
           ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
           : 'Este exame não tem cronômetro, então você pode concluir no seu ritmo.',
       ]
       : [
         'O modo treino mostra feedback imediato após cada resposta confirmada.',
-        'Use este nível para aprender com mais leveza e reforçar os pontos principais.',
-        pendingStart?.level.timeLimit
+        'Use este simulado para aprender com mais leveza e reforçar os pontos principais.',
+        pendingStart?.simulation.timeLimit
           ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
           : 'Este treino não tem cronômetro, então você pode concluir no seu ritmo.',
       ];
 
-  const handleStartLevel = (level: LevelData, topic: TopicData) => {
-    setPendingStart({ level, topic });
+  const handleStartSimulation = (simulation: SimulationData, topic: TopicData) => {
+    setPendingStart({ simulation, topic });
   };
 
   const handleConfirmStart = () => {
     if (!pendingStart) return;
 
     navigate(
-      `/dashboard/simulations/engine/${pendingStart.level.id}?mode=${pendingStart.level.simulationMode}&examId=${examId}`,
+      `/dashboard/simulations/engine/${pendingStart.simulation.id}?mode=${pendingStart.simulation.simulationMode}&examId=${examId}`,
     );
   };
 
@@ -287,12 +287,12 @@ export default function ExamTrail() {
                   <span
                     className={cn(
                       'px-3 py-1 rounded-full text-xs font-bold border',
-                      pendingStart.level.simulationMode === 'EXAM'
+                      pendingStart.simulation.simulationMode === 'EXAM'
                         ? 'bg-rose-50 text-rose-700 border-rose-100'
                         : 'bg-indigo-50 text-indigo-700 border-indigo-100',
                     )}
                   >
-                    {pendingStart.level.simulationMode === 'EXAM'
+                    {pendingStart.simulation.simulationMode === 'EXAM'
                       ? 'Modo exame'
                       : 'Modo treino'}
                   </span>
@@ -301,11 +301,11 @@ export default function ExamTrail() {
                   </span>
                 </div>
                 <h3 className="text-2xl font-bold text-slate-800 font-display">
-                  {pendingStart.level.name}
+                  {pendingStart.simulation.name}
                 </h3>
                 <p className="text-sm text-slate-500 mt-1 leading-relaxed">
-                  {pendingStart.level.description ||
-                    'Revise este nível com atenção antes de avançar na trilha.'}
+                  {pendingStart.simulation.description ||
+                    'Revise este simulado com atenção antes de avançar na trilha.'}
                 </p>
               </div>
             </div>
@@ -319,8 +319,8 @@ export default function ExamTrail() {
                   </span>
                 </div>
                 <p className="text-base font-bold text-slate-800">
-                  {pendingStart.level.timeLimit && pendingStart.level.timeLimit > 0
-                    ? formatDuration(pendingStart.level.timeLimit)
+                  {pendingStart.simulation.timeLimit && pendingStart.simulation.timeLimit > 0
+                    ? formatDuration(pendingStart.simulation.timeLimit)
                     : 'Sem cronômetro'}
                 </p>
               </div>
@@ -332,7 +332,7 @@ export default function ExamTrail() {
                   </span>
                 </div>
                 <p className="text-base font-bold text-slate-800">
-                  {pendingStart.level.questionsCount} questões
+                  {pendingStart.simulation.questionsCount} questões
                 </p>
               </div>
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
@@ -343,7 +343,7 @@ export default function ExamTrail() {
                   </span>
                 </div>
                 <p className="text-base font-bold text-slate-800">
-                  {pendingStart.level.xpReward} XP
+                  {pendingStart.simulation.xpReward} XP
                 </p>
               </div>
             </div>
@@ -356,7 +356,7 @@ export default function ExamTrail() {
               )}
             >
               <div className="flex items-center gap-2 mb-3">
-                {pendingStart.level.simulationMode === 'EXAM' ? (
+                {pendingStart.simulation.simulationMode === 'EXAM' ? (
                   <ShieldCheck className={cn('h-5 w-5', pendingTheme.textDark)} />
                 ) : (
                   <Brain className={cn('h-5 w-5', pendingTheme.textDark)} />
@@ -379,8 +379,8 @@ export default function ExamTrail() {
 
             <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3">
               <p className="text-sm text-amber-800">
-                Meta de aprovação: <span className="font-bold">{pendingStart.level.passingPercentage ?? 70}%</span>
-                {' '}de acertos para concluir este nível com sucesso.
+                Meta de aprovação: <span className="font-bold">{pendingStart.simulation.passingPercentage ?? 70}%</span>
+                {' '}de acertos para concluir este simulado com sucesso.
               </p>
             </div>
 
@@ -512,7 +512,7 @@ export default function ExamTrail() {
                 <div className="p-2 space-y-1">
                   {mappedTopics.map((topic: any) => {
                     const isActive = expandedTopic === topic.id;
-                    const completed = topic.levels.filter(
+                    const completed = topic.simulations.filter(
                       (l: any) => l.status === 'COMPLETED',
                     ).length;
                     const iconOpt = getIconOption(topic.iconKey);
@@ -552,9 +552,9 @@ export default function ExamTrail() {
                             {topic.name}
                           </p>
                           <p className="text-xs text-slate-400 font-medium mt-0.5">
-                            {topic.levels.length === 0 && topic.showComingSoon
+                            {topic.simulations.length === 0 && topic.showComingSoon
                               ? 'Em breve'
-                              : `${completed}/${topic.levels.length} concluídos`}
+                              : `${completed}/${topic.simulations.length} concluídos`}
                           </p>
                         </div>
                         <ChevronRight
@@ -578,8 +578,8 @@ export default function ExamTrail() {
             {/* Mobile Continuous Trail View */}
             <div className="lg:hidden space-y-12">
               {mappedTopics.map((topic: TopicData) => {
-                const completedCount = topic.levels.filter(
-                  (l: LevelData) => l.status === 'COMPLETED',
+                const completedCount = topic.simulations.filter(
+                  (l: SimulationData) => l.status === 'COMPLETED',
                 ).length;
                 const iconOpt = getIconOption(topic.iconKey);
                 const colorOpt = getColorOption(topic.colorScheme);
@@ -603,9 +603,9 @@ export default function ExamTrail() {
                             {topic.name}
                           </h4>
                           <p className="text-[10px] font-semibold text-slate-400 mt-0.5">
-                            {topic.levels.length === 0 && topic.showComingSoon
+                            {topic.simulations.length === 0 && topic.showComingSoon
                               ? 'Em breve'
-                              : `${completedCount}/${topic.levels.length} concluídos`}
+                              : `${completedCount}/${topic.simulations.length} concluídos`}
                           </p>
                         </div>
                       </div>
@@ -617,7 +617,7 @@ export default function ExamTrail() {
                               colorOpt.gradient,
                             )}
                             style={{
-                              width: `${(completedCount / topic.levels.length) * 100}%`,
+                              width: `${(completedCount / topic.simulations.length) * 100}%`,
                             }}
                           />
                         </div>
@@ -626,14 +626,14 @@ export default function ExamTrail() {
 
                     {/* Levels list (continuous timeline) */}
                     <div className="flex flex-col items-center py-4">
-                      {topic.levels.map((level: LevelData, idx: number) => (
-                        <LevelNodeTimeline
-                          key={level.id}
-                          level={level}
+                      {topic.simulations.map((simulation: SimulationData, idx: number) => (
+                        <SimulationNodeTimeline
+                          key={simulation.id}
+                          simulation={simulation}
                           topic={topic}
-                          onStart={handleStartLevel}
+                          onStart={handleStartSimulation}
                           isLast={
-                            idx === topic.levels.length - 1 &&
+                            idx === topic.simulations.length - 1 &&
                             !topic.showComingSoon
                           }
                         />
@@ -668,14 +668,14 @@ export default function ExamTrail() {
               </div>
 
               <div className="flex flex-col items-center py-8">
-                {activeTopicObj.levels.map((level: LevelData, idx: number) => (
-                  <LevelNodeTimeline
-                    key={level.id}
-                    level={level}
+                {activeTopicObj.simulations.map((simulation: SimulationData, idx: number) => (
+                  <SimulationNodeTimeline
+                    key={simulation.id}
+                    simulation={simulation}
                     topic={activeTopicObj}
-                    onStart={handleStartLevel}
+                    onStart={handleStartSimulation}
                     isLast={
-                      idx === activeTopicObj.levels.length - 1 &&
+                      idx === activeTopicObj.simulations.length - 1 &&
                       !activeTopicObj.showComingSoon
                     }
                   />

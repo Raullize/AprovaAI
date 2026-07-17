@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
             </div>
             <p className="text-slate-300 mb-6 max-w-md">
               Plataforma inovadora de estudos que combina metodologia por
-              níveis, gamificação e inteligência artificial para maximizar sua
+              simulados, gamificação e inteligência artificial para maximizar sua
               aprovação.
             </p>
 

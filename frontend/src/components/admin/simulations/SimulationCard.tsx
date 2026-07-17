@@ -2,17 +2,17 @@ import { ChevronRight, GripVertical, Clock } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
-import { type Level } from '@/services/levels.service';
+import { type Simulation } from '@/services/simulations.service';
 import { cn } from '@/lib/utils';
 import { getIconOption } from '@/config/examThemes';
 
-interface LevelCardProps {
-  level: Level;
+interface SimulationCardProps {
+  simulation: Simulation;
   colorScheme?: string;
   iconKey?: string;
   onEdit: (id: string) => void;
-  onDelete: (level: Level) => void;
-  onToggleStatus: (level: Level) => void;
+  onDelete: (simulation: Simulation) => void;
+  onToggleStatus: (simulation: Simulation) => void;
   onNavigate: (id: string) => void;
   isDragging: boolean;
   onDragStart: () => void;
@@ -106,8 +106,8 @@ const CARD_THEMES: Record<
   },
 };
 
-export function LevelCard({
-  level,
+export function SimulationCard({
+  simulation,
   colorScheme = 'indigo',
   iconKey = 'target',
   onEdit,
@@ -118,7 +118,7 @@ export function LevelCard({
   onDragStart,
   onDragOver,
   onDrop,
-}: LevelCardProps) {
+}: SimulationCardProps) {
   const theme = CARD_THEMES[colorScheme] || CARD_THEMES.indigo;
   const iconOpt = getIconOption(iconKey || 'target');
   const Icon = iconOpt.Icon;
@@ -150,21 +150,21 @@ export function LevelCard({
             >
               <Icon className={cn('h-5 w-5', theme.iconText)} />
             </div>
-            <StatusBadge status={level.status} />
+            <StatusBadge status={simulation.status} />
           </div>
           <div className="flex items-center gap-1">
             <GripVertical className="h-4 w-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
             <EntityCardActions
-              status={level.status}
-              onToggleStatus={() => onToggleStatus(level)}
-              onEdit={() => onEdit(level.id)}
-              onDelete={() => onDelete(level)}
+              status={simulation.status}
+              onToggleStatus={() => onToggleStatus(simulation)}
+              onEdit={() => onEdit(simulation.id)}
+              onDelete={() => onDelete(simulation)}
             />
           </div>
         </div>
 
         <h3 className="text-base font-semibold text-slate-900 mb-1.5 leading-snug">
-          {level.name}
+          {simulation.name}
         </h3>
 
         {/* Info Grid */}
@@ -174,7 +174,7 @@ export function LevelCard({
               Recompensa
             </span>
             <span className="text-sm font-semibold text-amber-600 truncate">
-              {level.xpReward} XP
+              {simulation.xpReward} XP
             </span>
           </div>
           <div className="flex flex-col">
@@ -182,7 +182,7 @@ export function LevelCard({
               Aprovação
             </span>
             <span className="text-sm font-semibold text-slate-700 truncate">
-              {level.passingPercentage}%
+              {simulation.passingPercentage}%
             </span>
           </div>
           <div className="flex flex-col">
@@ -190,13 +190,13 @@ export function LevelCard({
               Tempo
             </span>
             <span className="text-sm font-semibold text-slate-700 flex items-center gap-1 truncate">
-              {level.timeLimit ? (
+              {simulation.timeLimit ? (
                 <>
                   <Clock className="h-3 w-3 text-slate-400 shrink-0" />
                   {(() => {
-                    const h = Math.floor(level.timeLimit / 3600);
-                    const m = Math.floor((level.timeLimit % 3600) / 60);
-                    const s = level.timeLimit % 60;
+                    const h = Math.floor(simulation.timeLimit / 3600);
+                    const m = Math.floor((simulation.timeLimit % 3600) / 60);
+                    const s = simulation.timeLimit % 60;
                     const parts = [];
                     if (h > 0) parts.push(`${h}h`);
                     if (m > 0) parts.push(`${m}m`);
@@ -216,14 +216,14 @@ export function LevelCard({
       <div className="mt-4 pt-4 border-t border-slate-100 flex justify-between items-center">
         <div className="flex items-center gap-1.5 text-sm text-slate-400">
           <span className="font-semibold text-slate-600">
-            {level.questionsCount ?? 0}
+            {simulation.questionsCount ?? 0}
           </span>
           <span>questões</span>
         </div>
         <Button
           variant="outline"
           size="sm"
-          onClick={() => onNavigate(level.id)}
+          onClick={() => onNavigate(simulation.id)}
           className={cn(
             'text-xs transition-all',
             theme.buttonText,

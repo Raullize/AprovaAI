@@ -17,10 +17,10 @@ import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
 import { studentService } from '../../../services/student.service';
-import { simulationsService, type ApiSimulationHistoryItem } from '../../../services/simulations.service';
+import { simulationAttemptsService, type ApiSimulationHistoryItem } from '../../../services/simulation-attempts.service';
 import { getRecentExamsFromHistory } from '../../../utils/student.utils';
 import { topicsService } from '../../../services/topics.service';
-import { levelsService } from '../../../services/levels.service';
+import { simulationsService, type Simulation } from '../../../services/simulations.service';
 
 export default function StudentHome() {
   const { user } = useAuth();
@@ -29,7 +29,7 @@ export default function StudentHome() {
   const [activeDays, setActiveDays] = useState<number[]>([]);
   const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
   const [history, setHistory] = useState<ApiSimulationHistoryItem[]>([]);
-  const [levelsCountMap, setLevelsCountMap] = useState<Record<string, number>>({});
+  const [simulationsCountMap, setLevelsCountMap] = useState<Record<string, number>>({});
 
   useEffect(() => {
     if (history.length === 0) return;
@@ -37,7 +37,7 @@ export default function StudentHome() {
     const recentExamIds = Array.from(
       new Set(
         history
-          .map((h) => h.level?.topic?.exam?.id)
+          .map((h) => h.simulation?.topic?.exam?.id)
           .filter(Boolean) as string[]
       )
     ).slice(0, 3);
@@ -52,8 +52,8 @@ export default function StudentHome() {
             let total = 0;
             await Promise.all(
               activeTopics.map(async (topic) => {
-                const levelsData = await levelsService.findAll(topic.id);
-                const activeLevels = levelsData.filter((l) => l.status === 'PUBLISHED');
+                const levelsData = await simulationsService.findAll(topic.id);
+                const activeLevels = levelsData.filter((l: Simulation) => l.status === 'PUBLISHED');
                 total += activeLevels.length;
               })
             );
@@ -74,7 +74,7 @@ export default function StudentHome() {
       try {
         const [stats, historyData] = await Promise.all([
           studentService.getDashboardStats(),
-          simulationsService.getHistory(),
+          simulationAttemptsService.getHistory(),
         ]);
 
         setActiveDays(stats.activeDays);
@@ -97,7 +97,7 @@ export default function StudentHome() {
   const totalQuest = completedAttempts.reduce((sum, h) => sum + (h.totalQuestions || 0), 0);
   const accuracy = totalQuest > 0 ? Math.round((totalCorrect / totalQuest) * 100) : 0;
 
-  const recentExams = getRecentExamsFromHistory(history, levelsCountMap);
+  const recentExams = getRecentExamsFromHistory(history, simulationsCountMap);
 
   const getWeeklyActiveState = () => {
     const today = new Date();
@@ -199,7 +199,7 @@ export default function StudentHome() {
                 size="md"
               />
               <p className="text-[10px] text-slate-400 mt-1">
-                Faltam {xpNeededForNextLevel} XP para o Nível {currentLevel + 1}
+                Faltam {xpNeededForNextLevel} XP para o Simulado {currentLevel + 1}
               </p>
             </div>
           </Card>

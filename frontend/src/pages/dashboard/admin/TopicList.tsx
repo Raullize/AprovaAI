@@ -189,7 +189,7 @@ export default function TopicList() {
               onDelete={setTopicToDelete}
               onToggleStatus={handleToggleStatus}
               onNavigate={(id) =>
-                navigate(`/dashboard/admin/topics/${id}/levels`)
+                navigate(`/dashboard/admin/topics/${id}/simulations`)
               }
             />
           ))}

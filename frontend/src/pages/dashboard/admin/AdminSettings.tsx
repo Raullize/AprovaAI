@@ -1,6 +1,5 @@
 import { useState, useRef } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import {
   Camera,
@@ -18,7 +17,6 @@ import api from '../../../services/api';
 
 export default function AdminSettings() {
   const { user, refreshUser } = useAuth();
-  const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [fullName, setFullName] = useState(user?.fullName || '');

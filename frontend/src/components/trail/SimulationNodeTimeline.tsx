@@ -5,7 +5,7 @@ import { getColorOption } from '../../config/examThemes';
 import StarRating from '../ui/StarRating';
 import type { SimulationMode } from '../../types/simulation.types';
 
-export interface LevelData {
+export interface SimulationData {
   id: string;
   name: string;
   description?: string;
@@ -26,26 +26,26 @@ export interface TopicData {
   iconKey: string;
   colorScheme: string;
   showComingSoon?: boolean;
-  levels: LevelData[];
+  simulations: SimulationData[];
 }
 
-interface LevelNodeTimelineProps {
-  level: LevelData;
+interface SimulationNodeTimelineProps {
+  simulation: SimulationData;
   topic: TopicData;
-  onStart: (level: LevelData, topic: TopicData) => void;
+  onStart: (simulation: SimulationData, topic: TopicData) => void;
   isLast: boolean;
 }
 
-const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
-  level,
+const SimulationNodeTimeline: React.FC<SimulationNodeTimelineProps> = ({
+  simulation,
   topic,
   onStart,
   isLast,
 }) => {
-  const isCompleted = level.status === 'COMPLETED';
-  const isCurrent = level.status === 'CURRENT';
-  const isLocked = level.status === 'LOCKED';
-  const side = level.order % 2 === 0 ? 'right' : 'left';
+  const isCompleted = simulation.status === 'COMPLETED';
+  const isCurrent = simulation.status === 'CURRENT';
+  const isLocked = simulation.status === 'LOCKED';
+  const side = simulation.order % 2 === 0 ? 'right' : 'left';
   const colorOpt = getColorOption(topic.colorScheme);
 
   return (
@@ -103,11 +103,11 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
                 isCurrent ? colorOpt.textDark : 'text-slate-800',
               )}
             >
-              {level.name}
+              {simulation.name}
             </h3>
-            {level.description && (
+            {simulation.description && (
               <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
-                {level.description}
+                {simulation.description}
               </p>
             )}
 
@@ -119,17 +119,17 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
             >
               <div className="flex items-center gap-1.5 px-3 py-1 bg-amber-50 rounded-lg border border-amber-100 text-amber-700 font-bold text-sm">
                 <Zap className="h-4 w-4 fill-amber-500 text-amber-500" />
-                {level.xpReward} XP
+                {simulation.xpReward} XP
               </div>
               <div className="text-slate-400 font-medium text-sm flex items-center gap-1.5">
                 <PlayCircle className="h-4 w-4" />
-                {level.questionsCount} questões
+                {simulation.questionsCount} questões
               </div>
             </div>
 
             {isCurrent && (
               <button
-                onClick={() => onStart(level, topic)}
+                onClick={() => onStart(simulation, topic)}
                 className={cn(
                   'mt-4 flex items-center gap-2 text-white font-bold px-6 py-3 rounded-2xl shadow-md border-b-4 hover:-translate-y-0.5 active:translate-y-0 active:border-b-0 transition-all',
                   colorOpt.buttonBg,
@@ -166,7 +166,7 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
                 isCurrent ? colorOpt.textDark : 'text-slate-700',
               )}
             >
-              {level.name}
+              {simulation.name}
             </p>
             <div
               className={cn(
@@ -175,7 +175,7 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
               )}
             >
               <Zap className="h-3 w-3 fill-current" />
-              {level.xpReward} XP
+              {simulation.xpReward} XP
             </div>
           </div>
         )}
@@ -186,7 +186,7 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
               side === 'left' ? 'text-right' : 'text-left',
             )}
           >
-            {level.name}
+            {simulation.name}
           </div>
         )}
       </div>
@@ -195,7 +195,7 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
       <div className="relative z-40">
         {isCompleted && (
           <button
-            onClick={() => onStart(level, topic)}
+            onClick={() => onStart(simulation, topic)}
             className={cn(
               'w-16 h-16 lg:w-20 lg:h-20 rounded-full flex flex-col items-center justify-center shadow-md transition-all hover:scale-105 bg-gradient-to-br ring-4 lg:ring-[6px] relative',
               colorOpt.gradient,
@@ -205,7 +205,7 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
             <div className="absolute -inset-1.5 bg-gradient-to-r from-amber-400 to-yellow-300 rounded-full blur opacity-25 group-hover:opacity-40 transition-opacity" />
             <Trophy className="h-6 w-6 lg:h-8 lg:w-8 text-white mb-0.5 relative z-10" />
             <div className="relative z-10">
-              <StarRating stars={level.stars!} />
+              <StarRating stars={simulation.stars!} />
             </div>
           </button>
         )}
@@ -219,7 +219,7 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
               )}
             />
             <button
-              onClick={() => onStart(level, topic)}
+              onClick={() => onStart(simulation, topic)}
               className={cn(
                 'relative w-20 h-20 lg:w-24 lg:h-24 rounded-full flex flex-col items-center justify-center bg-gradient-to-br shadow-xl hover:scale-105 transition-all active:scale-95 ring-4 lg:ring-[6px]',
                 colorOpt.gradient,
@@ -229,25 +229,25 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
               <Star
                 className={cn(
                   'text-white fill-white/80 transition-all',
-                  level.attempted
+                  simulation.attempted
                     ? 'h-6 w-6 lg:h-8 lg:w-8 mb-0.5'
                     : 'h-8 w-8 lg:h-10 lg:w-10',
                 )}
               />
-              {level.attempted && (
+              {simulation.attempted && (
                 <div className="relative z-10">
-                  <StarRating stars={level.stars || 0} />
+                  <StarRating stars={simulation.stars || 0} />
                 </div>
               )}
             </button>
             <button
-              onClick={() => onStart(level, topic)}
+              onClick={() => onStart(simulation, topic)}
               className={cn(
                 'lg:hidden relative z-10 text-white text-sm font-bold px-6 py-2.5 rounded-2xl shadow-md active:translate-y-1 transition-all bg-gradient-to-br',
                 colorOpt.gradient,
               )}
             >
-              {level.attempted ? 'TENTAR NOVAMENTE' : 'INICIAR'}
+              {simulation.attempted ? 'TENTAR NOVAMENTE' : 'INICIAR'}
             </button>
           </div>
         )}
@@ -262,4 +262,4 @@ const LevelNodeTimeline: React.FC<LevelNodeTimelineProps> = ({
   );
 };
 
-export default LevelNodeTimeline;
+export default SimulationNodeTimeline;

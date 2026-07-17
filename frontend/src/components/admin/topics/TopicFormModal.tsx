@@ -247,8 +247,8 @@ export function TopicFormModal({
               </p>
               <p className="text-xs text-slate-400 mt-0.5">
                 {showComingSoonValue
-                  ? 'O tópico aparece para o aluno mesmo sem níveis publicados e mostra uma etapa final de "Em breve".'
-                  : 'O tópico só aparece para o aluno quando tiver pelo menos um nível publicado.'}
+                  ? 'O tópico aparece para o aluno mesmo sem simulados publicados e mostra uma etapa final de "Em breve".'
+                  : 'O tópico só aparece para o aluno quando tiver pelo menos um simulado publicado.'}
               </p>
             </div>
             <button

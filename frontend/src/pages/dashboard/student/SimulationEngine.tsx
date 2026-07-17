@@ -3,8 +3,8 @@ import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { X, Clock, CheckCircle2, XCircle, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import Modal from '../../../components/ui/Modal';
+import { simulationAttemptsService } from '../../../services/simulation-attempts.service';
 import { simulationsService } from '../../../services/simulations.service';
-import { levelsService } from '../../../services/levels.service';
 import { questionsService } from '../../../services/questions.service';
 import Loading from '../../../components/ui/Loading';
 import { useAuth } from '../../../context/AuthContext';
@@ -76,7 +76,7 @@ function formatTime(seconds: number) {
 
 
 export default function SimulationEngine() {
-  const { levelId } = useParams<{ levelId: string }>();
+  const { simulationId } = useParams<{ simulationId: string }>();
   const navigate = useNavigate();
   const { refreshUser } = useAuth();
 
@@ -86,7 +86,7 @@ export default function SimulationEngine() {
 
   const [level, setLevel] = useState<Level | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [simulationId, setSimulationId] = useState<string | null>(null);
+  const [simulationAttemptId, setSimulationAttemptId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
 
@@ -135,14 +135,14 @@ export default function SimulationEngine() {
     async function loadSimulation() {
       try {
         setIsLoading(true);
-        const lvlData = await levelsService.findOne(levelId!);
+        const lvlData = await simulationsService.findOne(simulationId!);
         setLevel(lvlData);
         setTimeLeft(lvlData.timeLimit || DEFAULT_TIME_LIMIT);
 
-        const startData = await simulationsService.start(levelId!);
-        setSimulationId(startData.id);
+        const startData = await simulationAttemptsService.start(simulationId!);
+        setSimulationAttemptId(startData.id);
 
-        const questionsData = await questionsService.findAll(levelId!);
+        const questionsData = await questionsService.findAll(simulationId!);
         const mappedQuestions = questionsData.map((q) => ({
           id: q.id,
           text: q.content,
@@ -188,26 +188,26 @@ export default function SimulationEngine() {
       }
     }
 
-    if (levelId) {
+    if (simulationId) {
       loadSimulation();
     }
-  }, [levelId]);
+  }, [simulationId]);
 
   const saveAnswerToBackend = async (
     questionId: string,
     selectedOptionIds: string[],
     isFlagged: boolean,
   ) => {
-    if (!simulationId) return;
+    if (!simulationAttemptId) return;
 
-    const request = simulationsService
-      .saveAnswer(simulationId, {
+    const request = simulationAttemptsService
+      .saveAnswer(simulationAttemptId, {
         questionId,
         selectedOptions: selectedOptionIds,
         timeSpent: 0,
         isFlaggedForReview: isFlagged,
       })
-      .catch((err) => {
+      .catch((err: any) => {
         console.error('Failed to save answer:', err);
       });
 
@@ -215,7 +215,7 @@ export default function SimulationEngine() {
   };
 
   const handleFinish = useCallback(async () => {
-    if (!simulationId) return;
+    if (!simulationAttemptId) return;
     try {
       setIsLoading(true);
       await waitForPendingSaves();
@@ -223,13 +223,13 @@ export default function SimulationEngine() {
       const baseLimit = level?.timeLimit && level.timeLimit > 0 ? level.timeLimit : (mode === 'EXAM' ? DEFAULT_TIME_LIMIT : 0);
       const computedTimeSpent = baseLimit > 0 ? Math.max(0, baseLimit - timeLeft) : 0;
 
-      const finishData = await simulationsService.finish(simulationId, {
+      const finishData = await simulationAttemptsService.finish(simulationAttemptId, {
         timeSpent: computedTimeSpent,
       });
-      const { examResult, xpGained } = finishData;
+      const { simulationAttempt, xpGained } = finishData;
       const rawResolved =
-        examResult.answers && examResult.answers.length > 0
-          ? examResult.answers.map((ans: any) => ({
+        simulationAttempt.answers && simulationAttempt.answers.length > 0
+          ? simulationAttempt.answers.map((ans: any) => ({
             questionId: ans.questionId,
             selectedId: ans.selectedOptions[0] || '',
             selectedIds: ans.selectedOptions || [],
@@ -253,11 +253,11 @@ export default function SimulationEngine() {
         state: {
           answers: resolvedAnswers,
           questions,
-          total: examResult.totalQuestions,
-          correct: examResult.score,
-          timeSpent: examResult.timeSpent,
+          total: simulationAttempt.totalQuestions,
+          correct: simulationAttempt.score,
+          timeSpent: simulationAttempt.timeSpent,
           xpEarned: xpGained,
-          stars: examResult.stars ?? 0,
+          stars: simulationAttempt.stars ?? 0,
           passingPercentage: level?.passingPercentage || 70,
           levelName: level?.name || 'Simulado',
           examId,
@@ -269,7 +269,7 @@ export default function SimulationEngine() {
       setIsLoading(false);
     }
   }, [
-    simulationId,
+    simulationAttemptId,
     mode,
     level?.timeLimit,
     timeLeft,

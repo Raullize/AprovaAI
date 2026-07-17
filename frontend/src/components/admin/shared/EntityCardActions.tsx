@@ -1,4 +1,4 @@
-import { Edit2, Eye, EyeOff, GripVertical, Trash2 } from 'lucide-react';
+import { Edit2, Eye, EyeOff, Trash2 } from 'lucide-react';
 
 interface EntityCardActionsProps {
   status: 'PUBLISHED' | 'DRAFT';

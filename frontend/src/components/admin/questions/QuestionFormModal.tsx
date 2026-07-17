@@ -40,7 +40,7 @@ interface QuestionFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
-  levelId: string;
+  simulationId: string;
   question?: Question | null;
 }
 
@@ -48,7 +48,7 @@ export function QuestionFormModal({
   isOpen,
   onClose,
   onSuccess,
-  levelId,
+  simulationId,
   question,
 }: QuestionFormModalProps) {
   const { toast } = useToast();
@@ -161,7 +161,7 @@ export function QuestionFormModal({
         status: form.status,
         explanation: form.explanation.trim() || undefined,
         studyLink: form.studyLink.trim() || undefined,
-        levelId,
+        simulationId,
         options: form.options.map((opt, i) => ({
           text: opt.text.trim(),
           isCorrect: opt.isCorrect,

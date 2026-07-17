@@ -11,7 +11,7 @@ import {
   Star,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import { simulationsService } from '../../../services/simulations.service';
+import { simulationAttemptsService } from '../../../services/simulation-attempts.service';
 import Loading from '../../../components/ui/Loading';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import EmptyState from '../../../components/ui/EmptyState';
@@ -20,9 +20,9 @@ import type { SimulationMode } from '../../../types/simulation.types';
 
 interface HistoryItem {
   id: string;
-  levelId: string;
-  levelName: string;
-  levelXpReward: number;
+  simulationId: string;
+  simulationName: string;
+  simulationXpReward: number;
   examName: string;
   examId: string;
   topicName: string;
@@ -99,15 +99,15 @@ function calculateHistoryXp(items: Omit<HistoryItem, 'xpEarned'>[]): HistoryItem
   const attemptsByLevel = new Map<string, Omit<HistoryItem, 'xpEarned'>[]>();
 
   items.forEach((item) => {
-    const levelAttempts = attemptsByLevel.get(item.levelId) ?? [];
-    levelAttempts.push(item);
-    attemptsByLevel.set(item.levelId, levelAttempts);
+    const simulationAttempts = attemptsByLevel.get(item.simulationId) ?? [];
+    simulationAttempts.push(item);
+    attemptsByLevel.set(item.simulationId, simulationAttempts);
   });
 
   const xpByAttemptId = new Map<string, number>();
 
-  attemptsByLevel.forEach((levelAttempts) => {
-    const orderedAttempts = [...levelAttempts].sort(
+  attemptsByLevel.forEach((simulationAttempts) => {
+    const orderedAttempts = [...simulationAttempts].sort(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
     );
@@ -120,7 +120,7 @@ function calculateHistoryXp(items: Omit<HistoryItem, 'xpEarned'>[]): HistoryItem
       const currentMultiplier = getXpMultiplier(currentStars);
       const xpEarned = Math.round(
         Math.max(0, currentMultiplier - previousMultiplier) *
-        attempt.levelXpReward,
+        attempt.simulationXpReward,
       );
 
       xpByAttemptId.set(attempt.id, xpEarned);
@@ -172,16 +172,16 @@ export default function SimulationsHistory() {
   useEffect(() => {
     async function load() {
       try {
-        const data = await simulationsService.getHistory();
+        const data = await simulationAttemptsService.getHistory();
         const mapped = data.map((item) => ({
           id: item.id,
-          levelId: item.levelId,
-          levelName: item.level?.name ?? 'Sem nome',
-          levelXpReward: item.level?.xpReward ?? 0,
-          examName: item.level?.topic?.exam?.name ?? 'Outros',
-          examId: item.level?.topic?.exam?.id ?? '',
-          topicName: item.level?.topic?.name ?? 'Sem tópico',
-          examCategory: item.level?.topic?.exam?.category ?? 'OUTROS',
+          simulationId: item.simulationId,
+          simulationName: item.simulation?.name ?? 'Sem nome',
+          simulationXpReward: item.simulation?.xpReward ?? 0,
+          examName: item.simulation?.topic?.exam?.name ?? 'Outros',
+          examId: item.simulation?.topic?.exam?.id ?? '',
+          topicName: item.simulation?.topic?.name ?? 'Sem tópico',
+          examCategory: item.simulation?.topic?.exam?.category ?? 'OUTROS',
           mode: item.mode,
           score: item.score ?? 0,
           totalQuestions: item.totalQuestions ?? 0,
@@ -191,8 +191,8 @@ export default function SimulationsHistory() {
           xpEarned: 0,
           timeSpent: item.timeSpent ?? 0,
           createdAt: item.createdAt,
-          iconKey: item.level?.topic?.exam?.iconKey ?? 'star',
-          colorScheme: item.level?.topic?.exam?.colorScheme ?? 'indigo',
+          iconKey: item.simulation?.topic?.exam?.iconKey ?? 'star',
+          colorScheme: item.simulation?.topic?.exam?.colorScheme ?? 'indigo',
           answers:
             item.answers?.map((ans) => ({
               questionId: ans.questionId,
@@ -255,7 +255,7 @@ export default function SimulationsHistory() {
   const detailItems = selectedGroup
     ? selectedGroup.items
       .filter((item) => {
-        const matchesSearch = item.levelName
+        const matchesSearch = item.simulationName
           .toLowerCase()
           .includes(search.toLowerCase());
         const matchesMode = modeFilter === 'ALL' || item.mode === modeFilter;
@@ -530,7 +530,7 @@ export default function SimulationsHistory() {
                   type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar pelo nome da fase/nível..."
+                  placeholder="Buscar pelo nome da fase/simulado..."
                   className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm text-slate-800 bg-white shadow-sm"
                 />
               </div>
@@ -616,7 +616,7 @@ export default function SimulationsHistory() {
                         <Stars value={item.stars ?? 0} />
                       </div>
                       <h3 className="font-bold text-slate-800 text-base leading-tight truncate">
-                        {item.levelName}
+                        {item.simulationName}
                       </h3>
                       <p className="text-xs text-slate-500 font-medium truncate mt-1">
                         {item.examName} • {item.topicName}
@@ -665,7 +665,7 @@ export default function SimulationsHistory() {
                               timeSpent: item.timeSpent,
                               xpEarned: item.xpEarned,
                               passingPercentage: 70,
-                              levelName: item.levelName,
+                              levelName: item.simulationName,
                               stars: item.stars,
                               examId: item.examId,
                             },

@@ -329,7 +329,7 @@ export default function SimulationResults() {
         {/* Title */}
         <div className="relative z-10">
           <h1 className="text-3xl font-bold text-white font-display">
-            {passed ? 'Nível Concluído!' : 'Continue Tentando!'}
+            {passed ? 'Simulado Concluído!' : 'Continue Tentando!'}
           </h1>
           <p className="text-white/70 mt-1.5 text-sm">{levelName}</p>
           <p className="text-white/60 text-xs mt-1">
