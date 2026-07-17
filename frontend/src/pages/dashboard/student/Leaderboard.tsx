@@ -94,10 +94,9 @@ export default function Leaderboard() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50/50 px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div className="max-w-4xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-800 font-display">
               Ranking Global
@@ -137,9 +136,9 @@ export default function Leaderboard() {
             </button>
           </div>
 
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             {/* Toolbar for Search and Filters */}
-            <div className="mb-6 flex flex-col md:flex-row gap-4 items-center justify-between pb-6 border-b border-slate-100">
+            <div className="mb-6 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between pb-6 border-b border-slate-100">
               {/* Search Input */}
               <div className="relative w-full md:w-80">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -153,7 +152,7 @@ export default function Leaderboard() {
               </div>
 
               {/* Filter buttons and Page Size */}
-              <div className="flex flex-wrap items-center gap-3 w-full md:w-auto justify-end">
+              <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">
                 <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200">
                   {(['all', 'top3', 'top10'] as const).map((tier) => (
                     <button
@@ -301,8 +300,7 @@ export default function Leaderboard() {
               </>
             )}
           </div>
-        </Card>
-      </div>
+      </Card>
     </div>
   );
 }

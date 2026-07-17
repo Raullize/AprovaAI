@@ -26,11 +26,16 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
     <div className="overflow-x-auto">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-slate-100 text-xs font-bold text-slate-400 uppercase tracking-wider">
-            <th className="py-4 px-4 w-16">Posição</th>
-            <th className="py-4 px-4">Estudante</th>
-            <th className="py-4 px-4 text-right">
-              {type === 'xp' ? 'Experiência' : 'Recorde de Ofensiva'}
+          <tr className="border-b border-slate-100 text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">
+            <th className="py-3 px-2 sm:px-4 w-12 sm:w-16">Posição</th>
+            <th className="py-3 px-2 sm:px-4">Estudante</th>
+            <th className="py-3 px-2 sm:px-4 text-right">
+              <span className="hidden sm:inline">
+                {type === 'xp' ? 'Experiência' : 'Recorde de Ofensiva'}
+              </span>
+              <span className="sm:hidden">
+                {type === 'xp' ? 'XP' : 'Ofensiva'}
+              </span>
             </th>
           </tr>
         </thead>
@@ -47,10 +52,10 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                     : 'hover:bg-slate-50/50'
                 )}
               >
-                <td className="py-4 px-4">
+                <td className="py-3 px-2 sm:px-4">
                   <span
                     className={cn(
-                      'w-8 h-8 rounded-full flex items-center justify-center font-bold font-display text-sm shrink-0',
+                      'w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-bold font-display text-xs sm:text-sm shrink-0',
                       row.rank === 1
                         ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-300/50'
                         : row.rank === 2
@@ -61,49 +66,49 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                     )}
                   >
                     {row.rank === 1 ? (
-                      <Trophy className="h-4.5 w-4.5 text-amber-500 fill-amber-500" />
+                      <Trophy className="h-4 w-4 text-amber-500 fill-amber-500" />
                     ) : row.rank === 2 ? (
-                      <Trophy className="h-4.5 w-4.5 text-slate-400 fill-slate-400" />
+                      <Trophy className="h-4 w-4 text-slate-400 fill-slate-400" />
                     ) : row.rank === 3 ? (
-                      <Trophy className="h-4.5 w-4.5 text-amber-700 fill-amber-700" />
+                      <Trophy className="h-4 w-4 text-amber-700 fill-amber-700" />
                     ) : (
                       row.rank
                     )}
                   </span>
                 </td>
-                <td className="py-4 px-4">
-                  <div className="flex items-center gap-3">
+                <td className="py-3 px-2 sm:px-4">
+                  <div className="flex items-center gap-2 sm:gap-3">
                     <UserAvatar
                       size="xs"
                       userOverride={
                         isCurrentUser
-                          ? undefined
-                          : {
-                            fullName: row.fullName,
-                            username: row.username,
-                          }
+                           ? undefined
+                           : {
+                             fullName: row.fullName,
+                             username: row.username,
+                           }
                       }
                     />
                     <div>
                       <span
                         className={cn(
-                          'block',
+                          'block text-xs sm:text-sm',
                           isCurrentUser ? 'text-indigo-900' : 'text-slate-700'
                         )}
                       >
                         {row.fullName} {isCurrentUser && '(Você)'}
                       </span>
-                      <span className="text-slate-400 text-xs font-normal">
+                      <span className="text-slate-450 text-[10px] sm:text-xs font-normal">
                         @{row.username}
                       </span>
                     </div>
                   </div>
                 </td>
-                <td className="py-4 px-4 text-right">
+                <td className="py-3 px-2 sm:px-4 text-right">
                   {type === 'xp' ? (
                     <span
                       className={cn(
-                        'font-bold font-display',
+                        'font-bold font-display text-xs sm:text-sm',
                         isCurrentUser ? 'text-indigo-600' : 'text-slate-600'
                       )}
                     >
@@ -113,15 +118,15 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                     <div className="inline-flex flex-col items-end">
                       <span
                         className={cn(
-                          'font-bold font-display flex items-center gap-1',
+                          'font-bold font-display flex items-center gap-1 text-xs sm:text-sm',
                           isCurrentUser ? 'text-orange-600' : 'text-slate-700'
                         )}
                       >
-                        <Flame className="h-4 w-4 fill-current text-orange-500" />
+                        <Flame className="h-3.5 w-3.5 fill-current text-orange-500" />
                         {row.value} {row.value === 1 ? 'dia' : 'dias'}
                       </span>
                       {row.subValue !== undefined && (
-                        <span className="text-[10px] text-slate-400 font-normal">
+                        <span className="text-[9px] sm:text-[10px] text-slate-400 font-normal">
                           Atual: {row.subValue} {row.subValue === 1 ? 'dia' : 'dias'}
                         </span>
                       )}

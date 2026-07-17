@@ -125,8 +125,7 @@ export default function Profile() {
   const accuracy = totalQuest > 0 ? Math.round((totalCorrect / totalQuest) * 100) : 0;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6">
         {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-slate-800 font-display">
@@ -622,7 +621,6 @@ export default function Profile() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }
