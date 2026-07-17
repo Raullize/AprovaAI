@@ -12,7 +12,7 @@ export interface Question {
   content: string;
   imageUrl?: string;
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   explanation?: string;
   studyLink?: string;
   order: number;
@@ -24,7 +24,7 @@ export interface CreateQuestionDTO {
   content: string;
   imageUrl?: string | null;
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   explanation?: string;
   studyLink?: string;
   levelId: string;

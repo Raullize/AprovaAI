@@ -97,14 +97,14 @@ export default function ExamTrail() {
 
         const topicsDataAll = await topicsService.findAll(examData.id);
         const topicsData = topicsDataAll.filter(
-          (topic) => topic.status === 'ACTIVE',
+          (topic) => topic.status === 'PUBLISHED',
         );
 
         const topicsWithLevels = await Promise.all(
           topicsData.map(async (topic) => {
             const levelsData = await levelsService.findAll(topic.id);
             const publicLevels = levelsData
-              .filter((level) => level.status === 'ACTIVE' && (level.questionsCount ?? 0) > 0)
+              .filter((level) => level.status === 'PUBLISHED' && (level.questionsCount ?? 0) > 0)
               .sort((a, b) => a.order - b.order);
 
             return {
@@ -257,7 +257,7 @@ export default function ExamTrail() {
             </button>
           </div>
 
-          <EmptyState message="Este exame ainda não possui tópicos públicos disponíveis." />
+          <EmptyState message="Este exame ainda não possui tópicos publicados disponíveis." />
         </div>
       </div>
     );

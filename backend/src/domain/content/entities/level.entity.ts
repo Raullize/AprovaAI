@@ -3,7 +3,7 @@ import { Slug } from '../value-objects/slug';
 import { Percentage } from '../value-objects/percentage';
 import { LevelCreatedEvent } from '../events/level-created.event';
 
-export type LevelStatus = 'ACTIVE' | 'INACTIVE';
+export type LevelStatus = 'PUBLISHED' | 'DRAFT';
 
 export interface LevelProps {
   name: string;
@@ -37,8 +37,8 @@ export class Level extends AggregateRoot<LevelProps> {
   get topicId(): string {
     return this.props.topicId;
   }
-  get status(): 'ACTIVE' | 'INACTIVE' {
-    return this.props.status ?? 'ACTIVE';
+  get status(): 'PUBLISHED' | 'DRAFT' {
+    return this.props.status ?? 'PUBLISHED';
   }
   get xpReward(): number {
     return this.props.xpReward ?? 0;
@@ -69,7 +69,7 @@ export class Level extends AggregateRoot<LevelProps> {
     const level = new Level(
       {
         ...props,
-        status: props.status ?? 'ACTIVE',
+        status: props.status ?? 'PUBLISHED',
         xpReward: props.xpReward ?? 0,
         passingPercentage: props.passingPercentage ?? Percentage.create(70.0),
         createdAt: props.createdAt ?? new Date(),
@@ -87,12 +87,12 @@ export class Level extends AggregateRoot<LevelProps> {
   }
 
   public activate(): void {
-    this.props.status = 'ACTIVE';
+    this.props.status = 'PUBLISHED';
     this.props.updatedAt = new Date();
   }
 
   public deactivate(): void {
-    this.props.status = 'INACTIVE';
+    this.props.status = 'DRAFT';
     this.props.updatedAt = new Date();
   }
 

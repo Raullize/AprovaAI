@@ -52,7 +52,7 @@ export default function ExploreExams() {
       try {
         setIsLoading(true);
         const data = await examsService.findAll();
-        setExams(data.filter((e) => e.status === 'ACTIVE'));
+        setExams(data.filter((e) => e.status === 'PUBLISHED'));
       } catch {
         setExams([]);
       } finally {

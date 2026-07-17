@@ -11,8 +11,8 @@ export const createExamSchema = z.object({
     .optional()
     .describe('Descrição detalhada do concurso ou exame.'),
   status: z
-    .enum(['ACTIVE', 'INACTIVE'])
-    .default('ACTIVE')
+    .enum(['PUBLISHED', 'DRAFT'])
+    .default('PUBLISHED')
     .describe('Controla se os alunos podem ver e acessar este exame.'),
   iconKey: z.string().optional().describe('Chave do ícone Lucide. Ex: "trophy"'),
   colorScheme: z.string().optional().describe('Esquema de cor. Ex: "indigo"'),
@@ -34,7 +34,7 @@ export const updateExamSchema = z.object({
     .optional()
     .describe('Nova descrição detalhada do exame ou trilha.'),
   status: z
-    .enum(['ACTIVE', 'INACTIVE'])
+    .enum(['PUBLISHED', 'DRAFT'])
     .optional()
     .describe('Controla se o exame continua visível para os alunos.'),
   iconKey: z

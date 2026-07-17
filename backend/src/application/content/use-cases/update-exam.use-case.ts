@@ -11,7 +11,7 @@ export interface UpdateExamRequest {
   data: {
     name?: string;
     description?: string;
-    status?: 'ACTIVE' | 'INACTIVE';
+    status?: 'PUBLISHED' | 'DRAFT';
     iconKey?: string | null;
     colorScheme?: string | null;
     category?: string | null;
@@ -62,7 +62,7 @@ export class UpdateExamUseCase implements UseCase<UpdateExamRequest, Exam> {
     }
 
     if (request.data.status !== undefined) {
-      if (request.data.status === 'ACTIVE') {
+      if (request.data.status === 'PUBLISHED') {
         exam.activate();
       } else {
         exam.deactivate();

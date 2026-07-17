@@ -7,7 +7,7 @@ export interface Level {
   slug: string;
   xpReward: number;
   passingPercentage: number;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   topicId: string;
   timeLimit: number | null;
   simulationMode: SimulationMode;
@@ -19,7 +19,7 @@ export interface CreateLevelDTO {
   name: string;
   xpReward: number;
   passingPercentage: number;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   topicId: string;
   timeLimit?: number;
   simulationMode: SimulationMode;

@@ -11,7 +11,7 @@ export interface UpdateTopicRequest {
   data: {
     name?: string;
     description?: string;
-    status?: 'ACTIVE' | 'INACTIVE';
+    status?: 'PUBLISHED' | 'DRAFT';
     showComingSoon?: boolean;
     examId?: string;
     iconKey?: string | null;
@@ -69,7 +69,7 @@ export class UpdateTopicUseCase implements UseCase<UpdateTopicRequest, Topic> {
     }
 
     if (request.data.status !== undefined) {
-      if (request.data.status === 'ACTIVE') {
+      if (request.data.status === 'PUBLISHED') {
         topic.activate();
       } else {
         topic.deactivate();

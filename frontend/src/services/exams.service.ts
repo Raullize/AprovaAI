@@ -5,7 +5,7 @@ export interface Exam {
   name: string;
   slug: string;
   description: string | null;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   topicsCount: number;
   iconKey?: string | null;
   colorScheme?: string | null;
@@ -15,7 +15,7 @@ export interface Exam {
 export interface CreateExamDTO {
   name: string;
   description: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   iconKey?: string;
   colorScheme?: string;
   category?: string;

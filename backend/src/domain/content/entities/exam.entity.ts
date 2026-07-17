@@ -5,7 +5,7 @@ export interface ExamProps {
   name: string;
   slug: Slug;
   description?: string | null;
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: 'PUBLISHED' | 'DRAFT';
   order?: number;
   topicsCount?: number;
   iconKey?: string | null;
@@ -25,8 +25,8 @@ export class Exam extends AggregateRoot<ExamProps> {
   get description(): string | null | undefined {
     return this.props.description;
   }
-  get status(): 'ACTIVE' | 'INACTIVE' {
-    return this.props.status ?? 'ACTIVE';
+  get status(): 'PUBLISHED' | 'DRAFT' {
+    return this.props.status ?? 'PUBLISHED';
   }
   get order(): number {
     return this.props.order ?? 0;
@@ -54,7 +54,7 @@ export class Exam extends AggregateRoot<ExamProps> {
     return new Exam(
       {
         ...props,
-        status: props.status ?? 'ACTIVE',
+        status: props.status ?? 'PUBLISHED',
         order: props.order ?? 0,
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
@@ -64,12 +64,12 @@ export class Exam extends AggregateRoot<ExamProps> {
   }
 
   public activate(): void {
-    this.props.status = 'ACTIVE';
+    this.props.status = 'PUBLISHED';
     this.props.updatedAt = new Date();
   }
 
   public deactivate(): void {
-    this.props.status = 'INACTIVE';
+    this.props.status = 'DRAFT';
     this.props.updatedAt = new Date();
   }
 

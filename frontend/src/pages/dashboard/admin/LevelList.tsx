@@ -67,7 +67,7 @@ export default function LevelList() {
   );
 
   const handleToggleStatus = async (level: Level) => {
-    const newStatus = level.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    const newStatus = level.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
     try {
       await levelsService.update(level.id, { status: newStatus });
       setLevels((prev) =>
@@ -75,7 +75,7 @@ export default function LevelList() {
       );
       toast({
         title: 'Visibilidade alterada!',
-        description: `O nível agora está ${newStatus === 'ACTIVE' ? 'público' : 'privado'}.`,
+        description: `O status do nível foi alterado para ${newStatus === 'PUBLISHED' ? 'Publicado' : 'Rascunho'}.`,
         variant: 'success',
       });
     } catch {

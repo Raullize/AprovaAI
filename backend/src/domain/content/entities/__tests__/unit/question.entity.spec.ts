@@ -12,7 +12,7 @@ describe('Question Entity', () => {
     expect(question.id).toBeDefined();
     expect(question.content).toBe('Test Question');
     expect(question.type).toBe('MULTIPLE_CHOICE');
-    expect(question.status).toBe('ACTIVE');
+    expect(question.status).toBe('PUBLISHED');
     expect(question.options).toEqual([]);
   });
 
@@ -21,12 +21,12 @@ describe('Question Entity', () => {
       content: 'Test Question',
       levelId: 'level-1',
       order: 1,
-      status: 'INACTIVE',
+      status: 'DRAFT',
     });
 
     question.activate();
 
-    expect(question.status).toBe('ACTIVE');
+    expect(question.status).toBe('PUBLISHED');
     expect(question.updatedAt).toBeDefined();
   });
 
@@ -39,7 +39,7 @@ describe('Question Entity', () => {
 
     question.deactivate();
 
-    expect(question.status).toBe('INACTIVE');
+    expect(question.status).toBe('DRAFT');
   });
 
   it('should update question details', () => {

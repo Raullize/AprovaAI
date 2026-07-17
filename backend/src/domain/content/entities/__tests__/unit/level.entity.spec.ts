@@ -14,7 +14,7 @@ describe('Level Entity', () => {
     expect(level).toBeDefined();
     expect(level.id).toBeDefined();
     expect(level.name).toBe('Test Level');
-    expect(level.status).toBe('ACTIVE');
+    expect(level.status).toBe('PUBLISHED');
     expect(level.xpReward).toBe(0);
     expect(level.passingPercentage).toBe(70.0);
   });
@@ -25,12 +25,12 @@ describe('Level Entity', () => {
       slug: Slug.createFromText('test-level'),
       topicId: 'topic-1',
       order: 1,
-      status: 'INACTIVE',
+      status: 'DRAFT',
     });
 
     level.activate();
 
-    expect(level.status).toBe('ACTIVE');
+    expect(level.status).toBe('PUBLISHED');
     expect(level.updatedAt).toBeDefined();
   });
 
@@ -44,7 +44,7 @@ describe('Level Entity', () => {
 
     level.deactivate();
 
-    expect(level.status).toBe('INACTIVE');
+    expect(level.status).toBe('DRAFT');
   });
 
   it('should update level details', () => {

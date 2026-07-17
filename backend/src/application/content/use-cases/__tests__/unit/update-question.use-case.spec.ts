@@ -75,11 +75,11 @@ describe('UpdateQuestionUseCase', () => {
     });
     await repository.create(question);
 
-    await useCase.execute({ id: question.id, data: { status: 'INACTIVE' } });
-    expect(repository.items[0].status).toBe('INACTIVE');
+    await useCase.execute({ id: question.id, data: { status: 'DRAFT' } });
+    expect(repository.items[0].status).toBe('DRAFT');
 
-    await useCase.execute({ id: question.id, data: { status: 'ACTIVE' } });
-    expect(repository.items[0].status).toBe('ACTIVE');
+    await useCase.execute({ id: question.id, data: { status: 'PUBLISHED' } });
+    expect(repository.items[0].status).toBe('PUBLISHED');
   });
 
   it('should only update provided fields (partial update)', async () => {

@@ -45,15 +45,15 @@ model User {
 }
 
 enum ExamStatus {
-  ACTIVE
-  INACTIVE
+  PUBLISHED
+  DRAFT
 
   @@map("exam_status")
 }
 
 enum TopicStatus {
-  ACTIVE
-  INACTIVE
+  PUBLISHED
+  DRAFT
 
   @@map("topic_status")
 }
@@ -73,7 +73,7 @@ model Exam {
   name        String       @map("name")
   slug        String       @unique @map("slug")
   description String?      @map("description")
-  status      ExamStatus   @default(ACTIVE) @map("status")
+  status      ExamStatus   @default(PUBLISHED) @map("status")
   order       Int          @default(0) @map("order")
   iconKey     String?      @map("icon_key")
   colorScheme String?      @map("color_scheme")
@@ -91,7 +91,7 @@ model Topic {
   name        String      @map("name")
   slug        String      @map("slug")
   description String?     @map("description")
-  status      TopicStatus @default(ACTIVE) @map("status")
+  status      TopicStatus @default(PUBLISHED) @map("status")
   showComingSoon Boolean  @default(false) @map("show_coming_soon")
   order       Int         @default(0) @map("order")
   examId      String      @map("exam_id")
@@ -108,8 +108,8 @@ model Topic {
 }
 
 enum LevelStatus {
-  ACTIVE
-  INACTIVE
+  PUBLISHED
+  DRAFT
 
   @@map("level_status")
 }
@@ -121,7 +121,7 @@ model Level {
   description       String?     @map("description")
   order             Int         @map("order")
   topicId           String      @map("topic_id")
-  status            LevelStatus @default(ACTIVE) @map("status")
+  status            LevelStatus @default(PUBLISHED) @map("status")
   xpReward          Int         @default(0) @map("xp_reward")
   passingPercentage Float          @default(70.0) @map("passing_percentage")
   timeLimit         Int?           @map("time_limit")
@@ -145,8 +145,8 @@ enum QuestionType {
 }
 
 enum QuestionStatus {
-  ACTIVE
-  INACTIVE
+  PUBLISHED
+  DRAFT
 
   @@map("question_status")
 }
@@ -156,7 +156,7 @@ model Question {
   content     String         @map("content")
   imageUrl    String?        @map("image_url")
   type        QuestionType   @default(MULTIPLE_CHOICE) @map("type")
-  status      QuestionStatus @default(ACTIVE) @map("status")
+  status      QuestionStatus @default(PUBLISHED) @map("status")
   order       Int            @map("order")
   explanation String?        @map("explanation")
   studyLink   String?        @map("study_link")

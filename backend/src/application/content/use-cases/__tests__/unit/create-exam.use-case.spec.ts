@@ -22,21 +22,21 @@ describe('CreateExamUseCase', () => {
     expect(exam.name).toBe('Matemática Básica');
     expect(exam.description).toBe('Exame de matemática para iniciantes');
     expect(exam.slug.value).toContain('matematica-basica');
-    expect(exam.status).toBe('ACTIVE');
+    expect(exam.status).toBe('PUBLISHED');
 
     expect(repository.items).toHaveLength(1);
     expect(repository.items[0].id).toBe(exam.id);
   });
 
-  it('should be able to create an exam with INACTIVE status', async () => {
+  it('should be able to create an exam with DRAFT status', async () => {
     const request = {
       name: 'Física',
-      status: 'INACTIVE' as const,
+      status: 'DRAFT' as const,
     };
 
     const exam = await useCase.execute(request);
 
-    expect(exam.status).toBe('INACTIVE');
+    expect(exam.status).toBe('DRAFT');
   });
 
   it('should generate unique slugs for exams with the same name', async () => {

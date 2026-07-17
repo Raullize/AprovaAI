@@ -11,7 +11,7 @@ describe('Exam Entity', () => {
     expect(exam.id).toBeDefined();
     expect(exam.name).toBe('Test Exam');
     expect(exam.slug.value).toBe('test-exam');
-    expect(exam.status).toBe('ACTIVE');
+    expect(exam.status).toBe('PUBLISHED');
     expect(exam.order).toBe(0);
     expect(exam.createdAt).toBeInstanceOf(Date);
     expect(exam.updatedAt).toBeInstanceOf(Date);
@@ -21,28 +21,28 @@ describe('Exam Entity', () => {
     const exam = Exam.create({
       name: 'Test Exam',
       slug: Slug.create('test-exam'),
-      status: 'INACTIVE',
+      status: 'DRAFT',
     });
 
-    expect(exam.status).toBe('INACTIVE');
+    expect(exam.status).toBe('DRAFT');
 
     exam.activate();
 
-    expect(exam.status).toBe('ACTIVE');
+    expect(exam.status).toBe('PUBLISHED');
   });
 
   it('should deactivate an exam', () => {
     const exam = Exam.create({
       name: 'Test Exam',
       slug: Slug.create('test-exam'),
-      status: 'ACTIVE',
+      status: 'PUBLISHED',
     });
 
-    expect(exam.status).toBe('ACTIVE');
+    expect(exam.status).toBe('PUBLISHED');
 
     exam.deactivate();
 
-    expect(exam.status).toBe('INACTIVE');
+    expect(exam.status).toBe('DRAFT');
   });
 
   it('should update exam details and change updatedAt', () => {

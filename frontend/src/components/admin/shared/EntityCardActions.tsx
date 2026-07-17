@@ -1,7 +1,7 @@
-import { Edit2, GripVertical, Lock, Trash2, Unlock } from 'lucide-react';
+import { Edit2, Eye, EyeOff, GripVertical, Trash2 } from 'lucide-react';
 
 interface EntityCardActionsProps {
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   onToggleStatus: () => void;
   onEdit: () => void;
   onDelete: () => void;
@@ -13,7 +13,7 @@ export function EntityCardActions({
   onEdit,
   onDelete,
 }: EntityCardActionsProps) {
-  const isActive = status === 'ACTIVE';
+  const isActive = status === 'PUBLISHED';
 
   return (
     <div className="flex items-center space-x-0.5">
@@ -24,12 +24,12 @@ export function EntityCardActions({
             ? 'text-slate-400 hover:text-slate-600 hover:bg-slate-100'
             : 'text-slate-400 hover:text-emerald-600 hover:bg-emerald-50'
         }`}
-        title={isActive ? 'Tornar Privado' : 'Tornar Público'}
+        title={isActive ? 'Mudar para Rascunho' : 'Publicar'}
       >
         {isActive ? (
-          <Unlock className="h-3.5 w-3.5" />
+          <Eye className="h-3.5 w-3.5" />
         ) : (
-          <Lock className="h-3.5 w-3.5" />
+          <EyeOff className="h-3.5 w-3.5" />
         )}
       </button>
 

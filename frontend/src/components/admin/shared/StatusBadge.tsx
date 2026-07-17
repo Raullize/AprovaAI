@@ -1,9 +1,9 @@
 interface StatusBadgeProps {
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
 }
 
 export function StatusBadge({ status }: StatusBadgeProps) {
-  const isActive = status === 'ACTIVE';
+  const isActive = status === 'PUBLISHED';
 
   return (
     <span
@@ -23,7 +23,7 @@ export function StatusBadge({ status }: StatusBadgeProps) {
           }`}
         />
       </span>
-      {isActive ? 'Público' : 'Privado'}
+      {isActive ? 'Publicado' : 'Rascunho'}
     </span>
   );
 }

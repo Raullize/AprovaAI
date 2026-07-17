@@ -8,7 +8,7 @@ import { generateUniqueSlug } from '../../../shared/utils/slugify';
 export interface CreateExamRequest {
   name: string;
   description?: string;
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: 'PUBLISHED' | 'DRAFT';
   iconKey?: string;
   colorScheme?: string;
   category?: string;

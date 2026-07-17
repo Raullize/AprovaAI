@@ -48,17 +48,17 @@ describe('Update Level Use Case', () => {
 
     await sut.execute({
       id: level.id,
-      data: { status: 'INACTIVE' },
+      data: { status: 'DRAFT' },
     });
 
-    expect(inMemoryLevelRepository.items[0].status).toBe('INACTIVE');
+    expect(inMemoryLevelRepository.items[0].status).toBe('DRAFT');
 
     await sut.execute({
       id: level.id,
-      data: { status: 'ACTIVE' },
+      data: { status: 'PUBLISHED' },
     });
 
-    expect(inMemoryLevelRepository.items[0].status).toBe('ACTIVE');
+    expect(inMemoryLevelRepository.items[0].status).toBe('PUBLISHED');
   });
 
   it('should throw ResourceNotFoundError if level does not exist', async () => {

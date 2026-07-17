@@ -45,8 +45,8 @@ export const createQuestionSchema = z.object({
     .default('MULTIPLE_CHOICE')
     .describe('Tipo da questão (Múltipla escolha ou escolha única)'),
   status: z
-    .enum(['ACTIVE', 'INACTIVE'])
-    .default('ACTIVE')
+    .enum(['PUBLISHED', 'DRAFT'])
+    .default('PUBLISHED')
     .describe('Status de visibilidade da questão'),
   explanation: z
     .string()
@@ -89,7 +89,7 @@ export const updateQuestionSchema = z.object({
     .optional()
     .describe('Novo tipo da questão.'),
   status: z
-    .enum(['ACTIVE', 'INACTIVE'])
+    .enum(['PUBLISHED', 'DRAFT'])
     .optional()
     .describe('Novo status de visibilidade da questão.'),
   explanation: z

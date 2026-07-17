@@ -63,17 +63,17 @@ describe('Update Topic Use Case', () => {
 
     await sut.execute({
       id: topic.id,
-      data: { status: 'INACTIVE' },
+      data: { status: 'DRAFT' },
     });
 
-    expect(inMemoryTopicRepository.items[0].status).toBe('INACTIVE');
+    expect(inMemoryTopicRepository.items[0].status).toBe('DRAFT');
 
     await sut.execute({
       id: topic.id,
-      data: { status: 'ACTIVE' },
+      data: { status: 'PUBLISHED' },
     });
 
-    expect(inMemoryTopicRepository.items[0].status).toBe('ACTIVE');
+    expect(inMemoryTopicRepository.items[0].status).toBe('PUBLISHED');
   });
 
   it('should throw ResourceNotFoundError if topic does not exist', async () => {

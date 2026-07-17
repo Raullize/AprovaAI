@@ -10,7 +10,7 @@ export interface UpdateQuestionRequest {
     content?: string;
     imageUrl?: string | null;
     type?: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-    status?: 'ACTIVE' | 'INACTIVE';
+    status?: 'PUBLISHED' | 'DRAFT';
     levelId?: string;
     explanation?: string | null;
     studyLink?: string | null;
@@ -75,7 +75,7 @@ export class UpdateQuestionUseCase implements UseCase<
     }
 
     if (request.data.status !== undefined) {
-      if (request.data.status === 'ACTIVE') {
+      if (request.data.status === 'PUBLISHED') {
         question.activate();
       } else {
         question.deactivate();

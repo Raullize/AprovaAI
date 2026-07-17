@@ -14,14 +14,14 @@ export const createTopicSchema = z.object({
     .optional()
     .describe('Ordem de exibição. Ex: 2'),
   status: z
-    .enum(['ACTIVE', 'INACTIVE'])
-    .default('ACTIVE')
+    .enum(['PUBLISHED', 'DRAFT'])
+    .default('PUBLISHED')
     .describe('Status de visibilidade'),
   showComingSoon: z
     .boolean()
     .default(false)
     .describe(
-      'Quando ativo, o tópico pode aparecer para o aluno com um indicador de "em breve", mesmo sem níveis públicos.',
+      'Quando ativo, o tópico pode aparecer para o aluno com um indicador de "em breve", mesmo sem níveis publicados.',
     ),
   examId: z
     .uuid('ID do exame inválido')
@@ -44,7 +44,7 @@ export const updateTopicSchema = z.object({
     .optional()
     .describe('Nova descrição opcional do tópico.'),
   status: z
-    .enum(['ACTIVE', 'INACTIVE'])
+    .enum(['PUBLISHED', 'DRAFT'])
     .optional()
     .describe('Novo status de visibilidade do tópico.'),
   showComingSoon: z

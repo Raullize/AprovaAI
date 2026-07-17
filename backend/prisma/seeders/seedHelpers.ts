@@ -45,7 +45,7 @@ export async function upsertQuestions(
         levelId,
         order: i + 1,
         type: q.type ?? QuestionType.SINGLE_CHOICE,
-        status: QuestionStatus.ACTIVE,
+        status: QuestionStatus.PUBLISHED,
       },
     });
 

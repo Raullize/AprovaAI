@@ -12,7 +12,7 @@ describe('Topic Entity', () => {
     expect(topic).toBeDefined();
     expect(topic.id).toBeDefined();
     expect(topic.name).toBe('Test Topic');
-    expect(topic.status).toBe('ACTIVE');
+    expect(topic.status).toBe('PUBLISHED');
     expect(topic.order).toBe(0);
   });
 
@@ -21,12 +21,12 @@ describe('Topic Entity', () => {
       name: 'Test Topic',
       slug: Slug.createFromText('test-topic'),
       examId: 'exam-1',
-      status: 'INACTIVE',
+      status: 'DRAFT',
     });
 
     topic.activate();
 
-    expect(topic.status).toBe('ACTIVE');
+    expect(topic.status).toBe('PUBLISHED');
     expect(topic.updatedAt).toBeDefined();
   });
 
@@ -39,7 +39,7 @@ describe('Topic Entity', () => {
 
     topic.deactivate();
 
-    expect(topic.status).toBe('INACTIVE');
+    expect(topic.status).toBe('DRAFT');
   });
 
   it('should update topic details', () => {

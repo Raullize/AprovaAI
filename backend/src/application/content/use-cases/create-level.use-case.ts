@@ -9,7 +9,7 @@ import { generateUniqueSlug } from '../../../shared/utils/slugify';
 export interface CreateLevelRequest {
   name: string;
   description?: string;
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: 'PUBLISHED' | 'DRAFT';
   topicId: string;
   xpReward?: number;
   passingPercentage?: number;

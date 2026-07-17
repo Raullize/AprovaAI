@@ -12,7 +12,7 @@ export interface QuestionProps {
   content: string;
   imageUrl?: string | null;
   type?: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: 'PUBLISHED' | 'DRAFT';
   order: number;
   explanation?: string | null;
   studyLink?: string | null;
@@ -32,8 +32,8 @@ export class Question extends AggregateRoot<QuestionProps> {
   get type(): 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE' {
     return this.props.type ?? 'MULTIPLE_CHOICE';
   }
-  get status(): 'ACTIVE' | 'INACTIVE' {
-    return this.props.status ?? 'ACTIVE';
+  get status(): 'PUBLISHED' | 'DRAFT' {
+    return this.props.status ?? 'PUBLISHED';
   }
   get order(): number {
     return this.props.order;
@@ -62,7 +62,7 @@ export class Question extends AggregateRoot<QuestionProps> {
       {
         ...props,
         type: props.type ?? 'MULTIPLE_CHOICE',
-        status: props.status ?? 'ACTIVE',
+        status: props.status ?? 'PUBLISHED',
         options: props.options ?? [],
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),
@@ -72,12 +72,12 @@ export class Question extends AggregateRoot<QuestionProps> {
   }
 
   public activate(): void {
-    this.props.status = 'ACTIVE';
+    this.props.status = 'PUBLISHED';
     this.props.updatedAt = new Date();
   }
 
   public deactivate(): void {
-    this.props.status = 'INACTIVE';
+    this.props.status = 'DRAFT';
     this.props.updatedAt = new Date();
   }
 

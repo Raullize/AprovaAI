@@ -86,7 +86,7 @@ export default function QuestionList() {
   );
 
   const handleToggleStatus = async (q: Question) => {
-    const newStatus = q.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    const newStatus = q.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
     try {
       await questionsService.update(q.id, { status: newStatus });
       setQuestions((prev) =>
@@ -96,7 +96,7 @@ export default function QuestionList() {
       );
       toast({
         title: 'Visibilidade alterada!',
-        description: `A questão agora está ${newStatus === 'ACTIVE' ? 'pública' : 'privada'}.`,
+        description: `O status da questão foi alterado para ${newStatus === 'PUBLISHED' ? 'Publicado' : 'Rascunho'}.`,
         variant: 'success',
       });
     } catch {

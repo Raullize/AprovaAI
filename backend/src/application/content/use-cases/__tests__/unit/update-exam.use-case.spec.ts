@@ -18,7 +18,7 @@ describe('UpdateExamUseCase', () => {
       name: 'Original Name',
       slug: Slug.create('original-name'),
       description: 'Original Description',
-      status: 'INACTIVE',
+      status: 'DRAFT',
     });
     await repository.create(exam);
 
@@ -27,19 +27,19 @@ describe('UpdateExamUseCase', () => {
       data: {
         name: 'New Name',
         description: 'New Description',
-        status: 'ACTIVE',
+        status: 'PUBLISHED',
       },
     });
 
     expect(updatedExam.name).toBe('New Name');
     expect(updatedExam.slug.value).toBe('new-name');
     expect(updatedExam.description).toBe('New Description');
-    expect(updatedExam.status).toBe('ACTIVE');
+    expect(updatedExam.status).toBe('PUBLISHED');
     expect(updatedExam.updatedAt).toBeDefined();
 
     const savedExam = await repository.findById(exam.id);
     expect(savedExam?.name).toBe('New Name');
-    expect(savedExam?.status).toBe('ACTIVE');
+    expect(savedExam?.status).toBe('PUBLISHED');
   });
 
   it('should throw an error if the exam does not exist', async () => {

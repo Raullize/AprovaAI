@@ -38,8 +38,8 @@ export const createLevelSchema = z.object({
       'Modo do simulado: PRACTICE (Feedback na hora) ou EXAM (Prova real)',
     ),
   status: z
-    .enum(['ACTIVE', 'INACTIVE'])
-    .default('ACTIVE')
+    .enum(['PUBLISHED', 'DRAFT'])
+    .default('PUBLISHED')
     .describe('Status de visibilidade do nível'),
   topicId: z
     .uuid('ID do tópico inválido')
@@ -60,7 +60,7 @@ export const updateLevelSchema = z.object({
     .optional()
     .describe('Nova descrição opcional do nível.'),
   status: z
-    .enum(['ACTIVE', 'INACTIVE'])
+    .enum(['PUBLISHED', 'DRAFT'])
     .optional()
     .describe('Novo status de visibilidade do nível.'),
   topicId: z

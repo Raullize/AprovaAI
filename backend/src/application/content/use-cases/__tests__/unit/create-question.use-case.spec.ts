@@ -25,7 +25,7 @@ describe('CreateQuestionUseCase', () => {
     expect(question.content).toBe('What is 2 + 2?');
     expect(question.type).toBe('SINGLE_CHOICE');
     expect(question.levelId).toBe('level-01');
-    expect(question.status).toBe('ACTIVE');
+    expect(question.status).toBe('PUBLISHED');
     expect(question.order).toBe(0);
 
     expect(repository.items).toHaveLength(1);
@@ -88,15 +88,15 @@ describe('CreateQuestionUseCase', () => {
     expect(firstOfLevel2.order).toBe(0);
   });
 
-  it('should create a question with INACTIVE status', async () => {
+  it('should create a question with DRAFT status', async () => {
     const question = await useCase.execute({
       content: 'Inactive question',
       type: 'SINGLE_CHOICE',
       levelId: 'level-01',
-      status: 'INACTIVE',
+      status: 'DRAFT',
     });
 
-    expect(question.status).toBe('INACTIVE');
+    expect(question.status).toBe('DRAFT');
   });
 
   it('should create a question with optional fields', async () => {

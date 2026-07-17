@@ -17,7 +17,7 @@ type FormData = {
   content: string;
   imageUrl: string;
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   explanation: string;
   studyLink: string;
   options: Option[];
@@ -27,7 +27,7 @@ const emptyForm = (): FormData => ({
   content: '',
   imageUrl: '',
   type: 'SINGLE_CHOICE',
-  status: 'ACTIVE',
+  status: 'PUBLISHED',
   explanation: '',
   studyLink: '',
   options: [
@@ -63,7 +63,7 @@ export function QuestionFormModal({
         content: question.content,
         imageUrl: question.imageUrl || '',
         type: question.type || 'SINGLE_CHOICE',
-        status: question.status || 'ACTIVE',
+        status: question.status || 'PUBLISHED',
         explanation: question.explanation || '',
         studyLink: question.studyLink || '',
         options: question.options.map((o) => ({

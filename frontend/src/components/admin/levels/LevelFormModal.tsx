@@ -17,7 +17,7 @@ interface LevelFormData {
   timeLimitSeconds?: number;
   simulationMode: SimulationMode;
   topicId: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
 }
 
 interface LevelFormModalProps {
@@ -48,7 +48,7 @@ export function LevelFormModal({
     watch,
     setValue,
   } = useForm<LevelFormData>({
-    defaultValues: { status: 'ACTIVE', topicId, simulationMode: 'PRACTICE' },
+    defaultValues: { status: 'PUBLISHED', topicId, simulationMode: 'PRACTICE' },
   });
 
   const statusValue = watch('status');
@@ -92,7 +92,7 @@ export function LevelFormModal({
       load();
     } else {
       reset({
-        status: 'ACTIVE',
+        status: 'PUBLISHED',
         topicId,
         name: '',
         xpReward: 0,

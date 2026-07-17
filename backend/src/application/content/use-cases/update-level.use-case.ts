@@ -12,7 +12,7 @@ export interface UpdateLevelRequest {
   data: {
     name?: string;
     description?: string;
-    status?: 'ACTIVE' | 'INACTIVE';
+    status?: 'PUBLISHED' | 'DRAFT';
     topicId?: string;
     xpReward?: number;
     passingPercentage?: number;
@@ -81,7 +81,7 @@ export class UpdateLevelUseCase implements UseCase<UpdateLevelRequest, Level> {
     }
 
     if (request.data.status !== undefined) {
-      if (request.data.status === 'ACTIVE') {
+      if (request.data.status === 'PUBLISHED') {
         level.activate();
       } else {
         level.deactivate();

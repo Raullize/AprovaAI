@@ -75,12 +75,12 @@ export default function AdminExams() {
   }, [exams, searchTerm, activeCategory]);
 
   const handleToggleStatus = async (exam: Exam) => {
-    const newStatus = exam.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    const newStatus = exam.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
     try {
       await examsService.update(exam.id, { status: newStatus });
       toast({
         title: 'Visibilidade alterada!',
-        description: `O exame agora está ${newStatus === 'ACTIVE' ? 'público' : 'privado'}.`,
+        description: `O status do exame foi alterado para ${newStatus === 'PUBLISHED' ? 'Publicado' : 'Rascunho'}.`,
         variant: 'success',
       });
       loadExams();

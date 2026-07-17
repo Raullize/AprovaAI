@@ -60,7 +60,7 @@ export default function TopicList() {
   );
 
   const handleToggleStatus = async (topic: Topic) => {
-    const newStatus = topic.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+    const newStatus = topic.status === 'PUBLISHED' ? 'DRAFT' : 'PUBLISHED';
     try {
       await topicsService.update(topic.id, { status: newStatus });
       setTopics((prev) =>
@@ -68,7 +68,7 @@ export default function TopicList() {
       );
       toast({
         title: 'Visibilidade alterada!',
-        description: `O tópico agora está ${newStatus === 'ACTIVE' ? 'público' : 'privado'}.`,
+        description: `O status do tópico foi alterado para ${newStatus === 'PUBLISHED' ? 'Publicado' : 'Rascunho'}.`,
         variant: 'success',
       });
     } catch {

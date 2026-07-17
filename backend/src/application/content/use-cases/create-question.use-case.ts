@@ -7,7 +7,7 @@ export interface CreateQuestionRequest {
   content: string;
   imageUrl?: string | null;
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: 'PUBLISHED' | 'DRAFT';
   levelId: string;
   explanation?: string | null;
   studyLink?: string | null;

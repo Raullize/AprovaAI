@@ -8,7 +8,7 @@ import { generateUniqueSlug } from '../../../shared/utils/slugify';
 export interface CreateTopicRequest {
   name: string;
   description?: string;
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: 'PUBLISHED' | 'DRAFT';
   showComingSoon?: boolean;
   examId: string;
   iconKey?: string;

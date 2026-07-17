@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 interface ExamFormData {
   name: string;
   description: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   iconKey: string;
   colorScheme: string;
   category: string;
@@ -52,7 +52,7 @@ export function ExamFormModal({
     setValue,
   } = useForm<ExamFormData>({
     defaultValues: {
-      status: 'ACTIVE',
+      status: 'PUBLISHED',
       description: '',
       iconKey: ICON_OPTIONS[0].key,
       colorScheme: COLOR_OPTIONS[0].key,
@@ -95,7 +95,7 @@ export function ExamFormModal({
       loadExam();
     } else {
       reset({
-        status: 'ACTIVE',
+        status: 'PUBLISHED',
         description: '',
         name: '',
         iconKey: ICON_OPTIONS[0].key,
@@ -193,7 +193,7 @@ export function ExamFormModal({
           </div>
 
           {/* Icon picker */}
-          <div className="space-y-1.5">
+          <div className="space-y-3">
             <label className={fieldLabel}>Ícone</label>
             <input type="hidden" {...register('iconKey')} />
             <div className="grid grid-cols-5 gap-2">
@@ -220,7 +220,7 @@ export function ExamFormModal({
           </div>
 
           {/* Color picker */}
-          <div className="space-y-1.5">
+          <div className="space-y-3">
             <label className={fieldLabel}>Cor do Tema</label>
             <input type="hidden" {...register('colorScheme')} />
             <div className="flex flex-wrap gap-3">

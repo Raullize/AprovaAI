@@ -48,12 +48,12 @@ export default function StudentHome() {
         recentExamIds.map(async (examId) => {
           try {
             const topicsData = await topicsService.findAll(examId);
-            const activeTopics = topicsData.filter((t) => t.status === 'ACTIVE');
+            const activeTopics = topicsData.filter((t) => t.status === 'PUBLISHED');
             let total = 0;
             await Promise.all(
               activeTopics.map(async (topic) => {
                 const levelsData = await levelsService.findAll(topic.id);
-                const activeLevels = levelsData.filter((l) => l.status === 'ACTIVE');
+                const activeLevels = levelsData.filter((l) => l.status === 'PUBLISHED');
                 total += activeLevels.length;
               })
             );

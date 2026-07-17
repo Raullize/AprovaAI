@@ -17,7 +17,7 @@ import { cn } from '@/lib/utils';
 interface TopicFormData {
   name: string;
   description: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: 'PUBLISHED' | 'DRAFT';
   showComingSoon: boolean;
   examId: string;
   iconKey: string;
@@ -53,7 +53,7 @@ export function TopicFormModal({
     setValue,
   } = useForm<TopicFormData>({
     defaultValues: {
-      status: 'ACTIVE',
+      status: 'PUBLISHED',
       showComingSoon: false,
       examId,
       iconKey: ICON_OPTIONS[0].key,
@@ -95,7 +95,7 @@ export function TopicFormModal({
       load();
     } else {
       reset({
-        status: 'ACTIVE',
+        status: 'PUBLISHED',
         showComingSoon: false,
         description: '',
         name: '',
@@ -181,7 +181,7 @@ export function TopicFormModal({
           </div>
 
           {/* Icon picker */}
-          <div className="space-y-1.5">
+          <div className="space-y-3">
             <label className={fieldLabel}>Ícone</label>
             <input type="hidden" {...register('iconKey')} />
             <div className="grid grid-cols-5 gap-2">
@@ -208,7 +208,7 @@ export function TopicFormModal({
           </div>
 
           {/* Color picker */}
-          <div className="space-y-1.5">
+          <div className="space-y-3">
             <label className={fieldLabel}>Cor do Tema</label>
             <input type="hidden" {...register('colorScheme')} />
             <div className="flex flex-wrap gap-3">
@@ -247,8 +247,8 @@ export function TopicFormModal({
               </p>
               <p className="text-xs text-slate-400 mt-0.5">
                 {showComingSoonValue
-                  ? 'O tópico aparece para o aluno mesmo sem níveis públicos e mostra uma etapa final de "Em breve".'
-                  : 'O tópico só aparece para o aluno quando tiver pelo menos um nível público.'}
+                  ? 'O tópico aparece para o aluno mesmo sem níveis publicados e mostra uma etapa final de "Em breve".'
+                  : 'O tópico só aparece para o aluno quando tiver pelo menos um nível publicado.'}
               </p>
             </div>
             <button

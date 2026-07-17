@@ -5,7 +5,7 @@ export interface TopicProps {
   name: string;
   slug: Slug;
   description?: string | null;
-  status?: 'ACTIVE' | 'INACTIVE';
+  status?: 'PUBLISHED' | 'DRAFT';
   showComingSoon?: boolean;
   examId: string;
   order?: number;
@@ -26,8 +26,8 @@ export class Topic extends AggregateRoot<TopicProps> {
   get description(): string | null | undefined {
     return this.props.description;
   }
-  get status(): 'ACTIVE' | 'INACTIVE' {
-    return this.props.status ?? 'ACTIVE';
+  get status(): 'PUBLISHED' | 'DRAFT' {
+    return this.props.status ?? 'PUBLISHED';
   }
   get showComingSoon(): boolean {
     return this.props.showComingSoon ?? false;
@@ -58,7 +58,7 @@ export class Topic extends AggregateRoot<TopicProps> {
     return new Topic(
       {
         ...props,
-        status: props.status ?? 'ACTIVE',
+        status: props.status ?? 'PUBLISHED',
         showComingSoon: props.showComingSoon ?? false,
         order: props.order ?? 0,
         createdAt: props.createdAt ?? new Date(),
@@ -69,12 +69,12 @@ export class Topic extends AggregateRoot<TopicProps> {
   }
 
   public activate(): void {
-    this.props.status = 'ACTIVE';
+    this.props.status = 'PUBLISHED';
     this.props.updatedAt = new Date();
   }
 
   public deactivate(): void {
-    this.props.status = 'INACTIVE';
+    this.props.status = 'DRAFT';
     this.props.updatedAt = new Date();
   }
 
