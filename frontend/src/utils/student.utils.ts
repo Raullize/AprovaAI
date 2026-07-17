@@ -12,7 +12,7 @@ export interface RecentExam {
 
 /**
  * Derives a list of unique recent exams from the raw simulation history.
- * Calculates an estimated progress percentage based on distinct completed levels.
+ * Calculates an estimated progress percentage based on distinct completed simulations.
  */
 export function getRecentExamsFromHistory(
   history: ApiSimulationHistoryItem[],

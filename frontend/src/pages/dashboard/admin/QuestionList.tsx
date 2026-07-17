@@ -27,7 +27,7 @@ export default function QuestionList() {
   const { toast } = useToast();
 
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [simulationId, setLevelId] = useState<string>(simulationIdParam ?? '');
+  const [simulationId, setSimulationId] = useState<string>(simulationIdParam ?? '');
   const [breadcrumb, setBreadcrumb] = useState<BreadcrumbData>({
     examId: '',
     examName: '',
@@ -49,7 +49,7 @@ export default function QuestionList() {
       setIsLoading(true);
       if (simulationIdParam) {
         const level = await simulationsService.findOne(simulationIdParam);
-        setLevelId(level.id);
+        setSimulationId(level.id);
         const topic = await topicsService.findOne(level.topicId);
         const exam = await examsService.findOne(topic.examId);
         setBreadcrumb({

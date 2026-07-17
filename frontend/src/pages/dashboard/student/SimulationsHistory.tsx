@@ -665,7 +665,7 @@ export default function SimulationsHistory() {
                               timeSpent: item.timeSpent,
                               xpEarned: item.xpEarned,
                               passingPercentage: 70,
-                              levelName: item.simulationName,
+                              simulationName: item.simulationName,
                               stars: item.stars,
                               examId: item.examId,
                             },
