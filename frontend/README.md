@@ -112,7 +112,7 @@ frontend/
     │   ├── login/      # Login
     │   ├── register/   # Register
     │   └── dashboard/
-    │       ├── admin/  # Gerenciamento: Exames, Tópicos, Níveis, Questões
+    │       ├── admin/  # Gerenciamento: Exames, Tópicos, Simulados, Questões
     │       └── student/ # Área do aluno: Simulados, Perfil, Progresso
     ├── services/
     │   └── api.ts      # Instância Axios com interceptors JWT
