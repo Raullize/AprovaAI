@@ -8,7 +8,7 @@ export interface Topic {
   status: 'PUBLISHED' | 'DRAFT';
   showComingSoon?: boolean;
   examId: string;
-  levelsCount?: number;
+  simulationsCount?: number;
   iconKey?: string | null;
   colorScheme?: string | null;
   order: number;

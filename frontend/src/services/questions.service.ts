@@ -17,7 +17,7 @@ export interface Question {
   studyLink?: string;
   order: number;
   options: Option[];
-  levelId: string;
+  simulationId: string;
 }
 
 export interface CreateQuestionDTO {
@@ -27,16 +27,16 @@ export interface CreateQuestionDTO {
   status: 'PUBLISHED' | 'DRAFT';
   explanation?: string;
   studyLink?: string;
-  levelId: string;
+  simulationId: string;
   options: Omit<Option, 'id'>[];
 }
 
-export type UpdateQuestionDTO = Partial<Omit<CreateQuestionDTO, 'levelId'>>;
+export type UpdateQuestionDTO = Partial<Omit<CreateQuestionDTO, 'simulationId'>>;
 
 export const questionsService = {
-  findAll: async (levelId?: string) => {
-    if (levelId) {
-      const response = await api.get<Question[]>(`/questions/level/${levelId}`);
+  findAll: async (simulationId?: string) => {
+    if (simulationId) {
+      const response = await api.get<Question[]>(`/questions/simulation/${simulationId}`);
       return response.data;
     }
     const response = await api.get<Question[]>('/questions');

@@ -10,7 +10,7 @@ import UnderConstruction from '../components/ui/UnderConstruction';
 
 import AdminExams from '../pages/dashboard/admin/AdminExams';
 import TopicList from '../pages/dashboard/admin/TopicList';
-import LevelList from '../pages/dashboard/admin/LevelList';
+import SimulationList from '../pages/dashboard/admin/SimulationList';
 import QuestionList from '../pages/dashboard/admin/QuestionList';
 import AdminSettings from '../pages/dashboard/admin/AdminSettings';
 import StudentHome from '../pages/dashboard/student/StudentHome';
@@ -129,16 +129,16 @@ export function AppRoutes() {
         />
 
         <Route
-          path="admin/topics/:topicId/levels"
+          path="admin/topics/:topicId/simulations"
           element={
             <AdminRoute>
-              <LevelList />
+              <SimulationList />
             </AdminRoute>
           }
         />
 
         <Route
-          path="admin/levels/:levelId/questions"
+          path="admin/simulations/:simulationId/questions"
           element={
             <AdminRoute>
               <QuestionList />
@@ -156,7 +156,7 @@ export function AppRoutes() {
         }
       >
         <Route
-          path="simulations/engine/:levelId"
+          path="simulations/engine/:simulationId"
           element={<SimulationEngine />}
         />
         <Route path="simulations/results" element={<SimulationResults />} />

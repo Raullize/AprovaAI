@@ -1,96 +1,64 @@
 import api from './api';
 import type { SimulationMode } from '../types/simulation.types';
 
-export interface SimulationAnswer {
-  questionId: string;
-  selectedId: string;
-  correct: boolean;
-}
-
-export interface ApiSimulationAnswer {
-  questionId: string;
-  selectedOptions: string[];
-  isCorrect: boolean | null;
-  isFlaggedForReview?: boolean;
-}
-
-export interface ApiSimulationHistoryItem {
+export interface Simulation {
   id: string;
-  levelId: string;
-  level?: {
-    name?: string;
-    xpReward?: number;
-    topic?: {
-      name?: string;
-      exam?: {
-        id?: string;
-        name?: string;
-        slug?: string;
-        category?: string;
-        iconKey?: string;
-        colorScheme?: string;
-      };
-    };
-  };
-  mode: SimulationMode;
-  status?: string;
-  score?: number;
-  totalQuestions?: number;
-  percentage?: number;
-  passed?: boolean;
-  stars?: number;
-  timeSpent?: number;
-  createdAt: string;
-  answers?: ApiSimulationAnswer[];
+  name: string;
+  slug: string;
+  xpReward: number;
+  passingPercentage: number;
+  status: 'PUBLISHED' | 'DRAFT';
+  topicId: string;
+  timeLimit: number | null;
+  simulationMode: SimulationMode;
+  questionsCount?: number;
+  order: number;
 }
 
-export interface StartSimulationResponse {
-  id: string;
-  answers?: ApiSimulationAnswer[];
+export interface CreateSimulationDTO {
+  name: string;
+  xpReward: number;
+  passingPercentage: number;
+  status: 'PUBLISHED' | 'DRAFT';
+  topicId: string;
+  timeLimit?: number;
+  simulationMode: SimulationMode;
 }
 
-export interface FinishSimulationResponse {
-  examResult: {
-    totalQuestions: number;
-    score: number;
-    timeSpent: number;
-    stars: number;
-    answers?: ApiSimulationAnswer[];
-  };
-  xpGained: number;
-}
+export type UpdateSimulationDTO = Partial<Omit<CreateSimulationDTO, 'topicId' | 'timeLimit'>> & {
+  timeLimit?: number | null;
+};
 
 export const simulationsService = {
-  getHistory: async (): Promise<ApiSimulationHistoryItem[]> => {
-    const response = await api.get<ApiSimulationHistoryItem[]>('/simulations/history');
-    return Array.isArray(response.data) ? response.data : [];
-  },
-
-  start: async (levelId: string): Promise<StartSimulationResponse> => {
-    const response = await api.post<StartSimulationResponse>('/simulations/start', { levelId });
+  findAll: async (topicId?: string) => {
+    if (topicId) {
+      const response = await api.get<Simulation[]>(`/simulations/topic/${topicId}`);
+      return response.data;
+    }
+    const response = await api.get<Simulation[]>('/simulations');
     return response.data;
   },
 
-  saveAnswer: async (
-    simulationId: string,
-    data: {
-      questionId: string;
-      selectedOptions: string[];
-      timeSpent: number;
-      isFlaggedForReview: boolean;
-    },
-  ): Promise<void> => {
-    await api.post(`/simulations/${simulationId}/answers`, data);
+  findOne: async (idOrSlug: string) => {
+    const response = await api.get<Simulation>(`/simulations/${idOrSlug}`);
+    return response.data;
   },
 
-  finish: async (
-    simulationId: string,
-    data: { timeSpent: number },
-  ): Promise<FinishSimulationResponse> => {
-    const response = await api.post<FinishSimulationResponse>(
-      `/simulations/${simulationId}/finish`,
-      data,
-    );
+  create: async (data: CreateSimulationDTO) => {
+    const response = await api.post<Simulation>('/simulations', data);
     return response.data;
+  },
+
+  update: async (id: string, data: UpdateSimulationDTO) => {
+    const response = await api.patch<Simulation>(`/simulations/${id}`, data);
+    return response.data;
+  },
+
+  delete: async (id: string) => {
+    await api.delete(`/simulations/${id}`);
+  },
+
+  reorder: async (ids: string[]) => {
+    await api.patch('/simulations/reorder', { ids });
   },
 };

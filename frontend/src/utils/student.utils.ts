@@ -1,4 +1,4 @@
-import type { ApiSimulationHistoryItem } from '../services/simulations.service';
+import type { ApiSimulationHistoryItem } from '../services/simulation-attempts.service';
 
 export interface RecentExam {
   id: string;
@@ -16,7 +16,7 @@ export interface RecentExam {
  */
 export function getRecentExamsFromHistory(
   history: ApiSimulationHistoryItem[],
-  levelsCountPerExam: Record<string, number> = {},
+  simulationsCountPerExam: Record<string, number> = {},
   limit = 3,
 ): RecentExam[] {
   return Array.from(
@@ -24,26 +24,26 @@ export function getRecentExamsFromHistory(
       history
         .filter(
           (h) =>
-            h.level?.topic?.exam?.name &&
-            (h.level?.topic?.exam?.slug || h.level?.topic?.exam?.id),
+            h.simulation?.topic?.exam?.name &&
+            (h.simulation?.topic?.exam?.slug || h.simulation?.topic?.exam?.id),
         )
         .map((h) => {
           const examKey =
-            h.level?.topic?.exam?.id ??
-            h.level?.topic?.exam?.slug ??
-            h.level?.topic?.exam?.name ??
+            h.simulation?.topic?.exam?.id ??
+            h.simulation?.topic?.exam?.slug ??
+            h.simulation?.topic?.exam?.name ??
             'unknown-exam';
 
           const examHistory = history.filter(
             (item) =>
-              (item.level?.topic?.exam?.id ??
-                item.level?.topic?.exam?.slug ??
-                item.level?.topic?.exam?.name) === examKey &&
+              (item.simulation?.topic?.exam?.id ??
+                item.simulation?.topic?.exam?.slug ??
+                item.simulation?.topic?.exam?.name) === examKey &&
               item.status === 'COMPLETED',
           );
 
-          const completedLevels = new Set(examHistory.map((item) => item.levelId));
-          const totalEstimated = levelsCountPerExam[examKey] || 10;
+          const completedLevels = new Set(examHistory.map((item) => item.simulationId));
+          const totalEstimated = simulationsCountPerExam[examKey] || 10;
           const progress = Math.min(
             100,
             Math.round((completedLevels.size / totalEstimated) * 100),
@@ -54,13 +54,13 @@ export function getRecentExamsFromHistory(
             {
               id: examKey,
               routeId:
-                h.level!.topic!.exam!.slug ||
-                h.level!.topic!.exam!.id ||
+                h.simulation!.topic!.exam!.slug ||
+                h.simulation!.topic!.exam!.id ||
                 examKey,
-              title: h.level!.topic!.exam!.name!,
-              iconKey: h.level?.topic?.exam?.iconKey || 'cpu',
-              colorScheme: h.level?.topic?.exam?.colorScheme || 'orange',
-              lastTopic: h.level?.name || '',
+              title: h.simulation!.topic!.exam!.name!,
+              iconKey: h.simulation?.topic?.exam?.iconKey || 'cpu',
+              colorScheme: h.simulation?.topic?.exam?.colorScheme || 'orange',
+              lastTopic: h.simulation?.name || '',
               progress,
             } satisfies RecentExam,
           ];
