@@ -165,3 +165,59 @@ Utilizada em telas complexas que exigem alta produtividade, grids de múltiplos 
 - **Trilha de Exame do Estudante** (`ExamTrail.tsx`): Em telas maiores (desktops e notebooks), o container de até `1600px` permite que o mapa linear e o painel fixo lateral de progresso e estatísticas fiquem posicionados lado a lado de forma harmônica.
 - **Painéis de Gerenciamento do Admin** (`AdminExams.tsx`, `TopicList.tsx`, `SimulationList.tsx`, `QuestionList.tsx`): Garante espaço horizontal para visualização em grid de até 4 colunas de cartões, diminuindo a rolagem vertical de conteúdo e dando maior legibilidade às informações gerenciais.
 
+---
+
+## 6. Padrão de Abas (Tab Layout)
+
+Para evitar telas excessivamente verticais e melhorar a navegação do usuário, as páginas de Perfil e Configurações adotam um layout de abas horizontais.
+
+### Páginas com Layout de Abas
+
+- **`Profile.tsx` (Perfil do Estudante)**: Três abas — *Visão Geral* (estatísticas, histórico recente com link "Ver todos"), *Ofensiva* (calendário de streak diário), e *Conquistas* (mural completo de badges com anel de progresso circular SVG).
+- **`ProfileSettings.tsx` (Configurações do Estudante)**: Três abas — *Dados Cadastrais* (foto de perfil e formulário em card unificado sem divisores internos), *Alterar Senha*, e *Zona de Perigo* (exclusão de conta).
+- **`AdminSettings.tsx` (Configurações do Administrador)**: Duas abas — *Dados Cadastrais* e *Alterar Senha*.
+
+---
+
+## 7. Indicadores de Conteúdo Vazio nos Cards Administrativos
+
+Os cards do painel administrativo exibem alertas visuais automáticos quando uma entidade está **publicada** (`status === 'PUBLISHED'`) mas não possui filhos cadastrados. Este padrão de sinalização passiva garante que o administrador perceba inconsistências de conteúdo sem precisar navegar dentro de cada entidade.
+
+| Card | Condição de Alerta | Mensagem |
+|------|-------------------|----------|
+| `ExamCard.tsx` | Exame publicado com `topicsCount === 0` | ⚠️ **Sem Tópicos** |
+| `TopicCard.tsx` | Tópico publicado com `simulationsCount === 0` | ⚠️ **Sem Simulados** |
+| `SimulationCard.tsx` | Simulado publicado com `questionsCount === 0` | ⚠️ **Sem Questões** |
+
+**Comportamento visual:**
+- A borda do card assume tonalidade âmbar (`border-amber-300`) com fundo levemente aquecido (`bg-amber-50/5`).
+- Um badge pulsante com ícone `AlertTriangle` e texto em maiúsculas aparece ao lado do `StatusBadge` no cabeçalho do card.
+- Rascunhos (`DRAFT`) **nunca** exibem o alerta — a sinalização se aplica exclusivamente a itens visíveis aos alunos.
+
+---
+
+## 8. Identidade Visual e Mascote
+
+O mascote oficial da plataforma é o **Prof. Sabichão**, representado pelo arquivo `public/images/prof-sabichao.png`.
+
+Ele substitui o antigo ícone de chapéu de formatura em todos os pontos de identidade da interface:
+- **`AuthLayout.tsx`**: Logo centralizado nas telas de login e cadastro.
+- **`Sidebar.tsx`**: Logo no topo da barra lateral de navegação.
+- **`Header.tsx`**: Logo no cabeçalho mobile.
+- **`AppFooter.tsx`**: Logo no rodapé da aplicação.
+
+O mascote é sempre renderizado sobre um fundo branco arredondado (`bg-white rounded-xl shadow-md`) para garantir contraste visual em qualquer contexto de cor.
+
+### Indicadores de Carregamento
+- **Páginas e seções**: Spinner circular genérico (`Loading.tsx`) — simples e sem referências visuais ao mascote.
+- **Botões de submit** (login/cadastro): Três pontos animados com `animate-bounce` escalonado por `animationDelay`, substituindo o spinner interno do botão para maior clareza contextual.
+
+---
+
+## 9. Responsividade do Ranking Global (`Leaderboard.tsx`)
+
+A tela de Ranking Global e o componente `LeaderboardTable.tsx` foram otimizados para funcionar bem em dispositivos móveis:
+
+- **Barra de ferramentas**: Em mobile, a busca ocupa largura total e os controles de filtro ("Todos/Top 3/Top 10") ficam distribuídos lado a lado com o seletor de paginação (`justify-between`), evitando quebra de linha descontrolada.
+- **Tabela responsiva**: Padding das células reduzido em mobile (`py-3 px-2 sm:px-4`). Cabeçalhos de coluna longos são abreviados automaticamente: "Experiência" → "XP" e "Recorde de Ofensiva" → "Ofensiva" em telas menores que `sm`.
+- **Eliminação de rolagem dupla**: As páginas `Leaderboard.tsx` e `Profile.tsx` não possuem mais wrappers redundantes de `min-h-screen`, delegando o controle de scroll ao `DashboardLayout.tsx` (container principal do painel).
