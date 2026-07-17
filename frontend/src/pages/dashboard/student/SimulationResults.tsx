@@ -32,7 +32,7 @@ interface ResultsState {
   timeSpent: number;
   xpEarned: number;
   passingPercentage: number;
-  levelName: string;
+  simulationName: string;
   stars?: number;
   examId?: string;
 }
@@ -189,7 +189,7 @@ export default function SimulationResults() {
     );
   }
 
-  const { total, correct, timeSpent, xpEarned, passingPercentage, levelName, stars: stateStars, examId } =
+  const { total, correct, timeSpent, xpEarned, passingPercentage, simulationName, stars: stateStars, examId } =
     state;
 
   const percentage = Math.round((correct / total) * 100);
@@ -331,7 +331,7 @@ export default function SimulationResults() {
           <h1 className="text-3xl font-bold text-white font-display">
             {passed ? 'Simulado Concluído!' : 'Continue Tentando!'}
           </h1>
-          <p className="text-white/70 mt-1.5 text-sm">{levelName}</p>
+          <p className="text-white/70 mt-1.5 text-sm">{simulationName}</p>
           <p className="text-white/60 text-xs mt-1">
             {passed
               ? stars === 3

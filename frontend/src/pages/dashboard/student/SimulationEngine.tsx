@@ -32,7 +32,7 @@ export interface Question {
   type: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
 }
 
-interface Level {
+interface SimulationConfig {
   name: string;
   timeLimit: number | null;
   passingPercentage: number;
@@ -84,7 +84,7 @@ export default function SimulationEngine() {
   const mode = (searchParams.get('mode') as SimulationMode) || 'PRACTICE';
   const examId = searchParams.get('examId');
 
-  const [level, setLevel] = useState<Level | null>(null);
+  const [simulationConfig, setSimulationConfig] = useState<SimulationConfig | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [simulationAttemptId, setSimulationAttemptId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -136,7 +136,7 @@ export default function SimulationEngine() {
       try {
         setIsLoading(true);
         const lvlData = await simulationsService.findOne(simulationId!);
-        setLevel(lvlData);
+        setSimulationConfig(lvlData);
         setTimeLeft(lvlData.timeLimit || DEFAULT_TIME_LIMIT);
 
         const startData = await simulationAttemptsService.start(simulationId!);
@@ -220,7 +220,7 @@ export default function SimulationEngine() {
       setIsLoading(true);
       await waitForPendingSaves();
 
-      const baseLimit = level?.timeLimit && level.timeLimit > 0 ? level.timeLimit : (mode === 'EXAM' ? DEFAULT_TIME_LIMIT : 0);
+      const baseLimit = simulationConfig?.timeLimit && simulationConfig.timeLimit > 0 ? simulationConfig.timeLimit : (mode === 'EXAM' ? DEFAULT_TIME_LIMIT : 0);
       const computedTimeSpent = baseLimit > 0 ? Math.max(0, baseLimit - timeLeft) : 0;
 
       const finishData = await simulationAttemptsService.finish(simulationAttemptId, {
@@ -258,8 +258,8 @@ export default function SimulationEngine() {
           timeSpent: simulationAttempt.timeSpent,
           xpEarned: xpGained,
           stars: simulationAttempt.stars ?? 0,
-          passingPercentage: level?.passingPercentage || 70,
-          levelName: level?.name || 'Simulado',
+          passingPercentage: simulationConfig?.passingPercentage || 70,
+          simulationName: simulationConfig?.name || 'Simulado',
           examId,
         },
       });
@@ -271,12 +271,12 @@ export default function SimulationEngine() {
   }, [
     simulationAttemptId,
     mode,
-    level?.timeLimit,
+    simulationConfig?.timeLimit,
     timeLeft,
     refreshUser,
     navigate,
-    level?.passingPercentage,
-    level?.name,
+    simulationConfig?.passingPercentage,
+    simulationConfig?.name,
     waitForPendingSaves,
     answers,
     questions,
@@ -284,7 +284,7 @@ export default function SimulationEngine() {
 
   // Timer for EXAM mode, or PRACTICE mode if level has timeLimit
   useEffect(() => {
-    const hasTimeLimit = level?.timeLimit && level.timeLimit > 0;
+    const hasTimeLimit = simulationConfig?.timeLimit && simulationConfig.timeLimit > 0;
     if (mode !== 'EXAM' && !hasTimeLimit) return;
     if (timeLeft <= 0) {
       handleFinish();
@@ -292,7 +292,7 @@ export default function SimulationEngine() {
     }
     const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
     return () => clearInterval(timer);
-  }, [mode, timeLeft, handleFinish, level?.timeLimit]);
+  }, [mode, timeLeft, handleFinish, simulationConfig?.timeLimit]);
 
   const currentQuestion = questions[currentIndex];
   const totalQuestions = questions.length;
@@ -503,7 +503,7 @@ export default function SimulationEngine() {
           setCurrentIndex={setCurrentIndex}
           setView={setView}
           handleFinish={handleFinish}
-          hasTimeLimit={!!(level?.timeLimit && level.timeLimit > 0)}
+          hasTimeLimit={!!(simulationConfig?.timeLimit && simulationConfig.timeLimit > 0)}
         />
       ) : (
         <>
@@ -526,7 +526,7 @@ export default function SimulationEngine() {
             </div>
 
             {/* Timer (EXAM mode, or PRACTICE mode if level has timeLimit) */}
-            {(mode === 'EXAM' || !!(level?.timeLimit && level.timeLimit > 0)) && (
+            {(mode === 'EXAM' || !!(simulationConfig?.timeLimit && simulationConfig.timeLimit > 0)) && (
               <div
                 className={`flex items-center gap-1.5 font-bold text-sm tabular-nums ${timerColor}`}
               >

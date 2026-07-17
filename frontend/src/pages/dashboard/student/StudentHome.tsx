@@ -199,7 +199,7 @@ export default function StudentHome() {
                 size="md"
               />
               <p className="text-[10px] text-slate-400 mt-1">
-                Faltam {xpNeededForNextLevel} XP para o Simulado {currentLevel + 1}
+                Faltam {xpNeededForNextLevel} XP para o Nível {currentLevel + 1}
               </p>
             </div>
           </Card>
