@@ -27,10 +27,10 @@ export function buildSeedUuid(seed: string): string {
 export async function upsertQuestions(
   prisma: PrismaClient,
   questions: QuestionSeed[],
-  levelId: string,
+  simulationId: string,
 ) {
   for (const [i, q] of questions.entries()) {
-    const questionId = buildSeedUuid(`question:${levelId}:${i + 1}:${q.id}`);
+    const questionId = buildSeedUuid(`question:${simulationId}:${i + 1}:${q.id}`);
     const question = await prisma.question.upsert({
       where: { id: questionId },
       update: {
@@ -42,7 +42,7 @@ export async function upsertQuestions(
         id: questionId,
         content: q.content,
         explanation: q.explanation,
-        levelId,
+        simulationId,
         order: i + 1,
         type: q.type ?? QuestionType.SINGLE_CHOICE,
         status: QuestionStatus.PUBLISHED,

@@ -38,7 +38,7 @@ model User {
   createdAt        DateTime         @default(now()) @map("created_at")
   updatedAt        DateTime         @updatedAt @map("updated_at")
 
-  examResults    ExamResult[]
+  simulationAttempts SimulationAttempt[]
   userActivities UserActivity[]
 
   @@map("users")
@@ -101,40 +101,40 @@ model Topic {
   updatedAt   DateTime    @updatedAt @map("updated_at")
 
   exam   Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
-  levels Level[]
+  simulations Simulation[]
 
   @@unique([examId, slug])
   @@map("topics")
 }
 
-enum LevelStatus {
+enum SimulationStatus {
   PUBLISHED
   DRAFT
 
-  @@map("level_status")
+  @@map("simulation_status")
 }
 
-model Level {
-  id                String      @id @default(uuid()) @map("id")
-  name              String      @map("name")
-  slug              String      @map("slug")
-  description       String?     @map("description")
-  order             Int         @map("order")
-  topicId           String      @map("topic_id")
-  status            LevelStatus @default(PUBLISHED) @map("status")
-  xpReward          Int         @default(0) @map("xp_reward")
-  passingPercentage Float          @default(70.0) @map("passing_percentage")
-  timeLimit         Int?           @map("time_limit")
-  simulationMode    SimulationMode @default(PRACTICE) @map("simulation_mode")
-  createdAt         DateTime       @default(now()) @map("created_at")
-  updatedAt         DateTime    @updatedAt @map("updated_at")
+model Simulation {
+  id                String           @id @default(uuid()) @map("id")
+  name              String           @map("name")
+  slug              String           @map("slug")
+  description       String?          @map("description")
+  order             Int              @map("order")
+  topicId           String           @map("topic_id")
+  status            SimulationStatus @default(PUBLISHED) @map("status")
+  xpReward          Int              @default(0) @map("xp_reward")
+  passingPercentage Float            @default(70.0) @map("passing_percentage")
+  timeLimit         Int?             @map("time_limit")
+  simulationMode    SimulationMode   @default(PRACTICE) @map("simulation_mode")
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
 
-  topic       Topic        @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  questions   Question[]
-  examResults ExamResult[]
+  topic              Topic               @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  questions          Question[]
+  simulationAttempts SimulationAttempt[]
 
   @@unique([topicId, slug])
-  @@map("levels")
+  @@map("simulations")
 }
 
 enum QuestionType {
@@ -160,13 +160,13 @@ model Question {
   order       Int            @map("order")
   explanation String?        @map("explanation")
   studyLink   String?        @map("study_link")
-  levelId     String         @map("level_id")
-  createdAt   DateTime       @default(now()) @map("created_at")
-  updatedAt   DateTime       @updatedAt @map("updated_at")
+  simulationId String         @map("simulation_id")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
 
-  level   Level        @relation(fields: [levelId], references: [id], onDelete: Cascade)
-  options Option[]
-  answers ExamAnswer[]
+  simulation   Simulation     @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  options      Option[]
+  answers      AttemptAnswer[]
 
   @@map("questions")
 }
@@ -185,12 +185,12 @@ model Option {
   @@map("options")
 }
 
-enum SimulationStatus {
+enum AttemptStatus {
   IN_PROGRESS
   COMPLETED
   ABANDONED
 
-  @@map("simulation_status")
+  @@map("attempt_status")
 }
 
 enum SimulationMode {
@@ -200,44 +200,44 @@ enum SimulationMode {
   @@map("simulation_mode")
 }
 
-model ExamResult {
-  id             String           @id @default(uuid()) @map("id")
-  userId         String           @map("user_id")
-  levelId        String           @map("level_id")
-  status         SimulationStatus @default(IN_PROGRESS) @map("status")
-  mode           SimulationMode   @default(PRACTICE) @map("mode")
-  score          Int?             @map("score")
-  totalQuestions Int              @map("total_questions")
-  percentage     Float?           @map("percentage")
-  passed         Boolean?         @map("passed")
-  stars          Int?             @map("stars")
-  timeSpent      Int?             @map("time_spent")
-  createdAt      DateTime         @default(now()) @map("created_at")
-  updatedAt      DateTime         @updatedAt @map("updated_at")
+model SimulationAttempt {
+  id             String        @id @default(uuid()) @map("id")
+  userId         String        @map("user_id")
+  simulationId   String        @map("simulation_id")
+  status         AttemptStatus @default(IN_PROGRESS) @map("status")
+  mode           SimulationMode @default(PRACTICE) @map("mode")
+  score          Int?          @map("score")
+  totalQuestions Int           @map("total_questions")
+  percentage     Float?        @map("percentage")
+  passed         Boolean?      @map("passed")
+  stars          Int?          @map("stars")
+  timeSpent      Int?          @map("time_spent")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
-  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
-  level   Level        @relation(fields: [levelId], references: [id], onDelete: Cascade)
-  answers ExamAnswer[]
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  simulation Simulation  @relation(fields: [simulationId], references: [id], onDelete: Cascade)
+  answers AttemptAnswer[]
 
-  @@map("exam_results")
+  @@map("simulation_attempts")
 }
 
-model ExamAnswer {
-  id               String   @id @default(uuid()) @map("id")
-  examResultId     String   @map("exam_result_id")
-  questionId       String   @map("question_id")
-  selectedOptions  String[] @map("selected_options")
-  isCorrect        Boolean? @map("is_correct")
-  timeSpent        Int?     @map("time_spent")
-  isFlaggedForReview Boolean @default(false) @map("is_flagged_for_review")
-  createdAt        DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+model AttemptAnswer {
+  id                  String            @id @default(uuid()) @map("id")
+  simulationAttemptId String            @map("simulation_attempt_id")
+  questionId          String            @map("question_id")
+  selectedOptions     String[]          @map("selected_options")
+  isCorrect           Boolean?          @map("is_correct")
+  timeSpent           Int?              @map("time_spent")
+  isFlaggedForReview  Boolean           @default(false) @map("is_flagged_for_review")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
 
-  examResult ExamResult @relation(fields: [examResultId], references: [id], onDelete: Cascade)
-  question   Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  simulationAttempt   SimulationAttempt @relation(fields: [simulationAttemptId], references: [id], onDelete: Cascade)
+  question            Question          @relation(fields: [questionId], references: [id], onDelete: Cascade)
 
-  @@unique([examResultId, questionId])
-  @@map("exam_answers")
+  @@unique([simulationAttemptId, questionId])
+  @@map("attempt_answers")
 }
 
 model UserActivity {

@@ -3,7 +3,7 @@ import {
   ExamCategory,
   ExamStatus,
   TopicStatus,
-  LevelStatus,
+  SimulationStatus,
   QuestionType,
 } from '@prisma/client';
 import { buildSeedUuid, upsertQuestions } from './seedHelpers';
@@ -62,17 +62,17 @@ export async function seedAwsContent(prisma: PrismaClient) {
   });
 
   // ─── Tópico 1 › Nível 1: O que é Cloud Computing? ────────────────────────
-  const lvl1 = await prisma.level.upsert({
+  const lvl1 = await prisma.simulation.upsert({
     where: { topicId_slug: { topicId: topic1.id, slug: 'o-que-e-cloud' } },
     update: {},
     create: {
-      id: buildSeedUuid('level:aws-cpp:introducao-a-cloud:o-que-e-cloud'),
+      id: buildSeedUuid('simulation:aws-cpp:introducao-a-cloud:o-que-e-cloud'),
       name: 'O que é Cloud Computing?',
       slug: 'o-que-e-cloud',
       description: 'Definição, características e vantagens da computação em nuvem.',
       order: 1,
       topicId: topic1.id,
-      status: LevelStatus.PUBLISHED,
+      status: SimulationStatus.PUBLISHED,
       xpReward: 100,
       passingPercentage: 70.0,
       timeLimit: 600,
@@ -193,17 +193,17 @@ export async function seedAwsContent(prisma: PrismaClient) {
   ], lvl1.id);
 
   // ─── Tópico 1 › Nível 2: Serviços Essenciais da AWS ──────────────────────
-  const lvl2 = await prisma.level.upsert({
+  const lvl2 = await prisma.simulation.upsert({
     where: { topicId_slug: { topicId: topic1.id, slug: 'servicos-essenciais' } },
     update: {},
     create: {
-      id: buildSeedUuid('level:aws-cpp:introducao-a-cloud:servicos-essenciais'),
+      id: buildSeedUuid('simulation:aws-cpp:introducao-a-cloud:servicos-essenciais'),
       name: 'Serviços Essenciais da AWS',
       slug: 'servicos-essenciais',
       description: 'Conheça os principais serviços de computação, armazenamento e banco de dados da AWS.',
       order: 2,
       topicId: topic1.id,
-      status: LevelStatus.PUBLISHED,
+      status: SimulationStatus.PUBLISHED,
       xpReward: 100,
       passingPercentage: 70.0,
       timeLimit: 600,
@@ -324,17 +324,17 @@ export async function seedAwsContent(prisma: PrismaClient) {
   ], lvl2.id);
 
   // ─── Tópico 2 › Nível 3: Modelo de Responsabilidade Compartilhada ─────────
-  const lvl3 = await prisma.level.upsert({
+  const lvl3 = await prisma.simulation.upsert({
     where: { topicId_slug: { topicId: topic2.id, slug: 'responsabilidade-compartilhada' } },
     update: {},
     create: {
-      id: buildSeedUuid('level:aws-cpp:seguranca-e-conformidade:responsabilidade-compartilhada'),
+      id: buildSeedUuid('simulation:aws-cpp:seguranca-e-conformidade:responsabilidade-compartilhada'),
       name: 'Responsabilidade Compartilhada',
       slug: 'responsabilidade-compartilhada',
       description: 'Entenda quem é responsável por cada camada de segurança: AWS vs. Cliente.',
       order: 1,
       topicId: topic2.id,
-      status: LevelStatus.PUBLISHED,
+      status: SimulationStatus.PUBLISHED,
       xpReward: 100,
       passingPercentage: 70.0,
       timeLimit: 600,
@@ -481,17 +481,17 @@ export async function seedAwsContent(prisma: PrismaClient) {
   ], lvl3.id);
 
   // ─── Tópico 1 › Nível 3: Vantagens e Modelos de Nuvem ────────────────────
-  const lvl1_3 = await prisma.level.upsert({
+  const lvl1_3 = await prisma.simulation.upsert({
     where: { topicId_slug: { topicId: topic1.id, slug: 'vantagens-modelos-nuvem' } },
     update: {},
     create: {
-      id: buildSeedUuid('level:aws-cpp:introducao-a-cloud:vantagens-modelos-nuvem'),
+      id: buildSeedUuid('simulation:aws-cpp:introducao-a-cloud:vantagens-modelos-nuvem'),
       name: 'Vantagens e Modelos de Nuvem',
       slug: 'vantagens-modelos-nuvem',
       description: 'Entenda os principais modelos de implantação e as vantagens financeiras e operacionais da nuvem.',
       order: 3,
       topicId: topic1.id,
-      status: LevelStatus.PUBLISHED,
+      status: SimulationStatus.PUBLISHED,
       xpReward: 100,
       passingPercentage: 70.0,
       timeLimit: 600,
@@ -612,17 +612,17 @@ export async function seedAwsContent(prisma: PrismaClient) {
   ], lvl1_3.id);
 
   // ─── Tópico 2 › Nível 2: Gerenciamento de Acesso e IAM ──────────────────
-  const lvl2_2 = await prisma.level.upsert({
+  const lvl2_2 = await prisma.simulation.upsert({
     where: { topicId_slug: { topicId: topic2.id, slug: 'identidade-acesso' } },
     update: {},
     create: {
-      id: buildSeedUuid('level:aws-cpp:seguranca-e-conformidade:identidade-acesso'),
+      id: buildSeedUuid('simulation:aws-cpp:seguranca-e-conformidade:identidade-acesso'),
       name: 'Gerenciamento de Identidade e Acesso - IAM',
       slug: 'identidade-acesso',
       description: 'Aprenda a controlar de forma segura o acesso aos recursos da AWS usando usuários, grupos, roles e políticas.',
       order: 2,
       topicId: topic2.id,
-      status: LevelStatus.PUBLISHED,
+      status: SimulationStatus.PUBLISHED,
       xpReward: 100,
       passingPercentage: 70.0,
       timeLimit: 600,
@@ -743,17 +743,17 @@ export async function seedAwsContent(prisma: PrismaClient) {
   ], lvl2_2.id);
 
   // ─── Tópico 2 › Nível 3: Criptografia e Segurança de Rede ───────────────
-  const lvl2_3 = await prisma.level.upsert({
+  const lvl2_3 = await prisma.simulation.upsert({
     where: { topicId_slug: { topicId: topic2.id, slug: 'criptografia-seguranca' } },
     update: {},
     create: {
-      id: buildSeedUuid('level:aws-cpp:seguranca-e-conformidade:criptografia-seguranca'),
+      id: buildSeedUuid('simulation:aws-cpp:seguranca-e-conformidade:criptografia-seguranca'),
       name: 'Criptografia e Segurança de Rede',
       slug: 'criptografia-seguranca',
       description: 'Compreenda a proteção de dados em trânsito e em repouso, criptografia com KMS, e controle de portas com Security Groups e NACLs.',
       order: 3,
       topicId: topic2.id,
-      status: LevelStatus.PUBLISHED,
+      status: SimulationStatus.PUBLISHED,
       xpReward: 100,
       passingPercentage: 70.0,
       timeLimit: 600,
@@ -882,13 +882,13 @@ export async function seedAwsContent(prisma: PrismaClient) {
     console.log('Seeding demo user simulation history...');
 
     // Limpar históricos anteriores do usuário demo para evitar duplicatas infinitas
-    await prisma.examResult.deleteMany({
+    await prisma.simulationAttempt.deleteMany({
       where: { userId: demoUser.id },
     });
 
     // Obter as questões de lvl1 para criar as respostas
     const lvl1Questions = await prisma.question.findMany({
-      where: { levelId: lvl1.id },
+      where: { simulationId: lvl1.id },
       include: { options: true },
     });
 
@@ -897,11 +897,11 @@ export async function seedAwsContent(prisma: PrismaClient) {
       const date1 = new Date();
       date1.setDate(date1.getDate() - 2);
 
-      const result1 = await prisma.examResult.create({
+      const result1 = await prisma.simulationAttempt.create({
         data: {
-          id: buildSeedUuid('exam-result:demo-history-1'),
+          id: buildSeedUuid('simulation-attempt:demo-history-1'),
           userId: demoUser.id,
-          levelId: lvl1.id,
+          simulationId: lvl1.id,
           status: 'COMPLETED',
           mode: 'PRACTICE',
           score: 5,
@@ -920,9 +920,9 @@ export async function seedAwsContent(prisma: PrismaClient) {
         const isCorrect = index < 5;
         const selectedOption = q.options.find(o => o.isCorrect === isCorrect);
         if (selectedOption) {
-          await prisma.examAnswer.create({
+          await prisma.attemptAnswer.create({
             data: {
-              examResultId: result1.id,
+              simulationAttemptId: result1.id,
               questionId: q.id,
               selectedOptions: [selectedOption.id],
               isCorrect,
@@ -936,11 +936,11 @@ export async function seedAwsContent(prisma: PrismaClient) {
       const date2 = new Date();
       date2.setDate(date2.getDate() - 1);
 
-      const result2 = await prisma.examResult.create({
+      const result2 = await prisma.simulationAttempt.create({
         data: {
-          id: buildSeedUuid('exam-result:demo-history-2'),
+          id: buildSeedUuid('simulation-attempt:demo-history-2'),
           userId: demoUser.id,
-          levelId: lvl1.id,
+          simulationId: lvl1.id,
           status: 'COMPLETED',
           mode: 'PRACTICE',
           score: 8,
@@ -959,9 +959,9 @@ export async function seedAwsContent(prisma: PrismaClient) {
         const isCorrect = index < 8;
         const selectedOption = q.options.find(o => o.isCorrect === isCorrect);
         if (selectedOption) {
-          await prisma.examAnswer.create({
+          await prisma.attemptAnswer.create({
             data: {
-              examResultId: result2.id,
+              simulationAttemptId: result2.id,
               questionId: q.id,
               selectedOptions: [selectedOption.id],
               isCorrect,
@@ -1002,5 +1002,5 @@ export async function seedAwsContent(prisma: PrismaClient) {
     }
   }
 
-  console.log('✓ Conteúdo AWS seeded: 1 exame, 2 tópicos, 6 níveis, 60 questões + histórico demo.');
+  console.log('✓ Conteúdo AWS seeded: 1 exame, 2 tópicos, 6 simulados, 60 questões + histórico demo.');
 }

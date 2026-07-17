@@ -13,6 +13,6 @@ export async function seedContent() {
   await seedEnemContent(prisma);
 
   console.log(
-    '✓ Seed finalizado: 2 exames, 7 topicos, 16 niveis, 160 questoes + historico demo.',
+    '✓ Seed finalizado: 2 exames, 7 topicos, 16 simulados, 160 questoes + historico demo.',
   );
 }

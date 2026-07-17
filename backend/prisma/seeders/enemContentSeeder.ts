@@ -3,7 +3,7 @@ import {
   ExamCategory,
   ExamStatus,
   TopicStatus,
-  LevelStatus,
+  SimulationStatus,
 } from '@prisma/client';
 import {
   buildSeedUuid,
@@ -75,7 +75,7 @@ export async function seedEnemContent(prisma: PrismaClient) {
         'A interpretação baseada apenas em opinião pessoal do leitor.',
         'A análise focada exclusivamente na forma gráfica do texto.',
       ],
-      levels: [
+      simulations: [
         {
           id: 'enem-t1-lvl1',
           name: 'Fundamentos de Interpretação',
@@ -138,7 +138,7 @@ export async function seedEnemContent(prisma: PrismaClient) {
         'Utilizar soma simples em uma situação que exige razão ou porcentagem.',
         'Ignorar as restrições e condições descritas no enunciado.',
       ],
-      levels: [
+      simulations: [
         {
           id: 'enem-t2-lvl1',
           name: 'Fundamentos Matemáticos',
@@ -201,7 +201,7 @@ export async function seedEnemContent(prisma: PrismaClient) {
         'Ignorar a relação entre espaço geográfico e dinâmica social.',
         'Confundir consequência histórica com causa imediata do fenômeno.',
       ],
-      levels: [
+      simulations: [
         {
           id: 'enem-t3-lvl1',
           name: 'Fundamentos de Ciências Humanas',
@@ -264,7 +264,7 @@ export async function seedEnemContent(prisma: PrismaClient) {
         'Confundir transformação física com transformação química sem analisar o contexto.',
         'Tomar o resultado observado como independente das variáveis do sistema.',
       ],
-      levels: [
+      simulations: [
         {
           id: 'enem-t4-lvl1',
           name: 'Fundamentos de Ciências da Natureza',
@@ -327,7 +327,7 @@ export async function seedEnemContent(prisma: PrismaClient) {
         'Tomar a informação apresentada como neutra sem análise crítica.',
         'Ignorar a dimensão histórica e política envolvida na questão.',
       ],
-      levels: [
+      simulations: [
         {
           id: 'enem-t5-lvl1',
           name: 'Leitura Crítica de Temas Contemporâneos',
@@ -395,40 +395,40 @@ export async function seedEnemContent(prisma: PrismaClient) {
       },
     });
 
-    for (const levelBlueprint of topicBlueprint.levels) {
-      const level = await prisma.level.upsert({
+    for (const simulationBlueprint of topicBlueprint.simulations) {
+      const simulation = await prisma.simulation.upsert({
         where: {
-          topicId_slug: { topicId: topic.id, slug: levelBlueprint.slug },
+          topicId_slug: { topicId: topic.id, slug: simulationBlueprint.slug },
         },
         update: {},
         create: {
           id: buildSeedUuid(
-            `level:enem:${topicBlueprint.slug}:${levelBlueprint.slug}`,
+            `simulation:enem:${topicBlueprint.slug}:${simulationBlueprint.slug}`,
           ),
-          name: levelBlueprint.name,
-          slug: levelBlueprint.slug,
-          description: levelBlueprint.description,
-          order: levelBlueprint.order,
+          name: simulationBlueprint.name,
+          slug: simulationBlueprint.slug,
+          description: simulationBlueprint.description,
+          order: simulationBlueprint.order,
           topicId: topic.id,
-          status: LevelStatus.PUBLISHED,
-          xpReward: levelBlueprint.xpReward,
+          status: SimulationStatus.PUBLISHED,
+          xpReward: simulationBlueprint.xpReward,
           passingPercentage: 70.0,
-          timeLimit: levelBlueprint.timeLimit,
+          timeLimit: simulationBlueprint.timeLimit,
         },
       });
 
       const questions = buildEnemQuestions({
-        prefix: `${topicBlueprint.slug}:${levelBlueprint.slug}`,
+        prefix: `${topicBlueprint.slug}:${simulationBlueprint.slug}`,
         topicName: `${topicBlueprint.name} no ENEM`,
-        prompts: levelBlueprint.prompts,
+        prompts: simulationBlueprint.prompts,
         distractorBank: topicBlueprint.distractorBank,
       });
 
-      await upsertQuestions(prisma, questions, level.id);
+      await upsertQuestions(prisma, questions, simulation.id);
     }
   }
 
   console.log(
-    '✓ Conteúdo ENEM seeded: 1 exame, 5 tópicos, 10 níveis e 100 questões.',
+    '✓ Conteúdo ENEM seeded: 1 exame, 5 tópicos, 10 simulados e 100 questões.',
   );
 }
