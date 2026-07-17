@@ -31,12 +31,12 @@ export class ReorderQuestionsUseCase implements UseCase<
     const scopeIds = allQuestionsInScope.map((q) => q.id);
 
     if (request.ids.length !== scopeIds.length) {
-      throw new InvalidReorderError('A lista de reordenação deve conter exatamente todas as questões do nível atual.');
+      throw new InvalidReorderError('A lista de reordenação deve conter exatamente todas as questões do simulado atual.');
     }
 
     const isValid = request.ids.every((id) => scopeIds.includes(id));
     if (!isValid) {
-      throw new InvalidReorderError('Um ou mais IDs informados não pertencem a este nível ou são inválidos.');
+      throw new InvalidReorderError('Um ou mais IDs informados não pertencem a este simulado ou são inválidos.');
     }
 
     await this.questionRepository.reorder(request.ids);

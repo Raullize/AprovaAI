@@ -24,14 +24,18 @@ export class ReorderSimulationsUseCase implements UseCase<
 
     const referenceSimulation = await this.simulationRepository.findById(request.ids[0]);
     if (!referenceSimulation) {
-      throw new InvalidReorderError(`O nível com ID ${request.ids[0]} não foi encontrado.`);
+      throw new InvalidReorderError(`O simulado com ID ${request.ids[0]} não foi encontrado.`);
     }
 
-    const allSimulationsInScope = await this.simulationRepository.findByTopicId(referenceSimulation.topicId);
+    const allSimulationsInScope = await this.simulationRepository.findByTopicId(
+      referenceSimulation.topicId,
+    );
     const scopeIds = allSimulationsInScope.map((l) => l.id);
 
     if (request.ids.length !== scopeIds.length) {
-      throw new InvalidReorderError('A lista de reordenação deve conter exatamente todos os níveis do tópico atual.');
+      throw new InvalidReorderError(
+        'A lista de reordenação deve conter exatamente todos os simulados do tópico atual.',
+      );
     }
 
     const isValid = request.ids.every((id) => scopeIds.includes(id));
