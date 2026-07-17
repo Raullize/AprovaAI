@@ -16,19 +16,19 @@
 
 ## Descrição
 
-O **AprovaAI** é uma plataforma inovadora de estudos focada em auxiliar estudantes na preparação para diversos tipos de exames — desde vestibulares tradicionais (como ENEM e ITA) até certificações profissionais (como AWS e OAB). Inspirado em uma metodologia de aprendizado por níveis e gamificação, o AprovaAI oferece simulados personalizados, feedback detalhado e acompanhamento de desempenho para otimizar a jornada de estudo do usuário.
+O **AprovaAI** é uma plataforma inovadora de estudos focada em auxiliar estudantes na preparação para diversos tipos de exames — desde vestibulares tradicionais (como ENEM e ITA) até certificações profissionais (como AWS e OAB). Inspirado em uma metodologia de aprendizado por simulados e gamificação, o AprovaAI oferece simulados personalizados, feedback detalhado e acompanhamento de desempenho para otimizar a jornada de estudo do usuário.
 
-O conteúdo é organizado de forma hierárquica: **Exame → Tópico → Nível → Questões**, permitindo que o aluno avance progressivamente e domine cada área antes de passar para o próximo desafio.
+O conteúdo é organizado de forma hierárquica: **Exame → Tópico → Simulado → Questões**, permitindo que o aluno avance progressivamente e domine cada área antes de passar para o próximo desafio.
 
 ---
 
 ## Características Principais
 
-- **Simulados por Nível** — Estrutura `Exame > Tópico > Nível > Questões` para aprendizado progressivo
+- **Simulados por Tópico** — Estrutura `Exame > Tópico > Simulado > Questões` para aprendizado progressivo
 - **Gamificação** — Sistema de XP, estrelas e ofensivas (streaks) para motivar o estudo contínuo
 - **Prof. Sabichão** — Mascote e assistente inteligente para tirar dúvidas *(em desenvolvimento)*
 - **Feedback Detalhado** — Explicações específicas para cada alternativa e links de aprofundamento
-- **Drag & Drop** — Reordenação intuitiva de exames, tópicos, níveis e questões pelo admin
+- **Drag & Drop** — Reordenação intuitiva de exames, tópicos, simulados e questões pelo admin
 - **Controle de Status** — Ativação/desativação de conteúdo sem necessidade de exclusão
 - **Interface Responsiva** — Design moderno que funciona em qualquer dispositivo
 - **Autenticação Segura** — JWT com controle de acesso por perfil (Admin / Aluno)
@@ -40,7 +40,7 @@ O conteúdo é organizado de forma hierárquica: **Exame → Tópico → Nível 
 O AprovaAI oferece dois planos para atender às necessidades de estudo:
 
 ### Free Tier
-- Acesso aos níveis e conteúdos iniciais
+- Acesso aos simulados e conteúdos iniciais
 - Período de espera de **6 horas** entre simulados
 - Acesso limitado ao chatbot Prof. Sabichão *(futuro)*
 - Pode conter anúncios
@@ -60,16 +60,16 @@ O AprovaAI oferece dois planos para atender às necessidades de estudo:
 
 ### Para o Usuário (Estudante)
 
-- **Simulados por Nível:** Faça simulados divididos por `Exame > Tópico > Nível > Questões`
+- **Simulados por Tópico:** Faça simulados divididos por `Exame > Tópico > Simulado > Questões`
 - **Modos de Simulado:** 
   - **Treino (Practice):** Sem limite de tempo, com feedback imediato de certo/errado a cada resposta.
   - **Exame (Exam):** Com ou sem limite de tempo, o resultado e as respostas corretas só são exibidos após a finalização.
 - **Níveis de Dificuldade:** Cada nível oferece questões focadas naquele conteúdo
-- **Simulado Diversificado:** O último nível de cada tópico apresenta questões mais variadas para consolidar o aprendizado
+- **Simulado Diversificado:** O último simulado de cada tópico apresenta questões mais variadas para consolidar o aprendizado
 - **Tipos de Questões:** Múltipla escolha com uma ou mais alternativas corretas
 - **Feedback Detalhado:** Explicações por alternativa detalhando o motivo de estar certa ou errada e links opcionais para aprofundamento.
 - **Autoatendimento:** Gerenciamento do próprio perfil, atualização de dados e alteração de senha de forma centralizada.
-- **Gamificação e Conquistas:** Receba estrelas por marcos (desempenho no nível) e ganhe XP baseado na melhoria contínua.
+- **Gamificação e Conquistas:** Receba estrelas por marcos (desempenho no simulado) e ganhe XP baseado na melhoria contínua.
 - **Streak de Dias:** Visualize seu progresso contínuo de estudos (ofensiva).
 
 ### Para o Administrador
@@ -77,8 +77,8 @@ O AprovaAI oferece dois planos para atender às necessidades de estudo:
 O perfil administrador possui controle total sobre o conteúdo da plataforma:
 
 - **Gerenciamento de Exames:** CRUD completo com controle de status (ativo/inativo) e reordenação
-- **Gerenciamento de Conteúdo:** CRUD de Tópicos, Níveis e Questões com drag & drop para reordenar
-- **Personalização de Níveis:** Definir XP de recompensa, percentual mínimo de aprovação, limite de tempo e modo do simulado (Treino/Exame).
+- **Gerenciamento de Conteúdo:** CRUD de Tópicos, Simulados e Questões com drag & drop para reordenar
+- **Personalização de Simulados:** Definir XP de recompensa, percentual mínimo de aprovação, limite de tempo e modo do simulado (Treino/Exame).
 - **Configuração de Feedback:** Adicionar explicações por alternativa e links de aprofundamento
 - **Gerenciamento da Própria Conta:** Utilização do mesmo módulo de autoatendimento para gerenciar perfil e senha.
 - **Gerenciamento de Usuários:** Controlar planos de acesso (Free/Premium), ativar/desativar contas
