@@ -1,121 +1,112 @@
 import {
   Controller,
+  Get,
   Post,
   Body,
+  Patch,
   Param,
+  Delete,
   UseGuards,
-  Request,
-  Get,
 } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import {
-  ApiTags,
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-} from '@nestjs/swagger';
+  createSimulationSchema,
+  updateSimulationSchema,
+  CreateSimulationDto,
+  UpdateSimulationDto,
+} from './dto/simulation.dto';
+import { reorderSchema, ReorderDto } from '../exams/dto/exam.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
+import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
-import { StartSimulationUseCase } from '../../application/simulations/use-cases/start-simulation.use-case';
-import { SaveAnswerUseCase } from '../../application/simulations/use-cases/save-answer.use-case';
-import { FinishSimulationUseCase } from '../../application/simulations/use-cases/finish-simulation.use-case';
-import { GetSimulationHistoryUseCase } from '../../application/simulations/use-cases/get-simulation-history.use-case';
-
-import {
-  startSimulationSchema,
-  saveAnswerSchema,
-  finishSimulationSchema,
-  StartSimulationDto,
-  SaveAnswerDto,
-  FinishSimulationDto,
-} from './dto/simulation.dto';
+import { FindAllSimulationsUseCase } from '../../application/content/use-cases/find-all-simulations.use-case';
+import { FindSimulationsByTopicIdUseCase } from '../../application/content/use-cases/find-simulations-by-topic-id.use-case';
+import { FindSimulationByIdOrSlugUseCase } from '../../application/content/use-cases/find-simulation-by-id-or-slug.use-case';
+import { CreateSimulationUseCase } from '../../application/content/use-cases/create-simulation.use-case';
+import { UpdateSimulationUseCase } from '../../application/content/use-cases/update-simulation.use-case';
+import { DeleteSimulationUseCase } from '../../application/content/use-cases/delete-simulation.use-case';
+import { ReorderSimulationsUseCase } from '../../application/content/use-cases/reorder-simulations.use-case';
 
 @ApiTags('Simulations')
-@ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
 @Controller('simulations')
 export class SimulationsController {
   constructor(
-    private readonly startSimulationUseCase: StartSimulationUseCase,
-    private readonly saveAnswerUseCase: SaveAnswerUseCase,
-    private readonly finishSimulationUseCase: FinishSimulationUseCase,
-    private readonly getSimulationHistoryUseCase: GetSimulationHistoryUseCase,
+    private readonly findAllSimulationsUseCase: FindAllSimulationsUseCase,
+    private readonly findSimulationsByTopicIdUseCase: FindSimulationsByTopicIdUseCase,
+    private readonly findSimulationByIdOrSlugUseCase: FindSimulationByIdOrSlugUseCase,
+    private readonly createSimulationUseCase: CreateSimulationUseCase,
+    private readonly updateSimulationUseCase: UpdateSimulationUseCase,
+    private readonly deleteSimulationUseCase: DeleteSimulationUseCase,
+    private readonly reorderSimulationsUseCase: ReorderSimulationsUseCase,
   ) {}
 
-  @Get('history')
-  @ApiOperation({
-    summary: 'Histórico de Simulados',
-    description:
-      'Retorna a lista de todos os simulados (em andamento ou concluídos) do usuário autenticado.',
-  })
-  @ApiResponse({ status: 200, description: 'Histórico retornado com sucesso.' })
-  getHistory(@Request() req: { user: { id: string } }) {
-    return this.getSimulationHistoryUseCase.execute({
-      userId: req.user.id,
-    });
-  }
-
-  @Post('start')
-  @ApiOperation({
-    summary: 'Iniciar um Simulado',
-    description:
-      'Inicia um novo simulado para o nível especificado ou retoma um simulado em andamento.',
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'Simulado iniciado ou retomado com sucesso.',
-  })
-  start(
-    @Request() req: { user: { id: string } },
-    @Body(new ZodValidationPipe(startSimulationSchema))
-    dto: StartSimulationDto,
+  @Post()
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Criar Nível', description: 'Cria um novo nível/simulado (Apenas Admin).' })
+  @ApiResponse({ status: 201, description: 'Nível criado com sucesso.' })
+  create(
+    @Body(new ZodValidationPipe(createSimulationSchema))
+    createSimulationDto: CreateSimulationDto,
   ) {
-    return this.startSimulationUseCase.execute({
-      userId: req.user.id,
-      levelId: dto.levelId,
-    });
+    return this.createSimulationUseCase.execute(createSimulationDto);
   }
 
-  @Post(':id/answers')
-  @ApiOperation({
-    summary: 'Salvar Resposta',
-    description:
-      'Salva a resposta selecionada pelo aluno para uma questão específica durante o simulado.',
-  })
-  @ApiResponse({ status: 200, description: 'Resposta salva com sucesso.' })
-  saveAnswer(
-    @Request() req: { user: { id: string } },
+  @Get()
+  @ApiOperation({ summary: 'Listar Níveis', description: 'Retorna a lista de todos os níveis cadastrados.' })
+  @ApiResponse({ status: 200, description: 'Lista retornada com sucesso.' })
+  findAll() {
+    return this.findAllSimulationsUseCase.execute();
+  }
+
+  @Get('topic/:topicId')
+  @ApiOperation({ summary: 'Buscar Níveis por Tópico', description: 'Retorna todos os níveis pertencentes a um tópico específico.' })
+  @ApiResponse({ status: 200, description: 'Níveis encontrados.' })
+  findByTopic(@Param('topicId') topicId: string) {
+    return this.findSimulationsByTopicIdUseCase.execute(topicId);
+  }
+
+  @Get(':idOrSlug')
+  @ApiOperation({ summary: 'Buscar Nível por ID ou Slug', description: 'Retorna os detalhes de um nível específico.' })
+  @ApiResponse({ status: 200, description: 'Nível encontrado.' })
+  findOne(@Param('idOrSlug') idOrSlug: string) {
+    return this.findSimulationByIdOrSlugUseCase.execute(idOrSlug);
+  }
+
+  @Patch('reorder')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Reordenar Níveis', description: 'Atualiza a ordem de exibição dos níveis (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Ordem atualizada com sucesso.' })
+  reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
+    return this.reorderSimulationsUseCase.execute(reorderDto);
+  }
+
+  @Patch(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Atualizar Nível', description: 'Atualiza os dados de um nível existente (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Nível atualizado com sucesso.' })
+  update(
     @Param('id') id: string,
-    @Body(new ZodValidationPipe(saveAnswerSchema))
-    dto: SaveAnswerDto,
+    @Body(new ZodValidationPipe(updateSimulationSchema))
+    updateSimulationDto: UpdateSimulationDto,
   ) {
-    return this.saveAnswerUseCase.execute({
-      userId: req.user.id,
-      examResultId: id,
-      questionId: dto.questionId,
-      selectedOptions: dto.selectedOptions,
-      timeSpent: dto.timeSpent,
-      isFlaggedForReview: dto.isFlaggedForReview,
-    });
+    return this.updateSimulationUseCase.execute({ id, data: updateSimulationDto });
   }
 
-  @Post(':id/finish')
-  @ApiOperation({
-    summary: 'Finalizar Simulado',
-    description:
-      'Finaliza o simulado, calcula a nota final e define se o aluno foi aprovado ou reprovado.',
-  })
-  @ApiResponse({ status: 200, description: 'Simulado finalizado com sucesso.' })
-  finish(
-    @Request() req: { user: { id: string } },
-    @Param('id') id: string,
-    @Body(new ZodValidationPipe(finishSimulationSchema))
-    dto: FinishSimulationDto,
-  ) {
-    return this.finishSimulationUseCase.execute({
-      userId: req.user.id,
-      examResultId: id,
-      timeSpent: dto.timeSpent,
-    });
+  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: 'Excluir Nível', description: 'Remove um nível do sistema (Apenas Admin).' })
+  @ApiResponse({ status: 200, description: 'Nível removido com sucesso.' })
+  remove(@Param('id') id: string) {
+    return this.deleteSimulationUseCase.execute(id);
   }
 }

@@ -16,9 +16,9 @@ export class PrismaQuestionRepository implements QuestionRepository {
     return questions.map((question) => PrismaQuestionMapper.toDomain(question));
   }
 
-  async findByLevelId(levelId: string): Promise<Question[]> {
+  async findBySimulationId(simulationId: string): Promise<Question[]> {
     const questions = await this.prisma.question.findMany({
-      where: { levelId },
+      where: { simulationId },
       orderBy: { order: 'asc' },
       include: { options: { orderBy: { order: 'asc' } } },
     });
@@ -45,7 +45,7 @@ export class PrismaQuestionRepository implements QuestionRepository {
         order: question.order,
         explanation: question.explanation ?? null,
         studyLink: question.studyLink ?? null,
-        levelId: question.levelId,
+        simulationId: question.simulationId,
         createdAt: question.createdAt ?? new Date(),
         updatedAt: question.updatedAt ?? new Date(),
         options: {
@@ -77,7 +77,7 @@ export class PrismaQuestionRepository implements QuestionRepository {
           order: question.order,
           explanation: question.explanation ?? null,
           studyLink: question.studyLink ?? null,
-          levelId: question.levelId,
+          simulationId: question.simulationId,
           updatedAt: question.updatedAt ?? new Date(),
           options: {
             create: question.options.map((opt) => ({
@@ -112,9 +112,9 @@ export class PrismaQuestionRepository implements QuestionRepository {
     );
   }
 
-  async countByLevelId(levelId: string): Promise<number> {
+  async countBySimulationId(simulationId: string): Promise<number> {
     return this.prisma.question.count({
-      where: { levelId },
+      where: { simulationId },
     });
   }
 }

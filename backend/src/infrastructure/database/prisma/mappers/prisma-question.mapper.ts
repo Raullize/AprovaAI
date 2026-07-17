@@ -17,7 +17,7 @@ export class PrismaQuestionMapper {
         order: raw.order,
         explanation: raw.explanation,
         studyLink: raw.studyLink,
-        levelId: raw.levelId,
+        simulationId: raw.simulationId,
         options: raw.options.map((opt) => ({
           id: opt.id,
           text: opt.text,

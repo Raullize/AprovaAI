@@ -1,43 +1,33 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from '../../infrastructure/database/prisma/prisma.module';
 import { SimulationsController } from './simulations.controller';
-import { StartSimulationUseCase } from '../../application/simulations/use-cases/start-simulation.use-case';
-import { SaveAnswerUseCase } from '../../application/simulations/use-cases/save-answer.use-case';
-import { FinishSimulationUseCase } from '../../application/simulations/use-cases/finish-simulation.use-case';
-import { GetSimulationHistoryUseCase } from '../../application/simulations/use-cases/get-simulation-history.use-case';
-import { ExamResultRepository } from '../../domain/simulations/repositories/exam-result.repository';
-import { LevelRepository } from '../../domain/content/repositories/level.repository';
-import { QuestionRepository } from '../../domain/content/repositories/question.repository';
-import { PrismaExamResultRepository } from '../../infrastructure/database/prisma/repositories/prisma-exam-result.repository';
-import { PrismaLevelRepository } from '../../infrastructure/database/prisma/repositories/prisma-level.repository';
-import { PrismaQuestionRepository } from '../../infrastructure/database/prisma/repositories/prisma-question.repository';
-import { UserRepository } from '../../domain/users/repositories/user.repository';
-import { PrismaUserRepository } from '../../infrastructure/database/prisma/repositories/prisma-user.repository';
+import { FindAllSimulationsUseCase } from '../../application/content/use-cases/find-all-simulations.use-case';
+import { FindSimulationsByTopicIdUseCase } from '../../application/content/use-cases/find-simulations-by-topic-id.use-case';
+import { FindSimulationByIdOrSlugUseCase } from '../../application/content/use-cases/find-simulation-by-id-or-slug.use-case';
+import { FindSimulationByIdUseCase } from '../../application/content/use-cases/find-simulation-by-id.use-case';
+import { FindSimulationBySlugUseCase } from '../../application/content/use-cases/find-simulation-by-slug.use-case';
+import { CreateSimulationUseCase } from '../../application/content/use-cases/create-simulation.use-case';
+import { UpdateSimulationUseCase } from '../../application/content/use-cases/update-simulation.use-case';
+import { DeleteSimulationUseCase } from '../../application/content/use-cases/delete-simulation.use-case';
+import { ReorderSimulationsUseCase } from '../../application/content/use-cases/reorder-simulations.use-case';
+import { SimulationRepository } from '../../domain/content/repositories/simulation.repository';
+import { PrismaSimulationRepository } from '../../infrastructure/database/prisma/repositories/prisma-simulation.repository';
 
 @Module({
-  imports: [PrismaModule],
   controllers: [SimulationsController],
   providers: [
+    FindAllSimulationsUseCase,
+    FindSimulationsByTopicIdUseCase,
+    FindSimulationByIdOrSlugUseCase,
+    FindSimulationByIdUseCase,
+    FindSimulationBySlugUseCase,
+    CreateSimulationUseCase,
+    UpdateSimulationUseCase,
+    DeleteSimulationUseCase,
+    ReorderSimulationsUseCase,
     {
-      provide: ExamResultRepository,
-      useClass: PrismaExamResultRepository,
+      provide: SimulationRepository,
+      useClass: PrismaSimulationRepository,
     },
-    {
-      provide: LevelRepository,
-      useClass: PrismaLevelRepository,
-    },
-    {
-      provide: QuestionRepository,
-      useClass: PrismaQuestionRepository,
-    },
-    {
-      provide: UserRepository,
-      useClass: PrismaUserRepository,
-    },
-    StartSimulationUseCase,
-    SaveAnswerUseCase,
-    FinishSimulationUseCase,
-    GetSimulationHistoryUseCase,
   ],
 })
 export class SimulationsModule {}

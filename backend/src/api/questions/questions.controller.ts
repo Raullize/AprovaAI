@@ -22,7 +22,7 @@ import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 
 import { FindAllQuestionsUseCase } from '../../application/content/use-cases/find-all-questions.use-case';
-import { FindQuestionsByLevelIdUseCase } from '../../application/content/use-cases/find-questions-by-level-id.use-case';
+import { FindQuestionsBySimulationIdUseCase } from '../../application/content/use-cases/find-questions-by-simulation-id.use-case';
 import { FindQuestionByIdUseCase } from '../../application/content/use-cases/find-question-by-id.use-case';
 import { CreateQuestionUseCase } from '../../application/content/use-cases/create-question.use-case';
 import { UpdateQuestionUseCase } from '../../application/content/use-cases/update-question.use-case';
@@ -34,7 +34,7 @@ import { ReorderQuestionsUseCase } from '../../application/content/use-cases/reo
 export class QuestionsController {
   constructor(
     private readonly findAllQuestionsUseCase: FindAllQuestionsUseCase,
-    private readonly findQuestionsByLevelIdUseCase: FindQuestionsByLevelIdUseCase,
+    private readonly findQuestionsBySimulationIdUseCase: FindQuestionsBySimulationIdUseCase,
     private readonly findQuestionByIdUseCase: FindQuestionByIdUseCase,
     private readonly createQuestionUseCase: CreateQuestionUseCase,
     private readonly updateQuestionUseCase: UpdateQuestionUseCase,
@@ -64,13 +64,13 @@ export class QuestionsController {
     return this.findAllQuestionsUseCase.execute();
   }
 
-  @Get('level/:levelId')
+  @Get('simulation/:simulationId')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Buscar Questões por Nível', description: 'Retorna todas as questões pertencentes a um nível específico.' })
   @ApiResponse({ status: 200, description: 'Questões encontradas.' })
-  findByLevel(@Param('levelId') levelId: string) {
-    return this.findQuestionsByLevelIdUseCase.execute(levelId);
+  findBySimulation(@Param('simulationId') simulationId: string) {
+    return this.findQuestionsBySimulationIdUseCase.execute(simulationId);
   }
 
   @Get(':id')

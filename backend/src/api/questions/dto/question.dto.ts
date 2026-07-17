@@ -61,7 +61,7 @@ export const createQuestionSchema = z.object({
     .optional()
     .nullable()
     .describe('Link externo para um material de estudo complementar.'),
-  levelId: z
+  simulationId: z
     .uuid('ID do nível inválido')
     .describe(
       'ID UUID do nível ao qual esta questão pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
@@ -103,7 +103,7 @@ export const updateQuestionSchema = z.object({
     .optional()
     .nullable()
     .describe('Novo link de estudo complementar ou `null` para remover.'),
-  levelId: z
+  simulationId: z
     .uuid('ID do nível inválido')
     .optional()
     .describe(

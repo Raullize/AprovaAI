@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { QuestionsController } from './questions.controller';
 import { FindAllQuestionsUseCase } from '../../application/content/use-cases/find-all-questions.use-case';
-import { FindQuestionsByLevelIdUseCase } from '../../application/content/use-cases/find-questions-by-level-id.use-case';
+import { FindQuestionsBySimulationIdUseCase } from '../../application/content/use-cases/find-questions-by-simulation-id.use-case';
 import { FindQuestionByIdUseCase } from '../../application/content/use-cases/find-question-by-id.use-case';
 import { CreateQuestionUseCase } from '../../application/content/use-cases/create-question.use-case';
 import { UpdateQuestionUseCase } from '../../application/content/use-cases/update-question.use-case';
@@ -14,7 +14,7 @@ import { PrismaQuestionRepository } from '../../infrastructure/database/prisma/r
   controllers: [QuestionsController],
   providers: [
     FindAllQuestionsUseCase,
-    FindQuestionsByLevelIdUseCase,
+    FindQuestionsBySimulationIdUseCase,
     FindQuestionByIdUseCase,
     CreateQuestionUseCase,
     UpdateQuestionUseCase,

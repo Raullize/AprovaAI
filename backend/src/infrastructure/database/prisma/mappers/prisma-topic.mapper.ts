@@ -3,7 +3,7 @@ import { Topic } from '../../../../domain/content/entities/topic.entity';
 import { Slug } from '../../../../domain/content/value-objects/slug';
 
 export class PrismaTopicMapper {
-  static toDomain(raw: PrismaTopic & { _count?: { levels: number } }): Topic {
+  static toDomain(raw: PrismaTopic & { _count?: { simulations: number } }): Topic {
     return Topic.create(
       {
         name: raw.name,
@@ -13,7 +13,7 @@ export class PrismaTopicMapper {
         showComingSoon: raw.showComingSoon,
         order: raw.order,
         examId: raw.examId,
-        levelsCount: raw._count?.levels,
+        simulationsCount: raw._count?.simulations,
         iconKey: raw.iconKey,
         colorScheme: raw.colorScheme,
         createdAt: raw.createdAt,

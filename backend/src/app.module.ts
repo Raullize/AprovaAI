@@ -3,11 +3,11 @@ import { PrismaModule } from './infrastructure/database/prisma/prisma.module';
 import { AuthModule } from './api/auth/auth.module';
 import { ExamsModule } from './api/exams/exams.module';
 import { TopicsModule } from './api/topics/topics.module';
-import { LevelsModule } from './api/levels/levels.module';
+import { SimulationsModule } from './api/simulations/simulations.module';
 import { QuestionsModule } from './api/questions/questions.module';
 import { UploadModule } from './api/upload/upload.module';
 import { HealthModule } from './api/health/health.module';
-import { SimulationsModule } from './api/simulations/simulations.module';
+import { SimulationAttemptsModule } from './api/simulation-attempts/simulation-attempts.module';
 import { AccountModule } from './api/account/account.module';
 import { StudentModule } from './api/student/student.module';
 
@@ -17,11 +17,11 @@ import { StudentModule } from './api/student/student.module';
     AuthModule,
     ExamsModule,
     TopicsModule,
-    LevelsModule,
+    SimulationsModule,
     QuestionsModule,
     UploadModule,
     HealthModule,
-    SimulationsModule,
+    SimulationAttemptsModule,
     AccountModule,
     StudentModule,
   ],

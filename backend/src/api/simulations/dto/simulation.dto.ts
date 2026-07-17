@@ -1,50 +1,96 @@
 import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
-export const startSimulationSchema = z.object({
-  levelId: z
-    .uuid('ID do nível inválido')
-    .describe(
-      'ID UUID do nível/simulado que o aluno deseja iniciar. Ex: "123e4567-e89b-12d3-a456-426614174000"',
-    ),
-});
-
-export const saveAnswerSchema = z.object({
-  questionId: z
-    .uuid('ID da questão inválido')
-    .describe(
-      'ID UUID da questão sendo respondida. Ex: "123e4567-e89b-12d3-a456-426614174000"',
-    ),
-  selectedOptions: z
-    .array(z.uuid('ID da opção inválido'))
-    .min(1, 'Selecione pelo menos uma opção')
-    .describe(
-      'Array contendo os IDs UUID das opções selecionadas pelo aluno. Ex: ["123e4567-e89b-12d3-a456-426614174000"]',
-    ),
-  timeSpent: z
+export const createSimulationSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'Nome deve ter no mínimo 3 caracteres')
+    .describe('Nome do nível. Ex: "Nível 1 - Básico"'),
+  description: z.string().optional().describe('Descrição opcional do nível.'),
+  order: z
+    .number()
+    .int()
+    .min(1)
+    .optional()
+    .describe('Ordem de exibição do nível. Ex: 1'),
+  xpReward: z
     .number()
     .int()
     .min(0)
+    .default(0)
+    .describe('Quantidade de XP que o aluno ganha ao concluir o nível. Ex: 50'),
+  passingPercentage: z
+    .number()
+    .min(0)
+    .max(100)
+    .default(70)
+    .describe('Porcentagem mínima de acertos para aprovação. Ex: 70'),
+  timeLimit: z
+    .number()
+    .int()
+    .min(1)
     .optional()
-    .describe('Tempo gasto pelo aluno nesta questão em segundos. Exemplo: 45'),
-  isFlaggedForReview: z
-    .boolean()
-    .optional()
-    .default(false)
+    .describe('Tempo limite em minutos para concluir o nível. Ex: 60'),
+  simulationMode: z
+    .enum(['PRACTICE', 'EXAM'])
+    .default('PRACTICE')
     .describe(
-      'Indica se o aluno marcou a questão para revisão posterior. Ex: true',
+      'Modo do simulado: PRACTICE (Feedback na hora) ou EXAM (Prova real)',
+    ),
+  status: z
+    .enum(['PUBLISHED', 'DRAFT'])
+    .default('PUBLISHED')
+    .describe('Status de visibilidade do nível'),
+  topicId: z
+    .uuid('ID do tópico inválido')
+    .describe(
+      'ID UUID do tópico ao qual este nível pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
     ),
 });
 
-export const finishSimulationSchema = z.object({
-  timeSpent: z
+export class CreateSimulationDto extends createZodDto(createSimulationSchema) {}
+
+export const updateSimulationSchema = z.object({
+  name: z
+    .string()
+    .optional()
+    .describe('Novo nome do nível. Ex: "Nível 2 - Intermediário"'),
+  description: z
+    .string()
+    .optional()
+    .describe('Nova descrição opcional do nível.'),
+  status: z
+    .enum(['PUBLISHED', 'DRAFT'])
+    .optional()
+    .describe('Novo status de visibilidade do nível.'),
+  topicId: z
+    .uuid('ID do tópico inválido')
+    .optional()
+    .describe(
+      'Novo ID UUID do tópico ao qual este nível pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+    ),
+  xpReward: z
     .number()
     .int()
-    .min(0)
     .optional()
-    .describe('Tempo total gasto pelo aluno no simulado em segundos. Exemplo: 3600'),
+    .describe('Novo total de XP concedido ao concluir o nível. Ex: 100'),
+  passingPercentage: z
+    .number()
+    .min(0)
+    .max(100)
+    .optional()
+    .describe('Nova porcentagem mínima de acertos para aprovação. Ex: 80'),
+  timeLimit: z
+    .number()
+    .int()
+    .min(1)
+    .optional()
+    .nullable()
+    .describe('Novo tempo limite em minutos ou `null` para remover. Ex: 45'),
+  simulationMode: z
+    .enum(['PRACTICE', 'EXAM'])
+    .optional()
+    .describe('Novo modo do simulado: PRACTICE ou EXAM.'),
 });
 
-export class StartSimulationDto extends createZodDto(startSimulationSchema) {}
-export class SaveAnswerDto extends createZodDto(saveAnswerSchema) {}
-export class FinishSimulationDto extends createZodDto(finishSimulationSchema) {}
+export class UpdateSimulationDto extends createZodDto(updateSimulationSchema) {}

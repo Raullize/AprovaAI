@@ -21,7 +21,7 @@ export class PrismaTopicRepository implements TopicRepository {
       orderBy: { order: 'asc' },
       include: {
         _count: {
-          select: { levels: true },
+          select: { simulations: true },
         },
       },
     });
