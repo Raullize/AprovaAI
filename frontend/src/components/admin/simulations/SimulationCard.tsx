@@ -1,4 +1,4 @@
-import { ChevronRight, GripVertical, Clock } from 'lucide-react';
+import { ChevronRight, GripVertical, Clock, AlertTriangle } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
@@ -123,6 +123,8 @@ export function SimulationCard({
   const iconOpt = getIconOption(iconKey || 'target');
   const Icon = iconOpt.Icon;
 
+  const showWarning = simulation.status === 'PUBLISHED' && (simulation.questionsCount ?? 0) === 0;
+
   return (
     <div
       draggable
@@ -130,12 +132,11 @@ export function SimulationCard({
       onDragOver={onDragOver}
       onDrop={onDrop}
       className={cn(
-        'bg-white rounded-2xl border border-slate-200 transition-all duration-200 p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing hover:shadow-lg',
-        theme.hoverBorder,
-        theme.hoverShadow,
-        isDragging
-          ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400'
-          : '',
+        'bg-white rounded-2xl border transition-all duration-200 p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing hover:shadow-lg',
+        showWarning
+          ? 'border-amber-300 hover:border-amber-400 hover:shadow-amber-500/10 bg-amber-50/5'
+          : cn('border-slate-200 hover:border-indigo-300 hover:shadow-indigo-500/10', theme.hoverBorder, theme.hoverShadow),
+        isDragging ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400' : '',
       )}
     >
       <div>
@@ -150,7 +151,15 @@ export function SimulationCard({
             >
               <Icon className={cn('h-5 w-5', theme.iconText)} />
             </div>
-            <StatusBadge status={simulation.status} />
+            <div className="flex items-center gap-2">
+              <StatusBadge status={simulation.status} />
+              {showWarning && (
+                <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg uppercase tracking-wider animate-pulse">
+                  <AlertTriangle className="h-3 w-3 text-amber-500 fill-current" />
+                  Sem Questões
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-1">
             <GripVertical className="h-4 w-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />

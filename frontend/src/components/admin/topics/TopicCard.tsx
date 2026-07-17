@@ -1,4 +1,4 @@
-import { ChevronRight, GripVertical } from 'lucide-react';
+import { ChevronRight, GripVertical, AlertTriangle } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import { StatusBadge } from '@/components/admin/shared/StatusBadge';
 import { EntityCardActions } from '@/components/admin/shared/EntityCardActions';
@@ -33,17 +33,21 @@ export function TopicCard({
   const colorOpt = getColorOption(topic.colorScheme);
   const Icon = iconOpt.Icon;
 
+  const showWarning = topic.status === 'PUBLISHED' && (topic.simulationsCount ?? 0) === 0;
+
   return (
     <div
       draggable
       onDragStart={onDragStart}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className={`bg-white rounded-2xl border border-slate-200 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10 transition-all duration-200 p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing ${
-        isDragging
-          ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400'
-          : ''
-      }`}
+      className={cn(
+        'bg-white rounded-2xl border p-5 flex flex-col justify-between group cursor-grab active:cursor-grabbing transition-all duration-200',
+        showWarning
+          ? 'border-amber-300 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/10 bg-amber-50/5'
+          : 'border-slate-200 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10',
+        isDragging ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400' : ''
+      )}
     >
       <div>
         {/* Header */}
@@ -57,7 +61,15 @@ export function TopicCard({
             >
               <Icon className="h-5 w-5 text-white" />
             </div>
-            <StatusBadge status={topic.status} />
+            <div className="flex items-center gap-2">
+              <StatusBadge status={topic.status} />
+              {showWarning && (
+                <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg uppercase tracking-wider animate-pulse">
+                  <AlertTriangle className="h-3 w-3 text-amber-500 fill-current" />
+                  Sem Simulados
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-1">
             <GripVertical className="h-4 w-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
