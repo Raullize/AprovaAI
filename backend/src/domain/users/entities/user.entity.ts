@@ -83,8 +83,6 @@ export class User extends AggregateRoot<UserProps> {
 
   public updateStreak(today: Date): boolean {
     const lastActive = this.props.lastActiveAt;
-
-    // truncate dates to midnight for comparison
     const truncateDate = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const todayTrunc = truncateDate(today);
 
@@ -107,7 +105,6 @@ export class User extends AggregateRoot<UserProps> {
       this._updateBestStreak();
       return true;
     } else if (diffDays > 1) {
-      // Streak quebrado — persiste bestStreak antes de resetar
       this.props.streakCount = 1;
       this.props.lastActiveAt = today;
       this.props.updatedAt = new Date();
@@ -118,7 +115,6 @@ export class User extends AggregateRoot<UserProps> {
     return false;
   }
 
-  /** Invariante de domínio: bestStreak sempre >= streakCount */
   private _updateBestStreak(): void {
     const current = this.props.streakCount ?? 0;
     const best = this.props.bestStreak ?? 0;
