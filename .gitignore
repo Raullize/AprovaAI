@@ -1,0 +1,75 @@
+# ==============================================================
+# Arquivos de apoio à edição local — NÃO VERSIONAR
+# ==============================================================
+CONTEXT.md
+CONTEXT_LOCAL.md
+CONTEXT_*.md
+
+# Pasta do Overleaf — apenas para apoio de edição local do TCC em LaTeX
+# O documento real está hospedado em overleaf.com e sincronizado separadamente
+# NÃO COMMITAR
+overleaf/
+overleaf-*/
+*.synctex.gz
+*.aux
+*.log
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.bbl
+*.blg
+
+# ==============================================================
+# IDE / Editor / Sistema
+# ==============================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+.trae/
+
+# ==============================================================
+# Variáveis de ambiente / credenciais
+# ==============================================================
+.env
+.env.local
+.env.*.local
+.env.production
+*.pem
+*.key
+secrets/
+
+# ==============================================================
+# Logs / Dump / Runtime
+# ==============================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+*.pid
+*.seed
+*.pid.lock
+
+coverage/
+.nyc_output/
+.tmp/
+.cache/
+
+# ==============================================================
+# Node.js — gerais (cada aplicação backend/frontend tem o seu)
+# ==============================================================
+node_modules/
+dist/
+build/
+.npm
+.eslintcache
+.parcel-cache/
+.jest/
+.pnpm-store/
