@@ -24,7 +24,12 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local env files
+# Convenção: ignorar TODOS os arquivos .env* (segredos reais)
+# MENOS os arquivos *.example (templates que devem ser commitados)
 .env
+.env.*
+!.env.example
+!.env.test.example
 
 # Vercel
 .vercel

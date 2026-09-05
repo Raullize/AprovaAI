@@ -119,3 +119,124 @@ pnpm test:cov
 ```
 
 O relatório de cobertura de código (*Coverage*) ajuda a demonstrar de forma quantitativa para o orientador/banca a qualidade do AprovaAI, mostrando exatamente quais arquivos de Caso de Uso e Entidades possuem cobertura de testes de 100%.
+
+---
+
+## 6. Testes Funcionais (End-to-End — E2E)
+
+Além dos testes unitários (em memória, sem banco), o AprovaAI conta com uma suíte de **testes funcionais end-to-end** que valida as rotas HTTP e a integração com um PostgreSQL real. Esses testes ficam localizados em [`backend/test/e2e/`](file:///home/raullize/Projects/AprovaAI/backend/test/e2e) e são executados com **Jest + Supertest + Prisma**, reaproveitando as mesmas dependências do backend (tipo `pnpm`, Jest 30, `tsx` e `ts-jest` do pacote pai).
+
+### 6.1. Diferença vs. Testes Unitários
+
+| Testes Unitários | Testes Funcionais E2E |
+|---|---|
+| Roda em memória com InMemory Repositories | Conecta em PostgreSQL real via Docker |
+| Não sobe API NestJS (instancia casos de uso) | Faz requisições HTTP reais via Supertest em uma API rodando |
+| Cobertura de regra de negócio pura | Cobertura de contrato HTTP, guards JWT, serialização, erros de DTO e persistência |
+| Velocidade: sub-1s para 30+ casos | Velocidade: alguns segundos para 30+ casos |
+
+### 6.2. Pré-requisitos
+
+- Docker rodando localmente
+- Backend e suas dependências instaladas (`cd backend && pnpm install`)
+- Arquivo [`backend/.env.test`](file:///home/raullize/Projects/AprovaAI/backend/.env.test) preenchido (copie de `.env.test.example`) com:
+  ```
+  APPLICATION_BASE_URL=http://localhost:3001
+  DATABASE_URL=postgresql://postgres:postgres@localhost:5434/aprovaai_test
+  JWT_SECRET=...
+  ```
+
+### 6.3. Fluxo de Execução Passo a Passo
+
+#### 1. Subir o banco isolado de testes
+
+Na **raiz do projeto**:
+
+```bash
+docker compose -f docker-compose.test.yml up -d db_test
+```
+
+O container `aprovaai_postgres_test` fica disponível na **porta externa `5434`** (isolado do banco de desenvolvimento que usa a porta `5433`), evitando conflito de bind.
+
+#### 2. Sincronizar schema do Prisma no banco de teste
+
+```bash
+cd backend
+DATABASE_URL="postgresql://postgres:postgres@localhost:5434/aprovaai_test" pnpm prisma db push
+```
+
+#### 3. Subir a API NestJS apontando para o banco de teste
+
+```bash
+cd backend
+cp .env.test.example .env.test   # primeira vez
+pnpm start:dev
+```
+
+A API ficará disponível em `http://localhost:3001/api/health`.
+
+#### 4. Rodar a suite completa (seed + jest + rollback)
+
+O script orquestrador automaticamente:
+1. Espera a API ficar pronta em `/api/health`
+2. Popula massa de dados funcional via seed
+3. Executa todos os arquivos `*.e2e-spec.ts` com Jest
+4. Faz rollback da massa, independentemente de sucesso ou falha
+
+```bash
+cd backend
+pnpm test:func
+```
+
+#### 5. Comandos auxiliares (seed / rollback)
+
+Se quiser rodar os passos manualmente para debug:
+
+```bash
+cd backend
+pnpm test:func:seed        # popula massa funcional
+pnpm test:e2e              # roda apenas Jest (sem seed/rollback)
+pnpm test:func:rollback    # limpa massa funcional
+```
+
+### 6.4. Estrutura dos Testes E2E
+
+```
+backend/test/e2e/
+├── helpers/testHelper.ts      # Prisma client + wrappers de request com Supertest
+├── setup/setup.ts             # Jest timeout global
+├── seed.ts                    # massa de teste (estudante/admin/exam/topic/simulation/question/option)
+├── rollback.ts                # limpa tudo criado pelo seed
+├── runFunctionalTests.ts      # orquestrador wait + seed + jest + rollback
+└── endpoints/
+    ├── auth/
+    ├── account/
+    ├── exams/
+    ├── simulations/           # CRUD admin de Simulados (rota /simulations)
+    ├── simulation-attempts/   # Execução do aluno (rota /simulation-attempts)
+    ├── topics/
+    ├── questions/
+    └── student/
+```
+
+### 6.5. Cobertura Atual
+
+- **Auth** (`/auth/login`, `/auth/register`)
+- **Account** (`GET/PATCH/DELETE /account/*`)
+- **Exams** (`GET /exams`, `GET /exams/:id`, `POST /exams` + Roles Guard)
+- **Simulations CRUD Admin** (`/simulations` — create/GET/Update/Delete + 401/403)
+- **Simulation Attempts Aluno** (`/simulation-attempts/start`, `/:id/answers`, `/:id/finish`, `GET /history`)
+- **Student Dashboard** (`/student/dashboard-stats`, `leaderboard`, `streak-leaderboard`)
+- **Topics CRUD Admin** (`/topics` — create/403/update/delete)
+- **Questions CRUD Admin** (`/questions` — create/403/400 sem options/delete)
+
+### 6.6. Pegadinha Frequente: Duas Rotas com Nomes Iguais
+
+Depois do refactor de domínio (Level → Simulation / ExamResult → SimulationAttempt):
+
+| Rota | Controller | Propósito |
+|---|---|---|
+| **`/simulations/*`** | `SimulationsController` | CRUD administrativo de níveis/simulados (ADMIN) |
+| **`/simulation-attempts/*`** | `SimulationAttemptsController` | Execução de simulado pelo aluno (start/answers/finish/history) |
+
+Evite confundir as duas: sempre confira qual controller você está testando antes de escrever asserções.
