@@ -41,7 +41,70 @@ Esse é o comando que efetivamente sobe o seu backend (a API NestJS) nativamente
 
 ---
 
+## Ambiente de Testes Funcionais Isolado
+
+Para rodar os testes end-to-end sem correr o risco de apagar ou poluir sua base de desenvolvimento local, o AprovaAI utiliza um **compose separado** (`docker-compose.test.yml`) com um banco PostgreSQL exclusivo para testes funcionais.
+
+### Passo a Passo (Banco de Teste)
+
+#### 1. Subir o container
+
+Na **raiz do projeto**:
+
+```bash
+docker compose -f docker-compose.test.yml up -d db_test
+```
+
+Este serviço (`db_test`, container `aprovaai_postgres_test`) utiliza a **porta externa `5434`** para não conflitar com o banco de desenvolvimento (que usa a porta `5433`). A URL de conexão padrão é:
+
+```
+DATABASE_URL=postgresql://postgres:postgres@localhost:5434/aprovaai_test
+```
+
+#### 2. Sincronizar schema do Prisma no banco de teste
+
+```bash
+cd backend
+DATABASE_URL="postgresql://postgres:postgres@localhost:5434/aprovaai_test" pnpm prisma db push
+```
+
+#### 3. Iniciar backend apontando para banco de teste
+
+Copie o arquivo de exemplo e ajuste seu `.env.test` (ou exporte variáveis antes do start):
+
+```bash
+cd backend
+cp .env.test.example .env.test
+pnpm start:dev
+```
+
+A API vai escutar em `http://localhost:3001` e responder ao healthcheck em `/api/health`.
+
+#### 4. Rodar os testes E2E
+
+Veja detalhes em [`docs/TESTS.md`](file:///home/raullize/Projects/AprovaAI/docs/TESTS.md). O script principal é:
+
+```bash
+cd backend
+pnpm test:func
+```
+
+Ele espera a API ficar pronta, roda `seed.ts`, executa Jest com `test/jest-e2e.json`, e roda `rollback.ts` no bloco `finally` — garantindo que o banco nunca fica sujo entre execuções.
+
+#### 5. Parar / Resetar o banco de testes
+
+```bash
+# Parar (mantém dados do volume)
+docker compose -f docker-compose.test.yml stop
+
+# Derrubar container APAGANDO dados (volume)
+docker compose -f docker-compose.test.yml down -v
+```
+
+---
+
 ## Dicas Úteis
 
 * **Derrubar os serviços:** Quando terminar de trabalhar, você pode parar o banco de dados executando `docker compose stop` ou `docker compose down` (o `down` remove os containers).
 * **Resetar o banco:** Se precisar limpar tudo, pode rodar `docker compose down -v` para destruir o container e os volumes de dados. Depois, é só seguir o Passo 1 e 2 novamente.
+* **Não misture portas:** Se você estiver rodando dev + testes simultaneamente, certifique-se de que as portas `5433` e `5434` estão livres. Erros de `port already in use` indicam que você tem containers rodando e tentou subir outro service na mesma porta externa.
