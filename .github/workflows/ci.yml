@@ -20,13 +20,13 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: pnpm
@@ -48,13 +48,13 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: pnpm
@@ -96,13 +96,13 @@ jobs:
           --health-timeout 5s
           --health-retries 5
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v6
         with:
           version: 10
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 22
           cache: pnpm
@@ -119,13 +119,16 @@ jobs:
           DATABASE_URL="postgresql://postgres:postgres@localhost:5434/aprovaai_test"
           npx prisma db push
 
-      - name: Start API (background)
+      - name: Build
+        run: pnpm build
+
+      - name: Run functional E2E suite (seed + jest + rollback)
         run: |
           DATABASE_URL="postgresql://postgres:postgres@localhost:5434/aprovaai_test" \
           JWT_SECRET="your-super-secret-jwt-key-at-least-32-chars" \
           PORT=3001 \
           NODE_ENV=test \
-          nohup npx nest start > /tmp/backend.log 2>&1 &
+          UPLOAD_DIR=./uploads \
+          nohup node dist/src/main.js > /tmp/backend.log 2>&1 &
 
-      - name: Run functional E2E suite (seed + jest + rollback)
-        run: pnpm test:func
+          pnpm test:func || { echo "--- backend.log ---"; cat /tmp/backend.log; exit 1; }
