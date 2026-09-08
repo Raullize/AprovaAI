@@ -17,7 +17,7 @@ export class LocalStorageProvider implements StorageProvider {
   private readonly uploadDir = process.env.UPLOAD_DIR || 'uploads';
 
   constructor() {
-    this.ensureUploadDirExists();
+    void this.ensureUploadDirExists();
   }
 
   private async ensureUploadDirExists() {

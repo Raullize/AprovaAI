@@ -9,7 +9,7 @@ import { Request } from 'express';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) { }
+  constructor(private jwtService: JwtService) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
@@ -20,13 +20,12 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync<Record<string, any>>(
-        token,
-        {
-          secret: process.env.JWT_SECRET || 'secret',
-        },
-      );
-      (request as any).user = payload;
+      const payload = await this.jwtService.verifyAsync<
+        Record<string, unknown>
+      >(token, {
+        secret: process.env.JWT_SECRET || 'secret',
+      });
+      (request as Request & { user: Record<string, unknown> }).user = payload;
     } catch {
       throw new UnauthorizedException('Token inválido ou expirado');
     }

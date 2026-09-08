@@ -59,11 +59,11 @@ export class PrismaSimulationAttemptMapper {
                           slug: raw.simulation.topic.exam.slug,
                           name: raw.simulation.topic.exam.name,
                           category:
-                            raw.simulation.topic.exam.category !== undefined &&
-                            raw.simulation.topic.exam.category !== null
-                              ? String(raw.simulation.topic.exam.category)
+                            raw.simulation.topic.exam.category != null
+                              ? (raw.simulation.topic.exam.category as string)
                               : undefined,
-                          iconKey: raw.simulation.topic.exam.iconKey ?? undefined,
+                          iconKey:
+                            raw.simulation.topic.exam.iconKey ?? undefined,
                           colorScheme:
                             raw.simulation.topic.exam.colorScheme ?? undefined,
                         }
@@ -92,7 +92,9 @@ export class PrismaSimulationAttemptMapper {
     );
   }
 
-  static toPrisma(simulationAttempt: SimulationAttempt): PrismaSimulationAttempt {
+  static toPrisma(
+    simulationAttempt: SimulationAttempt,
+  ): PrismaSimulationAttempt {
     return {
       id: simulationAttempt.id,
       userId: simulationAttempt.userId,

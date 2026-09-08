@@ -20,12 +20,15 @@ export interface GetStudentLeaderboardResponse {
 }
 
 @Injectable()
-export class GetStudentLeaderboardUseCase
-  implements UseCase<GetStudentLeaderboardRequest, GetStudentLeaderboardResponse>
-{
+export class GetStudentLeaderboardUseCase implements UseCase<
+  GetStudentLeaderboardRequest,
+  GetStudentLeaderboardResponse
+> {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async execute(request: GetStudentLeaderboardRequest): Promise<GetStudentLeaderboardResponse> {
+  async execute(
+    request: GetStudentLeaderboardRequest,
+  ): Promise<GetStudentLeaderboardResponse> {
     const [users, currentUserRank] = await Promise.all([
       this.userRepository.findLeaderboard(10),
       this.userRepository.findUserRankByXp(request.userId),
@@ -37,11 +40,6 @@ export class GetStudentLeaderboardUseCase
       username: user.username,
       xp: user.xp,
     }));
-
-    // Verifica se o usuário atual já está no top-10
-    const currentUserInTop = topUsers.find((u) => u.username === users.find(
-      (_, i) => topUsers[i]?.username === u.username
-    )?.username);
 
     // Busca o entry do usuário atual para exibir mesmo fora do top-10
     const currentUser = await this.userRepository.findById(request.userId);
