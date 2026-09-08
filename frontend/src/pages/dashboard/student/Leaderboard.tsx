@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { Flame, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Flame, Zap } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import {
   LeaderboardTable,
@@ -8,6 +8,8 @@ import {
 } from '../../../components/ui/LeaderboardTable';
 import UserAvatar from '../../../components/ui/UserAvatar';
 import { SearchInput } from '../../../components/admin/shared/SearchInput';
+import { PaginationControls } from '../../../components/ui/PaginationControls';
+import { usePagination } from '../../../hooks/usePagination';
 import {
   studentService,
   type LeaderboardResponse,
@@ -32,7 +34,6 @@ export default function Leaderboard() {
 
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTier, setFilterTier] = useState<'all' | 'top3' | 'top10'>('all');
-  const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
@@ -50,13 +51,6 @@ export default function Leaderboard() {
     }
     loadData();
   }, []);
-
-  const [prevFilterKey, setPrevFilterKey] = useState('');
-  const filterKey = `${searchQuery}|${filterTier}|${activeTab}|${pageSize}`;
-  if (filterKey !== prevFilterKey) {
-    setPrevFilterKey(filterKey);
-    setCurrentPage(1);
-  }
 
   const xpRows: LeaderboardRowData[] = leaderboardData.topUsers.map((item) => ({
     rank: item.rank,
@@ -94,10 +88,12 @@ export default function Leaderboard() {
     return matchesSearch && matchesTier;
   });
 
-  const totalItems = filteredRows.length;
-  const totalPages = Math.ceil(totalItems / pageSize) || 1;
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedRows = filteredRows.slice(startIndex, startIndex + pageSize);
+  const filterKey = `${searchQuery}|${filterTier}|${activeTab}|${pageSize}`;
+  const { currentPage, totalPages, pageItems, goToPage } = usePagination(
+    filteredRows,
+    pageSize,
+    filterKey,
+  );
 
   const isCurrentUserInXpTop = leaderboardData.topUsers.some(
     (u) => u.username === user?.username,
@@ -196,7 +192,7 @@ export default function Leaderboard() {
             </div>
           </div>
 
-          {paginatedRows.length === 0 ? (
+          {pageItems.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-slate-400 font-bold text-sm">
                 Nenhum estudante encontrado
@@ -210,7 +206,7 @@ export default function Leaderboard() {
               {activeTab === 'xp' ? (
                 <div className="space-y-4">
                   <LeaderboardTable
-                    rows={paginatedRows}
+                    rows={pageItems}
                     currentUserUsername={user?.username}
                     type="xp"
                   />
@@ -249,7 +245,7 @@ export default function Leaderboard() {
               ) : (
                 <div className="space-y-4">
                   <LeaderboardTable
-                    rows={paginatedRows}
+                    rows={pageItems}
                     currentUserUsername={user?.username}
                     type="streak"
                   />
@@ -316,31 +312,12 @@ export default function Leaderboard() {
               )}
 
               {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-6">
-                  <button
-                    disabled={currentPage === 1}
-                    onClick={() => setCurrentPage((p) => p - 1)}
-                    className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                    Anterior
-                  </button>
-
-                  <span className="text-xs font-bold text-slate-500">
-                    Página {currentPage} de {totalPages}
-                  </span>
-
-                  <button
-                    disabled={currentPage === totalPages}
-                    onClick={() => setCurrentPage((p) => p + 1)}
-                    className="inline-flex items-center gap-1 px-4 py-2 rounded-xl text-xs font-bold text-slate-500 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    Próxima
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-              )}
+              <PaginationControls
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+                className="mt-6 border-t border-slate-100 pt-6"
+              />
             </>
           )}
         </div>

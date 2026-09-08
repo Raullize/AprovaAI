@@ -11,11 +11,13 @@ import {
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { formatDuration } from '../../../lib/format';
+import { usePagination } from '../../../hooks/usePagination';
 import { simulationAttemptsService } from '../../../services/simulation-attempts.service';
 import Loading from '../../../components/ui/Loading';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import EmptyState from '../../../components/ui/EmptyState';
 import { SearchInput } from '../../../components/admin/shared/SearchInput';
+import { PaginationControls } from '../../../components/ui/PaginationControls';
 import { Card } from '../../../components/ui/Card';
 import type { SimulationMode } from '../../../types/simulation.types';
 
@@ -157,8 +159,6 @@ export default function SimulationsHistory() {
     'ALL',
   );
   const [sortOrder, setSortOrder] = useState<'NEWEST' | 'OLDEST'>('NEWEST');
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 5;
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -173,10 +173,6 @@ export default function SimulationsHistory() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search, modeFilter, statusFilter, selectedExamName]);
 
   useEffect(() => {
     async function load() {
@@ -281,52 +277,11 @@ export default function SimulationsHistory() {
         })
     : [];
 
-  const totalItems = detailItems.length;
-  const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedItems = detailItems.slice(
-    startIndex,
-    startIndex + ITEMS_PER_PAGE,
+  const { currentPage, totalPages, pageItems, goToPage } = usePagination(
+    detailItems,
+    5,
+    `${search}|${modeFilter}|${statusFilter}|${selectedExamName}`,
   );
-
-  const getPageNumbers = () => {
-    const pages: (number | string)[] = [];
-    const maxVisible = 5;
-
-    if (totalPages <= maxVisible) {
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i);
-      }
-      return pages;
-    }
-
-    pages.push(1);
-
-    let start = Math.max(2, currentPage - 1);
-    let end = Math.min(totalPages - 1, currentPage + 1);
-
-    if (currentPage <= 2) {
-      end = 3;
-    } else if (currentPage >= totalPages - 1) {
-      start = totalPages - 2;
-    }
-
-    if (start > 2) {
-      pages.push('...');
-    }
-
-    for (let i = start; i <= end; i++) {
-      pages.push(i);
-    }
-
-    if (end < totalPages - 1) {
-      pages.push('...');
-    }
-
-    pages.push(totalPages);
-
-    return pages;
-  };
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -595,7 +550,7 @@ export default function SimulationsHistory() {
               <EmptyState message="Nenhuma tentativa encontrada com os filtros selecionados." />
             ) : (
               <div className="space-y-4">
-                {paginatedItems.map((item) => (
+                {pageItems.map((item) => (
                   <Card
                     key={item.id}
                     hoverEffect
@@ -685,70 +640,11 @@ export default function SimulationsHistory() {
                 ))}
 
                 {/* Pagination Controls */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-8 pt-4 border-t border-slate-100">
-                    <button
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPage === 1}
-                      className={cn(
-                        'px-4 py-2 rounded-xl text-xs font-bold transition-all border',
-                        currentPage === 1
-                          ? 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed'
-                          : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 shadow-sm',
-                      )}
-                    >
-                      Anterior
-                    </button>
-
-                    <div className="flex items-center gap-1.5">
-                      {getPageNumbers().map((page, index) => {
-                        if (page === '...') {
-                          return (
-                            <span
-                              key={`ellipsis-${index}`}
-                              className="px-2 text-slate-400 font-bold text-xs"
-                            >
-                              ...
-                            </span>
-                          );
-                        }
-
-                        return (
-                          <button
-                            key={page}
-                            type="button"
-                            onClick={() => setCurrentPage(page as number)}
-                            className={cn(
-                              'w-8 h-8 rounded-xl text-xs font-bold transition-all border',
-                              currentPage === page
-                                ? 'bg-indigo-600 text-white border-indigo-600 shadow-md'
-                                : 'bg-white text-slate-600 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 shadow-sm',
-                            )}
-                          >
-                            {page}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <button
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                      }
-                      disabled={currentPage === totalPages}
-                      className={cn(
-                        'px-4 py-2 rounded-xl text-xs font-bold transition-all border',
-                        currentPage === totalPages
-                          ? 'bg-slate-50 text-slate-400 border-slate-200 cursor-not-allowed'
-                          : 'bg-white text-slate-700 border-slate-200 hover:border-indigo-500 hover:text-indigo-600 shadow-sm',
-                      )}
-                    >
-                      Próximo
-                    </button>
-                  </div>
-                )}
+                <PaginationControls
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={goToPage}
+                />
               </div>
             )}
           </div>
