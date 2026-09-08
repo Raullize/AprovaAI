@@ -16,7 +16,6 @@ import { cn } from '../../../lib/utils';
 import { Card } from '../../../components/ui/Card';
 import { questionsService } from '../../../services/questions.service';
 
-
 interface AnswerRecord {
   questionId: string;
   selectedId: string;
@@ -37,14 +36,12 @@ interface ResultsState {
   examId?: string;
 }
 
-
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60);
   const s = seconds % 60;
   if (m === 0) return `${s}s`;
   return `${m}m ${s}s`;
 }
-
 
 function useCountUp(target: number, duration = 1200) {
   const [count, setCount] = useState(0);
@@ -71,8 +68,6 @@ function useCountUp(target: number, duration = 1200) {
 function getOptionLabel(index: number) {
   return ['A', 'B', 'C', 'D', 'E'][index] ?? String(index + 1);
 }
-
-
 
 // Confetti colors (CSS-only burst) - generated once statically to remain pure
 const STATIC_CONFETTI_ITEMS = Array.from({ length: 20 }).map((_, i) => ({
@@ -125,7 +120,9 @@ export default function SimulationResults() {
         );
 
         const responses = await Promise.all(
-          uniqueQuestionIds.map((questionId) => questionsService.findOne(questionId)),
+          uniqueQuestionIds.map((questionId) =>
+            questionsService.findOne(questionId),
+          ),
         );
 
         const mappedQuestions = responses.map((data) => ({
@@ -133,8 +130,7 @@ export default function SimulationResults() {
           text: data.content,
           imageUrl: data.imageUrl,
           type: data.type,
-          explanation:
-            data.explanation || 'Sem explicação disponível.',
+          explanation: data.explanation || 'Sem explicação disponível.',
           studyLink: data.studyLink,
           options: [...(data.options ?? [])]
             .sort(
@@ -162,37 +158,18 @@ export default function SimulationResults() {
     loadQuestionsForReview();
   }, [state]);
 
-  if (!state) {
-    return (
-      <div className="min-h-screen bg-slate-50 px-4 py-10">
-        <div className="max-w-md mx-auto">
-          <Card padding="normal" className="text-center space-y-4">
-            <Trophy className="h-10 w-10 text-slate-300 mx-auto" />
-            <div>
-              <h1 className="text-lg font-bold text-slate-800">
-                Resultado indisponivel
-              </h1>
-              <p className="text-sm text-slate-500 mt-2">
-                Abra este resultado a partir de um simulado finalizado ou pelo
-                historico para carregar os dados corretos.
-              </p>
-            </div>
-            <button
-              onClick={() => navigate('/dashboard/simulations')}
-              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-colors"
-            >
-              Ir para historico
-            </button>
-          </Card>
-        </div>
-      </div>
-    );
-  }
+  const {
+    total = 0,
+    correct = 0,
+    timeSpent = 0,
+    xpEarned = 0,
+    passingPercentage = 0,
+    simulationName = '',
+    stars: stateStars,
+    examId,
+  } = state ?? ({} as Partial<ResultsState>);
 
-  const { total, correct, timeSpent, xpEarned, passingPercentage, simulationName, stars: stateStars, examId } =
-    state;
-
-  const percentage = Math.round((correct / total) * 100);
+  const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
   const passed = percentage >= passingPercentage;
   const getDynamicStars = (pct: number, passPct: number) => {
     if (pct >= Math.max(90, passPct)) return 3;
@@ -200,7 +177,10 @@ export default function SimulationResults() {
     if (pct >= Math.max(0, passPct - 20)) return 1;
     return 0;
   };
-  const stars = stateStars !== undefined && stateStars !== null ? stateStars : getDynamicStars(percentage, passingPercentage);
+  const stars =
+    stateStars !== undefined && stateStars !== null
+      ? stateStars
+      : getDynamicStars(percentage, passingPercentage);
   const wrong = total - correct;
 
   const animatedXP = useCountUp(xpEarned);
@@ -256,6 +236,33 @@ export default function SimulationResults() {
   }, [indexedAnswers, filter]);
 
   const confettiItems = STATIC_CONFETTI_ITEMS;
+
+  if (!state) {
+    return (
+      <div className="min-h-screen bg-slate-50 px-4 py-10">
+        <div className="max-w-md mx-auto">
+          <Card padding="normal" className="text-center space-y-4">
+            <Trophy className="h-10 w-10 text-slate-300 mx-auto" />
+            <div>
+              <h1 className="text-lg font-bold text-slate-800">
+                Resultado indisponivel
+              </h1>
+              <p className="text-sm text-slate-500 mt-2">
+                Abra este resultado a partir de um simulado finalizado ou pelo
+                historico para carregar os dados corretos.
+              </p>
+            </div>
+            <button
+              onClick={() => navigate('/dashboard/simulations')}
+              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-colors"
+            >
+              Ir para historico
+            </button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -586,79 +593,89 @@ export default function SimulationResults() {
 
                         {/* Options List */}
                         <div className="space-y-2 pl-8">
-                           {q.options.map((opt: ReviewOption, optionIndex: number) => {
-                             const isSelected = ans.selectedIds
-                               ? ans.selectedIds.includes(opt.id)
-                               : opt.id === ans.selectedId;
-                             const isCorrect = opt.isCorrect;
+                          {q.options.map(
+                            (opt: ReviewOption, optionIndex: number) => {
+                              const isSelected = ans.selectedIds
+                                ? ans.selectedIds.includes(opt.id)
+                                : opt.id === ans.selectedId;
+                              const isCorrect = opt.isCorrect;
 
-                             let optionStyle = 'border-slate-100 bg-slate-50/50 text-slate-400 opacity-60';
-                             let badge = null;
+                              let optionStyle =
+                                'border-slate-100 bg-slate-50/50 text-slate-400 opacity-60';
+                              let badge = null;
 
-                             if (isSelected && isCorrect) {
-                               optionStyle = 'border-emerald-500 bg-emerald-50 text-emerald-955 font-medium shadow-sm';
-                               badge = (
-                                 <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full shrink-0">
-                                   Você acertou
-                                 </span>
-                               );
-                             } else if (!isSelected && isCorrect) {
-                               optionStyle = 'border-dashed border-emerald-400 bg-emerald-50/30 text-emerald-800 font-medium';
-                               badge = (
-                                 <span className="text-[10px] font-semibold bg-slate-100 text-emerald-700 px-2 py-0.5 rounded-full shrink-0 border border-emerald-200">
-                                   Gabarito (Não selecionada)
-                                 </span>
-                               );
-                             } else if (isSelected && !isCorrect) {
-                               optionStyle = 'border-rose-400 bg-rose-50 text-rose-900 font-medium';
-                               badge = (
-                                 <span className="text-[10px] font-semibold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full shrink-0">
-                                   Você marcou (Incorreta)
-                                 </span>
-                               );
-                             }
+                              if (isSelected && isCorrect) {
+                                optionStyle =
+                                  'border-emerald-500 bg-emerald-50 text-emerald-955 font-medium shadow-sm';
+                                badge = (
+                                  <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full shrink-0">
+                                    Você acertou
+                                  </span>
+                                );
+                              } else if (!isSelected && isCorrect) {
+                                optionStyle =
+                                  'border-dashed border-emerald-400 bg-emerald-50/30 text-emerald-800 font-medium';
+                                badge = (
+                                  <span className="text-[10px] font-semibold bg-slate-100 text-emerald-700 px-2 py-0.5 rounded-full shrink-0 border border-emerald-200">
+                                    Gabarito (Não selecionada)
+                                  </span>
+                                );
+                              } else if (isSelected && !isCorrect) {
+                                optionStyle =
+                                  'border-rose-400 bg-rose-50 text-rose-900 font-medium';
+                                badge = (
+                                  <span className="text-[10px] font-semibold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full shrink-0">
+                                    Você marcou (Incorreta)
+                                  </span>
+                                );
+                              }
 
-                             return (
-                               <div
-                                 key={opt.id}
-                                 className={cn(
-                                   'flex items-start justify-between gap-2.5 p-3 rounded-2xl border text-xs leading-relaxed transition-all',
-                                   optionStyle,
-                                 )}
-                               >
-                                 <div className="flex items-start gap-2.5 flex-1">
-                                   <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0 border border-current mt-0.5">
-                                     {getOptionLabel(optionIndex)}
-                                   </span>
-                                   <span className="text-slate-700 font-medium">{opt.text}</span>
-                                 </div>
-                                 {badge}
-                               </div>
-                             );
-                           })}
+                              return (
+                                <div
+                                  key={opt.id}
+                                  className={cn(
+                                    'flex items-start justify-between gap-2.5 p-3 rounded-2xl border text-xs leading-relaxed transition-all',
+                                    optionStyle,
+                                  )}
+                                >
+                                  <div className="flex items-start gap-2.5 flex-1">
+                                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0 border border-current mt-0.5">
+                                      {getOptionLabel(optionIndex)}
+                                    </span>
+                                    <span className="text-slate-700 font-medium">
+                                      {opt.text}
+                                    </span>
+                                  </div>
+                                  {badge}
+                                </div>
+                              );
+                            },
+                          )}
                         </div>
 
-                         <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[11px] text-slate-500 pl-8 leading-relaxed space-y-2">
-                           <div>
-                             <span className="font-bold text-slate-700 block mb-1">
-                               Explicação:
-                             </span>
-                             {q.explanation}
-                           </div>
-                           {q.studyLink && (
-                             <div className="pt-2 border-t border-slate-150">
-                               <span className="font-bold text-slate-700">Link de Aprofundamento:</span>{' '}
-                               <a
-                                 href={q.studyLink}
-                                 target="_blank"
-                                 rel="noreferrer"
-                                 className="text-indigo-600 hover:text-indigo-800 underline font-medium"
-                               >
-                                 {q.studyLink}
-                               </a>
-                             </div>
-                           )}
-                         </div>
+                        <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[11px] text-slate-500 pl-8 leading-relaxed space-y-2">
+                          <div>
+                            <span className="font-bold text-slate-700 block mb-1">
+                              Explicação:
+                            </span>
+                            {q.explanation}
+                          </div>
+                          {q.studyLink && (
+                            <div className="pt-2 border-t border-slate-150">
+                              <span className="font-bold text-slate-700">
+                                Link de Aprofundamento:
+                              </span>{' '}
+                              <a
+                                href={q.studyLink}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-indigo-600 hover:text-indigo-800 underline font-medium"
+                              >
+                                {q.studyLink}
+                              </a>
+                            </div>
+                          )}
+                        </div>
                       </Card>
                     );
                   })()}
@@ -718,7 +735,11 @@ export default function SimulationResults() {
       <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 z-45 shadow-lg shrink-0">
         <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
           <button
-            onClick={() => navigate(examId ? `/dashboard/explore/${examId}` : '/dashboard/explore')}
+            onClick={() =>
+              navigate(
+                examId ? `/dashboard/explore/${examId}` : '/dashboard/explore',
+              )
+            }
             className="flex-1 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 transition-all shadow-md flex items-center justify-center gap-2"
           >
             Voltar para a Trilha
