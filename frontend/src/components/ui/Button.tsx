@@ -2,7 +2,13 @@ import React from 'react';
 import { cn } from '../../lib/utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'gamified';
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | 'outline'
+    | 'gamified'
+    | 'ghost'
+    | 'danger';
   size?: 'sm' | 'md' | 'lg';
   children: React.ReactNode;
   className?: string;
@@ -27,6 +33,10 @@ const Button: React.FC<ButtonProps> = ({
       'bg-white border-2 border-indigo-200 text-indigo-600 hover:bg-indigo-50 hover:border-indigo-300 focus:ring-indigo-500',
     gamified:
       'bg-indigo-600 hover:bg-indigo-700 text-white border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 shadow-md focus:ring-indigo-500',
+    ghost:
+      'bg-slate-100 hover:bg-slate-200 text-slate-600 focus:ring-slate-300',
+    danger:
+      'bg-red-600 hover:bg-red-700 text-white shadow-sm focus:ring-red-500',
   };
 
   const sizeClasses = {
