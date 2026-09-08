@@ -11,6 +11,7 @@ import {
   Target,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { formatTimeLimit } from '../../../lib/format';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import { examsService } from '../../../services/exams.service';
 import type { Exam } from '../../../services/exams.service';
@@ -64,23 +65,6 @@ const ComingSoonNodeTimeline = () => {
     </div>
   );
 };
-
-function formatDuration(seconds?: number | null) {
-  if (!seconds || seconds <= 0) return 'Sem limite';
-
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-
-  if (minutes > 0 && remainingSeconds > 0) {
-    return `${minutes} min ${remainingSeconds}s`;
-  }
-
-  if (minutes > 0) {
-    return `${minutes} min`;
-  }
-
-  return `${remainingSeconds}s`;
-}
 
 export default function ExamTrail() {
   const { examId } = useParams<{ examId: string }>();
@@ -349,7 +333,7 @@ export default function ExamTrail() {
                 <p className="text-base font-bold text-slate-800">
                   {pendingStart.simulation.timeLimit &&
                   pendingStart.simulation.timeLimit > 0
-                    ? formatDuration(pendingStart.simulation.timeLimit)
+                    ? formatTimeLimit(pendingStart.simulation.timeLimit)
                     : 'Sem cronômetro'}
                 </p>
               </div>

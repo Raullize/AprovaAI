@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams, useParams } from 'react-router-dom';
 import { X, Clock, CheckCircle2, XCircle, Flag } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { formatClock } from '../../../lib/format';
 import Modal from '../../../components/ui/Modal';
 import { simulationAttemptsService } from '../../../services/simulation-attempts.service';
 import { simulationsService } from '../../../services/simulations.service';
@@ -60,14 +61,6 @@ const WRONG_MESSAGES = [
     subtitle: 'A persistência é o caminho da aprovação.',
   },
 ];
-
-function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60)
-    .toString()
-    .padStart(2, '0');
-  const s = (seconds % 60).toString().padStart(2, '0');
-  return `${m}:${s}`;
-}
 
 export default function SimulationEngine() {
   const { simulationId } = useParams<{ simulationId: string }>();
@@ -556,7 +549,7 @@ export default function SimulationEngine() {
           mode={mode}
           timerColor={timerColor}
           timeLeft={timeLeft}
-          formatTime={formatTime}
+          formatTime={formatClock}
           answers={answers}
           questions={questions}
           flagged={flagged}
@@ -596,7 +589,7 @@ export default function SimulationEngine() {
                 className={`flex items-center gap-1.5 font-bold text-sm tabular-nums ${timerColor}`}
               >
                 <Clock className="h-4 w-4" />
-                {formatTime(timeLeft)}
+                {formatClock(timeLeft)}
               </div>
             )}
 

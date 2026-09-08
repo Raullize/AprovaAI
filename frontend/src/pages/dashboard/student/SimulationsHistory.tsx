@@ -6,15 +6,16 @@ import {
   ChevronRight,
   ChevronDown,
   ArrowLeft,
-  Search,
   SlidersHorizontal,
   Star,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { formatDuration } from '../../../lib/format';
 import { simulationAttemptsService } from '../../../services/simulation-attempts.service';
 import Loading from '../../../components/ui/Loading';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import EmptyState from '../../../components/ui/EmptyState';
+import { SearchInput } from '../../../components/admin/shared/SearchInput';
 import { Card } from '../../../components/ui/Card';
 import type { SimulationMode } from '../../../types/simulation.types';
 
@@ -327,13 +328,6 @@ export default function SimulationsHistory() {
     return pages;
   };
 
-  const formatDuration = (sec: number) => {
-    const m = Math.floor(sec / 60);
-    const s = sec % 60;
-    if (m === 0) return `${s}s`;
-    return `${m}m ${s}s`;
-  };
-
   const formatDate = (iso: string) => {
     const d = new Date(iso);
     const dateStr = d.toLocaleDateString('pt-BR', {
@@ -367,16 +361,13 @@ export default function SimulationsHistory() {
             {/* Search + Category Dropdown */}
             <div className="mb-5 flex gap-3">
               {/* Search */}
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
-                <input
-                  type="text"
-                  value={searchExams}
-                  onChange={(e) => setSearchExams(e.target.value)}
-                  placeholder="Buscar exames realizados..."
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm bg-white text-slate-800"
-                />
-              </div>
+              <SearchInput
+                value={searchExams}
+                onChange={setSearchExams}
+                placeholder="Buscar exames realizados..."
+                size="lg"
+                className="flex-1"
+              />
 
               {/* Category Dropdown */}
               <div className="relative shrink-0" ref={dropdownRef}>
@@ -540,16 +531,13 @@ export default function SimulationsHistory() {
             {/* Filter and Search Bar */}
             <div className="flex flex-col md:flex-row gap-3">
               {/* Search */}
-              <div className="relative flex-1 min-w-[280px]">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar pelo nome da fase/simulado..."
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm text-slate-800 bg-white shadow-sm"
-                />
-              </div>
+              <SearchInput
+                value={search}
+                onChange={setSearch}
+                placeholder="Buscar pelo nome da fase/simulado..."
+                size="lg"
+                className="flex-1 min-w-[280px]"
+              />
 
               {/* Filters Row */}
               <div className="flex flex-wrap gap-3">

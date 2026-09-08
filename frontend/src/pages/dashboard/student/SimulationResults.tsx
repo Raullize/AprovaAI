@@ -13,6 +13,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { formatDuration } from '../../../lib/format';
 import { Card } from '../../../components/ui/Card';
 import { questionsService } from '../../../services/questions.service';
 
@@ -34,13 +35,6 @@ interface ResultsState {
   simulationName: string;
   stars?: number;
   examId?: string;
-}
-
-function formatTime(seconds: number) {
-  const m = Math.floor(seconds / 60);
-  const s = seconds % 60;
-  if (m === 0) return `${s}s`;
-  return `${m}m ${s}s`;
 }
 
 function useCountUp(target: number, duration = 1200) {
@@ -427,7 +421,7 @@ export default function SimulationResults() {
               <Clock className="h-5 w-5 text-slate-500" />
             </div>
             <p className="text-base font-bold text-slate-700">
-              {timeSpent > 0 ? formatTime(timeSpent) : '—'}
+              {timeSpent > 0 ? formatDuration(timeSpent) : '—'}
             </p>
             <p className="text-xs text-slate-500">Tempo</p>
           </Card>
