@@ -1,12 +1,7 @@
 import { useState, useRef } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import {
-  Camera,
-  Eye,
-  EyeOff,
-  Trash2,
-} from 'lucide-react';
+import { Camera, Eye, EyeOff, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { accountService } from '../../../services/account.service';
 import { cn } from '../../../lib/utils';
@@ -25,7 +20,9 @@ export default function AdminSettings() {
   const [username, setUsername] = useState(user?.username || '');
   const [isSaving, setIsSaving] = useState(false);
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl || null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(
+    user?.avatarUrl || null,
+  );
   const [hasAvatar, setHasAvatar] = useState(!!user?.avatarUrl);
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -46,7 +43,7 @@ export default function AdminSettings() {
         toast.error('A imagem deve ter no máximo 2MB.');
         return;
       }
-      
+
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folder', 'avatars');
@@ -79,11 +76,18 @@ export default function AdminSettings() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await accountService.updateProfile({ fullName, email, username, avatarUrl });
+      await accountService.updateProfile({
+        fullName,
+        email,
+        username,
+        avatarUrl,
+      });
       await refreshUser();
       toast.success('Configurações updated com sucesso!');
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Falha ao salvar configurações.';
+    } catch (err) {
+      const msg =
+        (err as { response?: { data?: { message?: string | string[] } } })
+          .response?.data?.message || 'Falha ao salvar configurações.';
       toast.error(Array.isArray(msg) ? msg[0] : msg);
     } finally {
       setIsSaving(false);
@@ -100,10 +104,12 @@ export default function AdminSettings() {
       await accountService.updatePassword({ currentPassword, newPassword });
       toast.success('Senha atualizada com sucesso!');
       setCurrentPassword('');
-      newPassword && setNewPassword('');
-      confirmPassword && setConfirmPassword('');
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Falha ao atualizar senha.';
+      if (newPassword) setNewPassword('');
+      if (confirmPassword) setConfirmPassword('');
+    } catch (err) {
+      const msg =
+        (err as { response?: { data?: { message?: string | string[] } } })
+          .response?.data?.message || 'Falha ao atualizar senha.';
       toast.error(Array.isArray(msg) ? msg[0] : msg);
     }
   };
@@ -113,14 +119,17 @@ export default function AdminSettings() {
     score: strengthResult.score,
     label: strengthResult.label,
     color: strengthResult.color,
-    textColor: strengthResult.color ? strengthResult.color.replace('bg-', 'text-') : 'text-slate-400',
-    width: strengthResult.score === 0
-      ? 'w-0'
-      : strengthResult.score <= 3
-        ? 'w-1/3'
-        : strengthResult.score <= 5
-          ? 'w-2/3'
-          : 'w-full',
+    textColor: strengthResult.color
+      ? strengthResult.color.replace('bg-', 'text-')
+      : 'text-slate-400',
+    width:
+      strengthResult.score === 0
+        ? 'w-0'
+        : strengthResult.score <= 3
+          ? 'w-1/3'
+          : strengthResult.score <= 5
+            ? 'w-2/3'
+            : 'w-full',
   };
 
   return (
@@ -131,7 +140,8 @@ export default function AdminSettings() {
             Configurações da Conta
           </h2>
           <p className="text-slate-500 text-sm mt-1">
-            Gerencie suas informações cadastrais e credenciais de acesso do administrador.
+            Gerencie suas informações cadastrais e credenciais de acesso do
+            administrador.
           </p>
         </div>
 
@@ -143,7 +153,7 @@ export default function AdminSettings() {
               'pb-4 text-sm font-bold transition-all relative flex items-center gap-2',
               activeTab === 'profile'
                 ? 'text-indigo-650'
-                : 'text-slate-400 hover:text-slate-650'
+                : 'text-slate-400 hover:text-slate-650',
             )}
           >
             Dados Cadastrais
@@ -158,7 +168,7 @@ export default function AdminSettings() {
               'pb-4 text-sm font-bold transition-all relative flex items-center gap-2',
               activeTab === 'password'
                 ? 'text-indigo-650'
-                : 'text-slate-400 hover:text-slate-650'
+                : 'text-slate-400 hover:text-slate-650',
             )}
           >
             Alterar Senha
@@ -175,14 +185,17 @@ export default function AdminSettings() {
               <h3 className="font-bold text-slate-855 text-base mb-6 font-display">
                 Dados Cadastrais
               </h3>
-              
+
               {/* Profile image change and removal option */}
               <div className="flex flex-col sm:flex-row items-center gap-6 mb-6">
                 <div
                   className="relative group cursor-pointer"
                   onClick={handleAvatarClick}
                 >
-                  <UserAvatar size="xl" userOverride={user ? { ...user, avatarUrl } : undefined} />
+                  <UserAvatar
+                    size="xl"
+                    userOverride={user ? { ...user, avatarUrl } : undefined}
+                  />
                   <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                     <Camera className="h-6 w-6" />
                   </div>
@@ -222,8 +235,6 @@ export default function AdminSettings() {
                   </div>
                 </div>
               </div>
-
-
 
               {/* Form edit personal info */}
               <form onSubmit={handleSaveSettings} className="space-y-4">
@@ -304,7 +315,9 @@ export default function AdminSettings() {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      onClick={() =>
+                        setShowCurrentPassword(!showCurrentPassword)
+                      }
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-650 transition-colors"
                     >
                       {showCurrentPassword ? (

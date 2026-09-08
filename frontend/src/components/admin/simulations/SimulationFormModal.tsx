@@ -111,11 +111,12 @@ export function SimulationFormModal({
       const h = Number(data.timeLimitHours || 0);
       const m = Number(data.timeLimitMinutes || 0);
       const s = Number(data.timeLimitSeconds || 0);
-      const totalSeconds = (h * 3600) + (m * 60) + s;
+      const totalSeconds = h * 3600 + m * 60 + s;
 
-      const { timeLimitHours, timeLimitMinutes, timeLimitSeconds, ...rest } = data;
       const basePayload = {
-        ...rest,
+        name: data.name,
+        topicId: data.topicId,
+        status: data.status,
         xpReward: Number(data.xpReward),
         passingPercentage: Number(data.passingPercentage),
         simulationMode: data.simulationMode,
@@ -258,10 +259,7 @@ export function SimulationFormModal({
 
             <div className="flex flex-col gap-1.5">
               <label className={fieldLabel}>Modo de Simulação</label>
-              <select
-                {...register('simulationMode')}
-                className={fieldInput}
-              >
+              <select {...register('simulationMode')} className={fieldInput}>
                 <option value="PRACTICE">Prática</option>
                 <option value="EXAM">Exame</option>
               </select>
