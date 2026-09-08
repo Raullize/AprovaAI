@@ -124,7 +124,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
             )}
           >
             <div className="w-8 h-8 rounded-xl flex shrink-0 items-center justify-center bg-white shadow-md overflow-hidden">
-              <img src="/images/prof-sabichao.png" alt="Prof. Sabichão" className="h-6 w-6 object-contain" />
+              <img
+                src="/images/prof-sabichao.png"
+                alt="Prof. Sabichão"
+                className="h-6 w-6 object-contain"
+              />
             </div>
             {!isCollapsed && (
               <span className="text-lg font-bold font-display text-white tracking-tight truncate">
@@ -214,7 +218,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isCollapsed, onToggle }) => {
                   navigate(
                     user?.role === 'ADMIN'
                       ? '/dashboard/settings'
-                      : '/dashboard/profile/settings'
+                      : '/dashboard/profile/settings',
                   );
                   setIsUserMenuOpen(false);
                 }}

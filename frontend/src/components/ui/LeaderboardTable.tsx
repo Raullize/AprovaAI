@@ -49,7 +49,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                   'transition-colors text-sm',
                   isCurrentUser
                     ? 'bg-indigo-50/40 font-semibold'
-                    : 'hover:bg-slate-50/50'
+                    : 'hover:bg-slate-50/50',
                 )}
               >
                 <td className="py-3 px-2 sm:px-4">
@@ -82,18 +82,18 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                       size="xs"
                       userOverride={
                         isCurrentUser
-                           ? undefined
-                           : {
-                             fullName: row.fullName,
-                             username: row.username,
-                           }
+                          ? undefined
+                          : {
+                              fullName: row.fullName,
+                              username: row.username,
+                            }
                       }
                     />
                     <div>
                       <span
                         className={cn(
                           'block text-xs sm:text-sm',
-                          isCurrentUser ? 'text-indigo-900' : 'text-slate-700'
+                          isCurrentUser ? 'text-indigo-900' : 'text-slate-700',
                         )}
                       >
                         {row.fullName} {isCurrentUser && '(Você)'}
@@ -109,7 +109,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                     <span
                       className={cn(
                         'font-bold font-display text-xs sm:text-sm',
-                        isCurrentUser ? 'text-indigo-600' : 'text-slate-600'
+                        isCurrentUser ? 'text-indigo-600' : 'text-slate-600',
                       )}
                     >
                       {row.value} XP
@@ -119,7 +119,7 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                       <span
                         className={cn(
                           'font-bold font-display flex items-center gap-1 text-xs sm:text-sm',
-                          isCurrentUser ? 'text-orange-600' : 'text-slate-700'
+                          isCurrentUser ? 'text-orange-600' : 'text-slate-700',
                         )}
                       >
                         <Flame className="h-3.5 w-3.5 fill-current text-orange-500" />
@@ -127,7 +127,8 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({
                       </span>
                       {row.subValue !== undefined && (
                         <span className="text-[9px] sm:text-[10px] text-slate-400 font-normal">
-                          Atual: {row.subValue} {row.subValue === 1 ? 'dia' : 'dias'}
+                          Atual: {row.subValue}{' '}
+                          {row.subValue === 1 ? 'dia' : 'dias'}
                         </span>
                       )}
                     </div>

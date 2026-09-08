@@ -42,7 +42,9 @@ export function getRecentExamsFromHistory(
               item.status === 'COMPLETED',
           );
 
-          const completedSimulations = new Set(examHistory.map((item) => item.simulationId));
+          const completedSimulations = new Set(
+            examHistory.map((item) => item.simulationId),
+          );
           const totalEstimated = simulationsCountPerExam[examKey] || 10;
           const progress = Math.min(
             100,

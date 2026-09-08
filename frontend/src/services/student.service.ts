@@ -47,7 +47,9 @@ export const studentService = {
   },
 
   getStreakLeaderboard: async (): Promise<StreakLeaderboardResponse> => {
-    const response = await api.get<StreakLeaderboardResponse>('/student/streak-leaderboard');
+    const response = await api.get<StreakLeaderboardResponse>(
+      '/student/streak-leaderboard',
+    );
     return response.data;
   },
 };

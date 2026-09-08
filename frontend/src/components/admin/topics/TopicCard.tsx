@@ -33,7 +33,8 @@ export function TopicCard({
   const colorOpt = getColorOption(topic.colorScheme);
   const Icon = iconOpt.Icon;
 
-  const showWarning = topic.status === 'PUBLISHED' && (topic.simulationsCount ?? 0) === 0;
+  const showWarning =
+    topic.status === 'PUBLISHED' && (topic.simulationsCount ?? 0) === 0;
 
   return (
     <div
@@ -46,7 +47,9 @@ export function TopicCard({
         showWarning
           ? 'border-amber-300 hover:border-amber-400 hover:shadow-lg hover:shadow-amber-500/10 bg-amber-50/5'
           : 'border-slate-200 hover:border-indigo-300 hover:shadow-lg hover:shadow-indigo-500/10',
-        isDragging ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400' : ''
+        isDragging
+          ? 'opacity-50 rotate-1 scale-105 shadow-2xl border-indigo-400'
+          : '',
       )}
     >
       <div>

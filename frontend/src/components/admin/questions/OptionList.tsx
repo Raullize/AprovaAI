@@ -53,7 +53,9 @@ export function OptionList({
       </div>
 
       {errors.options && (
-        <p className="mb-3 text-sm text-rose-600 font-medium">{errors.options}</p>
+        <p className="mb-3 text-sm text-rose-600 font-medium">
+          {errors.options}
+        </p>
       )}
 
       <div className="space-y-2.5">
@@ -97,8 +99,8 @@ export function OptionList({
                   errors[`option_${index}`]
                     ? 'border-rose-300 bg-rose-50 focus:ring-rose-500/20 focus:border-rose-400 text-rose-800'
                     : option.isCorrect
-                    ? 'border-emerald-200 bg-white focus:ring-emerald-500/20 focus:border-emerald-400 text-slate-800'
-                    : 'border-slate-200 bg-white focus:ring-indigo-500/20 focus:border-indigo-400 text-slate-700'
+                      ? 'border-emerald-200 bg-white focus:ring-emerald-500/20 focus:border-emerald-400 text-slate-800'
+                      : 'border-slate-200 bg-white focus:ring-indigo-500/20 focus:border-indigo-400 text-slate-700'
                 }`}
                 placeholder={`Alternativa ${String.fromCharCode(65 + index)}`}
               />

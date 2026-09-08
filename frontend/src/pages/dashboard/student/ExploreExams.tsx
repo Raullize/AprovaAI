@@ -39,7 +39,10 @@ export default function ExploreExams() {
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
@@ -72,7 +75,8 @@ export default function ExploreExams() {
   });
 
   const activeCategoryLabel =
-    CATEGORIES.find((c) => c.key === activeCategory)?.label ?? 'Todas as Categorias';
+    CATEGORIES.find((c) => c.key === activeCategory)?.label ??
+    'Todas as Categorias';
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-8">
@@ -110,15 +114,19 @@ export default function ExploreExams() {
                 dropdownOpen
                   ? 'border-indigo-400 ring-2 ring-indigo-500/20 text-indigo-600'
                   : activeCategory !== 'Todos'
-                  ? 'border-indigo-300 text-indigo-600 bg-indigo-50'
-                  : 'border-slate-200 text-slate-600 hover:border-indigo-300',
+                    ? 'border-indigo-300 text-indigo-600 bg-indigo-50'
+                    : 'border-slate-200 text-slate-600 hover:border-indigo-300',
               )}
             >
-              <span className="flex-1 text-left truncate">{activeCategoryLabel}</span>
+              <span className="flex-1 text-left truncate">
+                {activeCategoryLabel}
+              </span>
               <ChevronDown
                 className={cn(
                   'h-4 w-4 shrink-0 transition-transform duration-200',
-                  dropdownOpen ? 'rotate-180 text-indigo-500' : 'text-slate-400',
+                  dropdownOpen
+                    ? 'rotate-180 text-indigo-500'
+                    : 'text-slate-400',
                 )}
               />
             </button>
@@ -155,7 +163,9 @@ export default function ExploreExams() {
         {/* Active filter chip */}
         {activeCategory !== 'Todos' && (
           <div className="mb-5 flex items-center gap-2">
-            <span className="text-xs text-slate-500 font-medium">Filtrando por:</span>
+            <span className="text-xs text-slate-500 font-medium">
+              Filtrando por:
+            </span>
             <button
               onClick={() => setActiveCategory('Todos')}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-xl border border-indigo-200 hover:bg-indigo-100 transition-colors"

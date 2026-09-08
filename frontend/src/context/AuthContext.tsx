@@ -66,10 +66,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
       if (storedToken && storedUser) {
         setUser(JSON.parse(storedUser));
-        accountService.getProfile()
+        accountService
+          .getProfile()
           .then((updatedUser) => {
             if (updatedUser) {
-              localStorage.setItem('@aprovaai:user', JSON.stringify(updatedUser));
+              localStorage.setItem(
+                '@aprovaai:user',
+                JSON.stringify(updatedUser),
+              );
               setUser(updatedUser);
             }
           })
@@ -117,7 +121,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   return (
     <AuthContext.Provider
-      value={{ signed: !!user, user, signIn, signUp, signOut, refreshUser, loading }}
+      value={{
+        signed: !!user,
+        user,
+        signIn,
+        signUp,
+        signOut,
+        refreshUser,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

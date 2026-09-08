@@ -86,7 +86,11 @@ const SimulationNodeTimeline: React.FC<SimulationNodeTimelineProps> = ({
           className={cn(
             'p-4 lg:p-5 rounded-3xl shadow-sm border transition-all duration-300',
             isCurrent
-              ? cn(colorOpt.bgLight, colorOpt.borderLight, 'shadow-md scale-105')
+              ? cn(
+                  colorOpt.bgLight,
+                  colorOpt.borderLight,
+                  'shadow-md scale-105',
+                )
               : 'bg-white border-slate-200 hover:shadow-md',
             isLocked && 'opacity-60 grayscale hover:grayscale-0',
           )}

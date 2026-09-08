@@ -116,12 +116,26 @@ export default function Login() {
           </div>
         </div>
 
-        <Button type="submit" size="lg" className="w-full h-11" disabled={isLoading}>
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full h-11"
+          disabled={isLoading}
+        >
           {isLoading ? (
             <div className="flex items-center justify-center gap-1.5 py-0.5">
-              <span className="w-2 h-2 rounded-full bg-white/90 animate-bounce" style={{ animationDelay: '0ms' }} />
-              <span className="w-2 h-2 rounded-full bg-white/90 animate-bounce" style={{ animationDelay: '150ms' }} />
-              <span className="w-2 h-2 rounded-full bg-white/90 animate-bounce" style={{ animationDelay: '300ms' }} />
+              <span
+                className="w-2 h-2 rounded-full bg-white/90 animate-bounce"
+                style={{ animationDelay: '0ms' }}
+              />
+              <span
+                className="w-2 h-2 rounded-full bg-white/90 animate-bounce"
+                style={{ animationDelay: '150ms' }}
+              />
+              <span
+                className="w-2 h-2 rounded-full bg-white/90 animate-bounce"
+                style={{ animationDelay: '300ms' }}
+              />
             </div>
           ) : (
             'Entrar'

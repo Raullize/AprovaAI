@@ -27,7 +27,9 @@ export default function QuestionList() {
   const { toast } = useToast();
 
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [simulationId, setSimulationId] = useState<string>(simulationIdParam ?? '');
+  const [simulationId, setSimulationId] = useState<string>(
+    simulationIdParam ?? '',
+  );
   const [breadcrumb, setBreadcrumb] = useState<BreadcrumbData>({
     examId: '',
     examName: '',

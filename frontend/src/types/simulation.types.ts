@@ -10,7 +10,10 @@ export interface SimulationModeConfig {
   description: string;
 }
 
-export const SIMULATION_MODE_CONFIG: Record<SimulationMode, SimulationModeConfig> = {
+export const SIMULATION_MODE_CONFIG: Record<
+  SimulationMode,
+  SimulationModeConfig
+> = {
   PRACTICE: {
     label: 'Treino',
     description: 'Feedback imediato após cada questão',

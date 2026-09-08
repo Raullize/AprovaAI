@@ -6,7 +6,12 @@ import { User as UserIcon } from 'lucide-react';
 interface UserAvatarProps {
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   className?: string;
-  userOverride?: { id?: string; fullName?: string; username?: string; avatarUrl?: string | null };
+  userOverride?: {
+    id?: string;
+    fullName?: string;
+    username?: string;
+    avatarUrl?: string | null;
+  };
 }
 
 export const UserAvatar: React.FC<UserAvatarProps> = ({
@@ -18,7 +23,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   const user = userOverride || authUser;
 
   const rawAvatarUrl = user?.avatarUrl;
-  const BACKEND_URL = import.meta.env.VITE_STATIC_URL || 'http://localhost:3001';
+  const BACKEND_URL =
+    import.meta.env.VITE_STATIC_URL || 'http://localhost:3001';
 
   const avatarUrl = rawAvatarUrl
     ? rawAvatarUrl.startsWith('http')

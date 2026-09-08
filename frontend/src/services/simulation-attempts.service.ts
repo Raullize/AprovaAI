@@ -62,12 +62,17 @@ export interface FinishSimulationResponse {
 
 export const simulationAttemptsService = {
   getHistory: async (): Promise<ApiSimulationHistoryItem[]> => {
-    const response = await api.get<ApiSimulationHistoryItem[]>('/simulation-attempts/history');
+    const response = await api.get<ApiSimulationHistoryItem[]>(
+      '/simulation-attempts/history',
+    );
     return Array.isArray(response.data) ? response.data : [];
   },
 
   start: async (simulationId: string): Promise<StartSimulationResponse> => {
-    const response = await api.post<StartSimulationResponse>('/simulation-attempts/start', { simulationId });
+    const response = await api.post<StartSimulationResponse>(
+      '/simulation-attempts/start',
+      { simulationId },
+    );
     return response.data;
   },
 

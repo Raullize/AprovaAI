@@ -2,7 +2,10 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, BarChart, Search } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
-import { simulationsService, type Simulation } from '@/services/simulations.service';
+import {
+  simulationsService,
+  type Simulation,
+} from '@/services/simulations.service';
 import { topicsService } from '@/services/topics.service';
 import { examsService } from '@/services/exams.service';
 import { useToast } from '@/hooks/useToast';
@@ -23,10 +26,11 @@ export default function SimulationList() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSimulationId, setEditingSimulationId] = useState<string | undefined>(
-    undefined,
-  );
-  const [simulationToDelete, setSimulationToDelete] = useState<Simulation | null>(null);
+  const [editingSimulationId, setEditingSimulationId] = useState<
+    string | undefined
+  >(undefined);
+  const [simulationToDelete, setSimulationToDelete] =
+    useState<Simulation | null>(null);
   const [draggedId, setDraggedId] = useState<string | null>(null);
 
   const navigate = useNavigate();
@@ -71,7 +75,9 @@ export default function SimulationList() {
     try {
       await simulationsService.update(simulation.id, { status: newStatus });
       setSimulations((prev) =>
-        prev.map((s) => (s.id === simulation.id ? { ...s, status: newStatus } : s)),
+        prev.map((s) =>
+          s.id === simulation.id ? { ...s, status: newStatus } : s,
+        ),
       );
       toast({
         title: 'Visibilidade alterada!',
@@ -170,7 +176,9 @@ export default function SimulationList() {
             <BarChart className="h-10 w-10 text-indigo-400" />
           </div>
           <h3 className="text-base font-semibold text-slate-900 mb-1">
-            {searchTerm ? 'Nenhum simulado encontrado' : 'Nenhum simulado cadastrado'}
+            {searchTerm
+              ? 'Nenhum simulado encontrado'
+              : 'Nenhum simulado cadastrado'}
           </h3>
           <p className="text-slate-500 text-sm mb-6 max-w-sm">
             {searchTerm

@@ -64,7 +64,6 @@ const CATEGORIES = [
   { key: 'OUTROS', label: 'Outros' },
 ];
 
-
 function formatCategoryLabel(category?: string) {
   const found = CATEGORIES.find((c) => c.key === category);
   return found?.label ?? category ?? 'Outros';
@@ -95,11 +94,17 @@ function getXpMultiplier(stars: number) {
   return 0;
 }
 
-function calculateHistoryXp(items: Omit<HistoryItem, 'xpEarned'>[]): HistoryItem[] {
-  const attemptsBySimulation = new Map<string, Omit<HistoryItem, 'xpEarned'>[]>();
+function calculateHistoryXp(
+  items: Omit<HistoryItem, 'xpEarned'>[],
+): HistoryItem[] {
+  const attemptsBySimulation = new Map<
+    string,
+    Omit<HistoryItem, 'xpEarned'>[]
+  >();
 
   items.forEach((item) => {
-    const simulationAttempts = attemptsBySimulation.get(item.simulationId) ?? [];
+    const simulationAttempts =
+      attemptsBySimulation.get(item.simulationId) ?? [];
     simulationAttempts.push(item);
     attemptsBySimulation.set(item.simulationId, simulationAttempts);
   });
@@ -120,7 +125,7 @@ function calculateHistoryXp(items: Omit<HistoryItem, 'xpEarned'>[]): HistoryItem
       const currentMultiplier = getXpMultiplier(currentStars);
       const xpEarned = Math.round(
         Math.max(0, currentMultiplier - previousMultiplier) *
-        attempt.simulationXpReward,
+          attempt.simulationXpReward,
       );
 
       xpByAttemptId.set(attempt.id, xpEarned);
@@ -157,7 +162,10 @@ export default function SimulationsHistory() {
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node)
+      ) {
         setDropdownOpen(false);
       }
     };
@@ -254,28 +262,31 @@ export default function SimulationsHistory() {
   const selectedGroup = examGroups.find((g) => g.examName === selectedExamName);
   const detailItems = selectedGroup
     ? selectedGroup.items
-      .filter((item) => {
-        const matchesSearch = item.simulationName
-          .toLowerCase()
-          .includes(search.toLowerCase());
-        const matchesMode = modeFilter === 'ALL' || item.mode === modeFilter;
-        const matchesStatus =
-          statusFilter === 'ALL' ||
-          (statusFilter === 'PASSED' && item.passed) ||
-          (statusFilter === 'FAILED' && !item.passed);
-        return matchesSearch && matchesMode && matchesStatus;
-      })
-      .sort((a, b) => {
-        const dateA = new Date(a.createdAt).getTime();
-        const dateB = new Date(b.createdAt).getTime();
-        return sortOrder === 'NEWEST' ? dateB - dateA : dateA - dateB;
-      })
+        .filter((item) => {
+          const matchesSearch = item.simulationName
+            .toLowerCase()
+            .includes(search.toLowerCase());
+          const matchesMode = modeFilter === 'ALL' || item.mode === modeFilter;
+          const matchesStatus =
+            statusFilter === 'ALL' ||
+            (statusFilter === 'PASSED' && item.passed) ||
+            (statusFilter === 'FAILED' && !item.passed);
+          return matchesSearch && matchesMode && matchesStatus;
+        })
+        .sort((a, b) => {
+          const dateA = new Date(a.createdAt).getTime();
+          const dateB = new Date(b.createdAt).getTime();
+          return sortOrder === 'NEWEST' ? dateB - dateA : dateA - dateB;
+        })
     : [];
 
   const totalItems = detailItems.length;
   const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedItems = detailItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const paginatedItems = detailItems.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
 
   const getPageNumbers = () => {
     const pages: (number | string)[] = [];
@@ -377,17 +388,20 @@ export default function SimulationsHistory() {
                     dropdownOpen
                       ? 'border-indigo-400 ring-2 ring-indigo-500/20 text-indigo-600'
                       : activeCategory !== 'Todos'
-                      ? 'border-indigo-300 text-indigo-600 bg-indigo-50'
-                      : 'border-slate-200 text-slate-600 hover:border-indigo-300',
+                        ? 'border-indigo-300 text-indigo-600 bg-indigo-50'
+                        : 'border-slate-200 text-slate-600 hover:border-indigo-300',
                   )}
                 >
                   <span className="flex-1 text-left truncate">
-                    {CATEGORIES.find((c) => c.key === activeCategory)?.label ?? 'Todas as Categorias'}
+                    {CATEGORIES.find((c) => c.key === activeCategory)?.label ??
+                      'Todas as Categorias'}
                   </span>
                   <ChevronDown
                     className={cn(
                       'h-4 w-4 shrink-0 transition-transform duration-200',
-                      dropdownOpen ? 'rotate-180 text-indigo-500' : 'text-slate-400',
+                      dropdownOpen
+                        ? 'rotate-180 text-indigo-500'
+                        : 'text-slate-400',
                     )}
                   />
                 </button>
@@ -424,7 +438,9 @@ export default function SimulationsHistory() {
             {/* Active filter chip */}
             {activeCategory !== 'Todos' && (
               <div className="mb-5 flex items-center gap-2">
-                <span className="text-xs text-slate-500 font-medium">Filtrando por:</span>
+                <span className="text-xs text-slate-500 font-medium">
+                  Filtrando por:
+                </span>
                 <button
                   onClick={() => setActiveCategory('Todos')}
                   className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-600 text-xs font-bold rounded-xl border border-indigo-200 hover:bg-indigo-100 transition-colors"
@@ -640,7 +656,8 @@ export default function SimulationsHistory() {
                         </span>
                         <span className="text-base font-black text-slate-800 block mt-0.5 font-display">
                           {item.score} / {item.totalQuestions} (
-                          {parseFloat(Number(item.percentage || 0).toFixed(2))}%)
+                          {parseFloat(Number(item.percentage || 0).toFixed(2))}
+                          %)
                         </span>
                       </div>
                       <div className="shrink-0">
@@ -683,7 +700,9 @@ export default function SimulationsHistory() {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 mt-8 pt-4 border-t border-slate-100">
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                       className={cn(
                         'px-4 py-2 rounded-xl text-xs font-bold transition-all border',
@@ -727,7 +746,9 @@ export default function SimulationsHistory() {
                     </div>
 
                     <button
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                       className={cn(
                         'px-4 py-2 rounded-xl text-xs font-bold transition-all border',

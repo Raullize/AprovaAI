@@ -52,7 +52,11 @@ export const Header: React.FC = () => {
           <div className="flex justify-between items-center h-16">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-10 h-10 bg-white border border-slate-100 rounded-xl flex items-center justify-center shadow-md overflow-hidden">
-                <img src="/images/prof-sabichao.png" alt="Prof. Sabichão" className="h-7 w-7 object-contain" />
+                <img
+                  src="/images/prof-sabichao.png"
+                  alt="Prof. Sabichão"
+                  className="h-7 w-7 object-contain"
+                />
               </div>
               <span className="text-xl font-bold font-display text-slate-900 tracking-tight">
                 AprovaAI
@@ -117,7 +121,11 @@ export const Header: React.FC = () => {
               <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-primary-600">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md overflow-hidden">
-                    <img src="/images/prof-sabichao.png" alt="Prof. Sabichão" className="h-7 w-7 object-contain" />
+                    <img
+                      src="/images/prof-sabichao.png"
+                      alt="Prof. Sabichão"
+                      className="h-7 w-7 object-contain"
+                    />
                   </div>
                   <span className="text-xl font-bold text-white">AprovaAI</span>
                 </div>

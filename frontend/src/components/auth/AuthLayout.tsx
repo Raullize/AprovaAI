@@ -24,7 +24,11 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
             to="/"
             className="inline-flex items-center justify-center w-14 h-14 bg-white rounded-2xl shadow-md border border-slate-100 hover:scale-105 transition-transform overflow-hidden"
           >
-            <img src="/images/prof-sabichao.png" alt="Prof. Sabichão" className="h-10 w-10 object-contain" />
+            <img
+              src="/images/prof-sabichao.png"
+              alt="Prof. Sabichão"
+              className="h-10 w-10 object-contain"
+            />
           </Link>
         </div>
 

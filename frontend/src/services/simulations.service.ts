@@ -25,14 +25,18 @@ export interface CreateSimulationDTO {
   simulationMode: SimulationMode;
 }
 
-export type UpdateSimulationDTO = Partial<Omit<CreateSimulationDTO, 'topicId' | 'timeLimit'>> & {
+export type UpdateSimulationDTO = Partial<
+  Omit<CreateSimulationDTO, 'topicId' | 'timeLimit'>
+> & {
   timeLimit?: number | null;
 };
 
 export const simulationsService = {
   findAll: async (topicId?: string) => {
     if (topicId) {
-      const response = await api.get<Simulation[]>(`/simulations/topic/${topicId}`);
+      const response = await api.get<Simulation[]>(
+        `/simulations/topic/${topicId}`,
+      );
       return response.data;
     }
     const response = await api.get<Simulation[]>('/simulations');

@@ -17,10 +17,16 @@ import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
 import { studentService } from '../../../services/student.service';
-import { simulationAttemptsService, type ApiSimulationHistoryItem } from '../../../services/simulation-attempts.service';
+import {
+  simulationAttemptsService,
+  type ApiSimulationHistoryItem,
+} from '../../../services/simulation-attempts.service';
 import { getRecentExamsFromHistory } from '../../../utils/student.utils';
 import { topicsService } from '../../../services/topics.service';
-import { simulationsService, type Simulation } from '../../../services/simulations.service';
+import {
+  simulationsService,
+  type Simulation,
+} from '../../../services/simulations.service';
 
 export default function StudentHome() {
   const { user } = useAuth();
@@ -29,7 +35,9 @@ export default function StudentHome() {
   const [activeDays, setActiveDays] = useState<number[]>([]);
   const [streakCount, setStreakCount] = useState(user?.streakCount || 0);
   const [history, setHistory] = useState<ApiSimulationHistoryItem[]>([]);
-  const [simulationsCountMap, setSimulationsCountMap] = useState<Record<string, number>>({});
+  const [simulationsCountMap, setSimulationsCountMap] = useState<
+    Record<string, number>
+  >({});
 
   useEffect(() => {
     if (history.length === 0) return;
@@ -38,8 +46,8 @@ export default function StudentHome() {
       new Set(
         history
           .map((h) => h.simulation?.topic?.exam?.id)
-          .filter(Boolean) as string[]
-      )
+          .filter(Boolean) as string[],
+      ),
     ).slice(0, 3);
 
     async function loadSimulationsCounts() {
@@ -48,20 +56,29 @@ export default function StudentHome() {
         recentExamIds.map(async (examId) => {
           try {
             const topicsData = await topicsService.findAll(examId);
-            const activeTopics = topicsData.filter((t) => t.status === 'PUBLISHED');
+            const activeTopics = topicsData.filter(
+              (t) => t.status === 'PUBLISHED',
+            );
             let total = 0;
             await Promise.all(
               activeTopics.map(async (topic) => {
-                const simulationsData = await simulationsService.findAll(topic.id);
-                const activeSimulations = simulationsData.filter((l: Simulation) => l.status === 'PUBLISHED');
+                const simulationsData = await simulationsService.findAll(
+                  topic.id,
+                );
+                const activeSimulations = simulationsData.filter(
+                  (l: Simulation) => l.status === 'PUBLISHED',
+                );
                 total += activeSimulations.length;
-              })
+              }),
             );
             counts[examId] = total;
           } catch (err) {
-            console.error(`Failed to load simulations count for exam ${examId}:`, err);
+            console.error(
+              `Failed to load simulations count for exam ${examId}:`,
+              err,
+            );
           }
-        })
+        }),
       );
       setSimulationsCountMap(counts);
     }
@@ -93,9 +110,16 @@ export default function StudentHome() {
   const xpNeededForNextLevel = 100 - (totalXP % 100 || 0);
 
   const completedAttempts = history.filter((h) => h.status === 'COMPLETED');
-  const totalCorrect = completedAttempts.reduce((sum, h) => sum + (h.score || 0), 0);
-  const totalQuest = completedAttempts.reduce((sum, h) => sum + (h.totalQuestions || 0), 0);
-  const accuracy = totalQuest > 0 ? Math.round((totalCorrect / totalQuest) * 100) : 0;
+  const totalCorrect = completedAttempts.reduce(
+    (sum, h) => sum + (h.score || 0),
+    0,
+  );
+  const totalQuest = completedAttempts.reduce(
+    (sum, h) => sum + (h.totalQuestions || 0),
+    0,
+  );
+  const accuracy =
+    totalQuest > 0 ? Math.round((totalCorrect / totalQuest) * 100) : 0;
 
   const recentExams = getRecentExamsFromHistory(history, simulationsCountMap);
 
@@ -223,7 +247,11 @@ export default function StudentHome() {
               </div>
             </div>
             <div className="mt-3">
-              <ProgressBar progress={accuracy} colorScheme="emerald" size="md" />
+              <ProgressBar
+                progress={accuracy}
+                colorScheme="emerald"
+                size="md"
+              />
               <p className="text-[10px] text-slate-400 mt-1">
                 Mapeado de todos os seus simulados
               </p>
@@ -302,7 +330,9 @@ export default function StudentHome() {
                 return (
                   <button
                     key={exam.id}
-                    onClick={() => navigate(`/dashboard/explore/${exam.routeId}`)}
+                    onClick={() =>
+                      navigate(`/dashboard/explore/${exam.routeId}`)
+                    }
                     className="group w-full"
                   >
                     <Card

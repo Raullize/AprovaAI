@@ -122,8 +122,10 @@ export function ExamFormModal({
     }
   };
 
-  const fieldLabel = 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5';
-  const fieldInput = 'w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all bg-white text-slate-800 text-sm font-medium';
+  const fieldLabel =
+    'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5';
+  const fieldInput =
+    'w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all bg-white text-slate-800 text-sm font-medium';
 
   return (
     <Modal
@@ -263,7 +265,13 @@ export function ExamFormModal({
               disabled={isSaving}
               className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm shadow-md shadow-indigo-600/20 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {isSaving ? <Loading size="sm" /> : isEditing ? 'Salvar' : 'Criar Exame'}
+              {isSaving ? (
+                <Loading size="sm" />
+              ) : isEditing ? (
+                'Salvar'
+              ) : (
+                'Criar Exame'
+              )}
             </button>
           </div>
         </form>
@@ -271,4 +279,3 @@ export function ExamFormModal({
     </Modal>
   );
 }
-

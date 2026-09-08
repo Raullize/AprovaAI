@@ -235,8 +235,7 @@ export function QuestionFormModal({
         {/* Content */}
         <div className="space-y-1.5">
           <label className={fieldLabel}>
-            Conteúdo da Questão{' '}
-            <span className="text-rose-500">*</span>
+            Conteúdo da Questão <span className="text-rose-500">*</span>
           </label>
           <textarea
             value={form.content}
@@ -251,7 +250,9 @@ export function QuestionFormModal({
             placeholder="Digite o enunciado da questão..."
           />
           {errors.content && (
-            <p className="text-sm text-rose-600 font-medium">{errors.content}</p>
+            <p className="text-sm text-rose-600 font-medium">
+              {errors.content}
+            </p>
           )}
         </div>
 
@@ -301,7 +302,9 @@ export function QuestionFormModal({
             placeholder="https://exemplo.com/material-de-estudo"
           />
           {errors.studyLink && (
-            <p className="text-sm text-rose-600 font-medium">{errors.studyLink}</p>
+            <p className="text-sm text-rose-600 font-medium">
+              {errors.studyLink}
+            </p>
           )}
           <p className="text-xs text-slate-400">
             Link para material complementar sobre o tema da questão

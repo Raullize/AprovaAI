@@ -1,10 +1,5 @@
 import React from 'react';
-import {
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
-} from 'lucide-react';
+import { Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
 
 export const Footer: React.FC = () => {
   return (
@@ -14,14 +9,18 @@ export const Footer: React.FC = () => {
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md overflow-hidden">
-                <img src="/images/prof-sabichao.png" alt="Prof. Sabichão" className="h-7 w-7 object-contain" />
+                <img
+                  src="/images/prof-sabichao.png"
+                  alt="Prof. Sabichão"
+                  className="h-7 w-7 object-contain"
+                />
               </div>
               <span className="text-xl font-bold font-display">AprovaAI</span>
             </div>
             <p className="text-slate-300 mb-6 max-w-md">
               Plataforma inovadora de estudos que combina metodologia por
-              simulados, gamificação e inteligência artificial para maximizar sua
-              aprovação.
+              simulados, gamificação e inteligência artificial para maximizar
+              sua aprovação.
             </p>
 
             <div className="flex space-x-4">

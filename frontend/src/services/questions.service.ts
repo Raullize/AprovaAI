@@ -31,12 +31,16 @@ export interface CreateQuestionDTO {
   options: Omit<Option, 'id'>[];
 }
 
-export type UpdateQuestionDTO = Partial<Omit<CreateQuestionDTO, 'simulationId'>>;
+export type UpdateQuestionDTO = Partial<
+  Omit<CreateQuestionDTO, 'simulationId'>
+>;
 
 export const questionsService = {
   findAll: async (simulationId?: string) => {
     if (simulationId) {
-      const response = await api.get<Question[]>(`/questions/simulation/${simulationId}`);
+      const response = await api.get<Question[]>(
+        `/questions/simulation/${simulationId}`,
+      );
       return response.data;
     }
     const response = await api.get<Question[]>('/questions');

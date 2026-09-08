@@ -35,9 +35,7 @@ const StarRating: React.FC<StarRatingProps> = ({
           className={cn(
             sizeClasses[size],
             'transition-all',
-            s <= stars
-              ? 'text-amber-400 fill-amber-400'
-              : unfilledColorClass,
+            s <= stars ? 'text-amber-400 fill-amber-400' : unfilledColorClass,
             starClassName,
           )}
         />
