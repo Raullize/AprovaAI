@@ -3,7 +3,6 @@ import { useAuth } from '../../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import {
   Zap,
-  Shield,
   Settings as SettingsIcon,
   Award,
   Flame,
@@ -17,8 +16,9 @@ import {
 import { cn } from '../../../lib/utils';
 import UserAvatar from '../../../components/ui/UserAvatar';
 import { Card } from '../../../components/ui/Card';
-import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
+import { ProfileStats } from '../../../components/profile/ProfileStats';
+import { AchievementsSnippet } from '../../../components/profile/AchievementsSnippet';
 import { studentService } from '../../../services/student.service';
 import {
   simulationAttemptsService,
@@ -258,143 +258,19 @@ export default function Profile() {
       {activeTab === 'overview' && (
         <div className="space-y-6 animate-fadeIn">
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* XP Total Card */}
-            <Card className="flex flex-col justify-between" padding="normal">
-              <div className="flex items-center gap-3">
-                <IconBox
-                  icon={<Zap className="h-5 w-5 animate-pulse" />}
-                  colorScheme="indigo"
-                  size="md"
-                  shape="square"
-                />
-                <div className="min-w-0">
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                    XP Total
-                  </p>
-                  <p className="font-bold text-slate-700 text-sm">
-                    {totalXP} XP
-                  </p>
-                </div>
-              </div>
-              <div className="mt-3">
-                <ProgressBar
-                  progress={totalXP % 100}
-                  colorScheme="indigo"
-                  size="md"
-                />
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Faltam {xpNeededForNextLevel} XP para o Simulado{' '}
-                  {currentLevel + 1}
-                </p>
-              </div>
-            </Card>
-
-            {/* Accuracy Card */}
-            <Card className="flex flex-col justify-between" padding="normal">
-              <div className="flex items-center gap-3">
-                <IconBox
-                  icon={<Award className="h-5 w-5" />}
-                  colorScheme="emerald"
-                  size="md"
-                  shape="square"
-                />
-                <div className="min-w-0">
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                    Aproveitamento
-                  </p>
-                  <p className="font-bold text-slate-700 text-sm">
-                    {accuracy}% de acertos
-                  </p>
-                </div>
-              </div>
-              <div className="mt-3">
-                <ProgressBar
-                  progress={accuracy}
-                  colorScheme="emerald"
-                  size="md"
-                />
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Mapeado de todos os seus simulados
-                </p>
-              </div>
-            </Card>
-
-            {/* Subscription Card */}
-            <Card className="flex flex-col justify-between" padding="normal">
-              <div>
-                <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">
-                  Plano Atual
-                </p>
-                <p className="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-1.5 font-display uppercase">
-                  <Shield className="h-5 w-5 text-indigo-500" />
-                  {user?.subscriptionPlan || 'FREE'}
-                </p>
-              </div>
-              <p className="text-[10px] text-slate-400 mt-2">
-                {user?.subscriptionPlan === 'PREMIUM'
-                  ? 'Plano Premium'
-                  : 'Plano Gratuito'}
-              </p>
-            </Card>
-          </div>
+          <ProfileStats
+            totalXP={totalXP}
+            xpNeededForNextLevel={xpNeededForNextLevel}
+            currentLevel={currentLevel}
+            accuracy={accuracy}
+            subscriptionPlan={user?.subscriptionPlan}
+          />
 
           {/* Achievements Snippet Card */}
-          <Card padding="large">
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center gap-2">
-                <Award className="h-5 w-5 text-indigo-500" />
-                <h3 className="font-bold text-slate-800 text-base font-display">
-                  Mural de Conquistas (Recentes)
-                </h3>
-              </div>
-              <button
-                onClick={() => setActiveTab('achievements')}
-                className="text-xs font-bold text-indigo-650 hover:text-indigo-750 hover:underline"
-              >
-                Ver todas &rarr;
-              </button>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {achievements.slice(0, 3).map((item) => {
-                const IconComp = item.icon;
-                return (
-                  <div
-                    key={item.id}
-                    className={cn(
-                      'p-5 rounded-3xl border flex items-center gap-4 transition-all relative',
-                      item.isUnlocked
-                        ? 'bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md cursor-pointer'
-                        : 'bg-slate-50/50 border-slate-100 opacity-60',
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        'w-12 h-12 rounded-full flex items-center justify-center shrink-0 shadow-sm',
-                        item.color,
-                      )}
-                    >
-                      <IconComp className="h-6 w-6" />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-slate-800 text-sm leading-tight">
-                        {item.title}
-                      </p>
-                      <p className="text-[10px] text-slate-400 mt-1 leading-snug">
-                        {item.description}
-                      </p>
-                    </div>
-                    {!item.isUnlocked && (
-                      <span className="absolute top-3 right-3 text-[9px] font-bold text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-lg">
-                        Bloqueado
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
+          <AchievementsSnippet
+            achievements={achievements}
+            onViewAll={() => setActiveTab('achievements')}
+          />
 
           {/* Recent History Card */}
           <Card padding="large">
