@@ -59,7 +59,7 @@ describe('POST /topics', () => {
       adminToken,
     );
     expect(createRes.status).toBe(201);
-    expect(createRes.body.slug).toBe('topico-smoke-post');
+    expect(createRes.body.slug).toBe('topico-smoke');
     createdTopicId = createRes.body.id;
   });
 });

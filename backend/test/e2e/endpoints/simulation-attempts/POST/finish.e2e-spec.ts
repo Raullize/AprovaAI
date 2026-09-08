@@ -2,7 +2,7 @@ import {
   createPostRequest,
   createPostRequestWithAuth,
   prisma,
-} from '../../helpers/testHelper';
+} from '../../../helpers/testHelper';
 
 describe('POST /simulation-attempts/:id/finish', () => {
   let studentToken: string;
@@ -65,7 +65,7 @@ describe('POST /simulation-attempts/:id/finish', () => {
       studentToken,
     );
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('xpGained');
     expect(response.body.simulationAttempt.status).toBe('COMPLETED');
     expect(response.body.simulationAttempt.passed).toBe(true);

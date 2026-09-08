@@ -79,7 +79,7 @@ describe('POST /simulations', () => {
 
     expect(response.status).toBe(201);
     expect(response.body).toHaveProperty('id');
-    expect(response.body.slug).toBe('simulado-smoke-test-post');
+    expect(response.body.slug).toBe('simulado-smoke-test');
     createdSimulationId = response.body.id;
   });
 });

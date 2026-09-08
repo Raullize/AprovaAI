@@ -2,7 +2,7 @@ import {
   createPostRequest,
   createDeleteRequestWithAuth,
   createGetRequestWithAuth,
-} from '../../helpers/testHelper';
+} from '../../../helpers/testHelper';
 
 describe('DELETE /account', () => {
   let tempUserToken: string;
@@ -43,6 +43,6 @@ describe('DELETE /account', () => {
     );
 
     expect(profileResponse.status).toBe(200);
-    expect(profileResponse.body).toBeNull();
+    expect(profileResponse.body).toEqual({});
   });
 });

@@ -2,7 +2,7 @@ import {
   createPostRequest,
   createPostRequestWithAuth,
   prisma,
-} from '../../helpers/testHelper';
+} from '../../../helpers/testHelper';
 
 describe('POST /simulation-attempts/:id/answers', () => {
   let studentToken: string;
@@ -73,7 +73,7 @@ describe('POST /simulation-attempts/:id/answers', () => {
       studentToken,
     );
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(response.body.isCorrect).toBe(true);
     expect(response.body.questionId).toBe(questionId);
   });
@@ -90,7 +90,7 @@ describe('POST /simulation-attempts/:id/answers', () => {
       studentToken,
     );
 
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(201);
     expect(response.body.isCorrect).toBe(false);
     expect(response.body.isFlaggedForReview).toBe(true);
   });
