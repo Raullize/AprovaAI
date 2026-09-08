@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, BookOpen, ChevronDown } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
+import Button from '@/components/ui/Button';
 import { examsService, type Exam } from '@/services/exams.service';
 import { useToast } from '@/hooks/useToast';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
@@ -132,15 +133,16 @@ export default function AdminExams() {
         title="Gerenciar Exames"
         subtitle="Gerencie os exames disponíveis na plataforma."
         action={
-          <button
+          <Button
+            variant="gamified"
             onClick={() => {
               setEditingExamId(undefined);
               setIsModalOpen(true);
             }}
-            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all text-sm shadow-md shadow-indigo-600/20 flex items-center gap-2"
+            className="px-5 py-3 rounded-2xl font-bold text-sm shadow-md shadow-indigo-600/20 gap-2 active:border-b-0 active:translate-y-1"
           >
             <Plus className="h-5 w-5" /> Novo Exame
-          </button>
+          </Button>
         }
       />
 
@@ -243,15 +245,16 @@ export default function AdminExams() {
               : 'Comece criando o primeiro exame da plataforma.'}
           </p>
           {!searchTerm && (
-            <button
+            <Button
+              variant="gamified"
               onClick={() => {
                 setEditingExamId(undefined);
                 setIsModalOpen(true);
               }}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl font-bold text-sm gap-2 active:border-b-0 active:translate-y-0.5"
             >
               <Plus className="h-5 w-5" /> Criar Primeiro Exame
-            </button>
+            </Button>
           )}
         </div>
       ) : (

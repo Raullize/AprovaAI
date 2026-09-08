@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, BarChart } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
+import Button from '@/components/ui/Button';
 import {
   simulationsService,
   type Simulation,
@@ -143,15 +144,16 @@ export default function SimulationList() {
             : '/dashboard/exams'
         }
         action={
-          <button
+          <Button
+            variant="gamified"
             onClick={() => {
               setEditingSimulationId(undefined);
               setIsModalOpen(true);
             }}
-            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all text-sm shadow-md shadow-indigo-600/20 flex items-center gap-2"
+            className="px-5 py-3 rounded-2xl font-bold text-sm shadow-md shadow-indigo-600/20 gap-2 active:border-b-0 active:translate-y-1"
           >
             <Plus className="h-5 w-5" /> Novo Simulado
-          </button>
+          </Button>
         }
       />
 
@@ -183,15 +185,16 @@ export default function SimulationList() {
               : 'Crie simulados de dificuldade para organizar as questões.'}
           </p>
           {!searchTerm && (
-            <button
+            <Button
+              variant="gamified"
               onClick={() => {
                 setEditingSimulationId(undefined);
                 setIsModalOpen(true);
               }}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl font-bold text-sm gap-2 active:border-b-0 active:translate-y-0.5"
             >
               <Plus className="h-5 w-5" /> Criar Primeiro Simulado
-            </button>
+            </Button>
           )}
         </div>
       ) : (

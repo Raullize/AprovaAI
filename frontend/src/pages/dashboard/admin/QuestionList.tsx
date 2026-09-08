@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Plus, HelpCircle } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
+import Button from '@/components/ui/Button';
 import { questionsService, type Question } from '@/services/questions.service';
 import { simulationsService } from '@/services/simulations.service';
 import { topicsService } from '@/services/topics.service';
@@ -174,15 +175,16 @@ export default function QuestionList() {
             : '/dashboard/exams'
         }
         action={
-          <button
+          <Button
+            variant="gamified"
             onClick={() => {
               setEditingQuestion(null);
               setIsFormOpen(true);
             }}
-            className="px-5 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all text-sm shadow-md shadow-indigo-600/20 flex items-center gap-2"
+            className="px-5 py-3 rounded-2xl font-bold text-sm shadow-md shadow-indigo-600/20 gap-2 active:border-b-0 active:translate-y-1"
           >
             <Plus className="h-5 w-5" /> Nova Questão
-          </button>
+          </Button>
         }
       />
 
@@ -214,15 +216,16 @@ export default function QuestionList() {
               : 'Crie questões para este simulado e comece a avaliar o conhecimento dos alunos.'}
           </p>
           {!searchTerm && (
-            <button
+            <Button
+              variant="gamified"
               onClick={() => {
                 setEditingQuestion(null);
                 setIsFormOpen(true);
               }}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm flex items-center gap-2"
+              className="px-5 py-2.5 rounded-xl font-bold text-sm gap-2 active:border-b-0 active:translate-y-0.5"
             >
               <Plus className="h-5 w-5" /> Criar Primeira Questão
-            </button>
+            </Button>
           )}
         </div>
       ) : (

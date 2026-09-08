@@ -89,13 +89,14 @@ export function DeleteConfirmModal({
           <Button variant="outline" onClick={handleClose} disabled={isDeleting}>
             Cancelar
           </Button>
-          <button
+          <Button
+            variant="danger"
             onClick={handleConfirm}
             disabled={confirmation !== 'excluir' || isDeleting}
-            className="bg-red-600 text-white px-5 py-2 rounded-xl hover:bg-red-700 font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 flex items-center gap-2"
+            className="px-5 py-2 rounded-xl shadow-sm gap-2"
           >
             {isDeleting ? <Loading size="sm" /> : 'Excluir'}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>

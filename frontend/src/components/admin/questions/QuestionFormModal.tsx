@@ -3,6 +3,7 @@ import { HelpCircle, Link } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import Loading from '@/components/ui/Loading';
 import ImageUpload from '@/components/ui/ImageUpload';
+import Button from '@/components/ui/Button';
 import { StatusToggle } from '@/components/admin/shared/StatusToggle';
 import { OptionList } from '@/components/admin/questions/OptionList';
 import {
@@ -319,18 +320,20 @@ export function QuestionFormModal({
         />
 
         <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
-          <button
+          <Button
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="px-5 py-2.5 rounded-2xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all text-sm disabled:opacity-50"
+            variant="ghost"
+            className="px-5 py-2.5 rounded-2xl font-bold text-sm"
           >
             Cancelar
-          </button>
-          <button
+          </Button>
+          <Button
             type="submit"
             disabled={saving}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-0.5 transition-all text-sm shadow-md shadow-indigo-600/20 disabled:opacity-60 disabled:cursor-not-allowed flex items-center gap-2"
+            variant="gamified"
+            className="px-6 py-2.5 rounded-2xl font-bold text-sm shadow-md shadow-indigo-600/20 gap-2 active:border-b-0 active:translate-y-0.5"
           >
             {saving ? (
               <Loading size="sm" />
@@ -339,7 +342,7 @@ export function QuestionFormModal({
             ) : (
               'Criar Questão'
             )}
-          </button>
+          </Button>
         </div>
       </form>
     </Modal>
