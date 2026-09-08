@@ -1,7 +1,6 @@
 import {
   createPostRequest,
   createGetRequestWithAuth,
-  prisma,
 } from '../../../helpers/testHelper';
 
 describe('GET /simulation-attempts/history', () => {

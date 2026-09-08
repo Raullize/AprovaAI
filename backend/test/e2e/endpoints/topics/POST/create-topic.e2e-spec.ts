@@ -1,7 +1,6 @@
 import {
   createPostRequest,
   createPostRequestWithAuth,
-  createPatchRequestWithAuth,
   prisma,
 } from '../../../helpers/testHelper';
 
