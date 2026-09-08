@@ -3,7 +3,10 @@ import dotenv from 'dotenv';
 import supertest from 'supertest';
 import { PrismaClient } from '@prisma/client';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
+dotenv.config({
+  path: path.resolve(process.cwd(), '.env.test'),
+  override: true,
+});
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const fixtures = {
