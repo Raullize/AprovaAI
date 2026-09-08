@@ -104,6 +104,7 @@ export class PrismaSimulationAttemptRepository implements SimulationAttemptRepos
         selectedOptions: saved.selectedOptions,
         isCorrect: saved.isCorrect,
         timeSpent: saved.timeSpent,
+        isFlaggedForReview: saved.isFlaggedForReview,
         createdAt: saved.createdAt,
         updatedAt: saved.updatedAt,
       },
