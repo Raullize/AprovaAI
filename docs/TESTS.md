@@ -212,6 +212,8 @@ backend/test/e2e/
     ├── auth/
     ├── account/
     ├── exams/
+    ├── health/
+    ├── upload/
     ├── simulations/           # CRUD admin de Simulados (rota /simulations)
     ├── simulation-attempts/   # Execução do aluno (rota /simulation-attempts)
     ├── topics/
@@ -221,14 +223,18 @@ backend/test/e2e/
 
 ### 6.5. Cobertura Atual
 
+A suíte cobre **todos os controllers da API** (`backend/src/api`), totalizando **43 arquivos de teste e 72 casos**:
+
 - **Auth** (`/auth/login`, `/auth/register`)
 - **Account** (`GET/PATCH/DELETE /account/*`)
-- **Exams** (`GET /exams`, `GET /exams/:id`, `POST /exams` + Roles Guard)
-- **Simulations CRUD Admin** (`/simulations` — create/GET/Update/Delete + 401/403)
+- **Exams** (`GET /exams`, `GET /exams/:idOrSlug`, `POST /exams`, `PATCH /exams/:id`, `PATCH /exams/reorder`, `DELETE /exams/:id` + Roles Guard)
+- **Topics** (`GET /topics`, `GET /topics/:idOrSlug`, `GET /topics/exam/:examId`, `POST /topics`, `PATCH /topics/:id`, `PATCH /topics/reorder`, `DELETE /topics/:id` + Roles Guard)
+- **Simulations CRUD Admin** (`/simulations` — create/GET por id e por tópico/reorder/update/delete + 401/403)
 - **Simulation Attempts Aluno** (`/simulation-attempts/start`, `/:id/answers`, `/:id/finish`, `GET /history`)
+- **Questions** (`GET /questions`, `GET /questions/:id`, `GET /questions/simulation/:simulationId`, `POST /questions`, `PATCH /questions/:id`, `PATCH /questions/reorder`, `DELETE /questions/:id` + Guards)
 - **Student Dashboard** (`/student/dashboard-stats`, `leaderboard`, `streak-leaderboard`)
-- **Topics CRUD Admin** (`/topics` — create/403/update/delete)
-- **Questions CRUD Admin** (`/questions` — create/403/400 sem options/delete)
+- **Upload** (`POST /upload`, `DELETE /upload/:filename` + roles e validação de MIME)
+- **Health** (`GET /api/health`)
 
 ### 6.6. Pegadinha Frequente: Duas Rotas com Nomes Iguais
 
