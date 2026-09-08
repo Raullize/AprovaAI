@@ -1,4 +1,4 @@
-import { createGetRequest, prisma } from '../../helpers/testHelper';
+import { createGetRequest, prisma } from '../../../helpers/testHelper';
 
 describe('GET /exams/:idOrSlug', () => {
   let seededExamId: string;

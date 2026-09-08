@@ -1,7 +1,7 @@
 import {
   createPostRequest,
   createPatchRequestWithAuth,
-} from '../../helpers/testHelper';
+} from '../../../helpers/testHelper';
 
 describe('PATCH /account/profile', () => {
   let tempUserToken: string;

@@ -2,7 +2,7 @@ import {
   createPostRequest,
   createGetRequestWithAuth,
   createGetRequest,
-} from '../../helpers/testHelper';
+} from '../../../helpers/testHelper';
 
 describe('GET /student/dashboard-stats', () => {
   let studentToken: string;

@@ -1,4 +1,4 @@
-import { createPostRequest } from '../../helpers/testHelper';
+import { createPostRequest } from '../../../helpers/testHelper';
 
 describe('POST /auth/login', () => {
   it('deve autenticar o estudante com credenciais validas e retornar o token', async () => {

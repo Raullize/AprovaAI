@@ -2,7 +2,7 @@ import {
   createPostRequest,
   createPostRequestWithAuth,
   prisma,
-} from '../../helpers/testHelper';
+} from '../../../helpers/testHelper';
 
 describe('POST /exams', () => {
   let studentToken: string;

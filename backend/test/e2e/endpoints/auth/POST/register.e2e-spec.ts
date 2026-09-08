@@ -1,4 +1,4 @@
-import { createPostRequest } from '../../helpers/testHelper';
+import { createPostRequest } from '../../../helpers/testHelper';
 
 describe('POST /auth/register', () => {
   const uniqueSuffix = Date.now();

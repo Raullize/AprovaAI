@@ -2,7 +2,7 @@ import {
   createPostRequest,
   createGetRequestWithAuth,
   prisma,
-} from '../../helpers/testHelper';
+} from '../../../helpers/testHelper';
 
 describe('GET /simulation-attempts/history', () => {
   let studentToken: string;
