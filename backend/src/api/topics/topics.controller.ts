@@ -12,6 +12,7 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
 import {
@@ -21,6 +22,7 @@ import {
   UpdateTopicDto,
 } from './dto/topic.dto';
 import { reorderSchema, ReorderDto } from '../exams/dto/exam.dto';
+import { TopicResponseDto } from '../content/dto/content-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
@@ -53,9 +55,21 @@ export class TopicsController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({
     summary: 'Criar Tópico',
-    description: 'Cria uma nova disciplina/tópico (Apenas Admin).',
+    description:
+      'Cria uma nova disciplina/tópico vinculada a um exame. O slug é ' +
+      'gerado automaticamente. (Somente Admin)',
   })
-  @ApiResponse({ status: 201, description: 'Tópico criado com sucesso.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Tópico criado com sucesso.',
+    type: TopicResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
   create(
     @Body(new ZodValidationPipe(createTopicSchema))
     createTopicDto: CreateTopicDto,
@@ -68,7 +82,11 @@ export class TopicsController {
     summary: 'Listar Tópicos',
     description: 'Retorna a lista de todos os tópicos cadastrados.',
   })
-  @ApiResponse({ status: 200, description: 'Lista retornada com sucesso.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de tópicos retornada com sucesso.',
+    type: [TopicResponseDto],
+  })
   findAll() {
     return this.findAllTopicsUseCase.execute();
   }
@@ -78,7 +96,15 @@ export class TopicsController {
     summary: 'Buscar Tópicos por Exame',
     description: 'Retorna todos os tópicos pertencentes a um exame específico.',
   })
-  @ApiResponse({ status: 200, description: 'Tópicos encontrados.' })
+  @ApiParam({
+    name: 'examId',
+    description: 'UUID do exame.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Tópicos do exame encontrados.',
+    type: [TopicResponseDto],
+  })
   findByExam(@Param('examId') examId: string) {
     return this.findTopicsByExamIdUseCase.execute(examId);
   }
@@ -88,7 +114,16 @@ export class TopicsController {
     summary: 'Buscar Tópico por ID ou Slug',
     description: 'Retorna os detalhes de um tópico específico.',
   })
-  @ApiResponse({ status: 200, description: 'Tópico encontrado.' })
+  @ApiParam({
+    name: 'idOrSlug',
+    description: 'UUID do tópico ou seu slug único.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Tópico encontrado.',
+    type: TopicResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Tópico não encontrado.' })
   findOne(@Param('idOrSlug') idOrSlug: string) {
     return this.findTopicByIdOrSlugUseCase.execute(idOrSlug);
   }
@@ -99,9 +134,17 @@ export class TopicsController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({
     summary: 'Reordenar Tópicos',
-    description: 'Atualiza a ordem de exibição dos tópicos (Apenas Admin).',
+    description:
+      'Atualiza a ordem de exibição de TODOS os tópicos de um exame. O ' +
+      'array `ids` deve conter exatamente todos os IDs dos tópicos do exame. (Somente Admin)',
   })
   @ApiResponse({ status: 200, description: 'Ordem atualizada com sucesso.' })
+  @ApiResponse({ status: 400, description: 'Lista de reordenação inválida.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
     return this.reorderTopicsUseCase.execute(reorderDto);
   }
@@ -112,9 +155,24 @@ export class TopicsController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({
     summary: 'Atualizar Tópico',
-    description: 'Atualiza os dados de um tópico existente (Apenas Admin).',
+    description: 'Atualiza os dados de um tópico existente. (Somente Admin)',
   })
-  @ApiResponse({ status: 200, description: 'Tópico atualizado com sucesso.' })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID do tópico a ser atualizado.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Tópico atualizado com sucesso.',
+    type: TopicResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
+  @ApiResponse({ status: 404, description: 'Tópico não encontrado.' })
   update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateTopicSchema))
@@ -129,9 +187,19 @@ export class TopicsController {
   @Roles(UserRole.ADMIN)
   @ApiOperation({
     summary: 'Excluir Tópico',
-    description: 'Remove um tópico do sistema (Apenas Admin).',
+    description: 'Remove um tópico do sistema. (Somente Admin)',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID do tópico a ser removido.',
   })
   @ApiResponse({ status: 200, description: 'Tópico removido com sucesso.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
+  @ApiResponse({ status: 404, description: 'Tópico não encontrado.' })
   remove(@Param('id') id: string) {
     return this.deleteTopicUseCase.execute(id);
   }

@@ -24,9 +24,22 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('AprovaAI API')
-    .setDescription('AprovaAI REST API documentation')
+    .setDescription(
+      'API REST do AprovaAI — plataforma de estudos gamificada.\n\n' +
+        '**Autenticação:** a maioria dos endpoints requer um token JWT. ' +
+        'Faça login em `POST /auth/login` e envie o token no header ' +
+        '`Authorization: Bearer <token>`.\n\n' +
+        '**Hierarquia de conteúdo:** Exame → Tópico → Simulado → Questão.\n' +
+        '**Rotas de admin** (`/exams`, `/topics`, `/simulations`, `/questions`): ' +
+        'CRUD administrativo.\n' +
+        '**Rotas do aluno** (`/simulation-attempts/*`): execução de simulados.\n' +
+        '**Papéis:** `STUDENT` (aluno) e `ADMIN` (administrador).',
+    )
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
+      'JWT-auth',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, config);
   const cleanedDoc = cleanupOpenApiDoc(document);

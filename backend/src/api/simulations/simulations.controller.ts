@@ -12,6 +12,7 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
 import {
@@ -21,6 +22,7 @@ import {
   UpdateSimulationDto,
 } from './dto/simulation.dto';
 import { reorderSchema, ReorderDto } from '../exams/dto/exam.dto';
+import { SimulationResponseDto } from '../content/dto/content-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
@@ -52,10 +54,22 @@ export class SimulationsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiOperation({
-    summary: 'Criar Nível',
-    description: 'Cria um novo nível/simulado (Apenas Admin).',
+    summary: 'Criar Simulado',
+    description:
+      'Cria um novo simulado vinculado a um tópico. O slug é gerado ' +
+      'automaticamente. (Somente Admin)',
   })
-  @ApiResponse({ status: 201, description: 'Nível criado com sucesso.' })
+  @ApiResponse({
+    status: 201,
+    description: 'Simulado criado com sucesso.',
+    type: SimulationResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
   create(
     @Body(new ZodValidationPipe(createSimulationSchema))
     createSimulationDto: CreateSimulationDto,
@@ -65,30 +79,52 @@ export class SimulationsController {
 
   @Get()
   @ApiOperation({
-    summary: 'Listar Níveis',
-    description: 'Retorna a lista de todos os níveis cadastrados.',
+    summary: 'Listar Simulados',
+    description: 'Retorna a lista de todos os simulados cadastrados.',
   })
-  @ApiResponse({ status: 200, description: 'Lista retornada com sucesso.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de simulados retornada com sucesso.',
+    type: [SimulationResponseDto],
+  })
   findAll() {
     return this.findAllSimulationsUseCase.execute();
   }
 
   @Get('topic/:topicId')
   @ApiOperation({
-    summary: 'Buscar Níveis por Tópico',
-    description: 'Retorna todos os níveis pertencentes a um tópico específico.',
+    summary: 'Buscar Simulados por Tópico',
+    description:
+      'Retorna todos os simulados pertencentes a um tópico específico.',
   })
-  @ApiResponse({ status: 200, description: 'Níveis encontrados.' })
+  @ApiParam({
+    name: 'topicId',
+    description: 'UUID do tópico.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Simulados do tópico encontrados.',
+    type: [SimulationResponseDto],
+  })
   findByTopic(@Param('topicId') topicId: string) {
     return this.findSimulationsByTopicIdUseCase.execute(topicId);
   }
 
   @Get(':idOrSlug')
   @ApiOperation({
-    summary: 'Buscar Nível por ID ou Slug',
-    description: 'Retorna os detalhes de um nível específico.',
+    summary: 'Buscar Simulado por ID ou Slug',
+    description: 'Retorna os detalhes de um simulado específico.',
   })
-  @ApiResponse({ status: 200, description: 'Nível encontrado.' })
+  @ApiParam({
+    name: 'idOrSlug',
+    description: 'UUID do simulado ou seu slug único.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Simulado encontrado.',
+    type: SimulationResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Simulado não encontrado.' })
   findOne(@Param('idOrSlug') idOrSlug: string) {
     return this.findSimulationByIdOrSlugUseCase.execute(idOrSlug);
   }
@@ -98,10 +134,18 @@ export class SimulationsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiOperation({
-    summary: 'Reordenar Níveis',
-    description: 'Atualiza a ordem de exibição dos níveis (Apenas Admin).',
+    summary: 'Reordenar Simulados',
+    description:
+      'Atualiza a ordem de exibição de TODOS os simulados de um tópico. O ' +
+      'array `ids` deve conter exatamente todos os IDs dos simulados do tópico. (Somente Admin)',
   })
   @ApiResponse({ status: 200, description: 'Ordem atualizada com sucesso.' })
+  @ApiResponse({ status: 400, description: 'Lista de reordenação inválida.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
     return this.reorderSimulationsUseCase.execute(reorderDto);
   }
@@ -111,10 +155,25 @@ export class SimulationsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiOperation({
-    summary: 'Atualizar Nível',
-    description: 'Atualiza os dados de um nível existente (Apenas Admin).',
+    summary: 'Atualizar Simulado',
+    description: 'Atualiza os dados de um simulado existente. (Somente Admin)',
   })
-  @ApiResponse({ status: 200, description: 'Nível atualizado com sucesso.' })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID do simulado a ser atualizado.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Simulado atualizado com sucesso.',
+    type: SimulationResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
+  @ApiResponse({ status: 404, description: 'Simulado não encontrado.' })
   update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateSimulationSchema))
@@ -131,10 +190,20 @@ export class SimulationsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
   @ApiOperation({
-    summary: 'Excluir Nível',
-    description: 'Remove um nível do sistema (Apenas Admin).',
+    summary: 'Excluir Simulado',
+    description: 'Remove um simulado do sistema. (Somente Admin)',
   })
-  @ApiResponse({ status: 200, description: 'Nível removido com sucesso.' })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID do simulado a ser removido.',
+  })
+  @ApiResponse({ status: 200, description: 'Simulado removido com sucesso.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
+  @ApiResponse({ status: 404, description: 'Simulado não encontrado.' })
   remove(@Param('id') id: string) {
     return this.deleteSimulationUseCase.execute(id);
   }

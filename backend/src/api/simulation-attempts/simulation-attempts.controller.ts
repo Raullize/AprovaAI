@@ -11,6 +11,7 @@ import {
   ApiTags,
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -49,6 +50,7 @@ export class SimulationAttemptsController {
       'Retorna a lista de todos os simulados (em andamento ou concluídos) do usuário autenticado.',
   })
   @ApiResponse({ status: 200, description: 'Histórico retornado com sucesso.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
   getHistory(@Request() req: { user: { id: string } }) {
     return this.getSimulationHistoryUseCase.execute({
       userId: req.user.id,
@@ -59,12 +61,16 @@ export class SimulationAttemptsController {
   @ApiOperation({
     summary: 'Iniciar um Simulado',
     description:
-      'Inicia um novo simulado para o nível especificado ou retoma um simulado em andamento.',
+      'Inicia um novo simulado para o simulado especificado ou retoma um simulado em andamento.',
   })
   @ApiResponse({
-    status: 200,
-    description: 'Simulado iniciado ou retomado com sucesso.',
+    status: 201,
+    description:
+      'Simulado iniciado ou retomado com sucesso. Retorna o simulationAttempt e a lista de questões.',
   })
+  @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({ status: 404, description: 'Simulado não encontrado.' })
   start(
     @Request() req: { user: { id: string } },
     @Body(new ZodValidationPipe(startSimulationSchema))
@@ -82,7 +88,20 @@ export class SimulationAttemptsController {
     description:
       'Salva a resposta selecionada pelo aluno para uma questão específica durante o simulado.',
   })
-  @ApiResponse({ status: 200, description: 'Resposta salva com sucesso.' })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID do simulationAttempt (tentativa do simulado).',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Resposta salva com sucesso. Retorna a resposta registrada.',
+  })
+  @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 404,
+    description: 'SimulationAttempt ou questão não encontrados.',
+  })
   saveAnswer(
     @Request() req: { user: { id: string } },
     @Param('id') id: string,
@@ -105,7 +124,21 @@ export class SimulationAttemptsController {
     description:
       'Finaliza o simulado, calcula a nota final e define se o aluno foi aprovado ou reprovado.',
   })
-  @ApiResponse({ status: 200, description: 'Simulado finalizado com sucesso.' })
+  @ApiParam({
+    name: 'id',
+    description: 'UUID do simulationAttempt (tentativa do simulado).',
+  })
+  @ApiResponse({
+    status: 201,
+    description:
+      'Simulado finalizado com sucesso. Retorna o resultado final e o XP ganho.',
+  })
+  @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 404,
+    description: 'SimulationAttempt ou simulado não encontrados.',
+  })
   finish(
     @Request() req: { user: { id: string } },
     @Param('id') id: string,

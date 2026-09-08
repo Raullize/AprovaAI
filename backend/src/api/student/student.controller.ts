@@ -39,6 +39,7 @@ export class StudentController {
     status: 200,
     description: 'Estatísticas retornadas com sucesso.',
   })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
   getDashboardStats(
     @Request() req: { user: { id: string } },
     @Query('month') month?: string,
@@ -57,6 +58,7 @@ export class StudentController {
       'e seu próprio entry (mesmo quando estiver fora do top 10).',
   })
   @ApiResponse({ status: 200, description: 'Ranking retornado com sucesso.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
   async getLeaderboard(@Request() req: { user: { id: string } }) {
     return this.getStudentLeaderboardUseCase.execute({ userId: req.user.id });
   }
@@ -72,6 +74,7 @@ export class StudentController {
     status: 200,
     description: 'Ranking de ofensivas retornado com sucesso.',
   })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
   async getStreakLeaderboard(@Request() req: { user: { id: string } }) {
     return this.getStudentStreakLeaderboardUseCase.execute({
       userId: req.user.id,
