@@ -25,7 +25,9 @@ export class CreateQuestionUseCase implements UseCase<
   constructor(private readonly questionRepository: QuestionRepository) {}
 
   async execute(request: CreateQuestionRequest): Promise<Question> {
-    const count = await this.questionRepository.countBySimulationId(request.simulationId);
+    const count = await this.questionRepository.countBySimulationId(
+      request.simulationId,
+    );
 
     const options =
       request.options?.map((opt, index) => ({

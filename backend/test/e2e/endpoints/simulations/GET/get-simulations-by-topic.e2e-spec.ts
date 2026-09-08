@@ -21,7 +21,8 @@ describe('GET /simulations/topic/:topicId', () => {
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
     const containsSeeded = response.body.some(
-      (simulation: { slug: string }) => simulation.slug === 'simulado-funcional',
+      (simulation: { slug: string }) =>
+        simulation.slug === 'simulado-funcional',
     );
     expect(containsSeeded).toBe(true);
   });

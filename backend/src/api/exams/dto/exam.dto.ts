@@ -14,7 +14,10 @@ export const createExamSchema = z.object({
     .enum(['PUBLISHED', 'DRAFT'])
     .default('PUBLISHED')
     .describe('Controla se os alunos podem ver e acessar este exame.'),
-  iconKey: z.string().optional().describe('Chave do ícone Lucide. Ex: "trophy"'),
+  iconKey: z
+    .string()
+    .optional()
+    .describe('Chave do ícone Lucide. Ex: "trophy"'),
   colorScheme: z.string().optional().describe('Esquema de cor. Ex: "indigo"'),
   category: z
     .enum(['CONCURSOS', 'CERTIFICACOES', 'VESTIBULAR', 'OAB', 'OUTROS'])

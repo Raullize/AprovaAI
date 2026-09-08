@@ -3,7 +3,11 @@ import { applicationBaseUrl } from './helpers/testHelper';
 
 const BACKEND_ROOT = process.cwd();
 
-function runCommand(command: string, args: string[], cwd: string = BACKEND_ROOT) {
+function runCommand(
+  command: string,
+  args: string[],
+  cwd: string = BACKEND_ROOT,
+) {
   const result = spawnSync(command, args, {
     cwd,
     env: process.env,

@@ -18,11 +18,16 @@ export interface CreateSimulationRequest {
 }
 
 @Injectable()
-export class CreateSimulationUseCase implements UseCase<CreateSimulationRequest, Simulation> {
+export class CreateSimulationUseCase implements UseCase<
+  CreateSimulationRequest,
+  Simulation
+> {
   constructor(private readonly simulationRepository: SimulationRepository) {}
 
   async execute(request: CreateSimulationRequest): Promise<Simulation> {
-    const count = await this.simulationRepository.countByTopicId(request.topicId);
+    const count = await this.simulationRepository.countByTopicId(
+      request.topicId,
+    );
 
     const slug = await generateUniqueSlug(
       request.name,

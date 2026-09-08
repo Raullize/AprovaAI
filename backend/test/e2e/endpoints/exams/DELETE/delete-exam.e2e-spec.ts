@@ -39,7 +39,9 @@ describe('DELETE /exams/:id', () => {
     expect(response.status).toBe(200);
     createdExamId = '';
 
-    const stillExists = await prisma.exam.findUnique({ where: { id: deletedId } });
+    const stillExists = await prisma.exam.findUnique({
+      where: { id: deletedId },
+    });
     expect(stillExists).toBeNull();
   });
 

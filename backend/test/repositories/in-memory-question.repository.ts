@@ -10,7 +10,9 @@ export class InMemoryQuestionRepository implements QuestionRepository {
   }
 
   findBySimulationId(simulationId: string): Promise<Question[]> {
-    const questions = this.items.filter((item) => item.simulationId === simulationId);
+    const questions = this.items.filter(
+      (item) => item.simulationId === simulationId,
+    );
     return Promise.resolve(questions.sort((a, b) => a.order - b.order));
   }
 
@@ -57,7 +59,9 @@ export class InMemoryQuestionRepository implements QuestionRepository {
   }
 
   countBySimulationId(simulationId: string): Promise<number> {
-    const count = this.items.filter((item) => item.simulationId === simulationId).length;
+    const count = this.items.filter(
+      (item) => item.simulationId === simulationId,
+    ).length;
     return Promise.resolve(count);
   }
 }

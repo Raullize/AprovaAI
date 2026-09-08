@@ -24,7 +24,10 @@ export class InMemorySimulationRepository implements SimulationRepository {
     return Promise.resolve(simulation || null);
   }
 
-  findBySlugAndTopicId(slug: string, topicId: string): Promise<Simulation | null> {
+  findBySlugAndTopicId(
+    slug: string,
+    topicId: string,
+  ): Promise<Simulation | null> {
     const simulation = this.items.find(
       (item) => item.slug.value === slug && item.topicId === topicId,
     );

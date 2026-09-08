@@ -40,8 +40,7 @@ describe('POST /simulation-attempts/start', () => {
   });
 
   it('deve retornar 404 ao tentar iniciar um simulado com simulationId inexistente', async () => {
-    const nonExistentSimulationId =
-      '00000000-0000-0000-0000-000000000000';
+    const nonExistentSimulationId = '00000000-0000-0000-0000-000000000000';
     const response = await createPostRequestWithAuth(
       '/simulation-attempts/start',
       { simulationId: nonExistentSimulationId },
@@ -52,10 +51,9 @@ describe('POST /simulation-attempts/start', () => {
   });
 
   it('deve retornar 401 ao tentar iniciar sem estar autenticado', async () => {
-    const response = await createPostRequest(
-      '/simulation-attempts/start',
-      { simulationId },
-    );
+    const response = await createPostRequest('/simulation-attempts/start', {
+      simulationId,
+    });
 
     expect(response.status).toBe(401);
   });

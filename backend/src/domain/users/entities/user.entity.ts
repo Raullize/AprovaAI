@@ -83,7 +83,8 @@ export class User extends AggregateRoot<UserProps> {
 
   public updateStreak(today: Date): boolean {
     const lastActive = this.props.lastActiveAt;
-    const truncateDate = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const truncateDate = (d: Date) =>
+      new Date(d.getFullYear(), d.getMonth(), d.getDate());
     const todayTrunc = truncateDate(today);
 
     if (!lastActive) {

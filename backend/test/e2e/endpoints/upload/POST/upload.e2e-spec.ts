@@ -1,5 +1,8 @@
 import supertest from 'supertest';
-import { createPostRequest, applicationBaseUrl } from '../../../helpers/testHelper';
+import {
+  createPostRequest,
+  applicationBaseUrl,
+} from '../../../helpers/testHelper';
 
 const PNG_1PX_BUFFER = Buffer.from(
   'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',

@@ -66,7 +66,10 @@ export function createPatchRequestWithAuth(
     .send(payload);
 }
 
-export function createDeleteRequestWithAuth(resourcePath: string, token: string) {
+export function createDeleteRequestWithAuth(
+  resourcePath: string,
+  token: string,
+) {
   return supertest(applicationBaseUrl)
     .delete(`${API_PREFIX}${resourcePath}`)
     .set('Authorization', `Bearer ${token}`);

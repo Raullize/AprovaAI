@@ -19,24 +19,37 @@ export class ReorderQuestionsUseCase implements UseCase<
 
     const uniqueIds = new Set(request.ids);
     if (uniqueIds.size !== request.ids.length) {
-      throw new InvalidReorderError('Existem IDs duplicados na lista de reordenação.');
+      throw new InvalidReorderError(
+        'Existem IDs duplicados na lista de reordenação.',
+      );
     }
 
-    const referenceQuestion = await this.questionRepository.findById(request.ids[0]);
+    const referenceQuestion = await this.questionRepository.findById(
+      request.ids[0],
+    );
     if (!referenceQuestion) {
-      throw new InvalidReorderError(`A questão com ID ${request.ids[0]} não foi encontrada.`);
+      throw new InvalidReorderError(
+        `A questão com ID ${request.ids[0]} não foi encontrada.`,
+      );
     }
 
-    const allQuestionsInScope = await this.questionRepository.findBySimulationId(referenceQuestion.simulationId);
+    const allQuestionsInScope =
+      await this.questionRepository.findBySimulationId(
+        referenceQuestion.simulationId,
+      );
     const scopeIds = allQuestionsInScope.map((q) => q.id);
 
     if (request.ids.length !== scopeIds.length) {
-      throw new InvalidReorderError('A lista de reordenação deve conter exatamente todas as questões do simulado atual.');
+      throw new InvalidReorderError(
+        'A lista de reordenação deve conter exatamente todas as questões do simulado atual.',
+      );
     }
 
     const isValid = request.ids.every((id) => scopeIds.includes(id));
     if (!isValid) {
-      throw new InvalidReorderError('Um ou mais IDs informados não pertencem a este simulado ou são inválidos.');
+      throw new InvalidReorderError(
+        'Um ou mais IDs informados não pertencem a este simulado ou são inválidos.',
+      );
     }
 
     await this.questionRepository.reorder(request.ids);

@@ -29,13 +29,18 @@ export class FinishSimulationUseCase implements UseCase<
     private readonly userRepository: UserRepository,
   ) {}
 
-  async execute(request: FinishSimulationRequest): Promise<FinishSimulationResponse> {
+  async execute(
+    request: FinishSimulationRequest,
+  ): Promise<FinishSimulationResponse> {
     // 1. Fetch simulation with answers
     const simulationAttempt = await this.simulationAttemptRepository.findById(
       request.simulationAttemptId,
     );
     if (!simulationAttempt) {
-      throw new ResourceNotFoundError('SimulationAttempt', request.simulationAttemptId);
+      throw new ResourceNotFoundError(
+        'SimulationAttempt',
+        request.simulationAttemptId,
+      );
     }
 
     if (simulationAttempt.userId !== request.userId) {
@@ -51,9 +56,14 @@ export class FinishSimulationUseCase implements UseCase<
     }
 
     // 2. Fetch simulation to know passing criteria
-    const simulation = await this.simulationRepository.findById(simulationAttempt.simulationId);
+    const simulation = await this.simulationRepository.findById(
+      simulationAttempt.simulationId,
+    );
     if (!simulation) {
-      throw new ResourceNotFoundError('Simulation', simulationAttempt.simulationId);
+      throw new ResourceNotFoundError(
+        'Simulation',
+        simulationAttempt.simulationId,
+      );
     }
 
     // 3. Calculate score
@@ -84,17 +94,23 @@ export class FinishSimulationUseCase implements UseCase<
       throw new ResourceNotFoundError('User', request.userId);
     }
 
-    const userAttempts = await this.simulationAttemptRepository.findHistoryByUserId(request.userId);
+    const userAttempts =
+      await this.simulationAttemptRepository.findHistoryByUserId(
+        request.userId,
+      );
     const completedAttemptsForSimulation = userAttempts.filter(
       (attempt) =>
         attempt.simulationId === simulationAttempt.simulationId &&
         attempt.status === 'COMPLETED' &&
         attempt.id !== simulationAttempt.id,
     );
-    const maxPrevStars = completedAttemptsForSimulation.reduce((max, attempt) => {
-      const attemptStars = attempt.stars ?? 0;
-      return attemptStars > max ? attemptStars : max;
-    }, 0);
+    const maxPrevStars = completedAttemptsForSimulation.reduce(
+      (max, attempt) => {
+        const attemptStars = attempt.stars ?? 0;
+        return attemptStars > max ? attemptStars : max;
+      },
+      0,
+    );
 
     const getMultiplier = (s: number) => {
       if (s === 3) return 1.0;
@@ -137,7 +153,8 @@ export class FinishSimulationUseCase implements UseCase<
       simulationAttempt.id,
     );
 
-    const savedResult = await this.simulationAttemptRepository.save(updatedSimulation);
+    const savedResult =
+      await this.simulationAttemptRepository.save(updatedSimulation);
 
     return {
       simulationAttempt: savedResult,

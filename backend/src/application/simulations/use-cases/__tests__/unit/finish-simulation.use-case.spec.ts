@@ -2,7 +2,10 @@ import { FinishSimulationUseCase } from '../../finish-simulation.use-case';
 import { InMemorySimulationAttemptRepository } from '../../../../../../test/repositories/in-memory-simulation-attempt.repository';
 import { InMemorySimulationRepository } from '../../../../../../test/repositories/in-memory-simulation.repository';
 import { InMemoryUserRepository } from '../../../../../../test/repositories/in-memory-user.repository';
-import { AttemptAnswer, SimulationAttempt } from '../../../../../domain/simulations/entities/simulation-attempt.entity';
+import {
+  AttemptAnswer,
+  SimulationAttempt,
+} from '../../../../../domain/simulations/entities/simulation-attempt.entity';
 import { Simulation } from '../../../../../domain/content/entities/simulation.entity';
 import { User } from '../../../../../domain/users/entities/user.entity';
 import { Slug } from '../../../../../domain/content/value-objects/slug';

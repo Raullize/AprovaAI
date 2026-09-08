@@ -23,7 +23,9 @@ export const registerSchema = z.object({
     .describe('Senha de acesso com no mínimo 6 caracteres. Ex: senha123'),
   dateOfBirth: z
     .string()
-    .describe('Data de nascimento no formato ISO ou YYYY-MM-DD. Ex: 1998-10-15'),
+    .describe(
+      'Data de nascimento no formato ISO ou YYYY-MM-DD. Ex: 1998-10-15',
+    ),
 });
 
 export class RegisterDto extends createZodDto(registerSchema) {}

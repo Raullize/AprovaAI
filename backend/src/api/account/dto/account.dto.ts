@@ -40,7 +40,9 @@ export const updateAccountPasswordSchema = z.object({
   newPassword: z
     .string()
     .min(6, 'A senha deve ter no minimo 6 caracteres')
-    .describe('Nova senha da conta com no minimo 6 caracteres. Ex: novaSenha123'),
+    .describe(
+      'Nova senha da conta com no minimo 6 caracteres. Ex: novaSenha123',
+    ),
 });
 
 export class UpdateAccountPasswordDto extends createZodDto(

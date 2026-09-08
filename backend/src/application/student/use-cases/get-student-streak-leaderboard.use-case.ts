@@ -21,24 +21,29 @@ export interface GetStudentStreakLeaderboardResponse {
 }
 
 @Injectable()
-export class GetStudentStreakLeaderboardUseCase
-  implements UseCase<GetStudentStreakLeaderboardRequest, GetStudentStreakLeaderboardResponse>
-{
+export class GetStudentStreakLeaderboardUseCase implements UseCase<
+  GetStudentStreakLeaderboardRequest,
+  GetStudentStreakLeaderboardResponse
+> {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async execute(request: GetStudentStreakLeaderboardRequest): Promise<GetStudentStreakLeaderboardResponse> {
+  async execute(
+    request: GetStudentStreakLeaderboardRequest,
+  ): Promise<GetStudentStreakLeaderboardResponse> {
     const [users, currentUserRank] = await Promise.all([
       this.userRepository.findStreakLeaderboard(10),
       this.userRepository.findUserRankByStreak(request.userId),
     ]);
 
-    const topUsers: StudentStreakLeaderboardEntry[] = users.map((user, index) => ({
-      rank: index + 1,
-      fullName: user.fullName,
-      username: user.username,
-      bestStreak: user.bestStreak,
-      streakCount: user.streakCount,
-    }));
+    const topUsers: StudentStreakLeaderboardEntry[] = users.map(
+      (user, index) => ({
+        rank: index + 1,
+        fullName: user.fullName,
+        username: user.username,
+        bestStreak: user.bestStreak,
+        streakCount: user.streakCount,
+      }),
+    );
 
     const currentUser = await this.userRepository.findById(request.userId);
     const currentUserEntry: StudentStreakLeaderboardEntry | null = currentUser

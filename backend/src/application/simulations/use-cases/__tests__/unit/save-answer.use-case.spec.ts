@@ -14,7 +14,10 @@ describe('SaveAnswerUseCase', () => {
   beforeEach(() => {
     simulationAttemptRepository = new InMemorySimulationAttemptRepository();
     questionRepository = new InMemoryQuestionRepository();
-    sut = new SaveAnswerUseCase(simulationAttemptRepository, questionRepository);
+    sut = new SaveAnswerUseCase(
+      simulationAttemptRepository,
+      questionRepository,
+    );
   });
 
   it('should save a correct single choice answer in practice mode', async () => {

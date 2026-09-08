@@ -22,9 +22,10 @@ export interface AccountProfileResponse {
 }
 
 @Injectable()
-export class GetAccountProfileUseCase
-  implements UseCase<GetAccountProfileRequest, AccountProfileResponse | null>
-{
+export class GetAccountProfileUseCase implements UseCase<
+  GetAccountProfileRequest,
+  AccountProfileResponse | null
+> {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(

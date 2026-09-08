@@ -8,7 +8,12 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import {
   createSimulationSchema,
   updateSimulationSchema,
@@ -46,7 +51,10 @@ export class SimulationsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Criar Nível', description: 'Cria um novo nível/simulado (Apenas Admin).' })
+  @ApiOperation({
+    summary: 'Criar Nível',
+    description: 'Cria um novo nível/simulado (Apenas Admin).',
+  })
   @ApiResponse({ status: 201, description: 'Nível criado com sucesso.' })
   create(
     @Body(new ZodValidationPipe(createSimulationSchema))
@@ -56,21 +64,30 @@ export class SimulationsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar Níveis', description: 'Retorna a lista de todos os níveis cadastrados.' })
+  @ApiOperation({
+    summary: 'Listar Níveis',
+    description: 'Retorna a lista de todos os níveis cadastrados.',
+  })
   @ApiResponse({ status: 200, description: 'Lista retornada com sucesso.' })
   findAll() {
     return this.findAllSimulationsUseCase.execute();
   }
 
   @Get('topic/:topicId')
-  @ApiOperation({ summary: 'Buscar Níveis por Tópico', description: 'Retorna todos os níveis pertencentes a um tópico específico.' })
+  @ApiOperation({
+    summary: 'Buscar Níveis por Tópico',
+    description: 'Retorna todos os níveis pertencentes a um tópico específico.',
+  })
   @ApiResponse({ status: 200, description: 'Níveis encontrados.' })
   findByTopic(@Param('topicId') topicId: string) {
     return this.findSimulationsByTopicIdUseCase.execute(topicId);
   }
 
   @Get(':idOrSlug')
-  @ApiOperation({ summary: 'Buscar Nível por ID ou Slug', description: 'Retorna os detalhes de um nível específico.' })
+  @ApiOperation({
+    summary: 'Buscar Nível por ID ou Slug',
+    description: 'Retorna os detalhes de um nível específico.',
+  })
   @ApiResponse({ status: 200, description: 'Nível encontrado.' })
   findOne(@Param('idOrSlug') idOrSlug: string) {
     return this.findSimulationByIdOrSlugUseCase.execute(idOrSlug);
@@ -80,7 +97,10 @@ export class SimulationsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Reordenar Níveis', description: 'Atualiza a ordem de exibição dos níveis (Apenas Admin).' })
+  @ApiOperation({
+    summary: 'Reordenar Níveis',
+    description: 'Atualiza a ordem de exibição dos níveis (Apenas Admin).',
+  })
   @ApiResponse({ status: 200, description: 'Ordem atualizada com sucesso.' })
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
     return this.reorderSimulationsUseCase.execute(reorderDto);
@@ -90,21 +110,30 @@ export class SimulationsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Atualizar Nível', description: 'Atualiza os dados de um nível existente (Apenas Admin).' })
+  @ApiOperation({
+    summary: 'Atualizar Nível',
+    description: 'Atualiza os dados de um nível existente (Apenas Admin).',
+  })
   @ApiResponse({ status: 200, description: 'Nível atualizado com sucesso.' })
   update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateSimulationSchema))
     updateSimulationDto: UpdateSimulationDto,
   ) {
-    return this.updateSimulationUseCase.execute({ id, data: updateSimulationDto });
+    return this.updateSimulationUseCase.execute({
+      id,
+      data: updateSimulationDto,
+    });
   }
 
   @Delete(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Excluir Nível', description: 'Remove um nível do sistema (Apenas Admin).' })
+  @ApiOperation({
+    summary: 'Excluir Nível',
+    description: 'Remove um nível do sistema (Apenas Admin).',
+  })
   @ApiResponse({ status: 200, description: 'Nível removido com sucesso.' })
   remove(@Param('id') id: string) {
     return this.deleteSimulationUseCase.execute(id);

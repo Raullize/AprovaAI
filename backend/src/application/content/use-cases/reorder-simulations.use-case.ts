@@ -19,12 +19,18 @@ export class ReorderSimulationsUseCase implements UseCase<
 
     const uniqueIds = new Set(request.ids);
     if (uniqueIds.size !== request.ids.length) {
-      throw new InvalidReorderError('Existem IDs duplicados na lista de reordenação.');
+      throw new InvalidReorderError(
+        'Existem IDs duplicados na lista de reordenação.',
+      );
     }
 
-    const referenceSimulation = await this.simulationRepository.findById(request.ids[0]);
+    const referenceSimulation = await this.simulationRepository.findById(
+      request.ids[0],
+    );
     if (!referenceSimulation) {
-      throw new InvalidReorderError(`O simulado com ID ${request.ids[0]} não foi encontrado.`);
+      throw new InvalidReorderError(
+        `O simulado com ID ${request.ids[0]} não foi encontrado.`,
+      );
     }
 
     const allSimulationsInScope = await this.simulationRepository.findByTopicId(
@@ -40,7 +46,9 @@ export class ReorderSimulationsUseCase implements UseCase<
 
     const isValid = request.ids.every((id) => scopeIds.includes(id));
     if (!isValid) {
-      throw new InvalidReorderError('Um ou mais IDs informados não pertencem a este tópico ou são inválidos.');
+      throw new InvalidReorderError(
+        'Um ou mais IDs informados não pertencem a este tópico ou são inválidos.',
+      );
     }
 
     await this.simulationRepository.reorder(request.ids);

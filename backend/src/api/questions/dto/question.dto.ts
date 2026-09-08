@@ -75,10 +75,7 @@ export const createQuestionSchema = z.object({
 export class CreateQuestionDto extends createZodDto(createQuestionSchema) {}
 
 export const updateQuestionSchema = z.object({
-  content: z
-    .string()
-    .optional()
-    .describe('Novo enunciado da questão.'),
+  content: z.string().optional().describe('Novo enunciado da questão.'),
   imageUrl: z
     .string()
     .optional()

@@ -94,7 +94,8 @@ export class InMemoryUserRepository implements UserRepository {
     const target = this.items.find((u) => u.id === userId);
     if (!target) return Promise.resolve(-1);
     const rank =
-      this.items.filter((u) => u.role === 'STUDENT' && u.xp > target.xp).length + 1;
+      this.items.filter((u) => u.role === 'STUDENT' && u.xp > target.xp)
+        .length + 1;
     return Promise.resolve(rank);
   }
 
@@ -110,7 +111,9 @@ export class InMemoryUserRepository implements UserRepository {
 
   delete(id: string): Promise<void> {
     this.items = this.items.filter((item) => item.id !== id);
-    this.activities = this.activities.filter((activity) => activity.userId !== id);
+    this.activities = this.activities.filter(
+      (activity) => activity.userId !== id,
+    );
     return Promise.resolve();
   }
 }

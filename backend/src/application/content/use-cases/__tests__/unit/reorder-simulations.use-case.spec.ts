@@ -37,7 +37,9 @@ describe('ReorderSimulationsUseCase', () => {
     await repository.create(simulationC);
 
     // Reverse the order: C, A, B
-    await useCase.execute({ ids: [simulationC.id, simulationA.id, simulationB.id] });
+    await useCase.execute({
+      ids: [simulationC.id, simulationA.id, simulationB.id],
+    });
 
     const reordered = await repository.findByTopicId('topic-01');
 
@@ -65,8 +67,12 @@ describe('ReorderSimulationsUseCase', () => {
 
     await useCase.execute({ ids: [simulationB.id, simulationA.id] });
 
-    const simulationBAfter = repository.items.find((l) => l.id === simulationB.id)!;
-    const simulationAAfter = repository.items.find((l) => l.id === simulationA.id)!;
+    const simulationBAfter = repository.items.find(
+      (l) => l.id === simulationB.id,
+    )!;
+    const simulationAAfter = repository.items.find(
+      (l) => l.id === simulationA.id,
+    )!;
 
     expect(simulationBAfter.order).toBe(0);
     expect(simulationAAfter.order).toBe(1);

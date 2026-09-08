@@ -59,10 +59,14 @@ export class PrismaSimulationAttemptRepository implements SimulationAttemptRepos
       },
     });
 
-    return results.map((result) => PrismaSimulationAttemptMapper.toDomain(result));
+    return results.map((result) =>
+      PrismaSimulationAttemptMapper.toDomain(result),
+    );
   }
 
-  async create(simulationAttempt: SimulationAttempt): Promise<SimulationAttempt> {
+  async create(
+    simulationAttempt: SimulationAttempt,
+  ): Promise<SimulationAttempt> {
     const data = PrismaSimulationAttemptMapper.toPrisma(simulationAttempt);
     const created = await this.prisma.simulationAttempt.create({ data });
     return PrismaSimulationAttemptMapper.toDomain(created);

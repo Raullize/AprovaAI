@@ -66,7 +66,11 @@ export class PrismaUserRepository implements UserRepository {
   }
 
   async logActivity(userId: string, date: Date): Promise<void> {
-    const truncateDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    const truncateDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+    );
     await this.prisma.userActivity.upsert({
       where: {
         userId_date: {
@@ -82,9 +86,20 @@ export class PrismaUserRepository implements UserRepository {
     });
   }
 
-  async findActivitiesByUserIdAndMonth(userId: string, month: Date): Promise<Date[]> {
+  async findActivitiesByUserIdAndMonth(
+    userId: string,
+    month: Date,
+  ): Promise<Date[]> {
     const startOfMonth = new Date(month.getFullYear(), month.getMonth(), 1);
-    const endOfMonth = new Date(month.getFullYear(), month.getMonth() + 1, 0, 23, 59, 59, 999);
+    const endOfMonth = new Date(
+      month.getFullYear(),
+      month.getMonth() + 1,
+      0,
+      23,
+      59,
+      59,
+      999,
+    );
     const activities = await this.prisma.userActivity.findMany({
       where: {
         userId,

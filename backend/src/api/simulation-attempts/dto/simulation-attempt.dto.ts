@@ -42,7 +42,9 @@ export const finishSimulationSchema = z.object({
     .int()
     .min(0)
     .optional()
-    .describe('Tempo total gasto pelo aluno no simulado em segundos. Exemplo: 3600'),
+    .describe(
+      'Tempo total gasto pelo aluno no simulado em segundos. Exemplo: 3600',
+    ),
 });
 
 export class StartSimulationDto extends createZodDto(startSimulationSchema) {}

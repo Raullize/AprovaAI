@@ -12,9 +12,13 @@ export class GetSimulationHistoryUseCase implements UseCase<
   GetSimulationHistoryRequest,
   SimulationAttempt[]
 > {
-  constructor(private readonly simulationAttemptRepository: SimulationAttemptRepository) {}
+  constructor(
+    private readonly simulationAttemptRepository: SimulationAttemptRepository,
+  ) {}
 
-  async execute(request: GetSimulationHistoryRequest): Promise<SimulationAttempt[]> {
+  async execute(
+    request: GetSimulationHistoryRequest,
+  ): Promise<SimulationAttempt[]> {
     return this.simulationAttemptRepository.findHistoryByUserId(request.userId);
   }
 }

@@ -23,7 +23,9 @@ export class StartSimulationUseCase implements UseCase<
 
   async execute(request: StartSimulationRequest): Promise<SimulationAttempt> {
     // 1. Check if simulation exists and count questions
-    const simulation = await this.simulationRepository.findById(request.simulationId);
+    const simulation = await this.simulationRepository.findById(
+      request.simulationId,
+    );
     if (!simulation) {
       throw new ResourceNotFoundError('Simulation', request.simulationId);
     }

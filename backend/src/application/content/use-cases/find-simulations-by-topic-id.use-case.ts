@@ -4,7 +4,10 @@ import { SimulationRepository } from '../../../domain/content/repositories/simul
 import { Simulation } from '../../../domain/content/entities/simulation.entity';
 
 @Injectable()
-export class FindSimulationsByTopicIdUseCase implements UseCase<string, Simulation[]> {
+export class FindSimulationsByTopicIdUseCase implements UseCase<
+  string,
+  Simulation[]
+> {
   constructor(private readonly simulationRepository: SimulationRepository) {}
 
   async execute(topicId: string): Promise<Simulation[]> {

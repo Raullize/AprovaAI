@@ -63,7 +63,7 @@ describe('GetStudentDashboardStatsUseCase', () => {
     await userRepository.logActivity(user.id, new Date(2026, 4, 10)); // May 10
     await userRepository.logActivity(user.id, new Date(2026, 4, 15)); // May 15
     // Atividade em outro mês (não deve aparecer)
-    await userRepository.logActivity(user.id, new Date(2026, 5, 1));  // June 1
+    await userRepository.logActivity(user.id, new Date(2026, 5, 1)); // June 1
 
     const result = await sut.execute({ userId: user.id, month: '2026-05' });
 

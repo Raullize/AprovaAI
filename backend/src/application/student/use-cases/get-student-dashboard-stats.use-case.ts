@@ -19,13 +19,10 @@ export interface GetStudentDashboardStatsResponse {
 }
 
 @Injectable()
-export class GetStudentDashboardStatsUseCase
-  implements
-    UseCase<
-      GetStudentDashboardStatsRequest,
-      GetStudentDashboardStatsResponse
-    >
-{
+export class GetStudentDashboardStatsUseCase implements UseCase<
+  GetStudentDashboardStatsRequest,
+  GetStudentDashboardStatsResponse
+> {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(
@@ -48,10 +45,11 @@ export class GetStudentDashboardStatsUseCase
       referenceDate = new Date();
     }
 
-    const activeDates = await this.userRepository.findActivitiesByUserIdAndMonth(
-      user.id,
-      referenceDate,
-    );
+    const activeDates =
+      await this.userRepository.findActivitiesByUserIdAndMonth(
+        user.id,
+        referenceDate,
+      );
 
     const monthStr = `${referenceDate.getFullYear()}-${String(referenceDate.getMonth() + 1).padStart(2, '0')}`;
 

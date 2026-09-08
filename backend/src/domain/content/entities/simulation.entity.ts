@@ -112,8 +112,10 @@ export class Simulation extends AggregateRoot<SimulationProps> {
     this.props.topicId = details.topicId;
     this.props.xpReward = details.xpReward;
     this.props.passingPercentage = details.passingPercentage;
-    if (details.timeLimit !== undefined) this.props.timeLimit = details.timeLimit;
-    if (details.simulationMode !== undefined) this.props.simulationMode = details.simulationMode;
+    if (details.timeLimit !== undefined)
+      this.props.timeLimit = details.timeLimit;
+    if (details.simulationMode !== undefined)
+      this.props.simulationMode = details.simulationMode;
     this.props.updatedAt = new Date();
   }
 

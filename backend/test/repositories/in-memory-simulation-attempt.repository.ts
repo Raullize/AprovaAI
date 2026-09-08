@@ -31,13 +31,17 @@ export class InMemorySimulationAttemptRepository implements SimulationAttemptRep
     return this.items.filter((item) => item.userId === userId);
   }
 
-  async create(simulationAttempt: SimulationAttempt): Promise<SimulationAttempt> {
+  async create(
+    simulationAttempt: SimulationAttempt,
+  ): Promise<SimulationAttempt> {
     this.items.push(simulationAttempt);
     return simulationAttempt;
   }
 
   async save(simulationAttempt: SimulationAttempt): Promise<SimulationAttempt> {
-    const index = this.items.findIndex((item) => item.id === simulationAttempt.id);
+    const index = this.items.findIndex(
+      (item) => item.id === simulationAttempt.id,
+    );
 
     if (index >= 0) {
       this.items[index] = simulationAttempt;

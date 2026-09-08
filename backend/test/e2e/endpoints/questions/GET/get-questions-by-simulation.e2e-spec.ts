@@ -31,9 +31,8 @@ describe('GET /questions/simulation/:simulationId', () => {
 
     expect(response.status).toBe(200);
     expect(Array.isArray(response.body)).toBe(true);
-    const containsSeeded = response.body.some(
-      (question: { content: string }) =>
-        question.content.includes('teste funcional'),
+    const containsSeeded = response.body.some((question: { content: string }) =>
+      question.content.includes('teste funcional'),
     );
     expect(containsSeeded).toBe(true);
   });

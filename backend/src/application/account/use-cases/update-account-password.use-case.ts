@@ -16,10 +16,10 @@ export interface UpdateAccountPasswordResponse {
 }
 
 @Injectable()
-export class UpdateAccountPasswordUseCase
-  implements
-    UseCase<UpdateAccountPasswordRequest, UpdateAccountPasswordResponse>
-{
+export class UpdateAccountPasswordUseCase implements UseCase<
+  UpdateAccountPasswordRequest,
+  UpdateAccountPasswordResponse
+> {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly hashProvider: HashProvider,

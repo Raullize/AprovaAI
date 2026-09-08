@@ -8,7 +8,12 @@ import {
   Delete,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiOperation,
+  ApiResponse,
+} from '@nestjs/swagger';
 import {
   createExamSchema,
   updateExamSchema,
@@ -45,7 +50,10 @@ export class ExamsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Criar Exame/Trilha', description: 'Cria uma nova trilha principal de estudos (Apenas Admin).' })
+  @ApiOperation({
+    summary: 'Criar Exame/Trilha',
+    description: 'Cria uma nova trilha principal de estudos (Apenas Admin).',
+  })
   @ApiResponse({ status: 201, description: 'Exame criado com sucesso.' })
   create(
     @Body(new ZodValidationPipe(createExamSchema)) createExamDto: CreateExamDto,
@@ -54,14 +62,20 @@ export class ExamsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Listar Exames', description: 'Retorna a lista de todos os exames/trilhas cadastrados.' })
+  @ApiOperation({
+    summary: 'Listar Exames',
+    description: 'Retorna a lista de todos os exames/trilhas cadastrados.',
+  })
   @ApiResponse({ status: 200, description: 'Lista retornada com sucesso.' })
   findAll() {
     return this.findAllExamsUseCase.execute();
   }
 
   @Get(':idOrSlug')
-  @ApiOperation({ summary: 'Buscar Exame por ID ou Slug', description: 'Retorna os detalhes de um exame específico.' })
+  @ApiOperation({
+    summary: 'Buscar Exame por ID ou Slug',
+    description: 'Retorna os detalhes de um exame específico.',
+  })
   @ApiResponse({ status: 200, description: 'Exame encontrado.' })
   findOne(@Param('idOrSlug') idOrSlug: string) {
     return this.findExamByIdOrSlugUseCase.execute(idOrSlug);
@@ -71,7 +85,10 @@ export class ExamsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Reordenar Exames', description: 'Atualiza a ordem de exibição dos exames (Apenas Admin).' })
+  @ApiOperation({
+    summary: 'Reordenar Exames',
+    description: 'Atualiza a ordem de exibição dos exames (Apenas Admin).',
+  })
   @ApiResponse({ status: 200, description: 'Ordem atualizada com sucesso.' })
   reorder(@Body(new ZodValidationPipe(reorderSchema)) reorderDto: ReorderDto) {
     return this.reorderExamsUseCase.execute(reorderDto);
@@ -81,7 +98,10 @@ export class ExamsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Atualizar Exame', description: 'Atualiza os dados de um exame existente (Apenas Admin).' })
+  @ApiOperation({
+    summary: 'Atualizar Exame',
+    description: 'Atualiza os dados de um exame existente (Apenas Admin).',
+  })
   @ApiResponse({ status: 200, description: 'Exame atualizado com sucesso.' })
   update(
     @Param('id') id: string,
@@ -94,7 +114,10 @@ export class ExamsController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(UserRole.ADMIN)
-  @ApiOperation({ summary: 'Excluir Exame', description: 'Remove um exame do sistema (Apenas Admin).' })
+  @ApiOperation({
+    summary: 'Excluir Exame',
+    description: 'Remove um exame do sistema (Apenas Admin).',
+  })
   @ApiResponse({ status: 200, description: 'Exame removido com sucesso.' })
   remove(@Param('id') id: string) {
     return this.deleteExamUseCase.execute(id);

@@ -16,7 +16,10 @@ describe('StartSimulationUseCase', () => {
   beforeEach(() => {
     simulationAttemptRepository = new InMemorySimulationAttemptRepository();
     simulationRepository = new InMemorySimulationRepository();
-    sut = new StartSimulationUseCase(simulationAttemptRepository, simulationRepository);
+    sut = new StartSimulationUseCase(
+      simulationAttemptRepository,
+      simulationRepository,
+    );
   });
 
   it('should create a new simulation using simulation mode and questions count', async () => {

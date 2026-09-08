@@ -36,7 +36,10 @@ describe('UpdateAccountPasswordUseCase', () => {
 
     expect(result.message).toBe('Senha atualizada com sucesso.');
     await expect(
-      hashProvider.compare('new-password', userRepository.items[0].passwordHash),
+      hashProvider.compare(
+        'new-password',
+        userRepository.items[0].passwordHash,
+      ),
     ).resolves.toBe(true);
   });
 

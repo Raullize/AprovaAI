@@ -85,7 +85,8 @@ export class Exam extends AggregateRoot<ExamProps> {
     this.props.description = details.description;
     this.props.slug = details.slug;
     if (details.iconKey !== undefined) this.props.iconKey = details.iconKey;
-    if (details.colorScheme !== undefined) this.props.colorScheme = details.colorScheme;
+    if (details.colorScheme !== undefined)
+      this.props.colorScheme = details.colorScheme;
     if (details.category !== undefined) this.props.category = details.category;
     this.props.updatedAt = new Date();
   }

@@ -22,11 +22,15 @@ export interface UpdateSimulationRequest {
 }
 
 @Injectable()
-export class UpdateSimulationUseCase implements UseCase<UpdateSimulationRequest, Simulation> {
+export class UpdateSimulationUseCase implements UseCase<
+  UpdateSimulationRequest,
+  Simulation
+> {
   constructor(private readonly simulationRepository: SimulationRepository) {}
 
   async execute(request: UpdateSimulationRequest): Promise<Simulation> {
-    const simulation: Simulation | null = await this.simulationRepository.findById(request.id);
+    const simulation: Simulation | null =
+      await this.simulationRepository.findById(request.id);
 
     if (!simulation) {
       throw new ResourceNotFoundError('Simulation', request.id);
@@ -54,8 +58,12 @@ export class UpdateSimulationUseCase implements UseCase<UpdateSimulationRequest,
           request.data.passingPercentage !== undefined
             ? Percentage.create(request.data.passingPercentage)
             : Percentage.create(simulation.passingPercentage),
-        timeLimit: request.data.timeLimit !== undefined ? request.data.timeLimit : simulation.timeLimit,
-        simulationMode: request.data.simulationMode ?? simulation.simulationMode,
+        timeLimit:
+          request.data.timeLimit !== undefined
+            ? request.data.timeLimit
+            : simulation.timeLimit,
+        simulationMode:
+          request.data.simulationMode ?? simulation.simulationMode,
       });
     } else if (
       request.data.description !== undefined ||
@@ -75,8 +83,12 @@ export class UpdateSimulationUseCase implements UseCase<UpdateSimulationRequest,
           request.data.passingPercentage !== undefined
             ? Percentage.create(request.data.passingPercentage)
             : Percentage.create(simulation.passingPercentage),
-        timeLimit: request.data.timeLimit !== undefined ? request.data.timeLimit : simulation.timeLimit,
-        simulationMode: request.data.simulationMode ?? simulation.simulationMode,
+        timeLimit:
+          request.data.timeLimit !== undefined
+            ? request.data.timeLimit
+            : simulation.timeLimit,
+        simulationMode:
+          request.data.simulationMode ?? simulation.simulationMode,
       });
     }
 

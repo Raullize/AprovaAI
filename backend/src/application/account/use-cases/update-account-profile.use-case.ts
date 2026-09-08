@@ -15,9 +15,10 @@ export interface UpdateAccountProfileRequest {
 }
 
 @Injectable()
-export class UpdateAccountProfileUseCase
-  implements UseCase<UpdateAccountProfileRequest, AccountProfileResponse>
-{
+export class UpdateAccountProfileUseCase implements UseCase<
+  UpdateAccountProfileRequest,
+  AccountProfileResponse
+> {
   constructor(private readonly userRepository: UserRepository) {}
 
   async execute(

@@ -9,7 +9,9 @@ describe('GET /exams/:idOrSlug', () => {
       where: { slug: 'exame-funcional' },
     });
     if (!exam) {
-      throw new Error('Seed funcional nao preparou exame com slug exame-funcional');
+      throw new Error(
+        'Seed funcional nao preparou exame com slug exame-funcional',
+      );
     }
     seededExamId = exam.id;
     seededExamSlug = exam.slug;

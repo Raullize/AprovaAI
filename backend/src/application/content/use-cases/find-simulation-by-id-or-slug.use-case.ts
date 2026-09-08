@@ -5,7 +5,10 @@ import { Simulation } from '../../../domain/content/entities/simulation.entity';
 import { ResourceNotFoundError } from '../../../shared/core/errors/resource-not-found.error';
 
 @Injectable()
-export class FindSimulationByIdOrSlugUseCase implements UseCase<string, Simulation> {
+export class FindSimulationByIdOrSlugUseCase implements UseCase<
+  string,
+  Simulation
+> {
   constructor(private readonly simulationRepository: SimulationRepository) {}
 
   async execute(idOrSlug: string): Promise<Simulation> {

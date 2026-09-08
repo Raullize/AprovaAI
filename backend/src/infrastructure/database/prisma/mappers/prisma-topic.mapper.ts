@@ -3,7 +3,9 @@ import { Topic } from '../../../../domain/content/entities/topic.entity';
 import { Slug } from '../../../../domain/content/value-objects/slug';
 
 export class PrismaTopicMapper {
-  static toDomain(raw: PrismaTopic & { _count?: { simulations: number } }): Topic {
+  static toDomain(
+    raw: PrismaTopic & { _count?: { simulations: number } },
+  ): Topic {
     return Topic.create(
       {
         name: raw.name,

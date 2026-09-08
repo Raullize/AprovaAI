@@ -31,7 +31,10 @@ export class SaveAnswerUseCase implements UseCase<
       request.simulationAttemptId,
     );
     if (!simulationAttempt) {
-      throw new ResourceNotFoundError('SimulationAttempt', request.simulationAttemptId);
+      throw new ResourceNotFoundError(
+        'SimulationAttempt',
+        request.simulationAttemptId,
+      );
     }
 
     // 2. Validate simulation belongs to user and is in progress
@@ -90,7 +93,8 @@ export class SaveAnswerUseCase implements UseCase<
       isFlaggedForReview: request.isFlaggedForReview ?? false,
     });
 
-    const savedAnswer = await this.simulationAttemptRepository.saveAnswer(newAnswer);
+    const savedAnswer =
+      await this.simulationAttemptRepository.saveAnswer(newAnswer);
 
     // 6. Anti-Cheat: If mode is EXAM, don't return the correctness of the answer
     if (simulationAttempt.mode === 'EXAM') {

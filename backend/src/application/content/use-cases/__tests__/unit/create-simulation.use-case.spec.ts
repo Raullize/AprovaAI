@@ -42,7 +42,10 @@ describe('Create Simulation Use Case', () => {
 
   it('should append a suffix to the slug if a simulation with same name exists in same topic', async () => {
     await sut.execute({ name: 'Same Name', topicId: 'topic-1' });
-    const simulation = await sut.execute({ name: 'Same Name', topicId: 'topic-1' });
+    const simulation = await sut.execute({
+      name: 'Same Name',
+      topicId: 'topic-1',
+    });
 
     expect(simulation.slug.value).toBe('same-name-1');
   });

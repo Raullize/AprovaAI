@@ -13,14 +13,13 @@ export interface DeleteAccountResponse {
 }
 
 @Injectable()
-export class DeleteAccountUseCase
-  implements UseCase<DeleteAccountRequest, DeleteAccountResponse>
-{
+export class DeleteAccountUseCase implements UseCase<
+  DeleteAccountRequest,
+  DeleteAccountResponse
+> {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async execute(
-    request: DeleteAccountRequest,
-  ): Promise<DeleteAccountResponse> {
+  async execute(request: DeleteAccountRequest): Promise<DeleteAccountResponse> {
     const user = await this.userRepository.findById(request.userId);
 
     if (!user) {
@@ -28,7 +27,9 @@ export class DeleteAccountUseCase
     }
 
     if (user.role === 'ADMIN') {
-      throw new ActionNotAllowedError('Administradores não podem excluir suas próprias contas.');
+      throw new ActionNotAllowedError(
+        'Administradores não podem excluir suas próprias contas.',
+      );
     }
 
     await this.userRepository.delete(user.id);

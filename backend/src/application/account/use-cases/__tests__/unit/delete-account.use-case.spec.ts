@@ -44,9 +44,9 @@ describe('DeleteAccountUseCase', () => {
 
     userRepository.items.push(admin);
 
-    await expect(
-      sut.execute({ userId: admin.id }),
-    ).rejects.toBeInstanceOf(ActionNotAllowedError);
+    await expect(sut.execute({ userId: admin.id })).rejects.toBeInstanceOf(
+      ActionNotAllowedError,
+    );
 
     expect(userRepository.items).toHaveLength(1);
   });

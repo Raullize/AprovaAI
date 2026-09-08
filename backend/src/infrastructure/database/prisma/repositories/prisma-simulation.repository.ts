@@ -12,7 +12,9 @@ export class PrismaSimulationRepository implements SimulationRepository {
     const simulations = await this.prisma.simulation.findMany({
       orderBy: { order: 'asc' },
     });
-    return simulations.map((simulation) => PrismaSimulationMapper.toDomain(simulation));
+    return simulations.map((simulation) =>
+      PrismaSimulationMapper.toDomain(simulation),
+    );
   }
 
   async findByTopicId(topicId: string): Promise<Simulation[]> {
@@ -25,7 +27,9 @@ export class PrismaSimulationRepository implements SimulationRepository {
         },
       },
     });
-    return simulations.map((simulation) => PrismaSimulationMapper.toDomain(simulation));
+    return simulations.map((simulation) =>
+      PrismaSimulationMapper.toDomain(simulation),
+    );
   }
 
   async findById(id: string): Promise<Simulation | null> {

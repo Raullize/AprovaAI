@@ -92,7 +92,8 @@ export class Topic extends AggregateRoot<TopicProps> {
     this.props.slug = details.slug;
     this.props.examId = details.examId;
     if (details.iconKey !== undefined) this.props.iconKey = details.iconKey;
-    if (details.colorScheme !== undefined) this.props.colorScheme = details.colorScheme;
+    if (details.colorScheme !== undefined)
+      this.props.colorScheme = details.colorScheme;
     if (details.showComingSoon !== undefined) {
       this.props.showComingSoon = details.showComingSoon;
     }
