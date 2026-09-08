@@ -8,6 +8,8 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   showPasswordToggle?: boolean;
   showPassword?: boolean;
   onTogglePassword?: () => void;
+  inputSize?: 'md' | 'lg';
+  labelStyle?: 'default' | 'uppercase';
 }
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
@@ -20,16 +22,30 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       showPassword = false,
       onTogglePassword,
       type,
+      inputSize = 'md',
+      labelStyle = 'default',
       ...props
     },
     ref,
   ) => {
     const baseClasses =
-      'w-full px-3.5 py-2.5 border rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed sm:text-sm text-slate-800 placeholder:text-slate-400';
+      'w-full border transition-all duration-200 focus:outline-none focus:ring-2 disabled:opacity-50 disabled:cursor-not-allowed sm:text-sm text-slate-800 placeholder:text-slate-400';
 
-    const errorClasses = error
+    const sizeClasses = {
+      md: 'px-3.5 py-2.5 rounded-xl',
+      lg: 'px-4 py-3 rounded-2xl font-medium text-sm',
+    };
+
+    const focusClasses = error
       ? 'border-red-400 bg-red-50 focus:ring-red-500/20 focus:border-red-500'
-      : 'border-slate-200 bg-white hover:border-slate-300 focus:ring-indigo-500/20 focus:border-indigo-400';
+      : inputSize === 'lg'
+        ? 'border-slate-200 bg-white hover:border-slate-300 focus:ring-indigo-500 focus:border-transparent'
+        : 'border-slate-200 bg-white hover:border-slate-300 focus:ring-indigo-500/20 focus:border-indigo-400';
+
+    const labelClasses =
+      labelStyle === 'uppercase'
+        ? 'block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5'
+        : 'block text-sm font-medium text-gray-700';
 
     const inputType = showPasswordToggle
       ? showPassword
@@ -39,16 +55,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     return (
       <div className="space-y-2">
-        {label && (
-          <label className="block text-sm font-medium text-gray-700">
-            {label}
-          </label>
-        )}
+        {label && <label className={labelClasses}>{label}</label>}
         <div className="relative">
           <input
             ref={ref}
             type={inputType}
-            className={cn(baseClasses, errorClasses, className)}
+            className={cn(
+              baseClasses,
+              sizeClasses[inputSize],
+              focusClasses,
+              className,
+            )}
             {...props}
           />
           {showPasswordToggle && onTogglePassword && (
