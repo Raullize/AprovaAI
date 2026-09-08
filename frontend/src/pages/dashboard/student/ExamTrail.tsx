@@ -13,13 +13,22 @@ import {
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import { examsService } from '../../../services/exams.service';
+import type { Exam } from '../../../services/exams.service';
 import { topicsService } from '../../../services/topics.service';
+import type { Topic } from '../../../services/topics.service';
 import { simulationAttemptsService } from '../../../services/simulation-attempts.service';
+import type { ApiSimulationHistoryItem } from '../../../services/simulation-attempts.service';
 import { simulationsService } from '../../../services/simulations.service';
+import type { Simulation } from '../../../services/simulations.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
 import EmptyState from '../../../components/ui/EmptyState';
-import SimulationNodeTimeline, { type SimulationData, type TopicData } from '../../../components/trail/SimulationNodeTimeline';
+import SimulationNodeTimeline, {
+  type SimulationData,
+  type TopicData,
+} from '../../../components/trail/SimulationNodeTimeline';
+
+type TrailTopic = Topic & { simulations: Simulation[] };
 
 const ComingSoonNodeTimeline = () => {
   return (
@@ -31,8 +40,8 @@ const ComingSoonNodeTimeline = () => {
               Em breve
             </h3>
             <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
-              Este tópico ainda vai receber novos simulados. Continue acompanhando a
-              trilha para liberar o próximo desafio.
+              Este tópico ainda vai receber novos simulados. Continue
+              acompanhando a trilha para liberar o próximo desafio.
             </p>
           </div>
         </div>
@@ -77,16 +86,15 @@ export default function ExamTrail() {
   const { examId } = useParams<{ examId: string }>();
   const navigate = useNavigate();
 
-  const [exam, setExam] = useState<any>(null);
-  const [topics, setTopics] = useState<any[]>([]);
-  const [history, setHistory] = useState<any[]>([]);
+  const [exam, setExam] = useState<Exam | null>(null);
+  const [topics, setTopics] = useState<TrailTopic[]>([]);
+  const [history, setHistory] = useState<ApiSimulationHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
   const [pendingStart, setPendingStart] = useState<{
     simulation: SimulationData;
     topic: TopicData;
   } | null>(null);
-
 
   useEffect(() => {
     async function loadTrail() {
@@ -104,7 +112,10 @@ export default function ExamTrail() {
           topicsData.map(async (topic) => {
             const simulationsData = await simulationsService.findAll(topic.id);
             const publicSimulations = simulationsData
-              .filter((sim) => sim.status === 'PUBLISHED' && (sim.questionsCount ?? 0) > 0)
+              .filter(
+                (sim) =>
+                  sim.status === 'PUBLISHED' && (sim.questionsCount ?? 0) > 0,
+              )
               .sort((a, b) => a.order - b.order);
 
             return {
@@ -153,7 +164,12 @@ export default function ExamTrail() {
   const allSimulations = topics.flatMap((t) => t.simulations);
   const simulationStatusMap: Record<
     string,
-    { stars: number; passed: boolean; attempted: boolean; status: 'COMPLETED' | 'CURRENT' | 'LOCKED' }
+    {
+      stars: number;
+      passed: boolean;
+      attempted: boolean;
+      status: 'COMPLETED' | 'CURRENT' | 'LOCKED';
+    }
   > = {};
 
   let previousPassed = true;
@@ -189,7 +205,9 @@ export default function ExamTrail() {
   const mappedTopics: TopicData[] = topics.map((t) => ({
     ...t,
     showComingSoon: t.showComingSoon ?? false,
-    simulations: t.simulations.map((sim: any) => ({
+    iconKey: t.iconKey ?? '',
+    colorScheme: t.colorScheme ?? '',
+    simulations: t.simulations.map((sim) => ({
       ...sim,
       status: simulationStatusMap[sim.id]?.status || 'LOCKED',
       stars: simulationStatusMap[sim.id]?.stars || 0,
@@ -203,11 +221,18 @@ export default function ExamTrail() {
   const activeTopicObj: TopicData | undefined =
     mappedTopics.find((t) => t.id === expandedTopic) || mappedTopics[0];
   const totalCompleted = mappedTopics.reduce(
-    (acc: number, t: TopicData) => acc + t.simulations.filter((sim: SimulationData) => sim.status === 'COMPLETED').length,
+    (acc: number, t: TopicData) =>
+      acc +
+      t.simulations.filter((sim: SimulationData) => sim.status === 'COMPLETED')
+        .length,
     0,
   );
-  const totalSimulations = mappedTopics.reduce((acc: number, t: TopicData) => acc + t.simulations.length, 0);
-  const globalProgress = totalSimulations > 0 ? (totalCompleted / totalSimulations) * 100 : 0;
+  const totalSimulations = mappedTopics.reduce(
+    (acc: number, t: TopicData) => acc + t.simulations.length,
+    0,
+  );
+  const globalProgress =
+    totalSimulations > 0 ? (totalCompleted / totalSimulations) * 100 : 0;
   const pendingTheme = pendingStart
     ? getColorOption(pendingStart.topic.colorScheme)
     : getColorOption('indigo');
@@ -217,21 +242,24 @@ export default function ExamTrail() {
   const instructions =
     pendingStart?.simulation.simulationMode === 'EXAM'
       ? [
-        'Leia cada questão com calma e confirme sua resposta quando estiver seguro.',
-        'O feedback aparece ao final do simulado, junto com seu resultado completo.',
-        pendingStart.simulation.timeLimit
-          ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
-          : 'Este exame não tem cronômetro, então você pode concluir no seu ritmo.',
-      ]
+          'Leia cada questão com calma e confirme sua resposta quando estiver seguro.',
+          'O feedback aparece ao final do simulado, junto com seu resultado completo.',
+          pendingStart.simulation.timeLimit
+            ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
+            : 'Este exame não tem cronômetro, então você pode concluir no seu ritmo.',
+        ]
       : [
-        'O modo treino mostra feedback imediato após cada resposta confirmada.',
-        'Use este simulado para aprender com mais leveza e reforçar os pontos principais.',
-        pendingStart?.simulation.timeLimit
-          ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
-          : 'Este treino não tem cronômetro, então você pode concluir no seu ritmo.',
-      ];
+          'O modo treino mostra feedback imediato após cada resposta confirmada.',
+          'Use este simulado para aprender com mais leveza e reforçar os pontos principais.',
+          pendingStart?.simulation.timeLimit
+            ? 'Fique de olho no cronômetro: quando o tempo acabar, a tentativa será finalizada.'
+            : 'Este treino não tem cronômetro, então você pode concluir no seu ritmo.',
+        ];
 
-  const handleStartSimulation = (simulation: SimulationData, topic: TopicData) => {
+  const handleStartSimulation = (
+    simulation: SimulationData,
+    topic: TopicData,
+  ) => {
     setPendingStart({ simulation, topic });
   };
 
@@ -319,7 +347,8 @@ export default function ExamTrail() {
                   </span>
                 </div>
                 <p className="text-base font-bold text-slate-800">
-                  {pendingStart.simulation.timeLimit && pendingStart.simulation.timeLimit > 0
+                  {pendingStart.simulation.timeLimit &&
+                  pendingStart.simulation.timeLimit > 0
                     ? formatDuration(pendingStart.simulation.timeLimit)
                     : 'Sem cronômetro'}
                 </p>
@@ -357,7 +386,9 @@ export default function ExamTrail() {
             >
               <div className="flex items-center gap-2 mb-3">
                 {pendingStart.simulation.simulationMode === 'EXAM' ? (
-                  <ShieldCheck className={cn('h-5 w-5', pendingTheme.textDark)} />
+                  <ShieldCheck
+                    className={cn('h-5 w-5', pendingTheme.textDark)}
+                  />
                 ) : (
                   <Brain className={cn('h-5 w-5', pendingTheme.textDark)} />
                 )}
@@ -368,7 +399,12 @@ export default function ExamTrail() {
               <div className="space-y-2.5 text-sm text-slate-600">
                 {instructions.map((instruction) => (
                   <p key={instruction} className="flex items-start gap-2">
-                    <span className={cn('mt-0.5 text-base leading-none', pendingTheme.textDark)}>
+                    <span
+                      className={cn(
+                        'mt-0.5 text-base leading-none',
+                        pendingTheme.textDark,
+                      )}
+                    >
                       •
                     </span>
                     <span>{instruction}</span>
@@ -379,8 +415,11 @@ export default function ExamTrail() {
 
             <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3">
               <p className="text-sm text-amber-800">
-                Meta de aprovação: <span className="font-bold">{pendingStart.simulation.passingPercentage ?? 70}%</span>
-                {' '}de acertos para concluir este simulado com sucesso.
+                Meta de aprovação:{' '}
+                <span className="font-bold">
+                  {pendingStart.simulation.passingPercentage ?? 70}%
+                </span>{' '}
+                de acertos para concluir este simulado com sucesso.
               </p>
             </div>
 
@@ -421,10 +460,12 @@ export default function ExamTrail() {
         {/* Mobile-only Exam Info Card */}
         <div className="lg:hidden bg-white p-5 rounded-3xl shadow-sm border border-slate-200 text-center mb-6">
           <div className="flex items-center gap-4 text-left">
-            <div className={cn(
-              "w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 bg-gradient-to-br",
-              getColorOption(exam?.colorScheme || 'orange').gradient
-            )}>
+            <div
+              className={cn(
+                'w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 bg-gradient-to-br',
+                getColorOption(exam?.colorScheme || 'orange').gradient,
+              )}
+            >
               <PlayCircle className="h-6 w-6 text-white" />
             </div>
             <div className="flex-1 min-w-0">
@@ -432,7 +473,9 @@ export default function ExamTrail() {
                 {exam?.name || 'AWS Cloud Practitioner'}
               </h1>
               <p className="text-slate-500 font-medium text-xs mt-0.5">
-                {exam?.category === 'OAB' ? 'Exame da Ordem' : 'Trilha de Certificação'}
+                {exam?.category === 'OAB'
+                  ? 'Exame da Ordem'
+                  : 'Trilha de Certificação'}
               </p>
             </div>
             <div className="text-right shrink-0">
@@ -471,17 +514,21 @@ export default function ExamTrail() {
 
               {/* Exam Info Card */}
               <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center">
-                <div className={cn(
-                  "w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner bg-gradient-to-br",
-                  getColorOption(exam?.colorScheme || 'orange').gradient
-                )}>
+                <div
+                  className={cn(
+                    'w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner bg-gradient-to-br',
+                    getColorOption(exam?.colorScheme || 'orange').gradient,
+                  )}
+                >
                   <PlayCircle className="h-8 w-8 text-white" />
                 </div>
                 <h1 className="text-2xl font-bold text-slate-800 font-display">
                   {exam?.name || 'AWS Cloud Practitioner'}
                 </h1>
                 <p className="text-slate-500 font-medium text-sm mt-1">
-                  {exam?.category === 'OAB' ? 'Exame da Ordem' : 'Trilha de Certificação'}
+                  {exam?.category === 'OAB'
+                    ? 'Exame da Ordem'
+                    : 'Trilha de Certificação'}
                 </p>
 
                 <div className="mt-6 text-left">
@@ -510,10 +557,10 @@ export default function ExamTrail() {
                   </h2>
                 </div>
                 <div className="p-2 space-y-1">
-                  {mappedTopics.map((topic: any) => {
+                  {mappedTopics.map((topic) => {
                     const isActive = expandedTopic === topic.id;
                     const completed = topic.simulations.filter(
-                      (l: any) => l.status === 'COMPLETED',
+                      (l) => l.status === 'COMPLETED',
                     ).length;
                     const iconOpt = getIconOption(topic.iconKey);
                     const colorOpt = getColorOption(topic.colorScheme);
@@ -552,7 +599,8 @@ export default function ExamTrail() {
                             {topic.name}
                           </p>
                           <p className="text-xs text-slate-400 font-medium mt-0.5">
-                            {topic.simulations.length === 0 && topic.showComingSoon
+                            {topic.simulations.length === 0 &&
+                            topic.showComingSoon
                               ? 'Em breve'
                               : `${completed}/${topic.simulations.length} concluídos`}
                           </p>
@@ -603,7 +651,8 @@ export default function ExamTrail() {
                             {topic.name}
                           </h4>
                           <p className="text-[10px] font-semibold text-slate-400 mt-0.5">
-                            {topic.simulations.length === 0 && topic.showComingSoon
+                            {topic.simulations.length === 0 &&
+                            topic.showComingSoon
                               ? 'Em breve'
                               : `${completedCount}/${topic.simulations.length} concluídos`}
                           </p>
@@ -626,18 +675,20 @@ export default function ExamTrail() {
 
                     {/* Levels list (continuous timeline) */}
                     <div className="flex flex-col items-center py-4">
-                      {topic.simulations.map((simulation: SimulationData, idx: number) => (
-                        <SimulationNodeTimeline
-                          key={simulation.id}
-                          simulation={simulation}
-                          topic={topic}
-                          onStart={handleStartSimulation}
-                          isLast={
-                            idx === topic.simulations.length - 1 &&
-                            !topic.showComingSoon
-                          }
-                        />
-                      ))}
+                      {topic.simulations.map(
+                        (simulation: SimulationData, idx: number) => (
+                          <SimulationNodeTimeline
+                            key={simulation.id}
+                            simulation={simulation}
+                            topic={topic}
+                            onStart={handleStartSimulation}
+                            isLast={
+                              idx === topic.simulations.length - 1 &&
+                              !topic.showComingSoon
+                            }
+                          />
+                        ),
+                      )}
                       {topic.showComingSoon && <ComingSoonNodeTimeline />}
                     </div>
                   </div>
@@ -668,25 +719,26 @@ export default function ExamTrail() {
               </div>
 
               <div className="flex flex-col items-center py-8">
-                {activeTopicObj.simulations.map((simulation: SimulationData, idx: number) => (
-                  <SimulationNodeTimeline
-                    key={simulation.id}
-                    simulation={simulation}
-                    topic={activeTopicObj}
-                    onStart={handleStartSimulation}
-                    isLast={
-                      idx === activeTopicObj.simulations.length - 1 &&
-                      !activeTopicObj.showComingSoon
-                    }
-                  />
-                ))}
+                {activeTopicObj.simulations.map(
+                  (simulation: SimulationData, idx: number) => (
+                    <SimulationNodeTimeline
+                      key={simulation.id}
+                      simulation={simulation}
+                      topic={activeTopicObj}
+                      onStart={handleStartSimulation}
+                      isLast={
+                        idx === activeTopicObj.simulations.length - 1 &&
+                        !activeTopicObj.showComingSoon
+                      }
+                    />
+                  ),
+                )}
                 {activeTopicObj.showComingSoon && <ComingSoonNodeTimeline />}
               </div>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

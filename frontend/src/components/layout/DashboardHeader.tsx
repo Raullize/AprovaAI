@@ -36,6 +36,11 @@ interface DashboardHeaderProps {
   onMenuClick?: () => void;
 }
 
+interface HeaderHistoryItem {
+  status: string;
+  createdAt: string;
+}
+
 export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
   const { user, signOut } = useAuth();
   const location = useLocation();
@@ -78,7 +83,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
 
         if (historyRes.data) {
           const todayStr = new Date().toDateString();
-          const doneToday = historyRes.data.filter((h: any) => {
+          const doneToday = historyRes.data.filter((h: HeaderHistoryItem) => {
             if (h.status !== 'COMPLETED') return false;
             const itemDate = new Date(h.createdAt).toDateString();
             return itemDate === todayStr;
@@ -194,7 +199,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = () => {
                   navigate(
                     user?.role === 'ADMIN'
                       ? '/dashboard/settings'
-                      : '/dashboard/profile/settings'
+                      : '/dashboard/profile/settings',
                   );
                   setIsDropdownOpen(false);
                 }}

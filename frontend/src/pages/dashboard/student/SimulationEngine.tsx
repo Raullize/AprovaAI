@@ -11,7 +11,6 @@ import { useAuth } from '../../../context/AuthContext';
 import type { SimulationMode } from '../../../types/simulation.types';
 import SimulationSummary from '../../../components/simulation/SimulationSummary';
 
-
 type FeedbackState = 'correct' | 'wrong' | null;
 
 export interface Option {
@@ -38,10 +37,7 @@ interface SimulationConfig {
   passingPercentage: number;
 }
 
-
 const DEFAULT_TIME_LIMIT = 10 * 60; // 10 min in seconds (EXAM mode)
-
-
 
 const CORRECT_MESSAGES = [
   { title: 'Excelente!', subtitle: 'Continue assim, você está arrasando!' },
@@ -65,7 +61,6 @@ const WRONG_MESSAGES = [
   },
 ];
 
-
 function formatTime(seconds: number) {
   const m = Math.floor(seconds / 60)
     .toString()
@@ -73,7 +68,6 @@ function formatTime(seconds: number) {
   const s = (seconds % 60).toString().padStart(2, '0');
   return `${m}:${s}`;
 }
-
 
 export default function SimulationEngine() {
   const { simulationId } = useParams<{ simulationId: string }>();
@@ -84,9 +78,12 @@ export default function SimulationEngine() {
   const mode = (searchParams.get('mode') as SimulationMode) || 'PRACTICE';
   const examId = searchParams.get('examId');
 
-  const [simulationConfig, setSimulationConfig] = useState<SimulationConfig | null>(null);
+  const [simulationConfig, setSimulationConfig] =
+    useState<SimulationConfig | null>(null);
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [simulationAttemptId, setSimulationAttemptId] = useState<string | null>(null);
+  const [simulationAttemptId, setSimulationAttemptId] = useState<string | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [initError, setInitError] = useState<string | null>(null);
 
@@ -96,7 +93,12 @@ export default function SimulationEngine() {
   const [timeLeft, setTimeLeft] = useState(DEFAULT_TIME_LIMIT);
   const [showExit, setShowExit] = useState(false);
   const [answers, setAnswers] = useState<
-    { questionId: string; selectedId: string; selectedIds?: string[]; correct: boolean }[]
+    {
+      questionId: string;
+      selectedId: string;
+      selectedIds?: string[];
+      correct: boolean;
+    }[]
   >([]);
   const [flagged, setFlagged] = useState<Record<string, boolean>>({});
   const [view, setView] = useState<'QUESTION' | 'SUMMARY'>('QUESTION');
@@ -110,7 +112,10 @@ export default function SimulationEngine() {
   const pendingSaveRequestsRef = useRef<Promise<unknown>[]>([]);
 
   const trackPendingSave = useCallback(<T,>(request: Promise<T>) => {
-    pendingSaveRequestsRef.current = [...pendingSaveRequestsRef.current, request];
+    pendingSaveRequestsRef.current = [
+      ...pendingSaveRequestsRef.current,
+      request,
+    ];
 
     request.finally(() => {
       pendingSaveRequestsRef.current = pendingSaveRequestsRef.current.filter(
@@ -143,21 +148,25 @@ export default function SimulationEngine() {
         setSimulationAttemptId(startData.id);
 
         const questionsData = await questionsService.findAll(simulationId!);
-        const mappedQuestions = questionsData.map((q) => ({
-          id: q.id,
-          text: q.content,
-          imageUrl: q.imageUrl,
-          type: q.type,
-          explanation: q.explanation || 'Sem explicação disponível.',
-          studyLink: q.studyLink,
-          order: q.order,
-          options: q.options.map((o) => ({
-            id: o.id ?? '',
-            text: o.text,
-            isCorrect: o.isCorrect,
-            order: o.order,
-          })).sort((a: Option, b: Option) => a.order - b.order),
-        })).sort((a: Question, b: Question) => a.order - b.order);
+        const mappedQuestions = questionsData
+          .map((q) => ({
+            id: q.id,
+            text: q.content,
+            imageUrl: q.imageUrl,
+            type: q.type,
+            explanation: q.explanation || 'Sem explicação disponível.',
+            studyLink: q.studyLink,
+            order: q.order,
+            options: q.options
+              .map((o) => ({
+                id: o.id ?? '',
+                text: o.text,
+                isCorrect: o.isCorrect,
+                order: o.order,
+              }))
+              .sort((a: Option, b: Option) => a.order - b.order),
+          }))
+          .sort((a: Question, b: Question) => a.order - b.order);
 
         setQuestions(mappedQuestions);
 
@@ -177,12 +186,13 @@ export default function SimulationEngine() {
           });
           setFlagged(mappedFlagged);
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error('Failed to initialize simulation:', err);
         const msg =
-          err?.response?.data?.message ||
+          (err as { response?: { data?: { message?: string | string[] } } })
+            .response?.data?.message ||
           'Nao foi possivel iniciar o simulado. Verifique se o nivel possui questoes cadastradas.';
-        setInitError(msg);
+        setInitError(Array.isArray(msg) ? msg[0] : msg);
       } finally {
         setIsLoading(false);
       }
@@ -207,7 +217,7 @@ export default function SimulationEngine() {
         timeSpent: 0,
         isFlaggedForReview: isFlagged,
       })
-      .catch((err: any) => {
+      .catch((err) => {
         console.error('Failed to save answer:', err);
       });
 
@@ -220,21 +230,30 @@ export default function SimulationEngine() {
       setIsLoading(true);
       await waitForPendingSaves();
 
-      const baseLimit = simulationConfig?.timeLimit && simulationConfig.timeLimit > 0 ? simulationConfig.timeLimit : (mode === 'EXAM' ? DEFAULT_TIME_LIMIT : 0);
-      const computedTimeSpent = baseLimit > 0 ? Math.max(0, baseLimit - timeLeft) : 0;
+      const baseLimit =
+        simulationConfig?.timeLimit && simulationConfig.timeLimit > 0
+          ? simulationConfig.timeLimit
+          : mode === 'EXAM'
+            ? DEFAULT_TIME_LIMIT
+            : 0;
+      const computedTimeSpent =
+        baseLimit > 0 ? Math.max(0, baseLimit - timeLeft) : 0;
 
-      const finishData = await simulationAttemptsService.finish(simulationAttemptId, {
-        timeSpent: computedTimeSpent,
-      });
+      const finishData = await simulationAttemptsService.finish(
+        simulationAttemptId,
+        {
+          timeSpent: computedTimeSpent,
+        },
+      );
       const { simulationAttempt, xpGained } = finishData;
       const rawResolved =
         simulationAttempt.answers && simulationAttempt.answers.length > 0
-          ? simulationAttempt.answers.map((ans: any) => ({
-            questionId: ans.questionId,
-            selectedId: ans.selectedOptions[0] || '',
-            selectedIds: ans.selectedOptions || [],
-            correct: ans.isCorrect ?? false,
-          }))
+          ? simulationAttempt.answers.map((ans) => ({
+              questionId: ans.questionId,
+              selectedId: ans.selectedOptions[0] || '',
+              selectedIds: ans.selectedOptions || [],
+              correct: ans.isCorrect ?? false,
+            }))
           : answers;
 
       const resolvedAnswers = questions.map((q) => {
@@ -280,11 +299,13 @@ export default function SimulationEngine() {
     waitForPendingSaves,
     answers,
     questions,
+    examId,
   ]);
 
   // Timer for EXAM mode, or PRACTICE mode if level has timeLimit
   useEffect(() => {
-    const hasTimeLimit = simulationConfig?.timeLimit && simulationConfig.timeLimit > 0;
+    const hasTimeLimit =
+      simulationConfig?.timeLimit && simulationConfig.timeLimit > 0;
     if (mode !== 'EXAM' && !hasTimeLimit) return;
     if (timeLeft <= 0) {
       handleFinish();
@@ -309,7 +330,12 @@ export default function SimulationEngine() {
   useEffect(() => {
     if (mode === 'EXAM' && currentQuestion) {
       const existing = answers.find((a) => a.questionId === currentQuestion.id);
-      setSelectedOptions(existing ? (existing.selectedIds || (existing.selectedId ? [existing.selectedId] : [])) : []);
+      setSelectedOptions(
+        existing
+          ? existing.selectedIds ||
+              (existing.selectedId ? [existing.selectedId] : [])
+          : [],
+      );
     }
   }, [currentIndex, answers, currentQuestion, mode]);
 
@@ -321,16 +347,32 @@ export default function SimulationEngine() {
     return (
       <div className="fixed inset-0 bg-white flex flex-col items-center justify-center gap-6 px-6 text-center z-50">
         <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
-          <svg className="h-8 w-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 4a8 8 0 100 16A8 8 0 0012 4z" />
+          <svg
+            className="h-8 w-8 text-red-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01M12 4a8 8 0 100 16A8 8 0 0012 4z"
+            />
           </svg>
         </div>
         <div>
-          <h2 className="text-xl font-bold text-slate-800 mb-2">Nao foi possivel iniciar</h2>
+          <h2 className="text-xl font-bold text-slate-800 mb-2">
+            Nao foi possivel iniciar
+          </h2>
           <p className="text-sm text-slate-500 max-w-xs">{initError}</p>
         </div>
         <button
-          onClick={() => navigate(examId ? `/dashboard/explore/${examId}` : '/dashboard/explore')}
+          onClick={() =>
+            navigate(
+              examId ? `/dashboard/explore/${examId}` : '/dashboard/explore',
+            )
+          }
           className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 transition-all shadow-md"
         >
           Voltar para a Trilha
@@ -356,8 +398,8 @@ export default function SimulationEngine() {
     } else {
       const selectedOption = selectedOptions[0];
       correct =
-        currentQuestion.options.find((o) => o.id === selectedOption)?.isCorrect ??
-        false;
+        currentQuestion.options.find((o) => o.id === selectedOption)
+          ?.isCorrect ?? false;
     }
 
     setFeedback(correct ? 'correct' : 'wrong');
@@ -370,7 +412,11 @@ export default function SimulationEngine() {
         correct,
       },
     ]);
-    saveAnswerToBackend(currentQuestion.id, selectedOptions, !!flagged[currentQuestion.id]);
+    saveAnswerToBackend(
+      currentQuestion.id,
+      selectedOptions,
+      !!flagged[currentQuestion.id],
+    );
   };
 
   const handleSelectOption = (optionId: string) => {
@@ -381,7 +427,9 @@ export default function SimulationEngine() {
     if (isMultiple) {
       setSelectedOptions((prev) => {
         const exists = prev.includes(optionId);
-        const next = exists ? prev.filter((id) => id !== optionId) : [...prev, optionId];
+        const next = exists
+          ? prev.filter((id) => id !== optionId)
+          : [...prev, optionId];
 
         if (mode === 'EXAM') {
           setAnswers((prevAnswers) => {
@@ -401,7 +449,11 @@ export default function SimulationEngine() {
             }
             return [...prevAnswers, newAns];
           });
-          saveAnswerToBackend(currentQuestion.id, next, !!flagged[currentQuestion.id]);
+          saveAnswerToBackend(
+            currentQuestion.id,
+            next,
+            !!flagged[currentQuestion.id],
+          );
         }
         return next;
       });
@@ -412,11 +464,13 @@ export default function SimulationEngine() {
 
         if (mode === 'EXAM') {
           if (isAlreadySelected) {
-            setAnswers((prevAnswers) => prevAnswers.filter((a) => a.questionId !== currentQuestion.id));
+            setAnswers((prevAnswers) =>
+              prevAnswers.filter((a) => a.questionId !== currentQuestion.id),
+            );
           } else {
             const correct =
-              currentQuestion.options.find((o) => o.id === optionId)?.isCorrect ??
-              false;
+              currentQuestion.options.find((o) => o.id === optionId)
+                ?.isCorrect ?? false;
             setAnswers((prevAnswers) => {
               const existingIdx = prevAnswers.findIndex(
                 (a) => a.questionId === currentQuestion.id,
@@ -434,7 +488,11 @@ export default function SimulationEngine() {
               }
               return [...prevAnswers, newAns];
             });
-            saveAnswerToBackend(currentQuestion.id, [optionId], !!flagged[currentQuestion.id]);
+            saveAnswerToBackend(
+              currentQuestion.id,
+              [optionId],
+              !!flagged[currentQuestion.id],
+            );
           }
         }
         return next;
@@ -483,7 +541,9 @@ export default function SimulationEngine() {
             CANCELAR
           </button>
           <button
-            onClick={() => navigate(examId ? `/dashboard/explore/${examId}` : '/dashboard')}
+            onClick={() =>
+              navigate(examId ? `/dashboard/explore/${examId}` : '/dashboard')
+            }
             className="flex-1 py-3 rounded-2xl font-bold text-white bg-red-500 hover:bg-red-600 border-b-4 border-red-700 active:border-b-0 active:translate-y-1 transition-all"
           >
             SAIR
@@ -503,7 +563,9 @@ export default function SimulationEngine() {
           setCurrentIndex={setCurrentIndex}
           setView={setView}
           handleFinish={handleFinish}
-          hasTimeLimit={!!(simulationConfig?.timeLimit && simulationConfig.timeLimit > 0)}
+          hasTimeLimit={
+            !!(simulationConfig?.timeLimit && simulationConfig.timeLimit > 0)
+          }
         />
       ) : (
         <>
@@ -526,7 +588,10 @@ export default function SimulationEngine() {
             </div>
 
             {/* Timer (EXAM mode, or PRACTICE mode if level has timeLimit) */}
-            {(mode === 'EXAM' || !!(simulationConfig?.timeLimit && simulationConfig.timeLimit > 0)) && (
+            {(mode === 'EXAM' ||
+              !!(
+                simulationConfig?.timeLimit && simulationConfig.timeLimit > 0
+              )) && (
               <div
                 className={`flex items-center gap-1.5 font-bold text-sm tabular-nums ${timerColor}`}
               >
@@ -561,7 +626,11 @@ export default function SimulationEngine() {
                             [currentQuestion.id]: newFlag,
                           }));
                           if (selectedOptions.length > 0) {
-                            saveAnswerToBackend(currentQuestion.id, selectedOptions, newFlag);
+                            saveAnswerToBackend(
+                              currentQuestion.id,
+                              selectedOptions,
+                              newFlag,
+                            );
                           }
                         }}
                         className={cn(
@@ -627,7 +696,8 @@ export default function SimulationEngine() {
                       } else if (!isSelected && isCorrectOption) {
                         borderClass = 'border-dashed border-green-400';
                         bgClass = 'bg-green-50/30';
-                        labelClass = 'border border-dashed border-green-400 text-green-600 bg-green-50';
+                        labelClass =
+                          'border border-dashed border-green-400 text-green-600 bg-green-50';
                         badge = (
                           <span className="text-[10px] font-semibold bg-slate-100 text-green-700 px-2 py-0.5 rounded-full shrink-0 border border-green-200 ml-auto self-center">
                             Gabarito (Não selecionada)
@@ -665,7 +735,7 @@ export default function SimulationEngine() {
                           borderClass,
                           bgClass,
                           feedback === null &&
-                          'cursor-pointer active:scale-[0.99]',
+                            'cursor-pointer active:scale-[0.99]',
                         )}
                       >
                         <div className="flex items-start gap-3 flex-1">
@@ -703,7 +773,9 @@ export default function SimulationEngine() {
                     </div>
                     {currentQuestion.studyLink && (
                       <div className="pt-2 border-t border-slate-200/50">
-                        <span className="font-semibold">Link de Aprofundamento:</span>{' '}
+                        <span className="font-semibold">
+                          Link de Aprofundamento:
+                        </span>{' '}
                         <a
                           href={currentQuestion.studyLink}
                           target="_blank"

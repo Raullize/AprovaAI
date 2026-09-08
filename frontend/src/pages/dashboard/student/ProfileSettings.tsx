@@ -2,13 +2,7 @@ import { useState, useRef } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
-import {
-  ArrowLeft,
-  Camera,
-  Trash2,
-  Eye,
-  EyeOff,
-} from 'lucide-react';
+import { ArrowLeft, Camera, Trash2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { accountService } from '../../../services/account.service';
 import { cn } from '../../../lib/utils';
@@ -22,14 +16,18 @@ export default function ProfileSettings() {
   const { user, signOut, refreshUser } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [activeTab, setActiveTab] = useState<'profile' | 'password' | 'danger'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'password' | 'danger'>(
+    'profile',
+  );
 
   const [fullName, setFullName] = useState(user?.fullName || '');
   const [email, setEmail] = useState(user?.email || '');
   const [username, setUsername] = useState(user?.username || '');
   const [isSaving, setIsSaving] = useState(false);
 
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl || null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(
+    user?.avatarUrl || null,
+  );
   const [hasAvatar, setHasAvatar] = useState(!!user?.avatarUrl);
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -85,12 +83,19 @@ export default function ProfileSettings() {
     e.preventDefault();
     setIsSaving(true);
     try {
-      await accountService.updateProfile({ fullName, email, username, avatarUrl });
+      await accountService.updateProfile({
+        fullName,
+        email,
+        username,
+        avatarUrl,
+      });
       await refreshUser();
       toast.success('Configurações atualizadas com sucesso!');
       navigate('/dashboard/profile');
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Falha ao salvar configurações.';
+    } catch (err) {
+      const msg =
+        (err as { response?: { data?: { message?: string | string[] } } })
+          .response?.data?.message || 'Falha ao salvar configurações.';
       toast.error(Array.isArray(msg) ? msg[0] : msg);
     } finally {
       setIsSaving(false);
@@ -109,8 +114,10 @@ export default function ProfileSettings() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Falha ao atualizar senha.';
+    } catch (err) {
+      const msg =
+        (err as { response?: { data?: { message?: string | string[] } } })
+          .response?.data?.message || 'Falha ao atualizar senha.';
       toast.error(Array.isArray(msg) ? msg[0] : msg);
     }
   };
@@ -121,8 +128,10 @@ export default function ProfileSettings() {
       setShowDeleteModal(false);
       toast.success('Conta excluída com sucesso.');
       signOut();
-    } catch (err: any) {
-      const msg = err.response?.data?.message || 'Falha ao excluir conta.';
+    } catch (err) {
+      const msg =
+        (err as { response?: { data?: { message?: string | string[] } } })
+          .response?.data?.message || 'Falha ao excluir conta.';
       toast.error(Array.isArray(msg) ? msg[0] : msg);
     }
   };
@@ -132,14 +141,17 @@ export default function ProfileSettings() {
     score: strengthResult.score,
     label: strengthResult.label,
     color: strengthResult.color,
-    textColor: strengthResult.color ? strengthResult.color.replace('bg-', 'text-') : 'text-slate-400',
-    width: strengthResult.score === 0
-      ? 'w-0'
-      : strengthResult.score <= 3
-        ? 'w-1/3'
-        : strengthResult.score <= 5
-          ? 'w-2/3'
-          : 'w-full',
+    textColor: strengthResult.color
+      ? strengthResult.color.replace('bg-', 'text-')
+      : 'text-slate-400',
+    width:
+      strengthResult.score === 0
+        ? 'w-0'
+        : strengthResult.score <= 3
+          ? 'w-1/3'
+          : strengthResult.score <= 5
+            ? 'w-2/3'
+            : 'w-full',
   };
 
   return (
@@ -166,7 +178,7 @@ export default function ProfileSettings() {
               'pb-4 text-sm font-bold transition-all relative flex items-center gap-2',
               activeTab === 'profile'
                 ? 'text-indigo-650'
-                : 'text-slate-400 hover:text-slate-650'
+                : 'text-slate-400 hover:text-slate-650',
             )}
           >
             Dados Cadastrais
@@ -181,7 +193,7 @@ export default function ProfileSettings() {
               'pb-4 text-sm font-bold transition-all relative flex items-center gap-2',
               activeTab === 'password'
                 ? 'text-indigo-650'
-                : 'text-slate-400 hover:text-slate-650'
+                : 'text-slate-400 hover:text-slate-650',
             )}
           >
             Alterar Senha
@@ -196,7 +208,7 @@ export default function ProfileSettings() {
               'pb-4 text-sm font-bold transition-all relative flex items-center gap-2',
               activeTab === 'danger'
                 ? 'text-rose-650'
-                : 'text-slate-400 hover:text-rose-650'
+                : 'text-slate-400 hover:text-rose-650',
             )}
           >
             Zona de Perigo
@@ -220,7 +232,10 @@ export default function ProfileSettings() {
                   className="relative group cursor-pointer"
                   onClick={handleAvatarClick}
                 >
-                  <UserAvatar size="xl" userOverride={user ? { ...user, avatarUrl } : undefined} />
+                  <UserAvatar
+                    size="xl"
+                    userOverride={user ? { ...user, avatarUrl } : undefined}
+                  />
                   <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
                     <Camera className="h-6 w-6" />
                   </div>
@@ -260,8 +275,6 @@ export default function ProfileSettings() {
                   </div>
                 </div>
               </div>
-
-
 
               {/* Form edit personal info */}
               <form onSubmit={handleSaveSettings} className="space-y-4">
@@ -342,7 +355,9 @@ export default function ProfileSettings() {
                     />
                     <button
                       type="button"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      onClick={() =>
+                        setShowCurrentPassword(!showCurrentPassword)
+                      }
                       className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-650 transition-colors"
                     >
                       {showCurrentPassword ? (
