@@ -10,6 +10,7 @@ import UserAvatar from '../../../components/ui/UserAvatar';
 import Modal from '../../../components/ui/Modal';
 import { Card } from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
+import Input from '../../../components/ui/Input';
 import { calculatePasswordStrength } from '../../../utils/password.utils';
 import api from '../../../services/api';
 
@@ -280,45 +281,36 @@ export default function ProfileSettings() {
               {/* Form edit personal info */}
               <form onSubmit={handleSaveSettings} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                      Nome Completo
-                    </label>
-                    <input
-                      type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      placeholder="Seu nome completo"
-                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm font-medium"
-                    />
-                  </div>
+                  <Input
+                    label="Nome Completo"
+                    labelStyle="uppercase"
+                    inputSize="lg"
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Seu nome completo"
+                  />
 
-                  <div>
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                      Nome de Usuário
-                    </label>
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Nome de usuário único"
-                      className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm font-medium"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                    Endereço de E-mail
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="seu.email@exemplo.com"
-                    className="w-full px-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm font-medium"
+                  <Input
+                    label="Nome de Usuário"
+                    labelStyle="uppercase"
+                    inputSize="lg"
+                    type="text"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Nome de usuário único"
                   />
                 </div>
+
+                <Input
+                  label="Endereço de E-mail"
+                  labelStyle="uppercase"
+                  inputSize="lg"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu.email@exemplo.com"
+                />
 
                 <div className="pt-2 flex justify-end">
                   <Button
