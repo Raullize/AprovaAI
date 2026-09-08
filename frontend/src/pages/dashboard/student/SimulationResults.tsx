@@ -15,6 +15,7 @@ import {
 import { cn } from '../../../lib/utils';
 import { formatDuration } from '../../../lib/format';
 import { Card } from '../../../components/ui/Card';
+import Button from '../../../components/ui/Button';
 import { questionsService } from '../../../services/questions.service';
 
 interface AnswerRecord {
@@ -728,16 +729,17 @@ export default function SimulationResults() {
       {/* CTA buttons */}
       <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 z-45 shadow-lg shrink-0">
         <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
-          <button
+          <Button
+            variant="gamified"
             onClick={() =>
               navigate(
                 examId ? `/dashboard/explore/${examId}` : '/dashboard/explore',
               )
             }
-            className="flex-1 py-4 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 transition-all shadow-md flex items-center justify-center gap-2"
+            className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
           >
             Voltar para a Trilha
-          </button>
+          </Button>
 
           <button
             onClick={() => navigate('/dashboard')}

@@ -9,6 +9,7 @@ import { cn } from '../../../lib/utils';
 import UserAvatar from '../../../components/ui/UserAvatar';
 import Modal from '../../../components/ui/Modal';
 import { Card } from '../../../components/ui/Card';
+import Button from '../../../components/ui/Button';
 import { calculatePasswordStrength } from '../../../utils/password.utils';
 import api from '../../../services/api';
 
@@ -320,13 +321,14 @@ export default function ProfileSettings() {
                 </div>
 
                 <div className="pt-2 flex justify-end">
-                  <button
+                  <Button
                     type="submit"
                     disabled={isSaving}
-                    className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all text-sm shadow-md shadow-indigo-600/10"
+                    variant="gamified"
+                    className="px-6 py-3.5 rounded-2xl font-bold text-sm shadow-md shadow-indigo-600/10 active:border-b-0 active:translate-y-1"
                   >
                     {isSaving ? 'Salvando...' : 'Salvar Alterações'}
-                  </button>
+                  </Button>
                 </div>
               </form>
             </Card>
@@ -452,12 +454,13 @@ export default function ProfileSettings() {
                 </div>
 
                 <div className="pt-2 flex justify-end">
-                  <button
+                  <Button
                     type="submit"
-                    className="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all text-sm shadow-md shadow-indigo-600/10"
+                    variant="gamified"
+                    className="px-6 py-3.5 rounded-2xl font-bold text-sm shadow-md shadow-indigo-600/10 active:border-b-0 active:translate-y-1"
                   >
                     Atualizar Senha
-                  </button>
+                  </Button>
                 </div>
               </form>
             </Card>

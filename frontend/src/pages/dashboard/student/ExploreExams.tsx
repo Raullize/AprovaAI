@@ -7,6 +7,7 @@ import { examsService, type Exam } from '../../../services/exams.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
 import EmptyState from '../../../components/ui/EmptyState';
+import Button from '../../../components/ui/Button';
 import { SearchInput } from '../../../components/admin/shared/SearchInput';
 import { Card } from '../../../components/ui/Card';
 
@@ -296,15 +297,16 @@ export default function ExploreExams() {
                 </div>
               </div>
 
-              <button
+              <Button
+                variant="gamified"
                 onClick={() => {
                   navigate(`/dashboard/explore/${selectedExam.id}`);
                   setSelectedExam(null);
                 }}
-                className="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all flex items-center justify-center gap-2 text-base font-display shadow-lg shadow-indigo-600/20"
+                className="w-full py-4 rounded-2xl font-bold text-base font-display gap-2 active:border-b-0 active:translate-y-1 shadow-lg shadow-indigo-600/20"
               >
                 Iniciar Trilha de Aprendizado
-              </button>
+              </Button>
             </div>
           )}
         </Modal>

@@ -8,6 +8,7 @@ import { simulationAttemptsService } from '../../../services/simulation-attempts
 import { simulationsService } from '../../../services/simulations.service';
 import { questionsService } from '../../../services/questions.service';
 import Loading from '../../../components/ui/Loading';
+import Button from '../../../components/ui/Button';
 import { useAuth } from '../../../context/AuthContext';
 import type { SimulationMode } from '../../../types/simulation.types';
 import SimulationSummary from '../../../components/simulation/SimulationSummary';
@@ -360,16 +361,17 @@ export default function SimulationEngine() {
           </h2>
           <p className="text-sm text-slate-500 max-w-xs">{initError}</p>
         </div>
-        <button
+        <Button
+          variant="gamified"
           onClick={() =>
             navigate(
               examId ? `/dashboard/explore/${examId}` : '/dashboard/explore',
             )
           }
-          className="px-6 py-3 bg-indigo-600 text-white font-bold rounded-2xl border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 transition-all shadow-md"
+          className="px-6 py-3 rounded-2xl font-bold"
         >
           Voltar para a Trilha
-        </button>
+        </Button>
       </div>
     );
   }
@@ -866,21 +868,23 @@ export default function SimulationEngine() {
                     </button>
 
                     {isLastQuestion ? (
-                      <button
+                      <Button
                         type="button"
+                        variant="gamified"
                         onClick={() => setView('SUMMARY')}
-                        className="px-6 py-4 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 shadow-md text-sm sm:text-base transition-all"
+                        className="px-6 py-4 rounded-2xl font-bold text-sm sm:text-base"
                       >
                         Revisar Prova
-                      </button>
+                      </Button>
                     ) : (
-                      <button
+                      <Button
                         type="button"
+                        variant="gamified"
                         onClick={() => setCurrentIndex((i) => i + 1)}
-                        className="px-6 py-4 rounded-2xl font-bold bg-indigo-600 hover:bg-indigo-700 text-white border-b-4 border-indigo-800 hover:-translate-y-0.5 active:translate-y-0 active:border-b-2 shadow-md text-sm sm:text-base transition-all"
+                        className="px-6 py-4 rounded-2xl font-bold text-sm sm:text-base"
                       >
                         Próximo
-                      </button>
+                      </Button>
                     )}
                   </div>
                 ) : feedback === null ? (

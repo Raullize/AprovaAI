@@ -16,6 +16,7 @@ import { getIconOption, getColorOption } from '../../../config/examThemes';
 import { Card } from '../../../components/ui/Card';
 import { ProgressBar } from '../../../components/ui/ProgressBar';
 import { IconBox } from '../../../components/ui/IconBox';
+import Button from '../../../components/ui/Button';
 import { studentService } from '../../../services/student.service';
 import {
   simulationAttemptsService,
@@ -396,13 +397,14 @@ export default function StudentHome() {
               Explore o catálogo e encontre a certificação ou concurso perfeito
               para você.
             </p>
-            <button
+            <Button
+              variant="gamified"
               onClick={() => navigate('/dashboard/explore')}
-              className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all"
+              className="py-3 px-6 rounded-2xl font-bold gap-2 active:border-b-0 active:translate-y-1"
             >
               <Compass className="h-5 w-5" />
               Explorar Catálogo
-            </button>
+            </Button>
           </Card>
         )}
 
@@ -482,13 +484,14 @@ export default function StudentHome() {
               Explore nosso catálogo com dezenas de exames e certificações.
             </p>
           </div>
-          <button
+          <Button
+            variant="gamified"
             onClick={() => navigate('/dashboard/explore')}
-            className="shrink-0 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-2xl border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 transition-all flex items-center gap-2"
+            className="shrink-0 py-3 px-6 rounded-2xl font-bold gap-2 active:border-b-0 active:translate-y-1"
           >
             <Compass className="h-5 w-5" />
             Explorar Catálogo
-          </button>
+          </Button>
         </div>
       </div>
     </div>
