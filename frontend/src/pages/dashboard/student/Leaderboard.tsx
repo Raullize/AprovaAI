@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
-import { Flame, Zap, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Flame, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import {
   LeaderboardTable,
   type LeaderboardRowData,
 } from '../../../components/ui/LeaderboardTable';
 import UserAvatar from '../../../components/ui/UserAvatar';
+import { SearchInput } from '../../../components/admin/shared/SearchInput';
 import {
   studentService,
   type LeaderboardResponse,
@@ -153,16 +154,12 @@ export default function Leaderboard() {
           {/* Toolbar for Search and Filters */}
           <div className="mb-6 flex flex-col md:flex-row gap-4 items-stretch md:items-center justify-between pb-6 border-b border-slate-100">
             {/* Search Input */}
-            <div className="relative w-full md:w-80">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Pesquisar estudante..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all bg-white text-slate-800 text-sm font-medium placeholder-slate-400"
-              />
-            </div>
+            <SearchInput
+              value={searchQuery}
+              onChange={setSearchQuery}
+              placeholder="Pesquisar estudante..."
+              className="w-full md:w-80"
+            />
 
             {/* Filter buttons and Page Size */}
             <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto">

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import { examsService, type Exam } from '../../../services/exams.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
 import EmptyState from '../../../components/ui/EmptyState';
+import { SearchInput } from '../../../components/admin/shared/SearchInput';
 import { Card } from '../../../components/ui/Card';
 
 const CATEGORY_MAP: Record<string, string> = {
@@ -93,16 +94,13 @@ export default function ExploreExams() {
         {/* Search + Category Dropdown */}
         <div className="mb-8 flex gap-3">
           {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar exames ou certificações..."
-              className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm bg-white text-slate-800"
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder="Buscar exames ou certificações..."
+            size="lg"
+            className="flex-1"
+          />
 
           {/* Category Dropdown */}
           <div className="relative shrink-0" ref={dropdownRef}>

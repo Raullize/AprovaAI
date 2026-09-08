@@ -1,11 +1,12 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Plus, BookOpen, Search, ChevronDown } from 'lucide-react';
+import { Plus, BookOpen, ChevronDown } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
 import { examsService, type Exam } from '@/services/exams.service';
 import { useToast } from '@/hooks/useToast';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
+import { SearchInput } from '@/components/admin/shared/SearchInput';
 import { ExamCard } from '@/components/admin/exams/ExamCard';
 import { ExamFormModal } from '@/components/admin/exams/ExamFormModal';
 import { cn } from '@/lib/utils';
@@ -146,16 +147,13 @@ export default function AdminExams() {
       {/* Search and Filters Section */}
       <div className="flex gap-3">
         {/* Search */}
-        <div className="relative flex-1">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Buscar exames..."
-            className="w-full pl-12 pr-4 py-4 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all shadow-sm bg-white text-slate-800"
-          />
-        </div>
+        <SearchInput
+          value={searchTerm}
+          onChange={setSearchTerm}
+          placeholder="Buscar exames..."
+          size="lg"
+          className="flex-1"
+        />
 
         {/* Category Dropdown */}
         <div className="relative shrink-0" ref={dropdownRef}>
