@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { DashboardHeader } from './DashboardHeader';
+import { FloatingStudyWidget } from './FloatingStudyWidget';
+import { useAuth } from '../../context/AuthContext';
 import { Outlet } from 'react-router-dom';
 
 export const DashboardLayout: React.FC = () => {
+  const { user } = useAuth();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
@@ -24,6 +27,8 @@ export const DashboardLayout: React.FC = () => {
           <Outlet />
         </main>
       </div>
+
+      {user?.role !== 'ADMIN' && <FloatingStudyWidget />}
     </div>
   );
 };
