@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
   Zap,
-  ChevronRight,
   PlayCircle,
   ArrowLeft,
   Clock3,
@@ -40,7 +39,6 @@ export default function ExamTrail() {
   const [topics, setTopics] = useState<TrailTopic[]>([]);
   const [history, setHistory] = useState<ApiSimulationHistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
   const [pendingStart, setPendingStart] = useState<{
     simulation: SimulationData;
     topic: TopicData;
@@ -83,11 +81,6 @@ export default function ExamTrail() {
           .sort((a, b) => a.order - b.order);
 
         setTopics(visibleTopics);
-        if (visibleTopics.length > 0) {
-          setExpandedTopic(visibleTopics[0].id);
-        } else {
-          setExpandedTopic(null);
-        }
 
         const historyData = await simulationAttemptsService.getHistory();
         setHistory(historyData);
@@ -102,10 +95,6 @@ export default function ExamTrail() {
       loadTrail();
     }
   }, [examId]);
-
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [expandedTopic]);
 
   if (isLoading) {
     return <Loading />;
@@ -168,8 +157,6 @@ export default function ExamTrail() {
     })),
   }));
 
-  const activeTopicObj: TopicData | undefined =
-    mappedTopics.find((t) => t.id === expandedTopic) || mappedTopics[0];
   const totalCompleted = mappedTopics.reduce(
     (acc: number, t: TopicData) =>
       acc +
@@ -221,10 +208,16 @@ export default function ExamTrail() {
     );
   };
 
-  if (mappedTopics.length === 0 || !activeTopicObj) {
+  const scrollToTopic = (id: string) => {
+    document
+      .getElementById(`topic-${id}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  if (mappedTopics.length === 0) {
     return (
       <div className="min-h-screen bg-slate-50/50">
-        <div className="max-w-[1600px] mx-auto px-4 lg:px-8 py-8 pb-32">
+        <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
           <div className="mb-6">
             <button
               onClick={() => navigate('/dashboard/explore')}
@@ -395,9 +388,9 @@ export default function ExamTrail() {
         )}
       </Modal>
 
-      <div className="max-w-[1600px] mx-auto px-4 lg:px-8 py-8 pb-32">
+      <div className="max-w-4xl mx-auto px-4 py-8 pb-32">
         {/* Back Button */}
-        <div className="mb-6 lg:hidden">
+        <div className="mb-6">
           <button
             onClick={() => navigate('/dashboard/explore')}
             className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
@@ -407,22 +400,22 @@ export default function ExamTrail() {
           </button>
         </div>
 
-        {/* Mobile-only Exam Info Card */}
-        <div className="lg:hidden bg-white p-5 rounded-3xl shadow-sm border border-slate-200 text-center mb-6">
-          <div className="flex items-center gap-4 text-left">
+        {/* Exam Overview */}
+        <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-6 sm:p-8">
+          <div className="flex items-center gap-4 sm:gap-5">
             <div
               className={cn(
-                'w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner shrink-0 bg-gradient-to-br',
+                'w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
                 getColorOption(exam?.colorScheme || 'orange').gradient,
               )}
             >
-              <PlayCircle className="h-6 w-6 text-white" />
+              <PlayCircle className="h-7 w-7 sm:h-8 sm:w-8 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-xl font-bold text-slate-800 font-display truncate">
-                {exam?.name || 'AWS Cloud Practitioner'}
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 font-display truncate">
+                {exam?.name || 'Trilha'}
               </h1>
-              <p className="text-slate-500 font-medium text-xs mt-0.5">
+              <p className="text-slate-500 font-medium text-sm mt-1">
                 {exam?.category === 'OAB'
                   ? 'Exame da Ordem'
                   : 'Trilha de Certificação'}
@@ -432,13 +425,22 @@ export default function ExamTrail() {
               <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider leading-none">
                 Progresso
               </span>
-              <span className="text-sm font-bold text-indigo-600 leading-tight block mt-0.5">
+              <span className="text-xl font-bold text-indigo-600 block mt-1 font-display">
                 {totalCompleted}/{totalSimulations}
               </span>
             </div>
           </div>
-          <div className="mt-4">
-            <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+
+          <div className="mt-6">
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+                Progresso Global
+              </span>
+              <span className="text-sm font-bold text-indigo-600">
+                {Math.round(globalProgress)}%
+              </span>
+            </div>
+            <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full transition-all duration-1000 ease-out"
                 style={{ width: `${globalProgress}%` }}
@@ -447,220 +449,100 @@ export default function ExamTrail() {
           </div>
         </div>
 
-        <div className="lg:grid lg:grid-cols-12 lg:gap-10">
-          {/* --- LEFT COLUMN: DESKTOP SIDEBAR --- */}
-          <div className="hidden lg:block col-span-4 relative">
-            <div className="sticky top-24 space-y-6">
-              {/* Back Button (Desktop) */}
-              <div>
-                <button
-                  onClick={() => navigate('/dashboard/explore')}
-                  className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  Voltar ao Catálogo
-                </button>
-              </div>
-
-              {/* Exam Info Card */}
-              <div className="bg-white p-6 rounded-3xl shadow-sm border border-slate-200 text-center">
-                <div
+        {/* Quick links to topics */}
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-2 -mx-1 px-1">
+          {mappedTopics.map((topic) => {
+            const completed = topic.simulations.filter(
+              (l) => l.status === 'COMPLETED',
+            ).length;
+            const colorOpt = getColorOption(topic.colorScheme);
+            const iconOpt = getIconOption(topic.iconKey);
+            const TopicIcon = iconOpt.Icon;
+            return (
+              <button
+                key={topic.id}
+                onClick={() => scrollToTopic(topic.id)}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-2xl border text-xs font-bold whitespace-nowrap shrink-0 bg-white border-slate-200 text-slate-600 hover:border-indigo-300 hover:text-indigo-700 hover:bg-indigo-50/40 shadow-sm transition-all"
+              >
+                <span
                   className={cn(
-                    'w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-inner bg-gradient-to-br',
-                    getColorOption(exam?.colorScheme || 'orange').gradient,
+                    'w-7 h-7 rounded-lg flex items-center justify-center bg-gradient-to-br',
+                    colorOpt.gradient,
                   )}
                 >
-                  <PlayCircle className="h-8 w-8 text-white" />
-                </div>
-                <h1 className="text-2xl font-bold text-slate-800 font-display">
-                  {exam?.name || 'AWS Cloud Practitioner'}
-                </h1>
-                <p className="text-slate-500 font-medium text-sm mt-1">
-                  {exam?.category === 'OAB'
-                    ? 'Exame da Ordem'
-                    : 'Trilha de Certificação'}
-                </p>
+                  <TopicIcon className="h-3.5 w-3.5 text-white" />
+                </span>
+                <span>{topic.name}</span>
+                <span className="text-slate-400 font-semibold">
+                  {completed}/{topic.simulations.length}
+                </span>
+              </button>
+            );
+          })}
+        </div>
 
-                <div className="mt-6 text-left">
-                  <div className="flex justify-between items-end mb-2">
-                    <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                      Progresso Global
-                    </span>
-                    <span className="text-sm font-bold text-indigo-600">
-                      {totalCompleted}/{totalSimulations}
-                    </span>
-                  </div>
-                  <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
+        {/* Full vertical trail */}
+        <div className="mt-8 space-y-12">
+          {mappedTopics.map((topic) => {
+            const completedCount = topic.simulations.filter(
+              (l) => l.status === 'COMPLETED',
+            ).length;
+            const iconOpt = getIconOption(topic.iconKey);
+            const colorOpt = getColorOption(topic.colorScheme);
+            const TopicIcon = iconOpt.Icon;
+
+            return (
+              <section
+                key={topic.id}
+                id={`topic-${topic.id}`}
+                className="scroll-mt-24 space-y-6"
+              >
+                {/* Topic header */}
+                <div className="p-4 sm:p-5 bg-white rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+                  <div className="flex items-center gap-3">
                     <div
-                      className="h-full bg-indigo-500 rounded-full transition-all duration-1000 ease-out"
-                      style={{ width: `${globalProgress}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Topic List */}
-              <div className="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
-                <div className="p-4 bg-slate-50 border-b border-slate-100">
-                  <h2 className="font-bold text-slate-700 text-sm uppercase tracking-wider">
-                    Tópicos do Exame
-                  </h2>
-                </div>
-                <div className="p-2 space-y-1">
-                  {mappedTopics.map((topic) => {
-                    const isActive = expandedTopic === topic.id;
-                    const completed = topic.simulations.filter(
-                      (l) => l.status === 'COMPLETED',
-                    ).length;
-                    const iconOpt = getIconOption(topic.iconKey);
-                    const colorOpt = getColorOption(topic.colorScheme);
-                    const TopicIcon = iconOpt.Icon;
-                    return (
-                      <button
-                        key={topic.id}
-                        onClick={() => setExpandedTopic(topic.id)}
-                        className={cn(
-                          'w-full flex items-center gap-3 p-3 rounded-2xl transition-all text-left group',
-                          isActive ? 'bg-indigo-50' : 'hover:bg-slate-50',
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            'w-10 h-10 rounded-xl flex items-center justify-center transition-all bg-gradient-to-br',
-                            isActive
-                              ? colorOpt.gradient
-                              : 'bg-slate-100 group-hover:bg-slate-200',
-                          )}
-                        >
-                          <TopicIcon
-                            className={cn(
-                              'h-5 w-5',
-                              isActive ? 'text-white' : 'text-slate-500',
-                            )}
-                          />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p
-                            className={cn(
-                              'font-bold truncate text-sm transition-colors',
-                              isActive ? 'text-indigo-900' : 'text-slate-700',
-                            )}
-                          >
-                            {topic.name}
-                          </p>
-                          <p className="text-xs text-slate-400 font-medium mt-0.5">
-                            {topic.simulations.length === 0 &&
-                            topic.showComingSoon
-                              ? 'Em breve'
-                              : `${completed}/${topic.simulations.length} concluídos`}
-                          </p>
-                        </div>
-                        <ChevronRight
-                          className={cn(
-                            'h-5 w-5 transition-transform',
-                            isActive
-                              ? 'text-indigo-500 translate-x-1'
-                              : 'text-slate-300',
-                          )}
-                        />
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* --- RIGHT COLUMN: THE TRAIL --- */}
-          <div className="col-span-12 lg:col-span-8">
-            {/* Mobile Continuous Trail View */}
-            <div className="lg:hidden space-y-12">
-              {mappedTopics.map((topic: TopicData) => {
-                const completedCount = topic.simulations.filter(
-                  (l: SimulationData) => l.status === 'COMPLETED',
-                ).length;
-                const iconOpt = getIconOption(topic.iconKey);
-                const colorOpt = getColorOption(topic.colorScheme);
-                const MobIcon = iconOpt.Icon;
-
-                return (
-                  <div key={topic.id} className="space-y-6">
-                    {/* Header divider of the topic */}
-                    <div className="mx-2 p-4 bg-white rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={cn(
-                            'w-10 h-10 rounded-2xl flex items-center justify-center bg-gradient-to-br text-white shadow-inner',
-                            colorOpt.gradient,
-                          )}
-                        >
-                          <MobIcon className="h-5 w-5" />
-                        </div>
-                        <div>
-                          <h4 className="font-bold text-slate-800 text-sm">
-                            {topic.name}
-                          </h4>
-                          <p className="text-[10px] font-semibold text-slate-400 mt-0.5">
-                            {topic.simulations.length === 0 &&
-                            topic.showComingSoon
-                              ? 'Em breve'
-                              : `${completedCount}/${topic.simulations.length} concluídos`}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="w-20">
-                        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div
-                            className={cn(
-                              'h-full rounded-full bg-gradient-to-r',
-                              colorOpt.gradient,
-                            )}
-                            style={{
-                              width: `${(completedCount / topic.simulations.length) * 100}%`,
-                            }}
-                          />
-                        </div>
-                      </div>
+                      className={cn(
+                        'w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br text-white shadow-inner',
+                        colorOpt.gradient,
+                      )}
+                    >
+                      <TopicIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-
-                    {/* Levels list (continuous timeline) */}
-                    <TopicTimeline
-                      topic={topic}
-                      onStart={handleStartSimulation}
-                    />
+                    <div>
+                      <h3 className="font-bold text-slate-800 text-base sm:text-lg">
+                        {topic.name}
+                      </h3>
+                      <p className="text-[11px] font-semibold text-slate-400 mt-0.5">
+                        {topic.simulations.length === 0 && topic.showComingSoon
+                          ? 'Em breve'
+                          : `${completedCount}/${topic.simulations.length} concluídos`}
+                      </p>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-
-            {/* Desktop Timeline View */}
-            <div className="hidden lg:block bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-10 min-h-[800px]">
-              <div className="mb-12 text-center">
-                <div
-                  className={cn(
-                    'inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 bg-gradient-to-br',
-                    getColorOption(activeTopicObj.colorScheme).gradient,
-                  )}
-                >
-                  {(() => {
-                    const I = getIconOption(activeTopicObj.iconKey).Icon;
-                    return <I className="h-8 w-8 text-white" />;
-                  })()}
+                  <div className="w-24 sm:w-32 shrink-0">
+                    <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                      <div
+                        className={cn(
+                          'h-full rounded-full bg-gradient-to-r',
+                          colorOpt.gradient,
+                        )}
+                        style={{
+                          width: `${
+                            topic.simulations.length
+                              ? (completedCount / topic.simulations.length) *
+                                100
+                              : 0
+                          }%`,
+                        }}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <h2 className="text-3xl font-display font-bold text-slate-800 mb-2">
-                  {activeTopicObj.name}
-                </h2>
-                <p className="text-slate-500 text-lg">
-                  Continue sua jornada de aprendizado
-                </p>
-              </div>
 
-              <TopicTimeline
-                topic={activeTopicObj}
-                onStart={handleStartSimulation}
-              />
-            </div>
-          </div>
+                <TopicTimeline topic={topic} onStart={handleStartSimulation} />
+              </section>
+            );
+          })}
         </div>
       </div>
     </div>
