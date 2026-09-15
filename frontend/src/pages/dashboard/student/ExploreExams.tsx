@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Star } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import { examsService, type Exam } from '../../../services/exams.service';
@@ -10,6 +10,7 @@ import EmptyState from '../../../components/ui/EmptyState';
 import Button from '../../../components/ui/Button';
 import { SearchInput } from '../../../components/admin/shared/SearchInput';
 import { Card } from '../../../components/ui/Card';
+import { useExamFavorites } from '../../../hooks/useExamFavorites';
 
 const CATEGORY_MAP: Record<string, string> = {
   CONCURSOS: 'Concursos',
@@ -30,6 +31,7 @@ const CATEGORIES = [
 
 export default function ExploreExams() {
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useExamFavorites();
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [search, setSearch] = useState('');
   const [exams, setExams] = useState<Exam[]>([]);
@@ -74,6 +76,12 @@ export default function ExploreExams() {
       exam.name.toLowerCase().includes(search.toLowerCase()) ||
       (exam.description || '').toLowerCase().includes(search.toLowerCase());
     return matchesCategory && matchesSearch;
+  });
+
+  const sortedFiltered = [...filtered].sort((a, b) => {
+    const aFav = isFavorite(a.id) ? 1 : 0;
+    const bFav = isFavorite(b.id) ? 1 : 0;
+    return bFav - aFav;
   });
 
   const activeCategoryLabel =
@@ -188,56 +196,83 @@ export default function ExploreExams() {
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            {filtered.map((exam) => {
+            {sortedFiltered.map((exam) => {
               const iconOpt = getIconOption(exam.iconKey);
               const colorOpt = getColorOption(exam.colorScheme);
               const Icon = iconOpt.Icon;
+              const fav = isFavorite(exam.id);
               return (
-                <button
-                  key={exam.id}
-                  onClick={() => setSelectedExam(exam)}
-                  className="group w-full"
-                >
-                  <Card
-                    hoverEffect
-                    padding="large"
-                    className="text-left flex flex-col h-full group-hover:-translate-y-1"
+                <div key={exam.id} className="relative group">
+                  <button
+                    onClick={() => setSelectedExam(exam)}
+                    className="group w-full"
                   >
-                    <div className="flex items-start gap-4 mb-4">
-                      <div
-                        className={cn(
-                          'w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
-                          colorOpt.gradient,
-                        )}
-                      >
-                        <Icon className="h-8 w-8 text-white" />
+                    <Card
+                      hoverEffect
+                      padding="large"
+                      className="text-left flex flex-col h-full group-hover:-translate-y-1"
+                    >
+                      <div className="flex items-start gap-4 mb-4">
+                        <div
+                          className={cn(
+                            'w-16 h-16 rounded-2xl flex items-center justify-center shrink-0 bg-gradient-to-br shadow-inner',
+                            colorOpt.gradient,
+                          )}
+                        >
+                          <Icon className="h-8 w-8 text-white" />
+                        </div>
+                        <div>
+                          {exam.category && (
+                            <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold mb-2">
+                              {CATEGORY_MAP[exam.category] || exam.category}
+                            </span>
+                          )}
+                          <h3 className="font-bold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors leading-tight">
+                            {exam.name}
+                          </h3>
+                        </div>
                       </div>
-                      <div>
-                        {exam.category && (
-                          <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold mb-2">
-                            {CATEGORY_MAP[exam.category] || exam.category}
+
+                      <p className="text-sm text-slate-500 mb-6 flex-1">
+                        {exam.description}
+                      </p>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto w-full">
+                        <span className="flex items-center gap-2">
+                          {fav && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg">
+                              <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                              Fixado
+                            </span>
+                          )}
+                          <span className="text-xs font-semibold text-slate-400">
+                            {exam.topicsCount} tópicos
                           </span>
-                        )}
-                        <h3 className="font-bold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors leading-tight">
-                          {exam.name}
-                        </h3>
+                        </span>
+                        <span className="text-sm font-bold text-indigo-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                          Ver Trilha &rarr;
+                        </span>
                       </div>
-                    </div>
+                    </Card>
+                  </button>
 
-                    <p className="text-sm text-slate-500 mb-6 flex-1">
-                      {exam.description}
-                    </p>
-
-                    <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-auto w-full">
-                      <span className="text-xs font-semibold text-slate-400">
-                        {exam.topicsCount} tópicos
-                      </span>
-                      <span className="text-sm font-bold text-indigo-600 group-hover:translate-x-1 transition-transform flex items-center gap-1">
-                        Ver Trilha &rarr;
-                      </span>
-                    </div>
-                  </Card>
-                </button>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(exam.id);
+                    }}
+                    aria-label={fav ? 'Remover dos fixados' : 'Fixar exame'}
+                    className="absolute top-4 right-4 p-2 rounded-xl bg-white/80 backdrop-blur-sm border border-slate-200 shadow-sm text-slate-300 hover:text-amber-500 hover:border-amber-300 transition-all group-hover:-translate-y-1"
+                  >
+                    <Star
+                      className={cn(
+                        'h-4 w-4',
+                        fav && 'fill-amber-400 text-amber-400',
+                      )}
+                    />
+                  </button>
+                </div>
               );
             })}
           </div>

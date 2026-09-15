@@ -8,6 +8,7 @@ import {
   Brain,
   ShieldCheck,
   Target,
+  Star,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { formatTimeLimit } from '../../../lib/format';
@@ -23,6 +24,7 @@ import type { Simulation } from '../../../services/simulations.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
 import EmptyState from '../../../components/ui/EmptyState';
+import { useExamFavorites } from '../../../hooks/useExamFavorites';
 import type {
   SimulationData,
   TopicData,
@@ -34,6 +36,7 @@ type TrailTopic = Topic & { simulations: Simulation[] };
 export default function ExamTrail() {
   const { examId } = useParams<{ examId: string }>();
   const navigate = useNavigate();
+  const { isFavorite, toggleFavorite } = useExamFavorites();
 
   const [exam, setExam] = useState<Exam | null>(null);
   const [topics, setTopics] = useState<TrailTopic[]>([]);
@@ -170,6 +173,7 @@ export default function ExamTrail() {
   );
   const globalProgress =
     totalSimulations > 0 ? (totalCompleted / totalSimulations) * 100 : 0;
+  const fav = examId ? isFavorite(examId) : false;
   const pendingTheme = pendingStart
     ? getColorOption(pendingStart.topic.colorScheme)
     : getColorOption('indigo');
@@ -429,6 +433,19 @@ export default function ExamTrail() {
                 {totalCompleted}/{totalSimulations}
               </span>
             </div>
+            <button
+              type="button"
+              onClick={() => toggleFavorite(examId!)}
+              aria-label={fav ? 'Remover dos fixados' : 'Fixar exame'}
+              className="p-2 rounded-xl text-slate-300 hover:text-amber-500 hover:bg-amber-50 transition-colors shrink-0"
+            >
+              <Star
+                className={cn(
+                  'h-5 w-5',
+                  fav && 'fill-amber-400 text-amber-400',
+                )}
+              />
+            </button>
           </div>
 
           <div className="mt-6">
