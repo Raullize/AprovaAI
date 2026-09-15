@@ -1,13 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Calendar,
   Clock,
-  ChevronRight,
   ChevronDown,
   ArrowLeft,
   SlidersHorizontal,
   Star,
+  BarChart3,
+  ClipboardList,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { formatDuration } from '../../../lib/format';
@@ -146,7 +147,15 @@ export default function SimulationsHistory() {
   const navigate = useNavigate();
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedExamName, setSelectedExamName] = useState<string | null>(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedExam = searchParams.get('exam');
+  const selectExam = (examName: string | null) => {
+    if (examName) {
+      setSearchParams({ exam: examName });
+    } else {
+      setSearchParams({});
+    }
+  };
   const [activeCategory, setActiveCategory] = useState('Todos');
   const [searchExams, setSearchExams] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -256,7 +265,7 @@ export default function SimulationsHistory() {
   });
 
   // Filter and sort items for detail view
-  const selectedGroup = examGroups.find((g) => g.examName === selectedExamName);
+  const selectedGroup = examGroups.find((g) => g.examName === selectedExam);
   const detailItems = selectedGroup
     ? selectedGroup.items
         .filter((item) => {
@@ -280,7 +289,7 @@ export default function SimulationsHistory() {
   const { currentPage, totalPages, pageItems, goToPage } = usePagination(
     detailItems,
     5,
-    `${search}|${modeFilter}|${statusFilter}|${selectedExamName}`,
+    `${search}|${modeFilter}|${statusFilter}|${selectedExam}`,
   );
 
   const formatDate = (iso: string) => {
@@ -301,7 +310,7 @@ export default function SimulationsHistory() {
     <div className="min-h-screen bg-slate-50 px-4 py-8">
       <div className="max-w-4xl mx-auto">
         {/* Main Selection View */}
-        {!selectedExamName ? (
+        {!selectedExam ? (
           <div>
             <div className="mb-8">
               <h1 className="text-2xl font-bold text-slate-800 font-display">
@@ -414,7 +423,7 @@ export default function SimulationsHistory() {
                   return (
                     <button
                       key={group.examName}
-                      onClick={() => setSelectedExamName(group.examName)}
+                      onClick={() => selectExam(group.examName)}
                       className="group w-full"
                     >
                       <Card
@@ -470,7 +479,7 @@ export default function SimulationsHistory() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <button
                 onClick={() => {
-                  setSelectedExamName(null);
+                  selectExam(null);
                   setSearch('');
                 }}
                 className="flex items-center gap-1.5 text-sm font-bold text-slate-500 hover:text-slate-700 transition-colors"
@@ -479,7 +488,7 @@ export default function SimulationsHistory() {
                 Voltar aos Exames
               </button>
               <h2 className="text-xl font-bold text-slate-800 font-display text-left sm:text-right">
-                {selectedExamName}
+                {selectedExam}
               </h2>
             </div>
 
@@ -615,26 +624,56 @@ export default function SimulationsHistory() {
                           {item.passed ? 'Aprovado' : 'Reprovado'}
                         </span>
                       </div>
-                      <button
-                        onClick={() => {
-                          navigate('/dashboard/simulations/results', {
-                            state: {
-                              answers: item.answers || [],
-                              total: item.totalQuestions,
-                              correct: item.score,
-                              timeSpent: item.timeSpent,
-                              xpEarned: item.xpEarned,
-                              passingPercentage: 70,
-                              simulationName: item.simulationName,
-                              stars: item.stars,
-                              examId: item.examId,
-                            },
-                          });
-                        }}
-                        className="p-2 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl text-slate-400 transition-colors"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <div className="relative group">
+                          <button
+                            onClick={() => {
+                              navigate('/dashboard/simulations/results', {
+                                state: {
+                                  answers: item.answers || [],
+                                  total: item.totalQuestions,
+                                  correct: item.score,
+                                  timeSpent: item.timeSpent,
+                                  xpEarned: item.xpEarned,
+                                  passingPercentage: 70,
+                                  simulationName: item.simulationName,
+                                  stars: item.stars,
+                                  examId: item.examId,
+                                  fromHistory: true,
+                                },
+                              });
+                            }}
+                            className="p-2 rounded-xl bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 text-slate-400 transition-colors"
+                            aria-label="Ver resultado"
+                          >
+                            <BarChart3 className="h-5 w-5" />
+                          </button>
+                          <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-800 text-white text-[10px] font-bold px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            Resultado
+                          </span>
+                        </div>
+                        <div className="relative group">
+                          <button
+                            onClick={() => {
+                              navigate('/dashboard/simulations/review', {
+                                state: {
+                                  answers: item.answers || [],
+                                  simulationName: item.simulationName,
+                                  examId: item.examId,
+                                  fromHistory: true,
+                                },
+                              });
+                            }}
+                            className="p-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 hover:text-indigo-700 text-indigo-500 transition-colors"
+                            aria-label="Revisar respostas"
+                          >
+                            <ClipboardList className="h-5 w-5" />
+                          </button>
+                          <span className="pointer-events-none absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-slate-800 text-white text-[10px] font-bold px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                            Revisar
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </Card>
                 ))}
