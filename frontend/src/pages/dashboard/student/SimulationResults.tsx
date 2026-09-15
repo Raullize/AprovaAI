@@ -1,18 +1,16 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Trophy,
-  CheckCircle2,
-  XCircle,
   Home,
-  ChevronDown,
-  ChevronUp,
+  ClipboardList,
+  ChevronRight,
+  ArrowLeft,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { Card } from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
 import { ResultSummary } from '../../../components/simulation/ResultSummary';
-import { questionsService } from '../../../services/questions.service';
 
 interface AnswerRecord {
   questionId: string;
@@ -23,7 +21,6 @@ interface AnswerRecord {
 
 interface ResultsState {
   answers: AnswerRecord[];
-  questions?: ReviewQuestion[];
   total: number;
   correct: number;
   timeSpent: number;
@@ -32,6 +29,7 @@ interface ResultsState {
   simulationName: string;
   stars?: number;
   examId?: string;
+  fromHistory?: boolean;
 }
 
 function useCountUp(target: number, duration = 1200) {
@@ -56,10 +54,6 @@ function useCountUp(target: number, duration = 1200) {
   return count;
 }
 
-function getOptionLabel(index: number) {
-  return ['A', 'B', 'C', 'D', 'E'][index] ?? String(index + 1);
-}
-
 // Confetti colors (CSS-only burst) - generated once statically to remain pure
 const STATIC_CONFETTI_ITEMS = Array.from({ length: 20 }).map((_, i) => ({
   top: `${Math.random() * 100}%`,
@@ -69,85 +63,10 @@ const STATIC_CONFETTI_ITEMS = Array.from({ length: 20 }).map((_, i) => ({
   duration: `${1 + Math.random()}s`,
 }));
 
-interface ReviewOption {
-  id: string;
-  text: string;
-  isCorrect: boolean;
-}
-interface ReviewQuestion {
-  id: string;
-  text: string;
-  explanation: string;
-  options: ReviewOption[];
-  studyLink?: string;
-  imageUrl?: string | null;
-  type?: 'MULTIPLE_CHOICE' | 'SINGLE_CHOICE';
-}
-
 export default function SimulationResults() {
   const location = useLocation();
   const navigate = useNavigate();
   const state = location.state as ResultsState | null;
-  const [resolvedQuestions, setResolvedQuestions] = useState<ReviewQuestion[]>(
-    state?.questions ?? [],
-  );
-  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
-
-  useEffect(() => {
-    if (state?.questions?.length) {
-      setResolvedQuestions(state.questions);
-    }
-  }, [state?.questions]);
-
-  useEffect(() => {
-    if (!state || state.questions?.length || !state.answers?.length) return;
-    const answersToResolve = state.answers;
-
-    async function loadQuestionsForReview() {
-      try {
-        setIsLoadingQuestions(true);
-        const uniqueQuestionIds = Array.from(
-          new Set(answersToResolve.map((answer) => answer.questionId)),
-        );
-
-        const responses = await Promise.all(
-          uniqueQuestionIds.map((questionId) =>
-            questionsService.findOne(questionId),
-          ),
-        );
-
-        const mappedQuestions = responses.map((data) => ({
-          id: data.id,
-          text: data.content,
-          imageUrl: data.imageUrl,
-          type: data.type,
-          explanation: data.explanation || 'Sem explicação disponível.',
-          studyLink: data.studyLink,
-          options: [...(data.options ?? [])]
-            .sort(
-              (a: { order?: number }, b: { order?: number }) =>
-                (a.order ?? 0) - (b.order ?? 0),
-            )
-            .map(
-              (option: { id?: string; text: string; isCorrect: boolean }) => ({
-                id: option.id ?? '',
-                text: option.text,
-                isCorrect: option.isCorrect,
-              }),
-            ),
-        }));
-
-        setResolvedQuestions(mappedQuestions);
-      } catch (error) {
-        console.error('Failed to load review questions:', error);
-        setResolvedQuestions([]);
-      } finally {
-        setIsLoadingQuestions(false);
-      }
-    }
-
-    loadQuestionsForReview();
-  }, [state]);
 
   const {
     total = 0,
@@ -158,6 +77,7 @@ export default function SimulationResults() {
     simulationName = '',
     stars: stateStars,
     examId,
+    fromHistory = false,
   } = state ?? ({} as Partial<ResultsState>);
 
   const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
@@ -187,46 +107,18 @@ export default function SimulationResults() {
     return () => clearTimeout(timer);
   }, [percentage]);
 
-  const [showReview, setShowReview] = useState(false);
-  const [filter, setFilter] = useState<'ALL' | 'CORRECT' | 'INCORRECT'>('ALL');
-  const [activeIndex, setActiveIndex] = useState(0);
-
-  const answers = useMemo(() => {
-    const rawAnswers = state?.answers ?? [];
-    if (!resolvedQuestions.length) return rawAnswers;
-
-    const answersMap = new Map(rawAnswers.map((a) => [a.questionId, a]));
-
-    return resolvedQuestions.map((q) => {
-      const existing = answersMap.get(q.id);
-      if (existing) return existing;
-      return {
-        questionId: q.id,
-        selectedId: '',
-        selectedIds: [],
-        correct: false,
-      };
-    });
-  }, [state?.answers, resolvedQuestions]);
-
-  const indexedAnswers = useMemo(
-    () =>
-      answers.map((ans, originalIndex) => ({
-        ...ans,
-        originalIndex,
-      })),
-    [answers],
-  );
-
-  const filteredAnswers = useMemo(() => {
-    return indexedAnswers.filter((ans) => {
-      if (filter === 'CORRECT') return ans.correct;
-      if (filter === 'INCORRECT') return !ans.correct;
-      return true;
-    });
-  }, [indexedAnswers, filter]);
-
   const confettiItems = STATIC_CONFETTI_ITEMS;
+
+  const openReview = () => {
+    navigate('/dashboard/simulations/review', {
+      state: {
+        answers: state?.answers ?? [],
+        simulationName,
+        examId,
+        fromHistory,
+      },
+    });
+  };
 
   if (!state) {
     return (
@@ -243,12 +135,13 @@ export default function SimulationResults() {
                 historico para carregar os dados corretos.
               </p>
             </div>
-            <button
+            <Button
+              variant="gamified"
               onClick={() => navigate('/dashboard/simulations')}
-              className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold transition-colors"
+              className="w-full py-3 rounded-2xl font-bold"
             >
               Ir para historico
-            </button>
+            </Button>
           </Card>
         </div>
       </div>
@@ -277,325 +170,62 @@ export default function SimulationResults() {
         timeSpent={timeSpent}
       />
 
-      {/* Review section */}
+      {/* Review CTA */}
       <div className="px-4 mt-4">
         <div className="max-w-md mx-auto">
-          <button onClick={() => setShowReview(!showReview)} className="w-full">
+          <button onClick={openReview} className="w-full">
             <Card
               hoverEffect
-              padding="normal"
+              padding="small"
               className="flex items-center justify-between text-left"
             >
-              <span className="text-sm font-semibold text-slate-700">
+              <span className="flex items-center gap-2 text-sm font-semibold text-slate-700">
+                <ClipboardList className="h-4 w-4 text-indigo-600" />
                 Revisar Respostas
               </span>
-              {showReview ? (
-                <ChevronUp className="h-4 w-4 text-slate-400" />
-              ) : (
-                <ChevronDown className="h-4 w-4 text-slate-400" />
-              )}
+              <ChevronRight className="h-4 w-4 text-slate-400 shrink-0" />
             </Card>
           </button>
-
-          {showReview && answers.length > 0 && (
-            <div className="mt-4 space-y-6">
-              {/* Filter Selector */}
-              <div className="flex bg-slate-100 p-1 rounded-2xl gap-1 border border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFilter('ALL');
-                    setActiveIndex(0);
-                  }}
-                  className={cn(
-                    'flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center',
-                    filter === 'ALL'
-                      ? 'bg-white text-slate-800 shadow-sm'
-                      : 'text-slate-500 hover:text-slate-800',
-                  )}
-                >
-                  Todas ({answers.length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFilter('CORRECT');
-                    setActiveIndex(0);
-                  }}
-                  className={cn(
-                    'flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center',
-                    filter === 'CORRECT'
-                      ? 'bg-white text-emerald-700 shadow-sm'
-                      : 'text-slate-500 hover:text-emerald-700',
-                  )}
-                >
-                  Acertos ({answers.filter((a) => a.correct).length})
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFilter('INCORRECT');
-                    setActiveIndex(0);
-                  }}
-                  className={cn(
-                    'flex-1 py-2 rounded-xl text-xs font-bold transition-all text-center',
-                    filter === 'INCORRECT'
-                      ? 'bg-white text-rose-700 shadow-sm'
-                      : 'text-slate-500 hover:text-rose-700',
-                  )}
-                >
-                  Erros ({answers.filter((a) => !a.correct).length})
-                </button>
-              </div>
-
-              {filteredAnswers.length > 0 ? (
-                <div className="space-y-4">
-                  {/* Compact Number Badges Grid */}
-                  <div className="flex flex-wrap gap-2 justify-center py-2 bg-slate-50/50 rounded-2xl border border-slate-100 p-3">
-                    {filteredAnswers.map((ans, idx) => {
-                      const qNum = ans.originalIndex + 1;
-                      const isActive = idx === activeIndex;
-
-                      return (
-                        <button
-                          key={ans.questionId + '-' + idx}
-                          type="button"
-                          onClick={() => setActiveIndex(idx)}
-                          className={cn(
-                            'w-9 h-9 rounded-xl font-bold flex items-center justify-center text-xs transition-all relative',
-                            isActive
-                              ? 'ring-2 ring-indigo-500 ring-offset-2 scale-105'
-                              : 'hover:scale-105',
-                            ans.correct
-                              ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
-                              : 'bg-rose-50 border border-rose-200 text-rose-700',
-                          )}
-                        >
-                          {qNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Active Question Detailed Card */}
-                  {(() => {
-                    const ans = filteredAnswers[activeIndex];
-                    if (!ans) return null;
-                    const displayIndex = ans.originalIndex;
-                    const q = resolvedQuestions.find(
-                      (question) => question.id === ans.questionId,
-                    );
-                    if (!q) {
-                      return (
-                        <Card
-                          padding="normal"
-                          className="text-center text-sm text-slate-500"
-                        >
-                          {isLoadingQuestions
-                            ? 'Carregando dados da questao...'
-                            : 'Nao foi possivel carregar os detalhes desta questao.'}
-                        </Card>
-                      );
-                    }
-
-                    return (
-                      <Card
-                        padding="normal"
-                        className="space-y-4 text-left transition-all"
-                      >
-                        {/* Question Header */}
-                        <div className="flex items-start gap-3">
-                          {ans.correct ? (
-                            <CheckCircle2 className="h-5 w-5 text-emerald-500 shrink-0 mt-0.5" />
-                          ) : (
-                            <XCircle className="h-5 w-5 text-rose-500 shrink-0 mt-0.5" />
-                          )}
-                          <div>
-                            <h4 className="font-bold text-slate-800 text-sm flex items-center gap-2">
-                              Questão {displayIndex + 1}
-                            </h4>
-                            <p className="text-slate-650 text-xs mt-1 leading-relaxed">
-                              {q.text}
-                            </p>
-
-                            {q.imageUrl && (
-                              <div className="my-3 rounded-xl overflow-hidden border border-slate-200 bg-slate-50 flex items-center justify-center max-h-[220px]">
-                                <img
-                                  src={
-                                    q.imageUrl.startsWith('http')
-                                      ? q.imageUrl
-                                      : `${import.meta.env.VITE_STATIC_URL || 'http://localhost:3001'}${q.imageUrl.startsWith('/') ? q.imageUrl : `/${q.imageUrl}`}`
-                                  }
-                                  alt="Imagem da questão"
-                                  className="max-h-[220px] object-contain"
-                                />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Options List */}
-                        <div className="space-y-2 pl-8">
-                          {q.options.map(
-                            (opt: ReviewOption, optionIndex: number) => {
-                              const isSelected = ans.selectedIds
-                                ? ans.selectedIds.includes(opt.id)
-                                : opt.id === ans.selectedId;
-                              const isCorrect = opt.isCorrect;
-
-                              let optionStyle =
-                                'border-slate-100 bg-slate-50/50 text-slate-400 opacity-60';
-                              let badge = null;
-
-                              if (isSelected && isCorrect) {
-                                optionStyle =
-                                  'border-emerald-500 bg-emerald-50 text-emerald-955 font-medium shadow-sm';
-                                badge = (
-                                  <span className="text-[10px] font-semibold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full shrink-0">
-                                    Você acertou
-                                  </span>
-                                );
-                              } else if (!isSelected && isCorrect) {
-                                optionStyle =
-                                  'border-dashed border-emerald-400 bg-emerald-50/30 text-emerald-800 font-medium';
-                                badge = (
-                                  <span className="text-[10px] font-semibold bg-slate-100 text-emerald-700 px-2 py-0.5 rounded-full shrink-0 border border-emerald-200">
-                                    Gabarito (Não selecionada)
-                                  </span>
-                                );
-                              } else if (isSelected && !isCorrect) {
-                                optionStyle =
-                                  'border-rose-400 bg-rose-50 text-rose-900 font-medium';
-                                badge = (
-                                  <span className="text-[10px] font-semibold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full shrink-0">
-                                    Você marcou (Incorreta)
-                                  </span>
-                                );
-                              }
-
-                              return (
-                                <div
-                                  key={opt.id}
-                                  className={cn(
-                                    'flex items-start justify-between gap-2.5 p-3 rounded-2xl border text-xs leading-relaxed transition-all',
-                                    optionStyle,
-                                  )}
-                                >
-                                  <div className="flex items-start gap-2.5 flex-1">
-                                    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold uppercase shrink-0 border border-current mt-0.5">
-                                      {getOptionLabel(optionIndex)}
-                                    </span>
-                                    <span className="text-slate-700 font-medium">
-                                      {opt.text}
-                                    </span>
-                                  </div>
-                                  {badge}
-                                </div>
-                              );
-                            },
-                          )}
-                        </div>
-
-                        <div className="bg-slate-50/80 border border-slate-100 rounded-2xl p-4 text-[11px] text-slate-500 pl-8 leading-relaxed space-y-2">
-                          <div>
-                            <span className="font-bold text-slate-700 block mb-1">
-                              Explicação:
-                            </span>
-                            {q.explanation}
-                          </div>
-                          {q.studyLink && (
-                            <div className="pt-2 border-t border-slate-150">
-                              <span className="font-bold text-slate-700">
-                                Link de Aprofundamento:
-                              </span>{' '}
-                              <a
-                                href={q.studyLink}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-indigo-600 hover:text-indigo-800 underline font-medium"
-                              >
-                                {q.studyLink}
-                              </a>
-                            </div>
-                          )}
-                        </div>
-                      </Card>
-                    );
-                  })()}
-
-                  {/* Pagination Controls */}
-                  <div className="flex justify-between items-center gap-4 pt-1">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setActiveIndex((prev) => Math.max(0, prev - 1))
-                      }
-                      disabled={activeIndex === 0}
-                      className={cn(
-                        'flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors text-center',
-                        activeIndex === 0
-                          ? 'border-slate-150 text-slate-300 cursor-not-allowed'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50',
-                      )}
-                    >
-                      Anterior
-                    </button>
-                    <span className="text-xs text-slate-400 font-semibold">
-                      {activeIndex + 1} de {filteredAnswers.length}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setActiveIndex((prev) =>
-                          Math.min(filteredAnswers.length - 1, prev + 1),
-                        )
-                      }
-                      disabled={activeIndex === filteredAnswers.length - 1}
-                      className={cn(
-                        'flex-1 py-2.5 rounded-xl text-xs font-bold border transition-colors text-center',
-                        activeIndex === filteredAnswers.length - 1
-                          ? 'border-slate-150 text-slate-300 cursor-not-allowed'
-                          : 'border-slate-200 text-slate-600 hover:bg-slate-50',
-                      )}
-                    >
-                      Próxima
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-8 text-center bg-white border border-slate-200 rounded-3xl">
-                  <p className="text-sm font-semibold text-slate-400">
-                    Nenhuma questão nesta categoria.
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
       {/* CTA buttons */}
       <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 z-45 shadow-lg shrink-0">
         <div className="max-w-md mx-auto flex flex-col sm:flex-row gap-3">
-          <Button
-            variant="gamified"
-            onClick={() =>
-              navigate(
-                examId ? `/dashboard/explore/${examId}` : '/dashboard/explore',
-              )
-            }
-            className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
-          >
-            Voltar para a Trilha
-          </Button>
+          {fromHistory ? (
+            <Button
+              variant="gamified"
+              onClick={() => navigate(-1)}
+              className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              Voltar
+            </Button>
+          ) : (
+            <Button
+              variant="gamified"
+              onClick={() =>
+                navigate(
+                  examId
+                    ? `/dashboard/explore/${examId}`
+                    : '/dashboard/explore',
+                )
+              }
+              className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              Voltar para a Trilha
+            </Button>
+          )}
 
-          <button
+          <Button
+            variant="outline"
             onClick={() => navigate('/dashboard')}
-            className="flex-1 py-4 rounded-2xl border-2 border-slate-200 text-slate-650 hover:bg-slate-50 font-bold text-base transition-colors flex items-center justify-center gap-2"
+            className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
           >
             <Home className="h-5 w-5" />
             Ir para o Início
-          </button>
+          </Button>
         </div>
       </div>
     </div>

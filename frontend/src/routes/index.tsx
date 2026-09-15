@@ -18,6 +18,7 @@ import ExploreExams from '../pages/dashboard/student/ExploreExams';
 import ExamTrail from '../pages/dashboard/student/ExamTrail';
 import SimulationEngine from '../pages/dashboard/student/SimulationEngine';
 import SimulationResults from '../pages/dashboard/student/SimulationResults';
+import SimulationReview from '../pages/dashboard/student/SimulationReview';
 import Profile from '../pages/dashboard/student/Profile';
 import ProfileSettings from '../pages/dashboard/student/ProfileSettings';
 import Achievements from '../pages/dashboard/student/Achievements';
@@ -160,6 +161,7 @@ export function AppRoutes() {
           element={<SimulationEngine />}
         />
         <Route path="simulations/results" element={<SimulationResults />} />
+        <Route path="simulations/review" element={<SimulationReview />} />
       </Route>
 
       <Route path="*" element={<Navigate to="/" />} />
