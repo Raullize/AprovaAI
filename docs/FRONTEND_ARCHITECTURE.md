@@ -109,14 +109,19 @@ export function AppRoutes() {
         <Route path="explore" element={<ExploreExams />} />
         <Route path="explore/:examId" element={<ExamTrail />} />
         <Route path="simulations" element={<SimulationsHistory />} />
-        <Route path="simulations/engine/:simulationId" element={<SimulationEngine />} />
-        <Route path="simulations/results" element={<SimulationResults />} />
         <Route path="profile" element={<Profile />} />
 
         <Route path="exams" element={<AdminRoute><AdminExams /></AdminRoute>} />
         <Route path="admin/exams/:examId/topics" element={<AdminRoute><TopicList /></AdminRoute>} />
         <Route path="admin/topics/:topicId/simulations" element={<AdminRoute><SimulationList /></AdminRoute>} />
         <Route path="admin/simulations/:simulationId/questions" element={<AdminRoute><QuestionList /></AdminRoute>} />
+      </Route>
+
+      {/* Rotas de Foco (simulação, resultado e revisão) — FocusLayout sem sidebar */}
+      <Route path="/dashboard" element={<PrivateRoute><FocusLayout /></PrivateRoute>}>
+        <Route path="simulations/engine/:simulationId" element={<SimulationEngine />} />
+        <Route path="simulations/results" element={<SimulationResults />} />
+        <Route path="simulations/review" element={<SimulationReview />} />
       </Route>
     </Routes>
   );
@@ -134,13 +139,17 @@ Utilizamos o hook `useNavigate` do `react-router-dom` para navegação programá
 frontend/src/
 ├── components/       # Componentes reutilizáveis (UI, Layouts)
 │   ├── ui/           # Componentes base (Button, Input, Modal)
-│   └── layout/       # Estruturas de página (Sidebar, Header)
+│   ├── layout/       # Estruturas de página (Sidebar, Header, FloatingStudyWidget)
+│   ├── simulation/   # Tela de simulado (QuestionView, ResultSummary, ReviewQuestionCard)
+│   ├── profile/      # Estatísticas e conquistas do perfil
+│   ├── trail/        # Timeline da trilha (SimulationNodeTimeline, TopicTimeline)
+│   └── admin/        # Componentes administrativos (cards, modais, formulários)
 ├── context/          # Contextos globais (AuthContext)
-├── hooks/            # Custom Hooks (useToast, useFormValidation)
+├── hooks/            # Custom Hooks (useToast, usePagination, useLocalStorage, useExamFavorites)
 ├── pages/            # Componentes de Página (vistas principais)
 │   ├── login/        # Login
 │   ├── register/     # Registro
-│   ├── dashboard/    # Páginas da área logada
+│   ├── dashboard/    # Páginas da área logada (student/ e admin/)
 │   └── ...
 ├── routes/           # Configuração de rotas (AppRoutes)
 ├── services/         # Comunicação com API (Axios + Services)
@@ -157,12 +166,12 @@ A aplicação AprovaAI adota uma estratégia responsiva híbrida projetada para 
 ### 5.1 Largura Focada (`max-w-4xl` / `max-w-md`)
 Utilizada em visualizações individuais, configurações e telas de entrada de dados específicas:
 - **Telas de Configuração e Perfil** (`ProfileSettings.tsx`, `AdminSettings.tsx`).
+- **Trilha de Exame do Estudante** (`ExamTrail.tsx`): Layout 100% vertical — a visão geral do exame, os atalhos para os tópicos e a trilha completa de simulados ficam em uma única coluna centralizada (`max-w-4xl`), sem colunas laterais, tanto em mobile quanto em desktop.
 - **Modais de Formulário** (`ExamFormModal.tsx`, `QuestionFormModal.tsx`).
 - *Objetivo*: Manter o tamanho de linha de leitura confortável e evitar a dispersão visual em formulários.
 
 ### 5.2 Largura Expandida (`max-w-[1600px]`)
-Utilizada em telas complexas que exigem alta produtividade, grids de múltiplos cartões ou painéis informativos paralelos:
-- **Trilha de Exame do Estudante** (`ExamTrail.tsx`): Em telas maiores (desktops e notebooks), o container de até `1600px` permite que o mapa linear e o painel fixo lateral de progresso e estatísticas fiquem posicionados lado a lado de forma harmônica.
+Utilizada em telas complexas que exigem alta produtividade e grids de múltiplos cartões:
 - **Painéis de Gerenciamento do Admin** (`AdminExams.tsx`, `TopicList.tsx`, `SimulationList.tsx`, `QuestionList.tsx`): Garante espaço horizontal para visualização em grid de até 4 colunas de cartões, diminuindo a rolagem vertical de conteúdo e dando maior legibilidade às informações gerenciais.
 
 ---

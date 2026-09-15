@@ -71,6 +71,9 @@ O AprovaAI oferece dois planos para atender às necessidades de estudo:
 - **Autoatendimento:** Gerenciamento do próprio perfil, atualização de dados e alteração de senha de forma centralizada.
 - **Gamificação e Conquistas:** Receba estrelas por marcos (desempenho no simulado) e ganhe XP baseado na melhoria contínua.
 - **Streak de Dias:** Visualize seu progresso contínuo de estudos (ofensiva).
+- **Correção Dedicada:** Tela de revisão que mostra questão a questão o que você acertou/errou, com navegação por teclado, filtros e explicações em destaque.
+- **Favoritar Exames:** Fixe exames favoritos (estrela) no catálogo — eles sobem para o topo da lista.
+- **Ferramentas de Estudo:** Widget flutuante com Pomodoro, bloco de anotações e chat com o Prof. Sabichão *(mock visual por enquanto)*.
 
 ### Para o Administrador
 
