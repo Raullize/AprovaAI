@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import type { FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../hooks/useAuth';
 import { ArrowLeft, Camera, Trash2, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { accountService } from '../../../services/account.service';

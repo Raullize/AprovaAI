@@ -26,7 +26,7 @@ export interface ReviewAnswer {
   originalIndex?: number;
 }
 
-export function getOptionLabel(index: number): string {
+function getOptionLabel(index: number): string {
   return ['A', 'B', 'C', 'D', 'E'][index] ?? String(index + 1);
 }
 

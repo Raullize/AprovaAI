@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { DashboardHeader } from './DashboardHeader';
 import { FloatingStudyWidget } from './FloatingStudyWidget';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { Outlet } from 'react-router-dom';
 
 export const DashboardLayout: React.FC = () => {

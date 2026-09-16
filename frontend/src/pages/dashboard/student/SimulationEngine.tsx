@@ -9,7 +9,7 @@ import { simulationAttemptsService } from '../../../services/simulation-attempts
 import { simulationsService } from '../../../services/simulations.service';
 import { questionsService } from '../../../services/questions.service';
 import Loading from '../../../components/ui/Loading';
-import { useAuth } from '../../../context/AuthContext';
+import { useAuth } from '../../../hooks/useAuth';
 import type { SimulationMode } from '../../../types/simulation.types';
 import SimulationSummary from '../../../components/simulation/SimulationSummary';
 import { QuestionView } from '../../../components/simulation/QuestionView';

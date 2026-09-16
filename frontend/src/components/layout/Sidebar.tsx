@@ -11,7 +11,7 @@ import {
   History,
   Trophy,
 } from 'lucide-react';
-import { useAuth } from '../../context/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { cn } from '../../lib/utils';
 import UserAvatar from '../ui/UserAvatar';
 

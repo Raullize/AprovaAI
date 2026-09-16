@@ -1,45 +1,10 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import { accountService } from '../services/account.service';
+import { AuthContext } from '../hooks/useAuth';
+import type { LoginCredentials, User } from '../hooks/useAuth';
 
-export interface User {
-  id: string;
-  fullName: string;
-  email: string;
-  role: string;
-  username: string;
-  xp: number;
-  streakCount?: number;
-  bestStreak?: number;
-  lastActiveAt?: string | null;
-  subscriptionPlan: string;
-  avatarUrl?: string | null;
-  createdAt?: string;
-}
-
-interface LoginCredentials {
-  email?: string;
-  username?: string;
-  password: string;
-}
-
-interface AuthContextData {
-  user: User | null;
-  signed: boolean;
-  signIn: (data: LoginCredentials) => Promise<void>;
-  signUp: (
-    data: Omit<LoginCredentials, 'password'> & {
-      password: string;
-      fullName: string;
-      dateOfBirth: string;
-    },
-  ) => Promise<void>;
-  signOut: () => void;
-  refreshUser: () => Promise<void>;
-  loading: boolean;
-}
-
-const AuthContext = createContext<AuthContextData>({} as AuthContextData);
+export type { User } from '../hooks/useAuth';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -135,7 +100,3 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     </AuthContext.Provider>
   );
 };
-
-export function useAuth() {
-  return useContext(AuthContext);
-}
