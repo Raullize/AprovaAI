@@ -49,7 +49,7 @@ const SimulationNodeTimeline: React.FC<SimulationNodeTimelineProps> = ({
   const colorOpt = getColorOption(topic.colorScheme);
 
   return (
-    <div className="relative flex justify-center items-center w-full min-h-[140px] lg:min-h-[180px] py-4">
+    <div className="relative flex justify-center items-center w-full min-h-[140px] lg:min-h-[240px] py-4">
       {/* Central Curved SVG Line */}
       {!isLast && (
         <svg
@@ -76,7 +76,7 @@ const SimulationNodeTimeline: React.FC<SimulationNodeTimelineProps> = ({
       {/* Desktop Rich Card (Left or Right) */}
       <div
         className={cn(
-          'hidden lg:block absolute z-30 w-[calc(50%-7rem)] xl:w-[calc(50%-8rem)] group transition-all duration-300',
+          'hidden lg:block absolute z-30 top-1/2 -translate-y-1/2 w-[calc(50%-7rem)] xl:w-[calc(50%-8rem)] group transition-all duration-300',
           side === 'left'
             ? 'right-1/2 mr-16 xl:mr-20 text-right'
             : 'left-1/2 ml-16 xl:ml-20 text-left',
@@ -110,7 +110,7 @@ const SimulationNodeTimeline: React.FC<SimulationNodeTimelineProps> = ({
               {simulation.name}
             </h3>
             {simulation.description && (
-              <p className="text-slate-500 text-sm leading-relaxed max-w-sm">
+              <p className="text-slate-500 text-sm leading-relaxed max-w-sm line-clamp-3">
                 {simulation.description}
               </p>
             )}
