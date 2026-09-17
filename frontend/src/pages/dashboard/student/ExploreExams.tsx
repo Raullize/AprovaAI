@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Star } from 'lucide-react';
+import { ChevronDown, Star, Shuffle, ListOrdered } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
 import {
@@ -305,6 +305,25 @@ export default function ExploreExams() {
               <p className="text-slate-500 text-sm mb-6 leading-relaxed max-w-md">
                 {selectedExam.description}
               </p>
+
+              {selectedExam.allowUnordered ? (
+                <div className="w-full flex items-center gap-3 text-left bg-violet-50 border border-violet-100 rounded-2xl px-4 py-3 mb-6">
+                  <Shuffle className="h-4 w-4 shrink-0 text-violet-600" />
+                  <p className="text-sm text-violet-900 leading-snug">
+                    <span className="font-bold">Trilha livre:</span> escolha
+                    qualquer simulado, na ordem que preferir, sem precisar
+                    concluir os anteriores.
+                  </p>
+                </div>
+              ) : (
+                <div className="w-full flex items-center gap-3 text-left bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 mb-6">
+                  <ListOrdered className="h-4 w-4 shrink-0 text-slate-500" />
+                  <p className="text-sm text-slate-600 leading-snug">
+                    <span className="font-bold">Trilha em ordem:</span> conclua
+                    cada simulado para liberar o próximo nível.
+                  </p>
+                </div>
+              )}
 
               <div className="w-full bg-slate-50 rounded-3xl p-5 mb-8 flex justify-around border border-slate-100">
                 <div>
