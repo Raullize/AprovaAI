@@ -12,6 +12,7 @@ import { examsService } from '@/services/exams.service';
 import { useToast } from '@/hooks/useToast';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { SearchInput } from '@/components/admin/shared/SearchInput';
+import { ReorderHint } from '@/components/admin/shared/ReorderHint';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
 import { SimulationCard } from '@/components/admin/simulations/SimulationCard';
 import { SimulationFormModal } from '@/components/admin/simulations/SimulationFormModal';
@@ -198,28 +199,40 @@ export default function SimulationList() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredSimulations.map((simulation) => (
-            <SimulationCard
-              key={simulation.id}
-              simulation={simulation}
-              colorScheme={topicColorScheme}
-              iconKey={topicIconKey}
-              isDragging={draggedId === simulation.id}
-              onDragStart={() => setDraggedId(simulation.id)}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(simulation.id)}
-              onEdit={(id) => {
-                setEditingSimulationId(id);
-                setIsModalOpen(true);
-              }}
-              onDelete={setSimulationToDelete}
-              onToggleStatus={handleToggleStatus}
-              onNavigate={(id) =>
-                navigate(`/dashboard/admin/simulations/${id}/questions`)
-              }
-            />
-          ))}
+        <div className="space-y-6">
+          <ReorderHint
+            entityLabel="simulados"
+            display="list"
+            items={filteredSimulations.map((simulation) => ({
+              id: simulation.id,
+              name: simulation.name,
+              colorScheme: topicColorScheme,
+              meta: `${simulation.questionsCount ?? 0} questões`,
+            }))}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredSimulations.map((simulation) => (
+              <SimulationCard
+                key={simulation.id}
+                simulation={simulation}
+                colorScheme={topicColorScheme}
+                iconKey={topicIconKey}
+                isDragging={draggedId === simulation.id}
+                onDragStart={() => setDraggedId(simulation.id)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(simulation.id)}
+                onEdit={(id) => {
+                  setEditingSimulationId(id);
+                  setIsModalOpen(true);
+                }}
+                onDelete={setSimulationToDelete}
+                onToggleStatus={handleToggleStatus}
+                onNavigate={(id) =>
+                  navigate(`/dashboard/admin/simulations/${id}/questions`)
+                }
+              />
+            ))}
+          </div>
         </div>
       )}
 

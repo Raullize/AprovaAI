@@ -68,7 +68,7 @@ export function QuestionCard({
 
           {/* Right: grip + actions */}
           <div className="flex items-center gap-1">
-            <GripVertical className="h-4 w-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <GripVertical className="h-4 w-4 text-slate-300" />
             <EntityCardActions
               status={question.status}
               onToggleStatus={() => onToggleStatus(question)}
