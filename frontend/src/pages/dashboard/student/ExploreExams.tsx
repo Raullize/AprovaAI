@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronDown, Star } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
+import {
+  EXAM_CATEGORY_LABELS,
+  EXAM_CATEGORY_OPTIONS,
+} from '../../../config/examCategories';
 import { examsService, type Exam } from '../../../services/exams.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
@@ -12,21 +16,9 @@ import { SearchInput } from '../../../components/admin/shared/SearchInput';
 import { Card } from '../../../components/ui/Card';
 import { useExamFavorites } from '../../../hooks/useExamFavorites';
 
-const CATEGORY_MAP: Record<string, string> = {
-  CONCURSOS: 'Concursos',
-  CERTIFICACOES: 'Certificações',
-  VESTIBULAR: 'Vestibular',
-  OAB: 'OAB',
-  OUTROS: 'Outros',
-};
-
 const CATEGORIES = [
   { key: 'Todos', label: 'Todas as Categorias' },
-  { key: 'CONCURSOS', label: 'Concursos' },
-  { key: 'CERTIFICACOES', label: 'Certificações' },
-  { key: 'VESTIBULAR', label: 'Vestibular' },
-  { key: 'OAB', label: 'OAB' },
-  { key: 'OUTROS', label: 'Outros' },
+  ...EXAM_CATEGORY_OPTIONS,
 ];
 
 export default function ExploreExams() {
@@ -192,7 +184,7 @@ export default function ExploreExams() {
           <EmptyState message="Nenhum exame está disponível no momento." />
         ) : filtered.length === 0 ? (
           <EmptyState
-            message={`Nenhum exame encontrado para "${search || CATEGORY_MAP[activeCategory] || activeCategory}".`}
+            message={`Nenhum exame encontrado para "${search || EXAM_CATEGORY_LABELS[activeCategory] || activeCategory}".`}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -224,7 +216,8 @@ export default function ExploreExams() {
                         <div>
                           {exam.category && (
                             <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold mb-2">
-                              {CATEGORY_MAP[exam.category] || exam.category}
+                              {EXAM_CATEGORY_LABELS[exam.category] ||
+                                exam.category}
                             </span>
                           )}
                           <h3 className="font-bold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors leading-tight">
@@ -301,7 +294,8 @@ export default function ExploreExams() {
 
               {selectedExam.category && (
                 <span className="px-3 py-1 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold mb-3">
-                  {CATEGORY_MAP[selectedExam.category] || selectedExam.category}
+                  {EXAM_CATEGORY_LABELS[selectedExam.category] ||
+                    selectedExam.category}
                 </span>
               )}
 

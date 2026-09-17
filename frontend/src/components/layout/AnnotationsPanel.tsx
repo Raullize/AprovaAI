@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { NotebookPen, Plus, ArrowLeft, Trash2, StickyNote } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { StudyPanel } from './StudyPanel';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 interface Note {
@@ -45,7 +46,7 @@ export function AnnotationsPanel() {
   };
 
   return (
-    <div className="w-80 sm:w-96 h-[28rem] max-h-[calc(100vh-8rem)] bg-white rounded-3xl shadow-2xl shadow-slate-900/15 border border-slate-200 overflow-hidden flex flex-col">
+    <StudyPanel className="w-80 sm:w-96 h-[28rem] max-h-[calc(100vh-8rem)] overflow-hidden flex flex-col">
       {/* Header */}
       <div className="p-4 border-b border-slate-100 bg-slate-50/50">
         {activeNote ? (
@@ -154,6 +155,6 @@ export function AnnotationsPanel() {
           ))}
         </div>
       )}
-    </div>
+    </StudyPanel>
   );
 }

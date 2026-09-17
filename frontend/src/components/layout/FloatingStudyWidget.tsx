@@ -8,6 +8,7 @@ import {
   LayoutGrid,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { StudyPanel } from './StudyPanel';
 import { PomodoroPanel } from './PomodoroPanel';
 import { AnnotationsPanel } from './AnnotationsPanel';
 import { ProfessorChatPanel } from './ProfessorChatPanel';
@@ -70,7 +71,7 @@ export function FloatingStudyWidget() {
               <ProfessorChatPanel />
             )
           ) : (
-            <div className="w-64 bg-white rounded-3xl shadow-2xl shadow-slate-900/15 border border-slate-200 p-2">
+            <StudyPanel className="w-64 p-2">
               <div className="px-3 py-2 mb-1">
                 <p className="text-xs font-bold text-slate-800">
                   Ferramentas de Estudo
@@ -110,7 +111,7 @@ export function FloatingStudyWidget() {
                   </button>
                 );
               })}
-            </div>
+            </StudyPanel>
           )}
         </div>
       )}

@@ -1,5 +1,6 @@
 import { Flag } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { resolveImageUrl } from '../../lib/image';
 import type { SimulationMode } from '../../types/simulation.types';
 
 interface QuestionOption {
@@ -30,12 +31,6 @@ interface QuestionViewProps {
   isFlagged: boolean;
   onSelectOption: (optionId: string) => void;
   onToggleFlag: () => void;
-}
-
-function resolveImageUrl(imageUrl: string): string {
-  if (imageUrl.startsWith('http')) return imageUrl;
-  const baseUrl = import.meta.env.VITE_STATIC_URL || 'http://localhost:3001';
-  return `${baseUrl}${imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`}`;
 }
 
 export function QuestionView({

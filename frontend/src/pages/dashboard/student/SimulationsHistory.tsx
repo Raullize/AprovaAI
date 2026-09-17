@@ -16,6 +16,10 @@ import { usePagination } from '../../../hooks/usePagination';
 import { simulationAttemptsService } from '../../../services/simulation-attempts.service';
 import Loading from '../../../components/ui/Loading';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
+import {
+  EXAM_CATEGORY_OPTIONS,
+  formatExamCategory,
+} from '../../../config/examCategories';
 import EmptyState from '../../../components/ui/EmptyState';
 import { SearchInput } from '../../../components/admin/shared/SearchInput';
 import { PaginationControls } from '../../../components/ui/PaginationControls';
@@ -59,19 +63,7 @@ interface ExamGroup {
   items: HistoryItem[];
 }
 
-const CATEGORIES = [
-  { key: 'Todos', label: 'Todos' },
-  { key: 'CONCURSOS', label: 'Concursos' },
-  { key: 'CERTIFICACOES', label: 'Certificações' },
-  { key: 'VESTIBULAR', label: 'Vestibular' },
-  { key: 'OAB', label: 'OAB' },
-  { key: 'OUTROS', label: 'Outros' },
-];
-
-function formatCategoryLabel(category?: string) {
-  const found = CATEGORIES.find((c) => c.key === category);
-  return found?.label ?? category ?? 'Outros';
-}
+const CATEGORIES = [{ key: 'Todos', label: 'Todos' }, ...EXAM_CATEGORY_OPTIONS];
 
 function Stars({ value }: { value: number }) {
   return (
@@ -579,7 +571,7 @@ export default function SimulationsHistory() {
                           {item.mode === 'EXAM' ? 'EXAME' : 'TREINO'}
                         </span>
                         <span className="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-slate-50 text-slate-600 border border-slate-200">
-                          {formatCategoryLabel(item.examCategory)}
+                          {formatExamCategory(item.examCategory)}
                         </span>
                         <Stars value={item.stars ?? 0} />
                       </div>

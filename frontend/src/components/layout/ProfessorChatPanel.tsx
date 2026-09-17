@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Send, GraduationCap, Maximize } from 'lucide-react';
+import { StudyPanel } from './StudyPanel';
 
 interface ChatMessage {
   id: number;
@@ -75,7 +76,7 @@ export function ProfessorChatPanel() {
   };
 
   return (
-    <div className="w-80 sm:w-96 h-[32rem] sm:h-[36rem] max-h-[calc(100vh-8rem)] bg-white rounded-3xl shadow-2xl shadow-slate-900/15 border border-slate-200 overflow-hidden flex flex-col">
+    <StudyPanel className="w-80 sm:w-96 h-[32rem] sm:h-[36rem] max-h-[calc(100vh-8rem)] overflow-hidden flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-indigo-600 to-violet-600">
         <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center shrink-0">
@@ -154,6 +155,6 @@ export function ProfessorChatPanel() {
           </button>
         </div>
       </div>
-    </div>
+    </StudyPanel>
   );
 }

@@ -7,6 +7,7 @@ import {
   Focus as FocusIcon,
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
+import { StudyPanel } from './StudyPanel';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 
 const MODES = {
@@ -76,7 +77,7 @@ export function PomodoroPanel() {
   const circumference = 2 * Math.PI * radius;
 
   return (
-    <div className="w-72 bg-white rounded-3xl shadow-2xl shadow-slate-900/15 border border-slate-200 p-5">
+    <StudyPanel className="w-72 p-5">
       <div className="flex items-center justify-between mb-4">
         <span className="text-sm font-bold text-slate-800">Pomodoro</span>
         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
@@ -174,6 +175,6 @@ export function PomodoroPanel() {
           )}
         </button>
       </div>
-    </div>
+    </StudyPanel>
   );
 }
