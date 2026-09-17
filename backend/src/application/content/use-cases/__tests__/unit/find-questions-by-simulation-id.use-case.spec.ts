@@ -35,7 +35,10 @@ describe('FindQuestionsBySimulationIdUseCase', () => {
     await repository.create(qB);
     await repository.create(qOther);
 
-    const result = await useCase.execute('simulation-01');
+    const result = await useCase.execute({
+      simulationId: 'simulation-01',
+      options: {},
+    });
 
     expect(result).toHaveLength(2);
     expect(result.every((q) => q.simulationId === 'simulation-01')).toBe(true);
@@ -59,14 +62,20 @@ describe('FindQuestionsBySimulationIdUseCase', () => {
     await repository.create(qB);
     await repository.create(qA);
 
-    const result = await useCase.execute('simulation-01');
+    const result = await useCase.execute({
+      simulationId: 'simulation-01',
+      options: {},
+    });
 
     expect(result[0].id).toBe(qA.id);
     expect(result[1].id).toBe(qB.id);
   });
 
   it('should return an empty array when no questions belong to the simulation', async () => {
-    const result = await useCase.execute('simulation-not-found');
+    const result = await useCase.execute({
+      simulationId: 'simulation-not-found',
+      options: {},
+    });
 
     expect(result).toHaveLength(0);
     expect(Array.isArray(result)).toBe(true);

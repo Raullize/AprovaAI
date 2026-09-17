@@ -22,7 +22,7 @@ describe('FindExamByIdOrSlugUseCase', () => {
 
     await repository.create(exam);
 
-    const result = await sut.execute(exam.id);
+    const result = await sut.execute({ idOrSlug: exam.id, options: {} });
 
     expect(result.id).toBe(exam.id);
     expect(result.slug.value).toBe('cloud');
@@ -37,15 +37,15 @@ describe('FindExamByIdOrSlugUseCase', () => {
 
     await repository.create(exam);
 
-    const result = await sut.execute('aws');
+    const result = await sut.execute({ idOrSlug: 'aws', options: {} });
 
     expect(result.id).toBe(exam.id);
     expect(result.name).toBe('AWS');
   });
 
   it('should throw ResourceNotFoundError when exam does not exist', async () => {
-    await expect(sut.execute('missing-exam')).rejects.toBeInstanceOf(
-      ResourceNotFoundError,
-    );
+    await expect(
+      sut.execute({ idOrSlug: 'missing-exam', options: {} }),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 });

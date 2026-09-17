@@ -28,7 +28,7 @@ describe('FindAllQuestionsUseCase', () => {
     await repository.create(qA);
     await repository.create(qB);
 
-    const result = await useCase.execute();
+    const result = await useCase.execute({});
 
     expect(result).toHaveLength(2);
     expect(result.map((q) => q.id)).toContain(qA.id);
@@ -36,7 +36,7 @@ describe('FindAllQuestionsUseCase', () => {
   });
 
   it('should return an empty array when there are no questions', async () => {
-    const result = await useCase.execute();
+    const result = await useCase.execute({});
 
     expect(result).toHaveLength(0);
     expect(Array.isArray(result)).toBe(true);

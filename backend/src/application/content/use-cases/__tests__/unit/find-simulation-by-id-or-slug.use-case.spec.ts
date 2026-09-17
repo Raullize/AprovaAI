@@ -26,7 +26,7 @@ describe('FindSimulationByIdOrSlugUseCase', () => {
 
     await repository.create(simulation);
 
-    const result = await sut.execute(simulation.id);
+    const result = await sut.execute({ idOrSlug: simulation.id, options: {} });
 
     expect(result.id).toBe(simulation.id);
     expect(result.name).toBe('Simulation 1');
@@ -44,15 +44,15 @@ describe('FindSimulationByIdOrSlugUseCase', () => {
 
     await repository.create(simulation);
 
-    const result = await sut.execute('simulation-2');
+    const result = await sut.execute({ idOrSlug: 'simulation-2', options: {} });
 
     expect(result.id).toBe(simulation.id);
     expect(result.xpReward).toBe(150);
   });
 
   it('should throw ResourceNotFoundError when simulation does not exist', async () => {
-    await expect(sut.execute('missing-simulation')).rejects.toBeInstanceOf(
-      ResourceNotFoundError,
-    );
+    await expect(
+      sut.execute({ idOrSlug: 'missing-simulation', options: {} }),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 });

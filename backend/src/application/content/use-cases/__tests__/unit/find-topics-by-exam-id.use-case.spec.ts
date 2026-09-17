@@ -36,7 +36,7 @@ describe('FindTopicsByExamIdUseCase', () => {
     await repository.create(topicB);
     await repository.create(topicOther);
 
-    const result = await useCase.execute('exam-01');
+    const result = await useCase.execute({ examId: 'exam-01', options: {} });
 
     expect(result).toHaveLength(2);
     expect(result.every((t) => t.examId === 'exam-01')).toBe(true);
@@ -60,14 +60,17 @@ describe('FindTopicsByExamIdUseCase', () => {
     await repository.create(topicB);
     await repository.create(topicA);
 
-    const result = await useCase.execute('exam-01');
+    const result = await useCase.execute({ examId: 'exam-01', options: {} });
 
     expect(result[0].id).toBe(topicA.id);
     expect(result[1].id).toBe(topicB.id);
   });
 
   it('should return an empty array when no topics belong to the exam', async () => {
-    const result = await useCase.execute('exam-not-found');
+    const result = await useCase.execute({
+      examId: 'exam-not-found',
+      options: {},
+    });
 
     expect(result).toHaveLength(0);
     expect(Array.isArray(result)).toBe(true);

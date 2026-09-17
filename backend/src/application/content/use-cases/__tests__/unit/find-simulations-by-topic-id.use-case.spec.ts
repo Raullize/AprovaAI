@@ -36,7 +36,7 @@ describe('FindSimulationsByTopicIdUseCase', () => {
     await repository.create(simulationB);
     await repository.create(simulationOther);
 
-    const result = await useCase.execute('topic-01');
+    const result = await useCase.execute({ topicId: 'topic-01', options: {} });
 
     expect(result).toHaveLength(2);
     expect(result.every((l) => l.topicId === 'topic-01')).toBe(true);
@@ -60,14 +60,17 @@ describe('FindSimulationsByTopicIdUseCase', () => {
     await repository.create(simulationB);
     await repository.create(simulationA);
 
-    const result = await useCase.execute('topic-01');
+    const result = await useCase.execute({ topicId: 'topic-01', options: {} });
 
     expect(result[0].id).toBe(simulationA.id);
     expect(result[1].id).toBe(simulationB.id);
   });
 
   it('should return an empty array when no simulations belong to the topic', async () => {
-    const result = await useCase.execute('topic-not-found');
+    const result = await useCase.execute({
+      topicId: 'topic-not-found',
+      options: {},
+    });
 
     expect(result).toHaveLength(0);
     expect(Array.isArray(result)).toBe(true);
