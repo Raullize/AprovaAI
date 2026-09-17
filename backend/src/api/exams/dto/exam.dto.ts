@@ -23,6 +23,13 @@ export const createExamSchema = z.object({
     .enum(['CONCURSOS', 'CERTIFICACOES', 'VESTIBULAR', 'OAB', 'OUTROS'])
     .default('OUTROS')
     .describe('Categoria do exame.'),
+  allowUnordered: z
+    .boolean()
+    .default(false)
+    .optional()
+    .describe(
+      'Se true, os alunos podem realizar os simulados da trilha fora de ordem, sem critério de aprovação.',
+    ),
 });
 
 export class CreateExamDto extends createZodDto(createExamSchema) {}
@@ -55,6 +62,12 @@ export const updateExamSchema = z.object({
     .nullable()
     .optional()
     .describe('Nova categoria do exame ou `null` para remover a categoria.'),
+  allowUnordered: z
+    .boolean()
+    .optional()
+    .describe(
+      'Se true, os alunos podem realizar os simulados da trilha fora de ordem, sem critério de aprovação.',
+    ),
 });
 
 export class UpdateExamDto extends createZodDto(updateExamSchema) {}

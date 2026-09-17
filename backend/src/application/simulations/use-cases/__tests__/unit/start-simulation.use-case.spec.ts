@@ -1,7 +1,11 @@
 import { StartSimulationUseCase } from '../../start-simulation.use-case';
 import { InMemorySimulationAttemptRepository } from '../../../../../../test/repositories/in-memory-simulation-attempt.repository';
 import { InMemorySimulationRepository } from '../../../../../../test/repositories/in-memory-simulation.repository';
+import { InMemoryTopicRepository } from '../../../../../../test/repositories/in-memory-topic.repository';
+import { InMemoryExamRepository } from '../../../../../../test/repositories/in-memory-exam.repository';
 import { Simulation } from '../../../../../domain/content/entities/simulation.entity';
+import { Topic } from '../../../../../domain/content/entities/topic.entity';
+import { Exam } from '../../../../../domain/content/entities/exam.entity';
 import { Slug } from '../../../../../domain/content/value-objects/slug';
 import { Percentage } from '../../../../../domain/content/value-objects/percentage';
 import { ResourceNotFoundError } from '../../../../../shared/core/errors/resource-not-found.error';
@@ -11,34 +15,69 @@ import { SimulationAttempt } from '../../../../../domain/simulations/entities/si
 describe('StartSimulationUseCase', () => {
   let simulationAttemptRepository: InMemorySimulationAttemptRepository;
   let simulationRepository: InMemorySimulationRepository;
+  let topicRepository: InMemoryTopicRepository;
+  let examRepository: InMemoryExamRepository;
   let sut: StartSimulationUseCase;
 
   beforeEach(() => {
     simulationAttemptRepository = new InMemorySimulationAttemptRepository();
     simulationRepository = new InMemorySimulationRepository();
+    topicRepository = new InMemoryTopicRepository();
+    examRepository = new InMemoryExamRepository();
     sut = new StartSimulationUseCase(
       simulationAttemptRepository,
       simulationRepository,
+      topicRepository,
+      examRepository,
     );
   });
 
-  it('should create a new simulation using simulation mode and questions count', async () => {
-    const simulation = Simulation.create({
-      name: 'Nivel 1',
-      slug: Slug.create('nivel-1'),
-      topicId: 'topic-1',
-      order: 0,
-      xpReward: 100,
-      passingPercentage: Percentage.create(70),
-      simulationMode: 'EXAM',
-      questionsCount: 10,
-    });
+  async function seedTrail(
+    options: { allowUnordered?: boolean; numberOfSimulations?: number } = {},
+  ) {
+    const { allowUnordered = true, numberOfSimulations = 1 } = options;
 
-    await simulationRepository.create(simulation);
+    const exam = Exam.create({
+      name: 'Exam',
+      slug: Slug.create('exam'),
+      allowUnordered,
+    });
+    await examRepository.create(exam);
+
+    const topic = Topic.create({
+      name: 'Topic',
+      slug: Slug.create('topic'),
+      examId: exam.id,
+      order: 0,
+    });
+    await topicRepository.create(topic);
+
+    const simulations = Array.from({ length: numberOfSimulations }, (_, i) =>
+      Simulation.create({
+        name: `Nivel ${i + 1}`,
+        slug: Slug.create(`nivel-${i + 1}`),
+        topicId: topic.id,
+        order: i,
+        xpReward: 100,
+        passingPercentage: Percentage.create(70),
+        simulationMode: 'EXAM',
+        questionsCount: 10,
+      }),
+    );
+
+    for (const simulation of simulations) {
+      await simulationRepository.create(simulation);
+    }
+
+    return { exam, topic, simulations };
+  }
+
+  it('should create a new simulation using simulation mode and questions count', async () => {
+    const { simulations } = await seedTrail();
 
     const result = await sut.execute({
       userId: 'user-1',
-      simulationId: simulation.id,
+      simulationId: simulations[0].id,
     });
 
     expect(result.status).toBe('IN_PROGRESS');
@@ -48,32 +87,22 @@ describe('StartSimulationUseCase', () => {
   });
 
   it('should resume an active simulation when one already exists', async () => {
-    const simulation = Simulation.create({
-      name: 'Nivel 2',
-      slug: Slug.create('nivel-2'),
-      topicId: 'topic-1',
-      order: 1,
-      xpReward: 100,
-      passingPercentage: Percentage.create(70),
-      simulationMode: 'PRACTICE',
-      questionsCount: 5,
-    });
+    const { simulations } = await seedTrail();
 
     const existingSimulation = SimulationAttempt.create({
       userId: 'user-1',
-      simulationId: simulation.id,
+      simulationId: simulations[0].id,
       status: 'IN_PROGRESS',
-      mode: 'PRACTICE',
-      totalQuestions: 5,
+      mode: 'EXAM',
+      totalQuestions: 10,
       answers: [],
     });
 
-    await simulationRepository.create(simulation);
     await simulationAttemptRepository.create(existingSimulation);
 
     const result = await sut.execute({
       userId: 'user-1',
-      simulationId: simulation.id,
+      simulationId: simulations[0].id,
     });
 
     expect(result.id).toBe(existingSimulation.id);
@@ -90,10 +119,12 @@ describe('StartSimulationUseCase', () => {
   });
 
   it('should throw ValidationError when simulation has no questions', async () => {
+    const { topic } = await seedTrail();
+
     const simulation = Simulation.create({
       name: 'Nivel vazio',
       slug: Slug.create('nivel-vazio'),
-      topicId: 'topic-1',
+      topicId: topic.id,
       order: 2,
       xpReward: 0,
       passingPercentage: Percentage.create(70),
@@ -108,5 +139,60 @@ describe('StartSimulationUseCase', () => {
         simulationId: simulation.id,
       }),
     ).rejects.toBeInstanceOf(ValidationError);
+  });
+
+  it('should allow starting any simulation when exam allows unordered access', async () => {
+    const { simulations } = await seedTrail({
+      allowUnordered: true,
+      numberOfSimulations: 2,
+    });
+
+    const result = await sut.execute({
+      userId: 'user-1',
+      simulationId: simulations[1].id,
+    });
+
+    expect(result.status).toBe('IN_PROGRESS');
+    expect(result.simulationId).toBe(simulations[1].id);
+  });
+
+  it('should throw ResourceNotFoundError when exam requires order and previous simulations were not passed', async () => {
+    const { simulations } = await seedTrail({
+      allowUnordered: false,
+      numberOfSimulations: 2,
+    });
+
+    await expect(
+      sut.execute({
+        userId: 'user-1',
+        simulationId: simulations[1].id,
+      }),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
+  });
+
+  it('should allow starting a later simulation when previous simulations were passed', async () => {
+    const { simulations } = await seedTrail({
+      allowUnordered: false,
+      numberOfSimulations: 2,
+    });
+
+    const passedAttempt = SimulationAttempt.create({
+      userId: 'user-1',
+      simulationId: simulations[0].id,
+      status: 'COMPLETED',
+      passed: true,
+      mode: 'EXAM',
+      totalQuestions: 10,
+      answers: [],
+    });
+    await simulationAttemptRepository.create(passedAttempt);
+
+    const result = await sut.execute({
+      userId: 'user-1',
+      simulationId: simulations[1].id,
+    });
+
+    expect(result.status).toBe('IN_PROGRESS');
+    expect(result.simulationId).toBe(simulations[1].id);
   });
 });

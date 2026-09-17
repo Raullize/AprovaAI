@@ -16,6 +16,11 @@ export const examResponseSchema = z.object({
   iconKey: z.string().nullable().optional().describe('Chave do ícone Lucide.'),
   colorScheme: z.string().nullable().optional().describe('Esquema de cor.'),
   category: z.string().nullable().optional().describe('Categoria do exame.'),
+  allowUnordered: z
+    .boolean()
+    .describe(
+      'Se true, os simulados da trilha podem ser feitos fora de ordem, sem critério de aprovação.',
+    ),
   createdAt: z.string().optional().describe('Data de criação (ISO 8601).'),
   updatedAt: z
     .string()

@@ -78,6 +78,7 @@ model Exam {
   iconKey     String?      @map("icon_key")
   colorScheme String?      @map("color_scheme")
   category    ExamCategory @default(OUTROS) @map("category")
+  allowUnordered Boolean    @default(false) @map("allow_unordered")
   createdAt   DateTime     @default(now()) @map("created_at")
   updatedAt   DateTime     @updatedAt @map("updated_at")
 

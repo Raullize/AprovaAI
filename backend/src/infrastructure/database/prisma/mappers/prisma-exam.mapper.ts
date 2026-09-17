@@ -15,6 +15,7 @@ export class PrismaExamMapper {
         iconKey: raw.iconKey,
         colorScheme: raw.colorScheme,
         category: raw.category,
+        allowUnordered: raw.allowUnordered,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt,
       },
@@ -33,6 +34,7 @@ export class PrismaExamMapper {
       iconKey: exam.iconKey ?? null,
       colorScheme: exam.colorScheme ?? null,
       category: (exam.category as ExamCategory) || ExamCategory.OUTROS,
+      allowUnordered: exam.allowUnordered,
       createdAt: exam.createdAt ?? new Date(),
       updatedAt: exam.updatedAt ?? new Date(),
     };

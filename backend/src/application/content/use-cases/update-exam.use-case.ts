@@ -15,6 +15,7 @@ export interface UpdateExamRequest {
     iconKey?: string | null;
     colorScheme?: string | null;
     category?: string | null;
+    allowUnordered?: boolean;
   };
 }
 
@@ -67,6 +68,10 @@ export class UpdateExamUseCase implements UseCase<UpdateExamRequest, Exam> {
       } else {
         exam.deactivate();
       }
+    }
+
+    if (request.data.allowUnordered !== undefined) {
+      exam.setAllowUnordered(request.data.allowUnordered);
     }
 
     return this.examRepository.save(exam);

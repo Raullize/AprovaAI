@@ -12,6 +12,7 @@ export interface CreateExamRequest {
   iconKey?: string;
   colorScheme?: string;
   category?: string;
+  allowUnordered?: boolean;
 }
 
 @Injectable()
@@ -38,6 +39,7 @@ export class CreateExamUseCase implements UseCase<CreateExamRequest, Exam> {
       iconKey: request.iconKey,
       colorScheme: request.colorScheme,
       category: request.category,
+      allowUnordered: request.allowUnordered,
     });
 
     return this.examRepository.create(exam);
