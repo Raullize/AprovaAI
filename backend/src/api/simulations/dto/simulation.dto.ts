@@ -5,20 +5,25 @@ export const createSimulationSchema = z.object({
   name: z
     .string()
     .min(3, 'Nome deve ter no mínimo 3 caracteres')
-    .describe('Nome do nível. Ex: "Nível 1 - Básico"'),
-  description: z.string().optional().describe('Descrição opcional do nível.'),
+    .describe('Nome do simulado. Ex: "Simulado 1 - Básico"'),
+  description: z
+    .string()
+    .optional()
+    .describe('Descrição opcional do simulado.'),
   order: z
     .number()
     .int()
     .min(1)
     .optional()
-    .describe('Ordem de exibição do nível. Ex: 1'),
+    .describe('Ordem de exibição do simulado. Ex: 1'),
   xpReward: z
     .number()
     .int()
     .min(0)
     .default(0)
-    .describe('Quantidade de XP que o aluno ganha ao concluir o nível. Ex: 50'),
+    .describe(
+      'Quantidade de XP que o aluno ganha ao concluir o simulado. Ex: 50',
+    ),
   passingPercentage: z
     .number()
     .min(0)
@@ -30,7 +35,7 @@ export const createSimulationSchema = z.object({
     .int()
     .min(1)
     .optional()
-    .describe('Tempo limite em minutos para concluir o nível. Ex: 60'),
+    .describe('Tempo limite em minutos para concluir o simulado. Ex: 60'),
   simulationMode: z
     .enum(['PRACTICE', 'EXAM'])
     .default('PRACTICE')
@@ -40,11 +45,11 @@ export const createSimulationSchema = z.object({
   status: z
     .enum(['PUBLISHED', 'DRAFT'])
     .default('PUBLISHED')
-    .describe('Status de visibilidade do nível'),
+    .describe('Status de visibilidade do simulado'),
   topicId: z
     .uuid('ID do tópico inválido')
     .describe(
-      'ID UUID do tópico ao qual este nível pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+      'ID UUID do tópico ao qual este simulado pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
     ),
 });
 
@@ -54,26 +59,26 @@ export const updateSimulationSchema = z.object({
   name: z
     .string()
     .optional()
-    .describe('Novo nome do nível. Ex: "Nível 2 - Intermediário"'),
+    .describe('Novo nome do simulado. Ex: "Simulado 2 - Intermediário"'),
   description: z
     .string()
     .optional()
-    .describe('Nova descrição opcional do nível.'),
+    .describe('Nova descrição opcional do simulado.'),
   status: z
     .enum(['PUBLISHED', 'DRAFT'])
     .optional()
-    .describe('Novo status de visibilidade do nível.'),
+    .describe('Novo status de visibilidade do simulado.'),
   topicId: z
     .uuid('ID do tópico inválido')
     .optional()
     .describe(
-      'Novo ID UUID do tópico ao qual este nível pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+      'Novo ID UUID do tópico ao qual este simulado pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
     ),
   xpReward: z
     .number()
     .int()
     .optional()
-    .describe('Novo total de XP concedido ao concluir o nível. Ex: 100'),
+    .describe('Novo total de XP concedido ao concluir o simulado. Ex: 100'),
   passingPercentage: z
     .number()
     .min(0)
