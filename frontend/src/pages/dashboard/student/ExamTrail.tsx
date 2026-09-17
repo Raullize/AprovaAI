@@ -9,6 +9,7 @@ import {
   ShieldCheck,
   Target,
   Star,
+  Shuffle,
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { formatTimeLimit } from '../../../lib/format';
@@ -115,6 +116,7 @@ export default function ExamTrail() {
   > = {};
 
   let previousPassed = true;
+  const freeOrder = exam?.allowUnordered === true;
 
   allSimulations.forEach((sim) => {
     const simHistory = history.filter(
@@ -130,7 +132,7 @@ export default function ExamTrail() {
     let status: 'COMPLETED' | 'CURRENT' | 'LOCKED' = 'LOCKED';
     if (passed) {
       status = 'COMPLETED';
-    } else if (previousPassed) {
+    } else if (freeOrder || previousPassed) {
       status = 'CURRENT';
     }
 
@@ -424,6 +426,12 @@ export default function ExamTrail() {
                   ? 'Exame da Ordem'
                   : 'Trilha de Certificação'}
               </p>
+              {exam?.allowUnordered && (
+                <span className="inline-flex items-center gap-1 mt-2 px-2.5 py-1 rounded-full text-[11px] font-bold bg-violet-50 text-violet-700 border border-violet-100">
+                  <Shuffle className="h-3 w-3" />
+                  Trilha livre — escolha qualquer simulado
+                </span>
+              )}
             </div>
             <div className="text-right shrink-0">
               <span className="text-[10px] font-bold text-slate-400 block uppercase tracking-wider leading-none">
