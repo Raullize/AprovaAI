@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -24,6 +25,7 @@ import {
 import { reorderSchema, ReorderDto } from '../exams/dto/exam.dto';
 import { SimulationResponseDto } from '../content/dto/content-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
@@ -78,24 +80,29 @@ export class SimulationsController {
   }
 
   @Get()
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({
     summary: 'Listar Simulados',
-    description: 'Retorna a lista de todos os simulados cadastrados.',
+    description:
+      'Retorna a lista de simulados. Estudantes veem apenas os publicados; administradores veem todos.',
   })
   @ApiResponse({
     status: 200,
     description: 'Lista de simulados retornada com sucesso.',
     type: [SimulationResponseDto],
   })
-  findAll() {
-    return this.findAllSimulationsUseCase.execute();
+  findAll(@Request() req: { user?: { role?: string } }) {
+    return this.findAllSimulationsUseCase.execute({
+      includeDraft: req.user?.role === UserRole.ADMIN,
+    });
   }
 
   @Get('topic/:topicId')
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({
     summary: 'Buscar Simulados por Tópico',
     description:
-      'Retorna todos os simulados pertencentes a um tópico específico.',
+      'Retorna os simulados de um tópico. Estudantes veem apenas publicados; administradores veem todos.',
   })
   @ApiParam({
     name: 'topicId',
@@ -106,14 +113,22 @@ export class SimulationsController {
     description: 'Simulados do tópico encontrados.',
     type: [SimulationResponseDto],
   })
-  findByTopic(@Param('topicId') topicId: string) {
-    return this.findSimulationsByTopicIdUseCase.execute(topicId);
+  findByTopic(
+    @Param('topicId') topicId: string,
+    @Request() req: { user?: { role?: string } },
+  ) {
+    return this.findSimulationsByTopicIdUseCase.execute({
+      topicId,
+      options: { includeDraft: req.user?.role === UserRole.ADMIN },
+    });
   }
 
   @Get(':idOrSlug')
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({
     summary: 'Buscar Simulado por ID ou Slug',
-    description: 'Retorna os detalhes de um simulado específico.',
+    description:
+      'Retorna os detalhes de um simulado. Estudantes só acessam publicados; administradores acessam qualquer status.',
   })
   @ApiParam({
     name: 'idOrSlug',
@@ -125,8 +140,14 @@ export class SimulationsController {
     type: SimulationResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Simulado não encontrado.' })
-  findOne(@Param('idOrSlug') idOrSlug: string) {
-    return this.findSimulationByIdOrSlugUseCase.execute(idOrSlug);
+  findOne(
+    @Param('idOrSlug') idOrSlug: string,
+    @Request() req: { user?: { role?: string } },
+  ) {
+    return this.findSimulationByIdOrSlugUseCase.execute({
+      idOrSlug,
+      options: { includeDraft: req.user?.role === UserRole.ADMIN },
+    });
   }
 
   @Patch('reorder')

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -93,8 +94,10 @@ export class QuestionsController {
     type: [QuestionResponseDto],
   })
   @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
-  findAll() {
-    return this.findAllQuestionsUseCase.execute();
+  findAll(@Request() req: { user?: { role?: string } }) {
+    return this.findAllQuestionsUseCase.execute({
+      includeDraft: req.user?.role === UserRole.ADMIN,
+    });
   }
 
   @Get('simulation/:simulationId')
@@ -115,8 +118,14 @@ export class QuestionsController {
     type: [QuestionResponseDto],
   })
   @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
-  findBySimulation(@Param('simulationId') simulationId: string) {
-    return this.findQuestionsBySimulationIdUseCase.execute(simulationId);
+  findBySimulation(
+    @Param('simulationId') simulationId: string,
+    @Request() req: { user?: { role?: string } },
+  ) {
+    return this.findQuestionsBySimulationIdUseCase.execute({
+      simulationId,
+      options: { includeDraft: req.user?.role === UserRole.ADMIN },
+    });
   }
 
   @Get(':id')
@@ -138,8 +147,14 @@ export class QuestionsController {
   })
   @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
   @ApiResponse({ status: 404, description: 'Questão não encontrada.' })
-  findOne(@Param('id') id: string) {
-    return this.findQuestionByIdUseCase.execute(id);
+  findOne(
+    @Param('id') id: string,
+    @Request() req: { user?: { role?: string } },
+  ) {
+    return this.findQuestionByIdUseCase.execute({
+      id,
+      options: { includeDraft: req.user?.role === UserRole.ADMIN },
+    });
   }
 
   @Patch('reorder')

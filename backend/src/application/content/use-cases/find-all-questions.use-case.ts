@@ -2,12 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { UseCase } from '../../../shared/core/use-case';
 import { QuestionRepository } from '../../../domain/content/repositories/question.repository';
 import { Question } from '../../../domain/content/entities/question.entity';
+import { ContentReadOptions } from './content-read-options';
 
 @Injectable()
-export class FindAllQuestionsUseCase implements UseCase<void, Question[]> {
+export class FindAllQuestionsUseCase implements UseCase<
+  ContentReadOptions,
+  Question[]
+> {
   constructor(private readonly questionRepository: QuestionRepository) {}
 
-  async execute(): Promise<Question[]> {
-    return this.questionRepository.findAll();
+  async execute(options: ContentReadOptions = {}): Promise<Question[]> {
+    const { includeDraft = false } = options;
+    const questions = await this.questionRepository.findAll();
+    return includeDraft
+      ? questions
+      : questions.filter((q) => q.status === 'PUBLISHED');
   }
 }

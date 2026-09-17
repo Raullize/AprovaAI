@@ -30,6 +30,10 @@ export class StartSimulationUseCase implements UseCase<
       throw new ResourceNotFoundError('Simulation', request.simulationId);
     }
 
+    if (simulation.status !== 'PUBLISHED') {
+      throw new ResourceNotFoundError('Simulation', request.simulationId);
+    }
+
     if (simulation.questionsCount === 0) {
       throw new ValidationError(
         'Cannot start a simulation for a simulation with no questions',

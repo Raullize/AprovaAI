@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -25,6 +26,7 @@ import {
 } from './dto/exam.dto';
 import { ExamResponseDto } from '../content/dto/content-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
@@ -76,23 +78,29 @@ export class ExamsController {
   }
 
   @Get()
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({
     summary: 'Listar Exames',
-    description: 'Retorna a lista de todos os exames/trilhas cadastrados.',
+    description:
+      'Retorna a lista de exames/trilhas. Estudantes veem apenas os publicados; administradores veem todos.',
   })
   @ApiResponse({
     status: 200,
     description: 'Lista de exames retornada com sucesso.',
     type: [ExamResponseDto],
   })
-  findAll() {
-    return this.findAllExamsUseCase.execute();
+  findAll(@Request() req: { user?: { role?: string } }) {
+    return this.findAllExamsUseCase.execute({
+      includeDraft: req.user?.role === UserRole.ADMIN,
+    });
   }
 
   @Get(':idOrSlug')
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({
     summary: 'Buscar Exame por ID ou Slug',
-    description: 'Retorna os detalhes de um exame específico.',
+    description:
+      'Retorna os detalhes de um exame específico. Estudantes só acessam publicados; administradores acessam qualquer status.',
   })
   @ApiParam({
     name: 'idOrSlug',
@@ -105,8 +113,14 @@ export class ExamsController {
     type: ExamResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Exame não encontrado.' })
-  findOne(@Param('idOrSlug') idOrSlug: string) {
-    return this.findExamByIdOrSlugUseCase.execute(idOrSlug);
+  findOne(
+    @Param('idOrSlug') idOrSlug: string,
+    @Request() req: { user?: { role?: string } },
+  ) {
+    return this.findExamByIdOrSlugUseCase.execute({
+      idOrSlug,
+      options: { includeDraft: req.user?.role === UserRole.ADMIN },
+    });
   }
 
   @Patch('reorder')
