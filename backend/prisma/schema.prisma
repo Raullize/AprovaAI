@@ -40,6 +40,7 @@ model User {
 
   simulationAttempts SimulationAttempt[]
   userActivities UserActivity[]
+  aiChatMessages AiChatMessage[]
 
   @@map("users")
 }
@@ -251,4 +252,24 @@ model UserActivity {
 
   @@unique([userId, date])
   @@map("user_activities")
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+
+  @@map("chat_role")
+}
+
+model AiChatMessage {
+  id        String   @id @default(uuid()) @map("id")
+  userId    String   @map("user_id")
+  role      ChatRole @map("role")
+  content   String   @map("content")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("ai_chat_messages")
 }

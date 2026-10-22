@@ -10,6 +10,7 @@ import { HealthModule } from './api/health/health.module';
 import { SimulationAttemptsModule } from './api/simulation-attempts/simulation-attempts.module';
 import { AccountModule } from './api/account/account.module';
 import { StudentModule } from './api/student/student.module';
+import { AiModule } from './api/ai/ai.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { StudentModule } from './api/student/student.module';
     SimulationAttemptsModule,
     AccountModule,
     StudentModule,
+    AiModule,
   ],
   controllers: [],
   providers: [],
