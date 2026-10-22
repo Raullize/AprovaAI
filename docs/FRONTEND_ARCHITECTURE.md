@@ -230,3 +230,15 @@ A tela de Ranking Global e o componente `LeaderboardTable.tsx` foram otimizados 
 - **Barra de ferramentas**: Em mobile, a busca ocupa largura total e os controles de filtro ("Todos/Top 3/Top 10") ficam distribuídos lado a lado com o seletor de paginação (`justify-between`), evitando quebra de linha descontrolada.
 - **Tabela responsiva**: Padding das células reduzido em mobile (`py-3 px-2 sm:px-4`). Cabeçalhos de coluna longos são abreviados automaticamente: "Experiência" → "XP" e "Recorde de Ofensiva" → "Ofensiva" em telas menores que `sm`.
 - **Eliminação de rolagem dupla**: As páginas `Leaderboard.tsx` e `Profile.tsx` não possuem mais wrappers redundantes de `min-h-screen`, delegando o controle de scroll ao `DashboardLayout.tsx` (container principal do painel).
+
+---
+
+## 10. Chat do Professor Sabichão (IA)
+
+O chat do widget flutuante (`FloatingStudyWidget.tsx` → `ProfessorChatPanel.tsx`) consome a API de IA do backend via `services/ai.service.ts`.
+
+- **Fluxo**: ao abrir, carrega o histórico (`GET /ai/chat/history`); ao enviar, chama `POST /ai/chat` e exibe a resposta com indicador de "digitando".
+- **Sugestões**: balões iniciais ("Como funciona o XP?", "Onde vejo meu histórico?", "O que é o modo treino?").
+- **Formatação**: o texto do assistente é renderizado com um parser inline seguro (negrito e código), sem `dangerouslySetInnerHTML`; o backend orienta respostas em texto simples, sem Markdown pesado nem rotas internas.
+- **Escopo**: o widget é exibido apenas para usuários cujo papel não é `ADMIN`; o backend reforça o escopo do aluno no system prompt.
+- **Erros**: falhas de rede ou do provedor exibem uma mensagem amigável, sem quebrar a conversa.

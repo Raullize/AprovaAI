@@ -122,6 +122,10 @@ Crie um arquivo `.env` na raiz de `backend/` baseado no `.env.example`:
 | `PORT` | `3001` | Porta HTTP do servidor |
 | `JWT_SECRET` | `your-secret-key` | Chave secreta para assinar tokens JWT |
 | `UPLOAD_DIR` | `./uploads` | Diretório de armazenamento de imagens |
+| `GEMINI_API_KEY` | *(vazio)* | Chave do Google AI Studio para o chat do Prof. Sabichão. Sem ela, o backend usa um provider fake de demonstração |
+| `GEMINI_MODEL` | `gemini-3.5-flash-lite` | Modelo do Gemini (free tier) usado no chat |
+| `AI_PROVIDER` | `gemini` | `gemini` ou `fake`. Em `NODE_ENV=test` o fake é sempre usado |
+| `AI_MAX_OUTPUT_TOKENS` | `500` | Limite de tokens de saída por resposta |
 
 ---
 
@@ -194,6 +198,10 @@ A API é estaticamente gerida por Controlles injetáveis:
 | `GET` | `/api/questions/simulation/:simulationId` | Lista questões de um simulado |
 | `PATCH` | `/api/questions/reorder` | Reordena questões |
 | `POST` | `/api/upload` | Upload local de imagem gerenciado pelo Nest |
+| `POST` | `/api/ai/chat` | Envia mensagem ao Prof. Sabichão e retorna a resposta da IA |
+| `GET` | `/api/ai/chat/history` | Retorna o histórico recente do chat do aluno |
+
+> **IA (Prof. Sabichão):** o chat usa a API do Gemini. Sem `GEMINI_API_KEY`, o backend usa um provider fake (resposta de demonstração). Em `NODE_ENV=test`, o provider fake é sempre usado para manter os testes determinísticos e sem custo.
 
 > **Documentação Interativa (Swagger):** Quando o servidor estiver rodando, a documentação completa e interativa da API poderá ser acessada em [http://localhost:3001/api/docs](http://localhost:3001/api/docs).
 

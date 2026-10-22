@@ -199,6 +199,48 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 
 ---
 
+## Inteligencia Artificial (Prof. Sabichao)
+
+### Cenario: Conversar com o assistente autenticado
+**Status:** Implementado
+
+- Dado que o aluno esta autenticado
+- Quando ele envia uma mensagem em `POST /ai/chat`
+- Entao o backend deve montar o contexto da plataforma e do catalogo de exames publicados
+- E chamar o provedor de IA configurado
+- E persistir a mensagem do aluno e a resposta do assistente
+- E retornar a resposta
+
+### Cenario: Mensagem invalida
+**Status:** Implementado
+
+- Quando a mensagem estiver vazia ou acima de 1000 caracteres
+- Entao o backend deve retornar 400 Bad Request
+
+### Cenario: Consultar o historico do chat
+**Status:** Implementado
+
+- Dado que o aluno esta autenticado
+- Quando ele solicita `GET /ai/chat/history`
+- Entao o backend deve retornar as mensagens mais recentes do proprio aluno, em ordem cronologica
+
+### Regra: Escopo do assistente
+**Status:** Implementado
+
+- O assistente deve responder apenas sobre conteudo educacional e o uso da plataforma pelo aluno
+- Nao deve revelar gabaritos de simulados em andamento
+- Nao deve orientar sobre o fluxo administrativo
+- Nao deve expor caminhos internos, URLs ou nomes tecnicos de rotas
+
+### Regra: Fallback do provedor de IA
+**Status:** Implementado
+
+- Quando o provedor de IA falhar (erro de rede, cota ou timeout)
+- Entao o backend deve persistir e retornar uma mensagem amigavel de indisponibilidade
+- E os testes devem usar o provider fake (`NODE_ENV=test`), sem chamadas externas
+
+---
+
 ## Erros e contratos HTTP
 
 ### Regra: Erros de dominio devem virar resposta HTTP coerente

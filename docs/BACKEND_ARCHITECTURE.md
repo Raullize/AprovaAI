@@ -30,7 +30,7 @@ O Fluxo Logico de dependencias e: `API -> Application -> Domain <- Infrastructur
 
 ### 1. Domain (Dominio - Coracao do Sistema)
 
-Essa e camada central. Nao possui **nenhuma** dependencia de framework web (como NestJS), de banco de dados (Prisma) ou de bibliotecas de validacao (Zod). E puro TypeScript estruturando a logica de negocios isolada em Contextos (ex: `content/`, `users/`).
+Essa e camada central. Nao possui **nenhuma** dependencia de framework web (como NestJS), de banco de dados (Prisma) ou de bibliotecas de validacao (Zod). E puro TypeScript estruturando a logica de negocios isolada em Contextos (ex: `content/`, `users/`, `ai/`).
 
 Dentro de cada contexto, subpastas especificas organizam o dominio:
 
@@ -45,7 +45,7 @@ Dentro de cada contexto, subpastas especificas organizam o dominio:
 Essa camada orquestra a logica de negocio contida no `Domain`. Os Casos de Uso guiam o fluxo, da requisicao inicial a resposta final. Nao sabe qual e o BD, tampouco a rota HTTP acionada.
 
 - **`use-cases/`**: Classes com um unico metodo `execute()` que representam acoes funcionais estritas. Cada Caso de Uso possui um arquivo isolado (ex: `find-simulation-by-slug.use-case.ts`), respeitando SRP. O Use Case injeta contratos via inversao de controle (`constructor(private repo: SimulationRepository)`), interage com regras da entidade do Domain e salva no repositorio (`repo.save(simulation)`).
-- **`ports/`**: Interfaces adicionais para servicos externos que a aplicacao precisa (ex: `HashProvider`, `TokenProvider`).
+- **`ports/`**: Interfaces adicionais para servicos externos que a aplicacao precisa (ex: `HashProvider`, `TokenProvider`, `LlmProvider`).
 
 ### 3. Infrastructure (Infraestrutura)
 
@@ -54,7 +54,7 @@ A camada mais externa conectada ao "Mundo Externo". Aqui os "contratos" definido
 - **Database (`database/prisma/`)**: 
   - **Repositorios (`repositories/`)**: Classes concretas que acessam efetivamente o banco, aplicando chamadas brutas a infra (ex: `this.prisma.simulation.findMany(...)`) satisfazendo as interfaces do Dominio.
   - **Mappers (`mappers/`)**: Classes estritamente necessarias para nao vazar o ORM para o sistema. Traduzem os dados crus da tabela Prisma para as "Entidades" ricas do Dominio (`PrismaSimulationMapper.toDomain(raw)` devolve uma arvore Aggregate Root isolada) e vice-versa.
-- **Providers (`providers/`)**: Implementacoes reais de servicos utilitarios. Exemplo: `BcryptHashProvider` implementa regras de criptografia satisfazendo a porta `HashProvider` requerida pela Application.
+- **Providers (`providers/`)**: Implementacoes reais de servicos utilitarios. Exemplo: `BcryptHashProvider` implementa regras de criptografia satisfazendo a porta `HashProvider` requerida pela Application. No contexto de IA, `GeminiLlmProvider` implementa a porta `LlmProvider` chamando a API do Gemini, enquanto `FakeLlmProvider` atende testes e ambientes sem chave.
 
 ### 4. API (Apresentacao / Interface)
 
@@ -119,3 +119,4 @@ Observe aqui um Update de Fase (Simulation) atuando na pratica ponta-a-ponta:
 - **Zod em vez de Class-Validator**: Foi selecionado por viabilizar uma modelagem de schema funcional muito mais segura sem encadear os DTOs com centenas de decoradores pesados.
 - **Injecao de Dependencia (DI)**: Componente do framework Web aproveitado amplamente para engatilhar metodos tecnicos (Infra) satisfazendo as portas agnosticas de dominio (Application Domain UseCases).
 - **Trade-off de Tokens vs. Purismo (Agentic Orchestration)**: A decisão de adotar Mappers e Entidades ricas (em vez de injetar o Prisma diretamente nos Casos de Uso) aumenta o consumo de tokens na interação com Inteligências Artificiais e adiciona *boilerplate*. No entanto, essa escolha é justificada pelo foco acadêmico do projeto (TCC), demonstrando maestria técnica na separação de responsabilidades (SRP), proteção do domínio e viabilizando testes unitários completamente desacoplados do banco de dados através de *In-Memory Repositories*.
+- **Integração de IA (Gemini)**: O chat do Prof. Sabichão usa a porta `LlmProvider` na Application, com `GeminiLlmProvider` (chamada REST ao Gemini) e `FakeLlmProvider` (testes/demonstração) na Infrastructure. As mensagens são persistidas em `ai_chat_messages` e o contexto da plataforma é montado no system prompt a cada requisição. Em `NODE_ENV=test` o provider fake evita chamadas externas, mantendo a suíte determinística e sem custo.
