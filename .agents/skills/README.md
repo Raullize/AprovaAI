@@ -16,14 +16,15 @@ can complement another, never replace the verdict of someone else's gate.
 | Skill | Role | Triggers when |
 | --- | --- | --- |
 | [council](./council/SKILL.md) | Decision | A real decision with more than one path must be made |
+| [grill-me](./grill-me/SKILL.md) | Decision | A plan, idea or decision must be stress-tested before committing |
 | [generate-docs](./generate-docs/SKILL.md) | Execution | Documenting the codebase, architecture or APIs |
 | [security-audit](./security-audit/SKILL.md) | Gate | Security review, before deploy, OWASP concerns |
 | [performance-audit](./performance-audit/SKILL.md) | Gate | Improving performance or optimizing bottlenecks |
 
 > Stack-specific skills (Docker, React, frontend humanization, SEO, UI-to-code,
-> legacy modernization) are NOT in the core. They are shipped as optional packs
-> under `optional/packs/` and installed by the init script when relevant to the
-> project's stack.
+> unslop, legacy modernization) are NOT in the core. They are shipped as
+> optional packs under `optional/packs/` and installed by the init script when
+> relevant to the project's stack.
 
 ## Mandatory structure of a skill
 
