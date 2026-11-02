@@ -1,6 +1,8 @@
 {
   "tool": "ai-guardrails",
   "versioned": "yes",
+  "prompts": "yes",
   "mode": "3",
-  "packs": "0,1,2,3,4,5"
+  "packs": "0,1,2,3,4,5,6",
+  "root_agents": "generated"
 }
