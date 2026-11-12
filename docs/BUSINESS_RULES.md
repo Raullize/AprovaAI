@@ -288,6 +288,35 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 
 ---
 
+## Admin: geração de simulados com IA/ENEM
+
+### Cenario: Gerar simulado a partir do ENEM
+**Status:** Implementado
+
+- Dado que o admin autenticado informa um topico, disciplina e anos do ENEM (2009-2023)
+- Quando ele solicita `POST /simulations/generate` com `source = ENEM`
+- Entao o backend deve buscar questoes reais na API publica enem.dev (respeitando 1 req/s)
+- E deve descartar questoes com imagem no enunciado
+- E deve gerar as explicacoes com IA
+- E deve criar o simulado e as questoes como `DRAFT`, com a proveniencia (`source = ENEM`, `sourceRef`)
+- E o aluno nao deve visualizar o simulado enquanto ele nao for publicado
+
+### Cenario: Gerar simulado com questoes de IA
+**Status:** Implementado
+
+- Dado que o admin informa um topico e, opcionalmente, um foco
+- Quando ele solicita `POST /simulations/generate` com `source = AI`
+- Entao o backend deve gerar as questoes em JSON estruturado via LLM
+- E deve validar que cada questao tem exatamente uma alternativa correta
+- E deve criar o simulado e as questoes como `DRAFT`, com `source = AI` e `aiModel`
+
+### Regra: Revisao humana obrigatoria
+**Status:** Implementado
+
+- Todo conteudo gerado ou importado nasce como `DRAFT`
+- A publicacao depende de acao explicita do admin nas telas de edicao existentes
+- A quantidade maxima por geracao e 10 questoes
+
 ## Erros e contratos HTTP
 
 ### Regra: Erros de dominio devem virar resposta HTTP coerente

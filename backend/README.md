@@ -194,6 +194,7 @@ A API é estaticamente gerida por Controlles injetáveis:
 | `GET` | `/api/topics?examId=:id` | Lista tópicos de um exame |
 | `PATCH` | `/api/topics/reorder` | Reordena tópicos |
 | `GET` | `/api/simulations?topicId=:id` | Lista simulados de um tópico |
+| `POST` | `/api/simulations/generate` | Gera um simulado rascunho com questões do ENEM ou de IA (Admin) |
 | `PATCH` | `/api/simulations/reorder` | Reordena simulados |
 | `GET` | `/api/questions/simulation/:simulationId` | Lista questões de um simulado |
 | `PATCH` | `/api/questions/reorder` | Reordena questões |

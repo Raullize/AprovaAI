@@ -1,5 +1,6 @@
 import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { ValidationError } from '../../../shared/core/errors/validation.error';
+import { ContentSource } from '../content-source';
 
 export interface OptionProps {
   id?: string;
@@ -16,6 +17,9 @@ export interface QuestionProps {
   order: number;
   explanation?: string | null;
   studyLink?: string | null;
+  source?: ContentSource;
+  sourceRef?: string | null;
+  aiModel?: string | null;
   simulationId: string;
   options?: OptionProps[];
   createdAt?: Date;
@@ -44,6 +48,15 @@ export class Question extends AggregateRoot<QuestionProps> {
   get studyLink(): string | null | undefined {
     return this.props.studyLink;
   }
+  get source(): ContentSource {
+    return this.props.source ?? 'MANUAL';
+  }
+  get sourceRef(): string | null | undefined {
+    return this.props.sourceRef;
+  }
+  get aiModel(): string | null | undefined {
+    return this.props.aiModel;
+  }
   get simulationId(): string {
     return this.props.simulationId;
   }
@@ -63,6 +76,7 @@ export class Question extends AggregateRoot<QuestionProps> {
         ...props,
         type: props.type ?? 'MULTIPLE_CHOICE',
         status: props.status ?? 'PUBLISHED',
+        source: props.source ?? 'MANUAL',
         options: props.options ?? [],
         createdAt: props.createdAt ?? new Date(),
         updatedAt: props.updatedAt ?? new Date(),

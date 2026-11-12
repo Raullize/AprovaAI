@@ -232,6 +232,7 @@ A suíte cobre **todos os controllers da API** (`backend/src/api`), totalizando 
 - **Exams** (`GET /exams`, `GET /exams/:idOrSlug`, `POST /exams`, `PATCH /exams/:id`, `PATCH /exams/reorder`, `DELETE /exams/:id` + Roles Guard)
 - **Topics** (`GET /topics`, `GET /topics/:idOrSlug`, `GET /topics/exam/:examId`, `POST /topics`, `PATCH /topics/:id`, `PATCH /topics/reorder`, `DELETE /topics/:id` + Roles Guard)
 - **Simulations CRUD Admin** (`/simulations` — create/GET por id e por tópico/reorder/update/delete + 401/403)
+- **Simulations Generate** (`POST /simulations/generate` — ENEM/IA, DRAFT, 400/401/403; usa fakes de banco/IA nos testes)
 - **Simulation Attempts Aluno** (`/simulation-attempts/start`, `/:id/answers`, `/:id/finish`, `GET /history`)
 - **Questions** (`GET /questions`, `GET /questions/:id`, `GET /questions/simulation/:simulationId`, `POST /questions`, `PATCH /questions/:id`, `PATCH /questions/reorder`, `DELETE /questions/:id` + Guards)
 - **Student Dashboard** (`/student/dashboard-stats`, `leaderboard`, `streak-leaderboard`)

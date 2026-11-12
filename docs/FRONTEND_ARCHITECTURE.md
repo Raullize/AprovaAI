@@ -245,3 +245,11 @@ O chat do widget flutuante (`FloatingStudyWidget.tsx` → `ProfessorChatPanel.ts
 - **Chat na correção**: `SimulationReview.tsx` reutiliza o `ProfessorChatPanel` em um widget flutuante (`AttemptChatWidget`) com o `attemptId` da tentativa. O `attemptId` é propagado de `SimulationEngine`/`SimulationsHistory` → `SimulationResults` → `SimulationReview`. Nesse modo, o painel consome `POST/GET/DELETE /ai/attempts/:attemptId/chat` e usa sugestões contextuais (explicar erro, dica de estudo, relatório de desempenho).
 - **Apagar histórico**: o cabeçalho do chat tem uma ação de limpeza com confirmação inline, que chama `DELETE /ai/chat/history` ou `DELETE /ai/attempts/:attemptId/chat/history` conforme o modo.
 - **Tela cheia e dimensões**: os dois chats compartilham `CHAT_PANEL_CLASSES` (mesma largura/altura) e o botão de tela cheia alterna entre `Expand` e `Shrink`, renderizando o painel via portal no `body` quando expandido.
+
+## 11. Geração de simulados (Admin)
+
+- **Entrada**: botão "Gerar com IA" na `SimulationList` do tópico, abrindo `GenerateSimulationModal`.
+- **Fonte**: `ENEM` (disciplina, anos e idioma, com sugestão automática da disciplina pelo nome do tópico) ou `IA` (foco opcional).
+- **Configuração**: quantidade (5 ou 10), modo, XP, aprovação e tempo limite.
+- **Resultado**: o backend cria um simulado `DRAFT`; o frontend navega para a `QuestionList` existente para revisão/edição e publicação.
+- **Badge**: o `SimulationCard` exibe `ENEM` ou `IA` conforme `simulation.source`.

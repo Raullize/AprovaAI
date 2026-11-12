@@ -99,3 +99,81 @@ export const updateSimulationSchema = z.object({
 });
 
 export class UpdateSimulationDto extends createZodDto(updateSimulationSchema) {}
+
+const generateSimulationBaseSchema = z.object({
+  topicId: z
+    .uuid('ID do tópico inválido')
+    .describe('ID UUID do tópico onde o simulado será criado.'),
+  count: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(10)
+    .describe('Quantidade de questões a gerar (1 a 10).'),
+  name: z
+    .string()
+    .min(3)
+    .max(120)
+    .optional()
+    .describe('Nome opcional; se omitido, será gerado automaticamente.'),
+  description: z
+    .string()
+    .max(500)
+    .optional()
+    .describe('Descrição opcional do simulado.'),
+  xpReward: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .default(100)
+    .describe('XP concedido ao concluir o simulado.'),
+  passingPercentage: z.coerce
+    .number()
+    .min(0)
+    .max(100)
+    .default(70)
+    .describe('Percentual mínimo de aprovação.'),
+  timeLimit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe('Tempo limite em minutos (opcional).'),
+  simulationMode: z
+    .enum(['PRACTICE', 'EXAM'])
+    .default('PRACTICE')
+    .describe('Modo do simulado.'),
+});
+
+export const generateSimulationSchema = generateSimulationBaseSchema.extend({
+  source: z
+    .enum(['ENEM', 'AI'])
+    .describe('Fonte: ENEM (banco real) ou AI (questões geradas).'),
+  discipline: z
+    .enum(['ciencias-humanas', 'ciencias-natureza', 'linguagens', 'matematica'])
+    .optional()
+    .describe('Disciplina do ENEM (obrigatória quando source = ENEM).'),
+  years: z
+    .array(z.coerce.number().int().min(2009).max(2023))
+    .min(1)
+    .max(5)
+    .optional()
+    .describe(
+      'Anos do ENEM, de 2009 a 2023 (obrigatório quando source = ENEM).',
+    ),
+  language: z
+    .enum(['ingles', 'espanhol'])
+    .optional()
+    .describe('Idioma para questões de Linguagens (padrão: inglês).'),
+  focus: z
+    .string()
+    .max(300)
+    .optional()
+    .describe('Tema ou foco opcional para a geração por IA.'),
+});
+
+export class GenerateSimulationDto extends createZodDto(
+  generateSimulationSchema,
+) {}

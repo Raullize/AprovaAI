@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Plus, BarChart } from 'lucide-react';
+import { Plus, BarChart, Sparkles } from 'lucide-react';
 import Loading from '@/components/ui/Loading';
 import Button from '@/components/ui/Button';
 import {
@@ -16,6 +16,7 @@ import { ReorderHint } from '@/components/admin/shared/ReorderHint';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
 import { SimulationCard } from '@/components/admin/simulations/SimulationCard';
 import { SimulationFormModal } from '@/components/admin/simulations/SimulationFormModal';
+import { GenerateSimulationModal } from '@/components/admin/simulations/GenerateSimulationModal';
 
 export default function SimulationList() {
   const { topicId } = useParams();
@@ -29,6 +30,7 @@ export default function SimulationList() {
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isGenerateOpen, setIsGenerateOpen] = useState(false);
   const [editingSimulationId, setEditingSimulationId] = useState<
     string | undefined
   >(undefined);
@@ -145,16 +147,26 @@ export default function SimulationList() {
             : '/dashboard/exams'
         }
         action={
-          <Button
-            variant="gamified"
-            onClick={() => {
-              setEditingSimulationId(undefined);
-              setIsModalOpen(true);
-            }}
-            className="px-5 py-3 rounded-2xl font-bold text-sm shadow-md shadow-indigo-600/20 gap-2 active:border-b-0 active:translate-y-1"
-          >
-            <Plus className="h-5 w-5" /> Novo Simulado
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setIsGenerateOpen(true)}
+              disabled={!resolvedTopicId}
+              className="px-4 py-3 rounded-2xl font-bold text-sm gap-2"
+            >
+              <Sparkles className="h-5 w-5" /> Gerar com IA
+            </Button>
+            <Button
+              variant="gamified"
+              onClick={() => {
+                setEditingSimulationId(undefined);
+                setIsModalOpen(true);
+              }}
+              className="px-5 py-3 rounded-2xl font-bold text-sm shadow-md shadow-indigo-600/20 gap-2 active:border-b-0 active:translate-y-1"
+            >
+              <Plus className="h-5 w-5" /> Novo Simulado
+            </Button>
+          </div>
         }
       />
 
@@ -254,6 +266,20 @@ export default function SimulationList() {
           onConfirm={handleDelete}
           entityName={simulationToDelete.name}
           entityLabel="o simulado"
+        />
+      )}
+
+      {isGenerateOpen && resolvedTopicId && (
+        <GenerateSimulationModal
+          isOpen={isGenerateOpen}
+          onClose={() => setIsGenerateOpen(false)}
+          onSuccess={(simulationId) => {
+            setIsGenerateOpen(false);
+            navigate(`/dashboard/admin/simulations/${simulationId}/questions`);
+          }}
+          topicId={resolvedTopicId}
+          topicName={topicName}
+          examName={examName}
         />
       )}
     </div>

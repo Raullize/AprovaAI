@@ -68,6 +68,9 @@ export const simulationResponseSchema = z.object({
     .string()
     .describe('ID do tópico ao qual o simulado pertence (UUID).'),
   status: z.enum(['PUBLISHED', 'DRAFT']).describe('Status de visibilidade.'),
+  source: z
+    .enum(['MANUAL', 'ENEM', 'AI'])
+    .describe('Origem do conteúdo do simulado.'),
   xpReward: z.number().describe('XP concedido ao concluir o simulado.'),
   passingPercentage: z
     .number()
@@ -120,6 +123,19 @@ export const questionResponseSchema = z.object({
     .nullable()
     .optional()
     .describe('Link de material de estudo.'),
+  source: z
+    .enum(['MANUAL', 'ENEM', 'AI'])
+    .describe('Origem do conteúdo da questão.'),
+  sourceRef: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Referência da fonte externa (ex.: enem:2023:12).'),
+  aiModel: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('Modelo de IA usado na geração/enriquecimento.'),
   simulationId: z.string().describe('ID do simulado ao qual pertence (UUID).'),
   options: z
     .array(questionOptionResponseSchema)

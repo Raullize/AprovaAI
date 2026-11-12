@@ -116,6 +116,14 @@ enum SimulationStatus {
   @@map("simulation_status")
 }
 
+enum ContentSource {
+  MANUAL
+  ENEM
+  AI
+
+  @@map("content_source")
+}
+
 model Simulation {
   id                String           @id @default(uuid()) @map("id")
   name              String           @map("name")
@@ -124,6 +132,7 @@ model Simulation {
   order             Int              @map("order")
   topicId           String           @map("topic_id")
   status            SimulationStatus @default(PUBLISHED) @map("status")
+  source            ContentSource    @default(MANUAL) @map("source")
   xpReward          Int              @default(0) @map("xp_reward")
   passingPercentage Float            @default(70.0) @map("passing_percentage")
   timeLimit         Int?             @map("time_limit")
@@ -162,6 +171,9 @@ model Question {
   order       Int            @map("order")
   explanation String?        @map("explanation")
   studyLink   String?        @map("study_link")
+  source      ContentSource  @default(MANUAL) @map("source")
+  sourceRef   String?        @map("source_ref")
+  aiModel     String?        @map("ai_model")
   simulationId String         @map("simulation_id")
   createdAt    DateTime       @default(now()) @map("created_at")
   updatedAt    DateTime       @updatedAt @map("updated_at")
