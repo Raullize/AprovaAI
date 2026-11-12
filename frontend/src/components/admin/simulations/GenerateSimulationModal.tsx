@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import axios from 'axios';
 import { Database, Sparkles } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
-import Loading from '@/components/ui/Loading';
 import { useToast } from '@/hooks/useToast';
 import {
   simulationsService,
@@ -51,6 +51,33 @@ const YEAR_PRESETS = [
   { value: '2020', label: 'Somente 2020', years: [2020] },
   { value: '2019', label: 'Somente 2019', years: [2019] },
 ];
+
+function getApiErrorMessage(error: unknown): string {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as
+      | {
+          message?: string;
+          errors?: Record<string, { _errors?: string[] }>;
+        }
+      | undefined;
+
+    if (data?.errors) {
+      const firstError = Object.values(data.errors)
+        .flatMap((field) => field?._errors ?? [])
+        .find(Boolean);
+
+      if (firstError) {
+        return firstError;
+      }
+    }
+
+    if (data?.message && data.message !== 'Validation failed') {
+      return data.message;
+    }
+  }
+
+  return 'Tente novamente em instantes.';
+}
 
 function inferDiscipline(topicName: string): EnemDiscipline | '' {
   const normalized = topicName.toLowerCase();
@@ -104,16 +131,61 @@ export function GenerateSimulationModal({
       return;
     }
 
+    const trimmedName = name.trim();
+    if (trimmedName.length > 0 && trimmedName.length < 3) {
+      toast({
+        title: 'Nome muito curto',
+        description: 'O nome opcional precisa ter pelo menos 3 caracteres.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const minutes = timeLimitMinutes === '' ? null : Number(timeLimitMinutes);
+    if (minutes !== null && (!Number.isFinite(minutes) || minutes < 1)) {
+      toast({
+        title: 'Tempo limite inválido',
+        description: 'Informe pelo menos 1 minuto ou deixe o campo em branco.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (
+      !Number.isFinite(passingPercentage) ||
+      passingPercentage < 0 ||
+      passingPercentage > 100
+    ) {
+      toast({
+        title: 'Aprovação inválida',
+        description: 'Informe um percentual entre 0 e 100.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!Number.isFinite(xpReward) || xpReward < 0) {
+      toast({
+        title: 'XP inválido',
+        description: 'Informe um valor de XP maior ou igual a zero.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     const years = YEAR_PRESETS.find((preset) => preset.value === yearPreset)
       ?.years ?? [2023];
     const base = {
       topicId,
       count,
-      name: name.trim() || undefined,
+      name: trimmedName || undefined,
       simulationMode,
-      xpReward,
-      passingPercentage,
-      timeLimit: timeLimitMinutes === '' ? null : Number(timeLimitMinutes) * 60,
+      xpReward: Math.max(0, Math.round(xpReward)),
+      passingPercentage: Math.min(
+        100,
+        Math.max(0, Math.round(passingPercentage)),
+      ),
+      timeLimit: minutes === null ? null : Math.round(minutes) * 60,
     };
 
     const payload: GenerateSimulationDTO =
@@ -140,10 +212,10 @@ export function GenerateSimulationModal({
         variant: 'success',
       });
       onSuccess(simulation.id);
-    } catch {
+    } catch (error) {
       toast({
         title: 'Não foi possível gerar o simulado',
-        description: 'Tente novamente em instantes.',
+        description: getApiErrorMessage(error),
         variant: 'destructive',
       });
     } finally {
@@ -366,14 +438,26 @@ export function GenerateSimulationModal({
             variant="gamified"
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="gap-2 px-5"
+            className="gap-2 px-5 min-w-[10rem]"
           >
             {isSubmitting ? (
-              <Loading size="xs" />
+              <span
+                className="flex items-center gap-1"
+                aria-label="Gerando simulado"
+              >
+                {[0, 1, 2].map((index) => (
+                  <span
+                    key={index}
+                    className="w-1.5 h-1.5 rounded-full bg-white animate-bounce"
+                    style={{ animationDelay: `${index * 0.15}s` }}
+                  />
+                ))}
+              </span>
             ) : (
-              <Sparkles className="h-4 w-4" />
+              <>
+                <Sparkles className="h-4 w-4" /> Gerar simulado
+              </>
             )}
-            Gerar simulado
           </Button>
         </div>
       </div>
