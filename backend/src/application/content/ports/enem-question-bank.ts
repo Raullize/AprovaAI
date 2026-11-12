@@ -1,5 +1,8 @@
 export type EnemDiscipline =
-  'ciencias-humanas' | 'ciencias-natureza' | 'linguagens' | 'matematica';
+  | 'ciencias-humanas'
+  | 'ciencias-natureza'
+  | 'linguagens'
+  | 'matematica';
 
 export type EnemLanguage = 'ingles' | 'espanhol';
 
