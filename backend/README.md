@@ -202,6 +202,8 @@ A API é estaticamente gerida por Controlles injetáveis:
 | `GET` | `/api/ai/chat/history` | Retorna o histórico recente do chat do aluno |
 | `POST` | `/api/ai/attempts/:attemptId/chat` | Conversa com o Prof. Sabichão usando o contexto de uma tentativa concluída |
 | `GET` | `/api/ai/attempts/:attemptId/chat/history` | Retorna o histórico da conversa de uma tentativa concluída |
+| `DELETE` | `/api/ai/chat/history` | Apaga o histórico do chat global do aluno |
+| `DELETE` | `/api/ai/attempts/:attemptId/chat/history` | Apaga o histórico do chat de uma tentativa concluída |
 
 > **IA (Prof. Sabichão):** o chat usa a API do Gemini. Sem `GEMINI_API_KEY`, o backend usa um provider fake (resposta de demonstração). Em `NODE_ENV=test`, o provider fake é sempre usado para manter os testes determinísticos e sem custo.
 

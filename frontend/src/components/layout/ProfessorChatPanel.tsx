@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, type ReactNode } from 'react';
-import { Send, GraduationCap, Maximize, X } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Send, GraduationCap, Expand, Shrink, Trash2, X } from 'lucide-react';
 import { StudyPanel } from './StudyPanel';
 import { aiService } from '../../services/ai.service';
 
@@ -39,6 +40,12 @@ const ATTEMPT_SUGGESTIONS = [
 ];
 
 const HISTORY_LIMIT = 20;
+
+export const CHAT_PANEL_CLASSES =
+  'w-80 sm:w-96 max-w-[calc(100vw-2rem)] h-[32rem] sm:h-[36rem] max-h-[calc(100vh-8rem)] border-0 overflow-hidden flex flex-col';
+
+const FULLSCREEN_PANEL_CLASSES =
+  'fixed inset-0 z-[70] w-screen h-screen max-w-none max-h-none rounded-none border-0 overflow-hidden flex flex-col';
 
 function renderInline(text: string): ReactNode[] {
   const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
@@ -108,6 +115,9 @@ export function ProfessorChatPanel({
   const [messages, setMessages] = useState<ChatMessage[]>([resolvedWelcome]);
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isConfirmingClear, setIsConfirmingClear] = useState(false);
+  const [isClearingHistory, setIsClearingHistory] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -179,13 +189,38 @@ export function ProfessorChatPanel({
     }
   };
 
-  const showSuggestions = !isLoadingHistory && messages.length === 1;
+  const handleClearHistory = async () => {
+    if (isClearingHistory) return;
 
-  return (
+    setIsClearingHistory(true);
+    setError(null);
+
+    try {
+      if (attemptId) {
+        await aiService.clearAttemptHistory(attemptId);
+      } else {
+        await aiService.clearHistory();
+      }
+
+      setMessages([resolvedWelcome]);
+      nextId.current = 1;
+      setIsConfirmingClear(false);
+    } catch {
+      setError('Não consegui apagar o histórico agora. Tente novamente.');
+    } finally {
+      setIsClearingHistory(false);
+    }
+  };
+
+  const showSuggestions = !isLoadingHistory && messages.length === 1;
+  const canClearHistory = messages.length > 1 && !isSending;
+
+  const panel = (
     <StudyPanel
       className={
-        className ??
-        'w-80 sm:w-96 h-[32rem] sm:h-[36rem] max-h-[calc(100vh-8rem)] overflow-hidden flex flex-col'
+        isFullscreen
+          ? FULLSCREEN_PANEL_CLASSES
+          : (className ?? CHAT_PANEL_CLASSES)
       }
     >
       {/* Header */}
@@ -200,7 +235,29 @@ export function ProfessorChatPanel({
             {attemptId ? 'Contexto deste simulado' : 'Disponível para dúvidas'}
           </p>
         </div>
-        {onClose ? (
+        <button
+          type="button"
+          onClick={() => setIsConfirmingClear((current) => !current)}
+          disabled={!canClearHistory || isClearingHistory}
+          aria-label="Apagar histórico do chat"
+          title="Apagar histórico do chat"
+          className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/20 transition-colors shrink-0 disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent"
+        >
+          <Trash2 className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={() => setIsFullscreen((current) => !current)}
+          aria-label={isFullscreen ? 'Sair da tela cheia' : 'Tela cheia'}
+          className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/20 transition-colors shrink-0"
+        >
+          {isFullscreen ? (
+            <Shrink className="h-4 w-4" />
+          ) : (
+            <Expand className="h-4 w-4" />
+          )}
+        </button>
+        {onClose && (
           <button
             type="button"
             onClick={onClose}
@@ -209,17 +266,32 @@ export function ProfessorChatPanel({
           >
             <X className="h-4 w-4" />
           </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => {}}
-            aria-label="Tela cheia"
-            className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/20 transition-colors shrink-0"
-          >
-            <Maximize className="h-4 w-4" />
-          </button>
         )}
       </div>
+
+      {isConfirmingClear && (
+        <div className="flex items-center gap-2 px-4 py-2.5 bg-rose-50 border-b border-rose-100 text-xs text-rose-700">
+          <span className="flex-1 font-semibold">
+            Apagar todo o histórico desta conversa?
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsConfirmingClear(false)}
+            disabled={isClearingHistory}
+            className="px-2.5 py-1 rounded-lg font-semibold text-slate-600 hover:bg-white transition-colors disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="button"
+            onClick={handleClearHistory}
+            disabled={isClearingHistory}
+            className="px-2.5 py-1 rounded-lg font-bold text-white bg-rose-600 hover:bg-rose-700 transition-colors disabled:opacity-50"
+          >
+            {isClearingHistory ? 'Apagando...' : 'Apagar'}
+          </button>
+        </div>
+      )}
 
       {/* Messages */}
       <div
@@ -298,4 +370,8 @@ export function ProfessorChatPanel({
       </div>
     </StudyPanel>
   );
+
+  return isFullscreen
+    ? createPortal(<div data-chat-panel>{panel}</div>, document.body)
+    : panel;
 }

@@ -4,6 +4,8 @@ import { SendChatMessageUseCase } from '../../application/ai/use-cases/send-chat
 import { GetChatHistoryUseCase } from '../../application/ai/use-cases/get-chat-history.use-case';
 import { SendAttemptChatMessageUseCase } from '../../application/ai/use-cases/send-attempt-chat-message.use-case';
 import { GetAttemptChatHistoryUseCase } from '../../application/ai/use-cases/get-attempt-chat-history.use-case';
+import { ClearChatHistoryUseCase } from '../../application/ai/use-cases/clear-chat-history.use-case';
+import { ClearAttemptChatHistoryUseCase } from '../../application/ai/use-cases/clear-attempt-chat-history.use-case';
 import { AiChatMessageRepository } from '../../domain/ai/repositories/ai-chat-message.repository';
 import { PrismaAiChatMessageRepository } from '../../infrastructure/database/prisma/repositories/prisma-ai-chat-message.repository';
 import { ExamRepository } from '../../domain/content/repositories/exam.repository';
@@ -61,6 +63,8 @@ function createLlmProvider(): LlmProvider {
     GetChatHistoryUseCase,
     SendAttemptChatMessageUseCase,
     GetAttemptChatHistoryUseCase,
+    ClearChatHistoryUseCase,
+    ClearAttemptChatHistoryUseCase,
     {
       provide: AiChatMessageRepository,
       useClass: PrismaAiChatMessageRepository,

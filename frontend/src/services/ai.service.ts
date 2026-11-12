@@ -47,4 +47,12 @@ export const aiService = {
     );
     return Array.isArray(response.data) ? response.data : [];
   },
+
+  clearHistory: async (): Promise<void> => {
+    await api.delete('/ai/chat/history');
+  },
+
+  clearAttemptHistory: async (attemptId: string): Promise<void> => {
+    await api.delete(`/ai/attempts/${attemptId}/chat/history`);
+  },
 };

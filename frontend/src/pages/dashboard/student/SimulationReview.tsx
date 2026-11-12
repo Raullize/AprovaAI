@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import {
-  Home,
-  ChevronLeft,
-  ChevronRight,
-  ArrowLeft,
-  GraduationCap,
-} from 'lucide-react';
+import { Home, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { Card } from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
@@ -18,7 +12,7 @@ import {
   type ReviewQuestion,
 } from '../../../components/simulation/ReviewQuestionCard';
 import { questionsService } from '../../../services/questions.service';
-import { AttemptChatDrawer } from '../../../components/simulation/AttemptChatDrawer';
+import { AttemptChatWidget } from '../../../components/simulation/AttemptChatWidget';
 
 type ReviewFilter = 'ALL' | 'CORRECT' | 'INCORRECT';
 
@@ -194,17 +188,6 @@ export default function SimulationReview() {
               </p>
             </div>
           </div>
-
-          {attemptId && (
-            <button
-              type="button"
-              onClick={() => setIsChatOpen(true)}
-              className="mt-4 w-full flex items-center justify-center gap-2 rounded-2xl border border-indigo-200 bg-indigo-50/60 px-4 py-3 text-sm font-bold text-indigo-700 hover:bg-indigo-100 transition-colors"
-            >
-              <GraduationCap className="h-4 w-4" />
-              Tirar dúvidas com o Prof. Sabichão
-            </button>
-          )}
         </div>
       </div>
 
@@ -341,31 +324,36 @@ export default function SimulationReview() {
       </div>
 
       {/* CTA buttons */}
-      <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 z-45 shadow-lg shrink-0">
-        <div className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
+      <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-3 sm:pb-6 sm:pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 z-45 shadow-lg shrink-0">
+        <div className="max-w-2xl mx-auto flex flex-row gap-2 sm:gap-3">
           <Button
             variant="gamified"
             onClick={() => navigate(-1)}
-            className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
+            className="flex-1 py-3 sm:py-4 rounded-2xl font-bold text-sm sm:text-base gap-1.5 sm:gap-2"
           >
-            <ArrowLeft className="h-5 w-5" />
-            {state.fromHistory ? 'Voltar' : 'Voltar ao Resultado'}
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="sm:hidden">Voltar</span>
+            <span className="hidden sm:inline">
+              {state.fromHistory ? 'Voltar' : 'Voltar ao Resultado'}
+            </span>
           </Button>
           <Button
             variant="outline"
             onClick={() => navigate('/dashboard')}
-            className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
+            className="flex-1 py-3 sm:py-4 rounded-2xl font-bold text-sm sm:text-base gap-1.5 sm:gap-2"
           >
-            <Home className="h-5 w-5" />
-            Ir para o Início
+            <Home className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="sm:hidden">Início</span>
+            <span className="hidden sm:inline">Ir para o Início</span>
           </Button>
         </div>
       </div>
 
       {attemptId && (
-        <AttemptChatDrawer
+        <AttemptChatWidget
           attemptId={attemptId}
           isOpen={isChatOpen}
+          onToggle={() => setIsChatOpen((current) => !current)}
           onClose={() => setIsChatOpen(false)}
         />
       )}

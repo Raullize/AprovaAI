@@ -13,4 +13,11 @@ export abstract class AiChatMessageRepository {
     userId: string,
     limit: number,
   ): Promise<AiChatMessage[]>;
+
+  abstract deleteByUserId(userId: string): Promise<void>;
+
+  abstract deleteBySimulationAttemptId(
+    simulationAttemptId: string,
+    userId: string,
+  ): Promise<void>;
 }

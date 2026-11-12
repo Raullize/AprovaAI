@@ -44,4 +44,19 @@ export class PrismaAiChatMessageRepository implements AiChatMessageRepository {
       .reverse()
       .map((result) => PrismaAiChatMessageMapper.toDomain(result));
   }
+
+  async deleteByUserId(userId: string): Promise<void> {
+    await this.prisma.aiChatMessage.deleteMany({
+      where: { userId, simulationAttemptId: null },
+    });
+  }
+
+  async deleteBySimulationAttemptId(
+    simulationAttemptId: string,
+    userId: string,
+  ): Promise<void> {
+    await this.prisma.aiChatMessage.deleteMany({
+      where: { simulationAttemptId, userId },
+    });
+  }
 }

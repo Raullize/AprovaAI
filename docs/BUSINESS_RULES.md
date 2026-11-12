@@ -263,6 +263,29 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 - As mensagens do chat contextual possuem o `simulationAttemptId` da tentativa
 - O historico global nao deve retornar mensagens de tentativas, nem o contrario
 
+### Cenario: Apagar o historico do chat
+**Status:** Implementado
+
+- Dado que o aluno autenticado possui mensagens no chat global
+- Quando ele solicita `DELETE /ai/chat/history`
+- Entao o backend deve apagar permanentemente apenas as mensagens globais desse aluno
+- E as conversas vinculadas a tentativas devem ser preservadas
+
+### Cenario: Apagar o historico do chat de uma tentativa
+**Status:** Implementado
+
+- Dado que o aluno autenticado possui uma tentativa concluida com conversa
+- Quando ele solicita `DELETE /ai/attempts/:attemptId/chat/history`
+- Entao o backend deve apagar permanentemente apenas as mensagens dessa tentativa
+- E deve retornar 404 para tentativa de outro aluno e 409 para tentativa em andamento
+
+### Regra: Apagamento de historico como controle de privacidade
+**Status:** Implementado
+
+- O aluno pode remover o proprio historico de conversa a qualquer momento
+- O apagamento e fisico (`deleteMany`), sem retencao de conteudo no banco
+- O backend nao registra o conteudo das mensagens em logs
+
 ---
 
 ## Erros e contratos HTTP

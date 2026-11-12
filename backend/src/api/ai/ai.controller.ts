@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -29,6 +30,9 @@ import { SendChatMessageUseCase } from '../../application/ai/use-cases/send-chat
 import { GetChatHistoryUseCase } from '../../application/ai/use-cases/get-chat-history.use-case';
 import { SendAttemptChatMessageUseCase } from '../../application/ai/use-cases/send-attempt-chat-message.use-case';
 import { GetAttemptChatHistoryUseCase } from '../../application/ai/use-cases/get-attempt-chat-history.use-case';
+import { ClearChatHistoryUseCase } from '../../application/ai/use-cases/clear-chat-history.use-case';
+import { ClearAttemptChatHistoryUseCase } from '../../application/ai/use-cases/clear-attempt-chat-history.use-case';
+import { MessageResponseDto } from '../shared/dto/message-response.dto';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -38,6 +42,8 @@ export class AiController {
     private readonly getChatHistoryUseCase: GetChatHistoryUseCase,
     private readonly sendAttemptChatMessageUseCase: SendAttemptChatMessageUseCase,
     private readonly getAttemptChatHistoryUseCase: GetAttemptChatHistoryUseCase,
+    private readonly clearChatHistoryUseCase: ClearChatHistoryUseCase,
+    private readonly clearAttemptChatHistoryUseCase: ClearAttemptChatHistoryUseCase,
   ) {}
 
   @Post('chat')
@@ -167,6 +173,56 @@ export class AiController {
       userId: req.user.id,
       simulationAttemptId: attemptId,
       limit: query.limit,
+    });
+  }
+
+  @Delete('chat/history')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Apagar o histórico do chat',
+    description:
+      'Remove permanentemente todas as mensagens do chat global do aluno autenticado. As conversas por tentativa são preservadas.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Histórico apagado com sucesso.',
+    type: MessageResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  clearHistory(@Request() req: { user: { id: string } }) {
+    return this.clearChatHistoryUseCase.execute({ userId: req.user.id });
+  }
+
+  @Delete('attempts/:attemptId/chat/history')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Apagar o histórico do chat de uma tentativa',
+    description:
+      'Remove permanentemente as mensagens do chat associado a uma tentativa concluída do aluno autenticado.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Histórico da tentativa apagado com sucesso.',
+    type: MessageResponseDto,
+  })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 404,
+    description: 'Tentativa não encontrada para este aluno.',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'A tentativa ainda não foi concluída.',
+  })
+  clearAttemptHistory(
+    @Request() req: { user: { id: string } },
+    @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
+  ) {
+    return this.clearAttemptChatHistoryUseCase.execute({
+      userId: req.user.id,
+      simulationAttemptId: attemptId,
     });
   }
 }

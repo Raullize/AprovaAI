@@ -28,4 +28,23 @@ export class InMemoryAiChatMessageRepository implements AiChatMessageRepository 
     );
     return Promise.resolve(messages.slice(-limit));
   }
+
+  deleteByUserId(userId: string): Promise<void> {
+    this.items = this.items.filter(
+      (item) => item.userId !== userId || item.simulationAttemptId,
+    );
+    return Promise.resolve();
+  }
+
+  deleteBySimulationAttemptId(
+    simulationAttemptId: string,
+    userId: string,
+  ): Promise<void> {
+    this.items = this.items.filter(
+      (item) =>
+        item.userId !== userId ||
+        item.simulationAttemptId !== simulationAttemptId,
+    );
+    return Promise.resolve();
+  }
 }

@@ -28,6 +28,13 @@ export function FloatingStudyWidget() {
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
+      const target = e.target as Element | null;
+
+      // O chat em tela cheia é renderizado em um portal fora do container.
+      if (target?.closest?.('[data-chat-panel]')) {
+        return;
+      }
+
       if (
         open &&
         containerRef.current &&
