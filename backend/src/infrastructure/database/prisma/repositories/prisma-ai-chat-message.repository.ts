@@ -19,7 +19,23 @@ export class PrismaAiChatMessageRepository implements AiChatMessageRepository {
     limit: number,
   ): Promise<AiChatMessage[]> {
     const results = await this.prisma.aiChatMessage.findMany({
-      where: { userId },
+      where: { userId, simulationAttemptId: null },
+      orderBy: { createdAt: 'desc' },
+      take: limit,
+    });
+
+    return results
+      .reverse()
+      .map((result) => PrismaAiChatMessageMapper.toDomain(result));
+  }
+
+  async findRecentBySimulationAttemptId(
+    simulationAttemptId: string,
+    userId: string,
+    limit: number,
+  ): Promise<AiChatMessage[]> {
+    const results = await this.prisma.aiChatMessage.findMany({
+      where: { simulationAttemptId, userId },
       orderBy: { createdAt: 'desc' },
       take: limit,
     });

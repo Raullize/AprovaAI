@@ -6,12 +6,17 @@ export interface AiChatMessageProps {
   userId: string;
   role: ChatRole;
   content: string;
+  simulationAttemptId?: string | null;
   createdAt?: Date;
 }
 
 export class AiChatMessage extends Entity<AiChatMessageProps> {
   get userId(): string {
     return this.props.userId;
+  }
+
+  get simulationAttemptId(): string | null | undefined {
+    return this.props.simulationAttemptId;
   }
 
   get role(): ChatRole {

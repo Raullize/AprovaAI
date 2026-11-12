@@ -220,6 +220,7 @@ model SimulationAttempt {
   user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   simulation Simulation  @relation(fields: [simulationId], references: [id], onDelete: Cascade)
   answers AttemptAnswer[]
+  aiChatMessages AiChatMessage[]
 
   @@map("simulation_attempts")
 }
@@ -262,14 +263,17 @@ enum ChatRole {
 }
 
 model AiChatMessage {
-  id        String   @id @default(uuid()) @map("id")
-  userId    String   @map("user_id")
-  role      ChatRole @map("role")
-  content   String   @map("content")
-  createdAt DateTime @default(now()) @map("created_at")
+  id                  String   @id @default(uuid()) @map("id")
+  userId              String   @map("user_id")
+  simulationAttemptId String?  @map("simulation_attempt_id")
+  role                ChatRole @map("role")
+  content             String   @map("content")
+  createdAt           DateTime @default(now()) @map("created_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  simulationAttempt SimulationAttempt? @relation(fields: [simulationAttemptId], references: [id], onDelete: Cascade)
 
   @@index([userId, createdAt])
+  @@index([simulationAttemptId, createdAt])
   @@map("ai_chat_messages")
 }

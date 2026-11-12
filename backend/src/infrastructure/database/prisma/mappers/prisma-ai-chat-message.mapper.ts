@@ -14,6 +14,7 @@ export class PrismaAiChatMessageMapper {
         userId: raw.userId,
         role: raw.role as ChatRole,
         content: raw.content,
+        simulationAttemptId: raw.simulationAttemptId,
         createdAt: raw.createdAt,
       },
       raw.id,
@@ -26,6 +27,7 @@ export class PrismaAiChatMessageMapper {
       userId: message.userId,
       role: message.role as PrismaChatRole,
       content: message.content,
+      simulationAttemptId: message.simulationAttemptId ?? null,
       createdAt: message.createdAt ?? new Date(),
     };
   }

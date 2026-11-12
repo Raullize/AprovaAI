@@ -631,6 +631,7 @@ export default function SimulationsHistory() {
                                   simulationName: item.simulationName,
                                   stars: item.stars,
                                   examId: item.examId,
+                                  attemptId: item.id,
                                   fromHistory: true,
                                 },
                               });
@@ -652,6 +653,7 @@ export default function SimulationsHistory() {
                                   answers: item.answers || [],
                                   simulationName: item.simulationName,
                                   examId: item.examId,
+                                  attemptId: item.id,
                                   fromHistory: true,
                                 },
                               });

@@ -3,8 +3,9 @@ import { UseCase } from '../../../shared/core/use-case';
 import { AiChatMessageRepository } from '../../../domain/ai/repositories/ai-chat-message.repository';
 import { AiChatMessage } from '../../../domain/ai/entities/ai-chat-message.entity';
 import { ExamRepository } from '../../../domain/content/repositories/exam.repository';
+import { loadPublishedChatCatalog } from '../chat-catalog';
 import { LlmMessage, LlmProvider } from '../ports/llm-provider';
-import { buildSystemPrompt, ChatCatalog } from '../prompts/chat.prompt';
+import { buildSystemPrompt } from '../prompts/chat.prompt';
 
 export interface SendChatMessageRequest {
   userId: string;
@@ -42,7 +43,10 @@ export class SendChatMessageUseCase implements UseCase<
       request.userId,
       HISTORY_LIMIT,
     );
-    const catalog = await this.loadCatalog();
+    const catalog = await loadPublishedChatCatalog(
+      this.examRepository,
+      this.logger,
+    );
 
     await this.messageRepository.create(
       AiChatMessage.create({
@@ -90,30 +94,5 @@ export class SendChatMessageUseCase implements UseCase<
       })),
       { role: 'user', content: message },
     ];
-  }
-
-  private async loadCatalog(): Promise<ChatCatalog | undefined> {
-    try {
-      const exams = await this.examRepository.findAll();
-      const published = exams.filter((exam) => exam.status === 'PUBLISHED');
-
-      if (published.length === 0) {
-        return undefined;
-      }
-
-      return {
-        exams: published.map((exam) => ({
-          name: exam.name,
-          category: exam.category,
-          topicsCount: exam.topicsCount,
-        })),
-      };
-    } catch (error) {
-      this.logger.warn(
-        'Não foi possível carregar o catálogo de exames para o chat',
-        error instanceof Error ? error.stack : undefined,
-      );
-      return undefined;
-    }
   }
 }

@@ -7,4 +7,10 @@ export abstract class AiChatMessageRepository {
     userId: string,
     limit: number,
   ): Promise<AiChatMessage[]>;
+
+  abstract findRecentBySimulationAttemptId(
+    simulationAttemptId: string,
+    userId: string,
+    limit: number,
+  ): Promise<AiChatMessage[]>;
 }

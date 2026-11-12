@@ -239,6 +239,30 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 - Entao o backend deve persistir e retornar uma mensagem amigavel de indisponibilidade
 - E os testes devem usar o provider fake (`NODE_ENV=test`), sem chamadas externas
 
+### Cenario: Conversar sobre uma tentativa concluida
+**Status:** Implementado
+
+- Dado que o aluno autenticado possui uma tentativa `COMPLETED`
+- Quando ele envia uma mensagem em `POST /ai/attempts/:attemptId/chat`
+- Entao o backend deve montar o contexto com exame, topico, simulado, questoes, respostas e desempenho
+- E deve persistir a conversa associada a essa tentativa
+- E o historico (`GET /ai/attempts/:attemptId/chat/history`) deve retornar apenas as mensagens dessa tentativa
+
+### Cenario: Tentativa indisponivel para conversa
+**Status:** Implementado
+
+- Dado que a tentativa nao existe ou pertence a outro aluno
+- Quando o aluno tenta conversar sobre ela
+- Entao o backend deve retornar 404
+- E se a tentativa ainda estiver `IN_PROGRESS`, deve retornar 409 sem revelar gabaritos
+
+### Regra: Isolamento entre chat global e chat por tentativa
+**Status:** Implementado
+
+- As mensagens do chat global possuem `simulationAttemptId = null`
+- As mensagens do chat contextual possuem o `simulationAttemptId` da tentativa
+- O historico global nao deve retornar mensagens de tentativas, nem o contrario
+
 ---
 
 ## Erros e contratos HTTP

@@ -10,7 +10,22 @@ export class InMemoryAiChatMessageRepository implements AiChatMessageRepository 
   }
 
   findRecentByUserId(userId: string, limit: number): Promise<AiChatMessage[]> {
-    const messages = this.items.filter((item) => item.userId === userId);
+    const messages = this.items.filter(
+      (item) => item.userId === userId && !item.simulationAttemptId,
+    );
+    return Promise.resolve(messages.slice(-limit));
+  }
+
+  findRecentBySimulationAttemptId(
+    simulationAttemptId: string,
+    userId: string,
+    limit: number,
+  ): Promise<AiChatMessage[]> {
+    const messages = this.items.filter(
+      (item) =>
+        item.userId === userId &&
+        item.simulationAttemptId === simulationAttemptId,
+    );
     return Promise.resolve(messages.slice(-limit));
   }
 }

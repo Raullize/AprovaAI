@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, type ReactNode } from 'react';
-import { Send, GraduationCap, Maximize } from 'lucide-react';
+import { Send, GraduationCap, Maximize, X } from 'lucide-react';
 import { StudyPanel } from './StudyPanel';
 import { aiService } from '../../services/ai.service';
 
@@ -9,19 +9,33 @@ interface ChatMessage {
   text: string;
 }
 
+interface ProfessorChatPanelProps {
+  attemptId?: string;
+  welcomeMessage?: string;
+  suggestions?: string[];
+  onClose?: () => void;
+  className?: string;
+}
+
 const SABICHAO_AVATAR = '/images/prof-sabichao.png';
 
-const WELCOME_MESSAGE: ChatMessage = {
-  id: 0,
-  role: 'professor',
-  text: 'Olá! Sou o Professor Sabichão. Posso tirar dúvidas sobre os conteúdos e sobre como usar o AprovaAI. Como posso ajudar?',
-};
+const GLOBAL_WELCOME_MESSAGE =
+  'Olá! Sou o Professor Sabichão. Posso tirar dúvidas sobre os conteúdos e sobre como usar o AprovaAI. Como posso ajudar?';
 
-const SUGGESTIONS = [
+const ATTEMPT_WELCOME_MESSAGE =
+  'Olá! Posso explicar os erros deste simulado, dar dicas de estudo e montar um relatório do seu desempenho. O que você quer revisar?';
+
+const GLOBAL_SUGGESTIONS = [
   'Como funciona o XP?',
   'Onde vejo meu histórico?',
   'O que é o modo treino?',
   'Onde ficam as ferramentas de estudo?',
+];
+
+const ATTEMPT_SUGGESTIONS = [
+  'Por que eu errei esta questão?',
+  'Explique o conceito desta questão',
+  'Gere um relatório do meu desempenho',
 ];
 
 const HISTORY_LIMIT = 20;
@@ -74,8 +88,24 @@ function TypingBubble() {
   );
 }
 
-export function ProfessorChatPanel() {
-  const [messages, setMessages] = useState<ChatMessage[]>([WELCOME_MESSAGE]);
+export function ProfessorChatPanel({
+  attemptId,
+  welcomeMessage,
+  suggestions,
+  onClose,
+  className,
+}: ProfessorChatPanelProps = {}) {
+  const resolvedWelcome = welcomeMessage
+    ? { id: 0, role: 'professor' as const, text: welcomeMessage }
+    : {
+        id: 0,
+        role: 'professor' as const,
+        text: attemptId ? ATTEMPT_WELCOME_MESSAGE : GLOBAL_WELCOME_MESSAGE,
+      };
+  const resolvedSuggestions =
+    suggestions ?? (attemptId ? ATTEMPT_SUGGESTIONS : GLOBAL_SUGGESTIONS);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([resolvedWelcome]);
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(true);
@@ -95,7 +125,9 @@ export function ProfessorChatPanel() {
 
     async function loadHistory() {
       try {
-        const history = await aiService.getHistory(HISTORY_LIMIT);
+        const history = attemptId
+          ? await aiService.getAttemptHistory(attemptId, HISTORY_LIMIT)
+          : await aiService.getHistory(HISTORY_LIMIT);
         if (cancelled || history.length === 0) return;
 
         const mapped: ChatMessage[] = history.map((item) => ({
@@ -104,7 +136,7 @@ export function ProfessorChatPanel() {
           text: item.content,
         }));
 
-        setMessages([WELCOME_MESSAGE, ...mapped]);
+        setMessages([resolvedWelcome, ...mapped]);
       } catch {
         // Sem histórico disponível: mantém apenas a mensagem de boas-vindas.
       } finally {
@@ -117,7 +149,8 @@ export function ProfessorChatPanel() {
     return () => {
       cancelled = true;
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [attemptId]);
 
   const handleSend = async (textOverride?: string) => {
     const text = (textOverride ?? input).trim();
@@ -132,7 +165,9 @@ export function ProfessorChatPanel() {
     setIsSending(true);
 
     try {
-      const { reply } = await aiService.sendMessage(text);
+      const { reply } = attemptId
+        ? await aiService.sendAttemptMessage(attemptId, text)
+        : await aiService.sendMessage(text);
       setMessages((prev) => [
         ...prev,
         { id: nextId.current++, role: 'professor', text: reply },
@@ -147,7 +182,12 @@ export function ProfessorChatPanel() {
   const showSuggestions = !isLoadingHistory && messages.length === 1;
 
   return (
-    <StudyPanel className="w-80 sm:w-96 h-[32rem] sm:h-[36rem] max-h-[calc(100vh-8rem)] overflow-hidden flex flex-col">
+    <StudyPanel
+      className={
+        className ??
+        'w-80 sm:w-96 h-[32rem] sm:h-[36rem] max-h-[calc(100vh-8rem)] overflow-hidden flex flex-col'
+      }
+    >
       {/* Header */}
       <div className="flex items-center gap-3 p-4 bg-gradient-to-br from-indigo-600 to-violet-600">
         <div className="w-11 h-11 rounded-full bg-white/20 flex items-center justify-center shrink-0">
@@ -157,17 +197,28 @@ export function ProfessorChatPanel() {
           <h3 className="text-sm font-bold text-white">Professor Sabichão</h3>
           <p className="text-[10px] font-semibold text-white/80 flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-300 animate-pulse" />
-            Disponível para dúvidas
+            {attemptId ? 'Contexto deste simulado' : 'Disponível para dúvidas'}
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => {}}
-          aria-label="Tela cheia"
-          className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/20 transition-colors shrink-0"
-        >
-          <Maximize className="h-4 w-4" />
-        </button>
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Fechar chat"
+            className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/20 transition-colors shrink-0"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {}}
+            aria-label="Tela cheia"
+            className="p-2 rounded-xl text-white/70 hover:text-white hover:bg-white/20 transition-colors shrink-0"
+          >
+            <Maximize className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* Messages */}
@@ -205,7 +256,7 @@ export function ProfessorChatPanel() {
 
         {showSuggestions && (
           <div className="flex flex-wrap gap-2 pt-1">
-            {SUGGESTIONS.map((suggestion) => (
+            {resolvedSuggestions.map((suggestion) => (
               <button
                 key={suggestion}
                 type="button"

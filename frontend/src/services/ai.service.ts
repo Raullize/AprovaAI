@@ -25,4 +25,26 @@ export const aiService = {
     });
     return Array.isArray(response.data) ? response.data : [];
   },
+
+  sendAttemptMessage: async (
+    attemptId: string,
+    message: string,
+  ): Promise<SendChatMessageResponse> => {
+    const response = await api.post<SendChatMessageResponse>(
+      `/ai/attempts/${attemptId}/chat`,
+      { message },
+    );
+    return response.data;
+  },
+
+  getAttemptHistory: async (
+    attemptId: string,
+    limit = 20,
+  ): Promise<AiChatMessage[]> => {
+    const response = await api.get<AiChatMessage[]>(
+      `/ai/attempts/${attemptId}/chat/history`,
+      { params: { limit } },
+    );
+    return Array.isArray(response.data) ? response.data : [];
+  },
 };

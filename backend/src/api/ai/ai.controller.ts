@@ -2,6 +2,8 @@ import {
   Body,
   Controller,
   Get,
+  Param,
+  ParseUUIDPipe,
   Post,
   Query,
   Request,
@@ -25,6 +27,8 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
 import { SendChatMessageUseCase } from '../../application/ai/use-cases/send-chat-message.use-case';
 import { GetChatHistoryUseCase } from '../../application/ai/use-cases/get-chat-history.use-case';
+import { SendAttemptChatMessageUseCase } from '../../application/ai/use-cases/send-attempt-chat-message.use-case';
+import { GetAttemptChatHistoryUseCase } from '../../application/ai/use-cases/get-attempt-chat-history.use-case';
 
 @ApiTags('AI')
 @Controller('ai')
@@ -32,6 +36,8 @@ export class AiController {
   constructor(
     private readonly sendChatMessageUseCase: SendChatMessageUseCase,
     private readonly getChatHistoryUseCase: GetChatHistoryUseCase,
+    private readonly sendAttemptChatMessageUseCase: SendAttemptChatMessageUseCase,
+    private readonly getAttemptChatHistoryUseCase: GetAttemptChatHistoryUseCase,
   ) {}
 
   @Post('chat')
@@ -85,6 +91,81 @@ export class AiController {
   ) {
     return this.getChatHistoryUseCase.execute({
       userId: req.user.id,
+      limit: query.limit,
+    });
+  }
+
+  @Post('attempts/:attemptId/chat')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Conversar com o Professor Sabichão sobre uma tentativa',
+    description:
+      'Envia uma mensagem ao assistente com o contexto da tentativa concluída: exame, tópico, simulado, questões, respostas e desempenho do aluno.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Resposta gerada com sucesso.',
+    type: ChatReplyResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Identificador de tentativa ou mensagem inválidos.',
+  })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 404,
+    description: 'Tentativa não encontrada para este aluno.',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'A tentativa ainda não foi concluída.',
+  })
+  sendAboutAttempt(
+    @Request() req: { user: { id: string } },
+    @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
+    @Body(new ZodValidationPipe(sendChatMessageSchema))
+    dto: SendChatMessageDto,
+  ) {
+    return this.sendAttemptChatMessageUseCase.execute({
+      userId: req.user.id,
+      simulationAttemptId: attemptId,
+      message: dto.message,
+    });
+  }
+
+  @Get('attempts/:attemptId/chat/history')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Histórico do Professor Sabichão por tentativa',
+    description:
+      'Retorna as mensagens mais recentes da conversa do aluno sobre uma tentativa concluída.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Histórico retornado com sucesso.',
+    type: ChatHistoryItemDto,
+    isArray: true,
+  })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 404,
+    description: 'Tentativa não encontrada para este aluno.',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'A tentativa ainda não foi concluída.',
+  })
+  attemptHistory(
+    @Request() req: { user: { id: string } },
+    @Param('attemptId', new ParseUUIDPipe()) attemptId: string,
+    @Query(new ZodValidationPipe(chatHistoryQuerySchema))
+    query: ChatHistoryQueryDto,
+  ) {
+    return this.getAttemptChatHistoryUseCase.execute({
+      userId: req.user.id,
+      simulationAttemptId: attemptId,
       limit: query.limit,
     });
   }

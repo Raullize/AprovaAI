@@ -242,3 +242,4 @@ O chat do widget flutuante (`FloatingStudyWidget.tsx` → `ProfessorChatPanel.ts
 - **Formatação**: o texto do assistente é renderizado com um parser inline seguro (negrito e código), sem `dangerouslySetInnerHTML`; o backend orienta respostas em texto simples, sem Markdown pesado nem rotas internas.
 - **Escopo**: o widget é exibido apenas para usuários cujo papel não é `ADMIN`; o backend reforça o escopo do aluno no system prompt.
 - **Erros**: falhas de rede ou do provedor exibem uma mensagem amigável, sem quebrar a conversa.
+- **Chat na correção**: `SimulationReview.tsx` reutiliza o `ProfessorChatPanel` em um drawer (`AttemptChatDrawer`) com o `attemptId` da tentativa. O `attemptId` é propagado de `SimulationEngine`/`SimulationsHistory` → `SimulationResults` → `SimulationReview`. Nesse modo, o painel consome `POST/GET /ai/attempts/:attemptId/chat` e usa sugestões contextuais (explicar erro, dica de estudo, relatório de desempenho).

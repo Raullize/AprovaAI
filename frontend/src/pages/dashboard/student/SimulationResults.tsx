@@ -29,6 +29,7 @@ interface ResultsState {
   simulationName: string;
   stars?: number;
   examId?: string;
+  attemptId?: string;
   fromHistory?: boolean;
 }
 
@@ -77,6 +78,7 @@ export default function SimulationResults() {
     simulationName = '',
     stars: stateStars,
     examId,
+    attemptId,
     fromHistory = false,
   } = state ?? ({} as Partial<ResultsState>);
 
@@ -115,6 +117,7 @@ export default function SimulationResults() {
         answers: state?.answers ?? [],
         simulationName,
         examId,
+        attemptId,
         fromHistory,
       },
     });

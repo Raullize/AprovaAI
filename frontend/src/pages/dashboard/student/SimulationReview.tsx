@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Home, ChevronLeft, ChevronRight, ArrowLeft } from 'lucide-react';
+import {
+  Home,
+  ChevronLeft,
+  ChevronRight,
+  ArrowLeft,
+  GraduationCap,
+} from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { Card } from '../../../components/ui/Card';
 import Button from '../../../components/ui/Button';
@@ -12,12 +18,14 @@ import {
   type ReviewQuestion,
 } from '../../../components/simulation/ReviewQuestionCard';
 import { questionsService } from '../../../services/questions.service';
+import { AttemptChatDrawer } from '../../../components/simulation/AttemptChatDrawer';
 
 type ReviewFilter = 'ALL' | 'CORRECT' | 'INCORRECT';
 
 interface ReviewState {
   answers: ReviewAnswer[];
   questions?: ReviewQuestion[];
+  attemptId?: string;
   simulationName?: string;
   examId?: string;
   total?: number;
@@ -36,8 +44,10 @@ export default function SimulationReview() {
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
   const [filter, setFilter] = useState<ReviewFilter>('ALL');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const answers = state?.answers ?? [];
+  const attemptId = state?.attemptId;
 
   useEffect(() => {
     if (state?.questions?.length) {
@@ -184,6 +194,17 @@ export default function SimulationReview() {
               </p>
             </div>
           </div>
+
+          {attemptId && (
+            <button
+              type="button"
+              onClick={() => setIsChatOpen(true)}
+              className="mt-4 w-full flex items-center justify-center gap-2 rounded-2xl border border-indigo-200 bg-indigo-50/60 px-4 py-3 text-sm font-bold text-indigo-700 hover:bg-indigo-100 transition-colors"
+            >
+              <GraduationCap className="h-4 w-4" />
+              Tirar dúvidas com o Prof. Sabichão
+            </button>
+          )}
         </div>
       </div>
 
@@ -340,6 +361,14 @@ export default function SimulationReview() {
           </Button>
         </div>
       </div>
+
+      {attemptId && (
+        <AttemptChatDrawer
+          attemptId={attemptId}
+          isOpen={isChatOpen}
+          onClose={() => setIsChatOpen(false)}
+        />
+      )}
     </div>
   );
 }
