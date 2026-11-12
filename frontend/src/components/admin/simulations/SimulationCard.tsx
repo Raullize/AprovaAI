@@ -160,6 +160,18 @@ export function SimulationCard({
             </div>
             <div className="flex items-center gap-2">
               <StatusBadge status={simulation.status} />
+              {simulation.source && simulation.source !== 'MANUAL' && (
+                <span
+                  className={cn(
+                    'inline-flex items-center gap-1 text-[9px] font-extrabold border px-2 py-0.5 rounded-lg uppercase tracking-wider',
+                    simulation.source === 'ENEM'
+                      ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                      : 'text-violet-700 bg-violet-50 border-violet-200',
+                  )}
+                >
+                  {simulation.source === 'ENEM' ? 'ENEM' : 'IA'}
+                </span>
+              )}
               {showWarning && (
                 <span className="inline-flex items-center gap-1 text-[9px] font-extrabold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg uppercase tracking-wider animate-pulse">
                   <AlertTriangle className="h-3 w-3 text-amber-500 fill-current" />
@@ -169,7 +181,7 @@ export function SimulationCard({
             </div>
           </div>
           <div className="flex items-center gap-1">
-            <GripVertical className="h-4 w-4 text-slate-300 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <GripVertical className="h-4 w-4 text-slate-300" />
             <EntityCardActions
               status={simulation.status}
               onToggleStatus={() => onToggleStatus(simulation)}

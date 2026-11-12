@@ -13,6 +13,10 @@ import { PrismaSimulationRepository } from '../../infrastructure/database/prisma
 import { PrismaQuestionRepository } from '../../infrastructure/database/prisma/repositories/prisma-question.repository';
 import { UserRepository } from '../../domain/users/repositories/user.repository';
 import { PrismaUserRepository } from '../../infrastructure/database/prisma/repositories/prisma-user.repository';
+import { TopicRepository } from '../../domain/content/repositories/topic.repository';
+import { PrismaTopicRepository } from '../../infrastructure/database/prisma/repositories/prisma-topic.repository';
+import { ExamRepository } from '../../domain/content/repositories/exam.repository';
+import { PrismaExamRepository } from '../../infrastructure/database/prisma/repositories/prisma-exam.repository';
 
 @Module({
   imports: [PrismaModule],
@@ -33,6 +37,14 @@ import { PrismaUserRepository } from '../../infrastructure/database/prisma/repos
     {
       provide: UserRepository,
       useClass: PrismaUserRepository,
+    },
+    {
+      provide: TopicRepository,
+      useClass: PrismaTopicRepository,
+    },
+    {
+      provide: ExamRepository,
+      useClass: PrismaExamRepository,
     },
     StartSimulationUseCase,
     SaveAnswerUseCase,

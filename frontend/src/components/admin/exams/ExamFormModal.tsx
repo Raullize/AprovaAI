@@ -23,6 +23,7 @@ interface ExamFormData {
   iconKey: string;
   colorScheme: string;
   category: string;
+  allowUnordered: boolean;
 }
 
 interface ExamFormModalProps {
@@ -57,12 +58,14 @@ export function ExamFormModal({
       iconKey: ICON_OPTIONS[0].key,
       colorScheme: COLOR_OPTIONS[0].key,
       category: 'OUTROS',
+      allowUnordered: false,
     },
   });
 
   const statusValue = watch('status');
   const iconKeyValue = watch('iconKey');
   const colorSchemeValue = watch('colorScheme');
+  const allowUnorderedValue = watch('allowUnordered');
 
   const selectedColor = getColorOption(colorSchemeValue);
   const SelectedIcon = getIconOption(iconKeyValue).Icon;
@@ -82,6 +85,7 @@ export function ExamFormModal({
             iconKey: exam.iconKey || ICON_OPTIONS[0].key,
             colorScheme: exam.colorScheme || COLOR_OPTIONS[0].key,
             category: exam.category || 'OUTROS',
+            allowUnordered: exam.allowUnordered,
           });
         } catch {
           toast({
@@ -101,6 +105,7 @@ export function ExamFormModal({
         iconKey: ICON_OPTIONS[0].key,
         colorScheme: COLOR_OPTIONS[0].key,
         category: 'OUTROS',
+        allowUnordered: false,
       });
     }
   }, [isOpen, examId, isEditing, reset, toast]);
@@ -252,6 +257,42 @@ export function ExamFormModal({
             disabled={isSaving}
           />
           <input type="hidden" {...register('status')} />
+
+          <div className="flex items-center justify-between gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-slate-800">
+                Simulados fora de ordem
+              </p>
+              <p className="text-xs text-slate-500 mt-0.5 leading-relaxed">
+                Se ativo, os alunos podem escolher qualquer simulado da trilha,
+                sem critério de aprovação para liberar os próximos.
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={allowUnorderedValue}
+              aria-label="Permitir simulados fora de ordem"
+              onClick={() =>
+                setValue('allowUnordered', !allowUnorderedValue, {
+                  shouldDirty: true,
+                })
+              }
+              disabled={isSaving}
+              className={cn(
+                'relative w-12 h-7 rounded-full transition-colors shrink-0',
+                allowUnorderedValue ? 'bg-indigo-600' : 'bg-slate-300',
+              )}
+            >
+              <span
+                className={cn(
+                  'absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-all',
+                  allowUnorderedValue ? 'left-6' : 'left-1',
+                )}
+              />
+            </button>
+            <input type="hidden" {...register('allowUnordered')} />
+          </div>
 
           <div className="flex justify-end gap-3 pt-2">
             <Button

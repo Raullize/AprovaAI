@@ -115,6 +115,7 @@ export default function ExamTrail() {
   > = {};
 
   let previousPassed = true;
+  const freeOrder = exam?.allowUnordered === true;
 
   allSimulations.forEach((sim) => {
     const simHistory = history.filter(
@@ -130,7 +131,7 @@ export default function ExamTrail() {
     let status: 'COMPLETED' | 'CURRENT' | 'LOCKED' = 'LOCKED';
     if (passed) {
       status = 'COMPLETED';
-    } else if (previousPassed) {
+    } else if (freeOrder || previousPassed) {
       status = 'CURRENT';
     }
 

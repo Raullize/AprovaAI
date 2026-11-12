@@ -211,6 +211,7 @@ backend/test/e2e/
 └── endpoints/
     ├── auth/
     ├── account/
+    ├── ai/                    # Chat do Prof. Sabichão (rota /ai)
     ├── exams/
     ├── health/
     ├── upload/
@@ -223,13 +224,15 @@ backend/test/e2e/
 
 ### 6.5. Cobertura Atual
 
-A suíte cobre **todos os controllers da API** (`backend/src/api`), totalizando **43 arquivos de teste e 72 casos**:
+A suíte cobre **todos os controllers da API** (`backend/src/api`), totalizando **44 arquivos de teste e 75 casos**:
 
 - **Auth** (`/auth/login`, `/auth/register`)
 - **Account** (`GET/PATCH/DELETE /account/*`)
+- **AI** (`POST /ai/chat`, `GET /ai/chat/history`, `DELETE /ai/chat/history`, `POST/GET/DELETE /ai/attempts/:attemptId/chat*` + autenticação, escopo por tentativa e validação; usa provider fake nos testes)
 - **Exams** (`GET /exams`, `GET /exams/:idOrSlug`, `POST /exams`, `PATCH /exams/:id`, `PATCH /exams/reorder`, `DELETE /exams/:id` + Roles Guard)
 - **Topics** (`GET /topics`, `GET /topics/:idOrSlug`, `GET /topics/exam/:examId`, `POST /topics`, `PATCH /topics/:id`, `PATCH /topics/reorder`, `DELETE /topics/:id` + Roles Guard)
 - **Simulations CRUD Admin** (`/simulations` — create/GET por id e por tópico/reorder/update/delete + 401/403)
+- **Simulations Generate** (`POST /simulations/generate` — ENEM/IA, DRAFT, 400/401/403; usa fakes de banco/IA nos testes)
 - **Simulation Attempts Aluno** (`/simulation-attempts/start`, `/:id/answers`, `/:id/finish`, `GET /history`)
 - **Questions** (`GET /questions`, `GET /questions/:id`, `GET /questions/simulation/:simulationId`, `POST /questions`, `PATCH /questions/:id`, `PATCH /questions/reorder`, `DELETE /questions/:id` + Guards)
 - **Student Dashboard** (`/student/dashboard-stats`, `leaderboard`, `streak-leaderboard`)

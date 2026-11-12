@@ -2,6 +2,7 @@ import { AggregateRoot } from '../../../shared/core/aggregate-root';
 import { Slug } from '../value-objects/slug';
 import { Percentage } from '../value-objects/percentage';
 import { SimulationCreatedEvent } from '../events/simulation-created.event';
+import { ContentSource } from '../content-source';
 
 export type SimulationStatus = 'PUBLISHED' | 'DRAFT';
 
@@ -12,6 +13,7 @@ export interface SimulationProps {
   order: number;
   topicId: string;
   status?: SimulationStatus;
+  source?: ContentSource;
   xpReward?: number;
   passingPercentage?: Percentage;
   timeLimit?: number | null;
@@ -39,6 +41,9 @@ export class Simulation extends AggregateRoot<SimulationProps> {
   }
   get status(): 'PUBLISHED' | 'DRAFT' {
     return this.props.status ?? 'PUBLISHED';
+  }
+  get source(): ContentSource {
+    return this.props.source ?? 'MANUAL';
   }
   get xpReward(): number {
     return this.props.xpReward ?? 0;
@@ -70,6 +75,7 @@ export class Simulation extends AggregateRoot<SimulationProps> {
       {
         ...props,
         status: props.status ?? 'PUBLISHED',
+        source: props.source ?? 'MANUAL',
         xpReward: props.xpReward ?? 0,
         passingPercentage: props.passingPercentage ?? Percentage.create(70.0),
         createdAt: props.createdAt ?? new Date(),

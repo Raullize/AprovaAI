@@ -199,6 +199,126 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 
 ---
 
+## Inteligencia Artificial (Prof. Sabichao)
+
+### Cenario: Conversar com o assistente autenticado
+**Status:** Implementado
+
+- Dado que o aluno esta autenticado
+- Quando ele envia uma mensagem em `POST /ai/chat`
+- Entao o backend deve montar o contexto da plataforma e do catalogo de exames publicados
+- E chamar o provedor de IA configurado
+- E persistir a mensagem do aluno e a resposta do assistente
+- E retornar a resposta
+
+### Cenario: Mensagem invalida
+**Status:** Implementado
+
+- Quando a mensagem estiver vazia ou acima de 1000 caracteres
+- Entao o backend deve retornar 400 Bad Request
+
+### Cenario: Consultar o historico do chat
+**Status:** Implementado
+
+- Dado que o aluno esta autenticado
+- Quando ele solicita `GET /ai/chat/history`
+- Entao o backend deve retornar as mensagens mais recentes do proprio aluno, em ordem cronologica
+
+### Regra: Escopo do assistente
+**Status:** Implementado
+
+- O assistente deve responder apenas sobre conteudo educacional e o uso da plataforma pelo aluno
+- Nao deve revelar gabaritos de simulados em andamento
+- Nao deve orientar sobre o fluxo administrativo
+- Nao deve expor caminhos internos, URLs ou nomes tecnicos de rotas
+
+### Regra: Fallback do provedor de IA
+**Status:** Implementado
+
+- Quando o provedor de IA falhar (erro de rede, cota ou timeout)
+- Entao o backend deve persistir e retornar uma mensagem amigavel de indisponibilidade
+- E os testes devem usar o provider fake (`NODE_ENV=test`), sem chamadas externas
+
+### Cenario: Conversar sobre uma tentativa concluida
+**Status:** Implementado
+
+- Dado que o aluno autenticado possui uma tentativa `COMPLETED`
+- Quando ele envia uma mensagem em `POST /ai/attempts/:attemptId/chat`
+- Entao o backend deve montar o contexto com exame, topico, simulado, questoes, respostas e desempenho
+- E deve persistir a conversa associada a essa tentativa
+- E o historico (`GET /ai/attempts/:attemptId/chat/history`) deve retornar apenas as mensagens dessa tentativa
+
+### Cenario: Tentativa indisponivel para conversa
+**Status:** Implementado
+
+- Dado que a tentativa nao existe ou pertence a outro aluno
+- Quando o aluno tenta conversar sobre ela
+- Entao o backend deve retornar 404
+- E se a tentativa ainda estiver `IN_PROGRESS`, deve retornar 409 sem revelar gabaritos
+
+### Regra: Isolamento entre chat global e chat por tentativa
+**Status:** Implementado
+
+- As mensagens do chat global possuem `simulationAttemptId = null`
+- As mensagens do chat contextual possuem o `simulationAttemptId` da tentativa
+- O historico global nao deve retornar mensagens de tentativas, nem o contrario
+
+### Cenario: Apagar o historico do chat
+**Status:** Implementado
+
+- Dado que o aluno autenticado possui mensagens no chat global
+- Quando ele solicita `DELETE /ai/chat/history`
+- Entao o backend deve apagar permanentemente apenas as mensagens globais desse aluno
+- E as conversas vinculadas a tentativas devem ser preservadas
+
+### Cenario: Apagar o historico do chat de uma tentativa
+**Status:** Implementado
+
+- Dado que o aluno autenticado possui uma tentativa concluida com conversa
+- Quando ele solicita `DELETE /ai/attempts/:attemptId/chat/history`
+- Entao o backend deve apagar permanentemente apenas as mensagens dessa tentativa
+- E deve retornar 404 para tentativa de outro aluno e 409 para tentativa em andamento
+
+### Regra: Apagamento de historico como controle de privacidade
+**Status:** Implementado
+
+- O aluno pode remover o proprio historico de conversa a qualquer momento
+- O apagamento e fisico (`deleteMany`), sem retencao de conteudo no banco
+- O backend nao registra o conteudo das mensagens em logs
+
+---
+
+## Admin: geração de simulados com IA/ENEM
+
+### Cenario: Gerar simulado a partir do ENEM
+**Status:** Implementado
+
+- Dado que o admin autenticado informa um topico, disciplina e anos do ENEM (2009-2023)
+- Quando ele solicita `POST /simulations/generate` com `source = ENEM`
+- Entao o backend deve buscar questoes reais na API publica enem.dev (respeitando 1 req/s)
+- E deve filtrar localmente pela disciplina e pelo idioma escolhidos
+- E deve usar IA para descartar questoes que nao pertencem de fato a disciplina/topico
+- E deve descartar questoes com imagem no enunciado
+- E deve gerar as explicacoes com IA
+- E deve criar o simulado e as questoes como `DRAFT`, com a proveniencia (`source = ENEM`, `sourceRef`)
+- E o aluno nao deve visualizar o simulado enquanto ele nao for publicado
+
+### Cenario: Gerar simulado com questoes de IA
+**Status:** Implementado
+
+- Dado que o admin informa um topico e, opcionalmente, um foco
+- Quando ele solicita `POST /simulations/generate` com `source = AI`
+- Entao o backend deve gerar as questoes em JSON estruturado via LLM
+- E deve validar que cada questao tem exatamente uma alternativa correta
+- E deve criar o simulado e as questoes como `DRAFT`, com `source = AI` e `aiModel`
+
+### Regra: Revisao humana obrigatoria
+**Status:** Implementado
+
+- Todo conteudo gerado ou importado nasce como `DRAFT`
+- A publicacao depende de acao explicita do admin nas telas de edicao existentes
+- A quantidade maxima por geracao e 10 questoes
+
 ## Erros e contratos HTTP
 
 ### Regra: Erros de dominio devem virar resposta HTTP coerente

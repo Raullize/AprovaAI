@@ -275,6 +275,7 @@ export default function SimulationEngine() {
           passingPercentage: simulationConfig?.passingPercentage || 70,
           simulationName: simulationConfig?.name || 'Simulado',
           examId,
+          attemptId: simulationAttemptId ?? undefined,
         },
       });
     } catch (err) {

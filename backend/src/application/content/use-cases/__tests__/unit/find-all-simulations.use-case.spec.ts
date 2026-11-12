@@ -29,7 +29,7 @@ describe('FindAllSimulationsUseCase', () => {
     await repository.create(simulationA);
     await repository.create(simulationB);
 
-    const result = await useCase.execute();
+    const result = await useCase.execute({});
 
     expect(result).toHaveLength(2);
     expect(result.map((l) => l.id)).toContain(simulationA.id);
@@ -37,7 +37,7 @@ describe('FindAllSimulationsUseCase', () => {
   });
 
   it('should return an empty array when there are no simulations', async () => {
-    const result = await useCase.execute();
+    const result = await useCase.execute({});
 
     expect(result).toHaveLength(0);
     expect(Array.isArray(result)).toBe(true);

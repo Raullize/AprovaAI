@@ -25,7 +25,7 @@ describe('FindQuestionByIdUseCase', () => {
     });
     await repository.create(question);
 
-    const found = await useCase.execute(question.id);
+    const found = await useCase.execute({ id: question.id, options: {} });
 
     expect(found.id).toBe(question.id);
     expect(found.content).toBe('What is TypeScript?');
@@ -33,14 +33,14 @@ describe('FindQuestionByIdUseCase', () => {
   });
 
   it('should throw ResourceNotFoundError when question does not exist', async () => {
-    await expect(useCase.execute('non-existing-id')).rejects.toBeInstanceOf(
-      ResourceNotFoundError,
-    );
+    await expect(
+      useCase.execute({ id: 'non-existing-id', options: {} }),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 
   it('should throw ResourceNotFoundError with the correct identifier in the message', async () => {
-    await expect(useCase.execute('bad-id')).rejects.toThrow(
-      "Question with identifier 'bad-id' not found",
-    );
+    await expect(
+      useCase.execute({ id: 'bad-id', options: {} }),
+    ).rejects.toThrow("Question with identifier 'bad-id' not found");
   });
 });

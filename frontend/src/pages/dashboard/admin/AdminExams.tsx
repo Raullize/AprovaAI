@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/useToast';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
 import { SearchInput } from '@/components/admin/shared/SearchInput';
+import { ReorderHint } from '@/components/admin/shared/ReorderHint';
 import { ExamCard } from '@/components/admin/exams/ExamCard';
 import { ExamFormModal } from '@/components/admin/exams/ExamFormModal';
 import { cn } from '@/lib/utils';
@@ -258,26 +259,40 @@ export default function AdminExams() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredExams.map((exam) => (
-            <ExamCard
-              key={exam.id}
-              exam={exam}
-              isDragging={draggedId === exam.id}
-              onDragStart={() => setDraggedId(exam.id)}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(exam.id)}
-              onEdit={(id) => {
-                setEditingExamId(id);
-                setIsModalOpen(true);
-              }}
-              onDelete={setExamToDelete}
-              onToggleStatus={handleToggleStatus}
-              onNavigate={(id) =>
-                navigate(`/dashboard/admin/exams/${id}/topics`)
-              }
-            />
-          ))}
+        <div className="space-y-6">
+          <ReorderHint
+            entityLabel="exames"
+            display="catalog"
+            items={filteredExams.map((exam) => ({
+              id: exam.id,
+              name: exam.name,
+              description: exam.description ?? undefined,
+              iconKey: exam.iconKey,
+              colorScheme: exam.colorScheme,
+              meta: `${exam.topicsCount ?? 0} tópicos`,
+            }))}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredExams.map((exam) => (
+              <ExamCard
+                key={exam.id}
+                exam={exam}
+                isDragging={draggedId === exam.id}
+                onDragStart={() => setDraggedId(exam.id)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(exam.id)}
+                onEdit={(id) => {
+                  setEditingExamId(id);
+                  setIsModalOpen(true);
+                }}
+                onDelete={setExamToDelete}
+                onToggleStatus={handleToggleStatus}
+                onNavigate={(id) =>
+                  navigate(`/dashboard/admin/exams/${id}/topics`)
+                }
+              />
+            ))}
+          </div>
         </div>
       )}
 

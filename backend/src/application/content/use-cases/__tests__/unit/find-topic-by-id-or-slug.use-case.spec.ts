@@ -23,7 +23,7 @@ describe('FindTopicByIdOrSlugUseCase', () => {
 
     await repository.create(topic);
 
-    const result = await sut.execute(topic.id);
+    const result = await sut.execute({ idOrSlug: topic.id, options: {} });
 
     expect(result.id).toBe(topic.id);
     expect(result.name).toBe('Introducao');
@@ -39,15 +39,15 @@ describe('FindTopicByIdOrSlugUseCase', () => {
 
     await repository.create(topic);
 
-    const result = await sut.execute('seguranca');
+    const result = await sut.execute({ idOrSlug: 'seguranca', options: {} });
 
     expect(result.id).toBe(topic.id);
     expect(result.slug.value).toBe('seguranca');
   });
 
   it('should throw ResourceNotFoundError when topic does not exist', async () => {
-    await expect(sut.execute('missing-topic')).rejects.toBeInstanceOf(
-      ResourceNotFoundError,
-    );
+    await expect(
+      sut.execute({ idOrSlug: 'missing-topic', options: {} }),
+    ).rejects.toBeInstanceOf(ResourceNotFoundError);
   });
 });

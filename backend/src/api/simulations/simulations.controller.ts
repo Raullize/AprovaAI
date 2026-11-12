@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Controller,
   Get,
   Post,
@@ -7,6 +8,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -18,12 +20,15 @@ import {
 import {
   createSimulationSchema,
   updateSimulationSchema,
+  generateSimulationSchema,
   CreateSimulationDto,
   UpdateSimulationDto,
+  GenerateSimulationDto,
 } from './dto/simulation.dto';
 import { reorderSchema, ReorderDto } from '../exams/dto/exam.dto';
 import { SimulationResponseDto } from '../content/dto/content-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { OptionalJwtAuthGuard } from '../auth/guards/optional-jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles, UserRole } from '../auth/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/pipes/zod-validation.pipe';
@@ -35,6 +40,7 @@ import { CreateSimulationUseCase } from '../../application/content/use-cases/cre
 import { UpdateSimulationUseCase } from '../../application/content/use-cases/update-simulation.use-case';
 import { DeleteSimulationUseCase } from '../../application/content/use-cases/delete-simulation.use-case';
 import { ReorderSimulationsUseCase } from '../../application/content/use-cases/reorder-simulations.use-case';
+import { GenerateSimulationUseCase } from '../../application/content/use-cases/generate-simulation.use-case';
 
 @ApiTags('Simulations')
 @Controller('simulations')
@@ -47,6 +53,7 @@ export class SimulationsController {
     private readonly updateSimulationUseCase: UpdateSimulationUseCase,
     private readonly deleteSimulationUseCase: DeleteSimulationUseCase,
     private readonly reorderSimulationsUseCase: ReorderSimulationsUseCase,
+    private readonly generateSimulationUseCase: GenerateSimulationUseCase,
   ) {}
 
   @Post()
@@ -77,25 +84,90 @@ export class SimulationsController {
     return this.createSimulationUseCase.execute(createSimulationDto);
   }
 
+  @Post('generate')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({
+    summary: 'Gerar Simulado com IA/ENEM',
+    description:
+      'Gera um simulado em rascunho a partir de questões reais do ENEM ou de ' +
+      'questões criadas por IA. (Somente Admin)',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Simulado gerado como rascunho.',
+    type: SimulationResponseDto,
+  })
+  @ApiResponse({ status: 400, description: 'Dados de entrada inválidos.' })
+  @ApiResponse({ status: 401, description: 'Token JWT ausente ou inválido.' })
+  @ApiResponse({
+    status: 403,
+    description: 'Acesso negado (requer role ADMIN).',
+  })
+  generate(
+    @Body(new ZodValidationPipe(generateSimulationSchema))
+    dto: GenerateSimulationDto,
+  ) {
+    const base = {
+      topicId: dto.topicId,
+      source: dto.source,
+      count: dto.count,
+      name: dto.name,
+      description: dto.description,
+      xpReward: dto.xpReward,
+      passingPercentage: dto.passingPercentage,
+      timeLimit: dto.timeLimit,
+      simulationMode: dto.simulationMode,
+    } as const;
+
+    if (dto.source === 'ENEM') {
+      if (!dto.discipline || !dto.years?.length) {
+        throw new BadRequestException(
+          'Disciplina e anos são obrigatórios para gerar a partir do ENEM.',
+        );
+      }
+
+      return this.generateSimulationUseCase.execute({
+        ...base,
+        enem: {
+          discipline: dto.discipline,
+          years: dto.years,
+          language: dto.language,
+        },
+      });
+    }
+
+    return this.generateSimulationUseCase.execute({
+      ...base,
+      ai: { focus: dto.focus },
+    });
+  }
+
   @Get()
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({
     summary: 'Listar Simulados',
-    description: 'Retorna a lista de todos os simulados cadastrados.',
+    description:
+      'Retorna a lista de simulados. Estudantes veem apenas os publicados; administradores veem todos.',
   })
   @ApiResponse({
     status: 200,
     description: 'Lista de simulados retornada com sucesso.',
     type: [SimulationResponseDto],
   })
-  findAll() {
-    return this.findAllSimulationsUseCase.execute();
+  findAll(@Request() req: { user?: { role?: string } }) {
+    return this.findAllSimulationsUseCase.execute({
+      includeDraft: req.user?.role === UserRole.ADMIN,
+    });
   }
 
   @Get('topic/:topicId')
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({
     summary: 'Buscar Simulados por Tópico',
     description:
-      'Retorna todos os simulados pertencentes a um tópico específico.',
+      'Retorna os simulados de um tópico. Estudantes veem apenas publicados; administradores veem todos.',
   })
   @ApiParam({
     name: 'topicId',
@@ -106,14 +178,22 @@ export class SimulationsController {
     description: 'Simulados do tópico encontrados.',
     type: [SimulationResponseDto],
   })
-  findByTopic(@Param('topicId') topicId: string) {
-    return this.findSimulationsByTopicIdUseCase.execute(topicId);
+  findByTopic(
+    @Param('topicId') topicId: string,
+    @Request() req: { user?: { role?: string } },
+  ) {
+    return this.findSimulationsByTopicIdUseCase.execute({
+      topicId,
+      options: { includeDraft: req.user?.role === UserRole.ADMIN },
+    });
   }
 
   @Get(':idOrSlug')
+  @UseGuards(OptionalJwtAuthGuard)
   @ApiOperation({
     summary: 'Buscar Simulado por ID ou Slug',
-    description: 'Retorna os detalhes de um simulado específico.',
+    description:
+      'Retorna os detalhes de um simulado. Estudantes só acessam publicados; administradores acessam qualquer status.',
   })
   @ApiParam({
     name: 'idOrSlug',
@@ -125,8 +205,14 @@ export class SimulationsController {
     type: SimulationResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Simulado não encontrado.' })
-  findOne(@Param('idOrSlug') idOrSlug: string) {
-    return this.findSimulationByIdOrSlugUseCase.execute(idOrSlug);
+  findOne(
+    @Param('idOrSlug') idOrSlug: string,
+    @Request() req: { user?: { role?: string } },
+  ) {
+    return this.findSimulationByIdOrSlugUseCase.execute({
+      idOrSlug,
+      options: { includeDraft: req.user?.role === UserRole.ADMIN },
+    });
   }
 
   @Patch('reorder')

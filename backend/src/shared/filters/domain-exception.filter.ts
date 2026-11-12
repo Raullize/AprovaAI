@@ -35,6 +35,7 @@ export class DomainExceptionFilter implements ExceptionFilter {
         statusCode: status,
         message: resObj['message'] || exception.message,
         error: resObj['error'] || exception.name,
+        ...(resObj['errors'] ? { errors: resObj['errors'] } : {}),
       });
     }
 

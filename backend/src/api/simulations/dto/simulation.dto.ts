@@ -5,20 +5,25 @@ export const createSimulationSchema = z.object({
   name: z
     .string()
     .min(3, 'Nome deve ter no mínimo 3 caracteres')
-    .describe('Nome do nível. Ex: "Nível 1 - Básico"'),
-  description: z.string().optional().describe('Descrição opcional do nível.'),
+    .describe('Nome do simulado. Ex: "Simulado 1 - Básico"'),
+  description: z
+    .string()
+    .optional()
+    .describe('Descrição opcional do simulado.'),
   order: z
     .number()
     .int()
     .min(1)
     .optional()
-    .describe('Ordem de exibição do nível. Ex: 1'),
+    .describe('Ordem de exibição do simulado. Ex: 1'),
   xpReward: z
     .number()
     .int()
     .min(0)
     .default(0)
-    .describe('Quantidade de XP que o aluno ganha ao concluir o nível. Ex: 50'),
+    .describe(
+      'Quantidade de XP que o aluno ganha ao concluir o simulado. Ex: 50',
+    ),
   passingPercentage: z
     .number()
     .min(0)
@@ -30,7 +35,7 @@ export const createSimulationSchema = z.object({
     .int()
     .min(1)
     .optional()
-    .describe('Tempo limite em minutos para concluir o nível. Ex: 60'),
+    .describe('Tempo limite em minutos para concluir o simulado. Ex: 60'),
   simulationMode: z
     .enum(['PRACTICE', 'EXAM'])
     .default('PRACTICE')
@@ -40,11 +45,11 @@ export const createSimulationSchema = z.object({
   status: z
     .enum(['PUBLISHED', 'DRAFT'])
     .default('PUBLISHED')
-    .describe('Status de visibilidade do nível'),
+    .describe('Status de visibilidade do simulado'),
   topicId: z
     .uuid('ID do tópico inválido')
     .describe(
-      'ID UUID do tópico ao qual este nível pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+      'ID UUID do tópico ao qual este simulado pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
     ),
 });
 
@@ -54,26 +59,26 @@ export const updateSimulationSchema = z.object({
   name: z
     .string()
     .optional()
-    .describe('Novo nome do nível. Ex: "Nível 2 - Intermediário"'),
+    .describe('Novo nome do simulado. Ex: "Simulado 2 - Intermediário"'),
   description: z
     .string()
     .optional()
-    .describe('Nova descrição opcional do nível.'),
+    .describe('Nova descrição opcional do simulado.'),
   status: z
     .enum(['PUBLISHED', 'DRAFT'])
     .optional()
-    .describe('Novo status de visibilidade do nível.'),
+    .describe('Novo status de visibilidade do simulado.'),
   topicId: z
     .uuid('ID do tópico inválido')
     .optional()
     .describe(
-      'Novo ID UUID do tópico ao qual este nível pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
+      'Novo ID UUID do tópico ao qual este simulado pertence. Ex: "123e4567-e89b-12d3-a456-426614174000"',
     ),
   xpReward: z
     .number()
     .int()
     .optional()
-    .describe('Novo total de XP concedido ao concluir o nível. Ex: 100'),
+    .describe('Novo total de XP concedido ao concluir o simulado. Ex: 100'),
   passingPercentage: z
     .number()
     .min(0)
@@ -94,3 +99,81 @@ export const updateSimulationSchema = z.object({
 });
 
 export class UpdateSimulationDto extends createZodDto(updateSimulationSchema) {}
+
+const generateSimulationBaseSchema = z.object({
+  topicId: z
+    .uuid('ID do tópico inválido')
+    .describe('ID UUID do tópico onde o simulado será criado.'),
+  count: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(10)
+    .default(10)
+    .describe('Quantidade de questões a gerar (1 a 10).'),
+  name: z
+    .string()
+    .min(3)
+    .max(120)
+    .optional()
+    .describe('Nome opcional; se omitido, será gerado automaticamente.'),
+  description: z
+    .string()
+    .max(500)
+    .optional()
+    .describe('Descrição opcional do simulado.'),
+  xpReward: z.coerce
+    .number()
+    .int()
+    .min(0)
+    .default(100)
+    .describe('XP concedido ao concluir o simulado.'),
+  passingPercentage: z.coerce
+    .number()
+    .min(0)
+    .max(100)
+    .default(70)
+    .describe('Percentual mínimo de aprovação.'),
+  timeLimit: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .nullable()
+    .optional()
+    .describe('Tempo limite em minutos (opcional).'),
+  simulationMode: z
+    .enum(['PRACTICE', 'EXAM'])
+    .default('PRACTICE')
+    .describe('Modo do simulado.'),
+});
+
+export const generateSimulationSchema = generateSimulationBaseSchema.extend({
+  source: z
+    .enum(['ENEM', 'AI'])
+    .describe('Fonte: ENEM (banco real) ou AI (questões geradas).'),
+  discipline: z
+    .enum(['ciencias-humanas', 'ciencias-natureza', 'linguagens', 'matematica'])
+    .optional()
+    .describe('Disciplina do ENEM (obrigatória quando source = ENEM).'),
+  years: z
+    .array(z.coerce.number().int().min(2009).max(2023))
+    .min(1)
+    .max(5)
+    .optional()
+    .describe(
+      'Anos do ENEM, de 2009 a 2023 (obrigatório quando source = ENEM).',
+    ),
+  language: z
+    .enum(['ingles', 'espanhol'])
+    .optional()
+    .describe('Idioma para questões de Linguagens (padrão: inglês).'),
+  focus: z
+    .string()
+    .max(300)
+    .optional()
+    .describe('Tema ou foco opcional para a geração por IA.'),
+});
+
+export class GenerateSimulationDto extends createZodDto(
+  generateSimulationSchema,
+) {}

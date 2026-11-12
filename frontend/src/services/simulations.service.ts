@@ -1,6 +1,8 @@
 import api from './api';
 import type { SimulationMode } from '../types/simulation.types';
 
+export type ContentSource = 'MANUAL' | 'ENEM' | 'AI';
+
 export interface Simulation {
   id: string;
   name: string;
@@ -8,6 +10,7 @@ export interface Simulation {
   xpReward: number;
   passingPercentage: number;
   status: 'PUBLISHED' | 'DRAFT';
+  source: ContentSource;
   topicId: string;
   timeLimit: number | null;
   simulationMode: SimulationMode;
@@ -31,6 +34,34 @@ export type UpdateSimulationDTO = Partial<
   timeLimit?: number | null;
 };
 
+export type EnemDiscipline =
+  'ciencias-humanas' | 'ciencias-natureza' | 'linguagens' | 'matematica';
+
+export type EnemLanguage = 'ingles' | 'espanhol';
+
+interface GenerateSimulationBaseDTO {
+  topicId: string;
+  count: number;
+  name?: string;
+  description?: string;
+  xpReward?: number;
+  passingPercentage?: number;
+  timeLimit?: number | null;
+  simulationMode: SimulationMode;
+}
+
+export type GenerateSimulationDTO =
+  | (GenerateSimulationBaseDTO & {
+      source: 'ENEM';
+      discipline: EnemDiscipline;
+      years: number[];
+      language?: EnemLanguage;
+    })
+  | (GenerateSimulationBaseDTO & {
+      source: 'AI';
+      focus?: string;
+    });
+
 export const simulationsService = {
   findAll: async (topicId?: string) => {
     if (topicId) {
@@ -50,6 +81,11 @@ export const simulationsService = {
 
   create: async (data: CreateSimulationDTO) => {
     const response = await api.post<Simulation>('/simulations', data);
+    return response.data;
+  },
+
+  generate: async (data: GenerateSimulationDTO) => {
+    const response = await api.post<Simulation>('/simulations/generate', data);
     return response.data;
   },
 

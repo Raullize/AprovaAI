@@ -1,8 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronDown, Star } from 'lucide-react';
+import { ChevronDown, Star, Shuffle, ListOrdered } from 'lucide-react';
 import { cn } from '../../../lib/utils';
 import { getIconOption, getColorOption } from '../../../config/examThemes';
+import {
+  EXAM_CATEGORY_LABELS,
+  EXAM_CATEGORY_OPTIONS,
+} from '../../../config/examCategories';
 import { examsService, type Exam } from '../../../services/exams.service';
 import Loading from '../../../components/ui/Loading';
 import Modal from '../../../components/ui/Modal';
@@ -12,21 +16,9 @@ import { SearchInput } from '../../../components/admin/shared/SearchInput';
 import { Card } from '../../../components/ui/Card';
 import { useExamFavorites } from '../../../hooks/useExamFavorites';
 
-const CATEGORY_MAP: Record<string, string> = {
-  CONCURSOS: 'Concursos',
-  CERTIFICACOES: 'Certificações',
-  VESTIBULAR: 'Vestibular',
-  OAB: 'OAB',
-  OUTROS: 'Outros',
-};
-
 const CATEGORIES = [
   { key: 'Todos', label: 'Todas as Categorias' },
-  { key: 'CONCURSOS', label: 'Concursos' },
-  { key: 'CERTIFICACOES', label: 'Certificações' },
-  { key: 'VESTIBULAR', label: 'Vestibular' },
-  { key: 'OAB', label: 'OAB' },
-  { key: 'OUTROS', label: 'Outros' },
+  ...EXAM_CATEGORY_OPTIONS,
 ];
 
 export default function ExploreExams() {
@@ -192,7 +184,7 @@ export default function ExploreExams() {
           <EmptyState message="Nenhum exame está disponível no momento." />
         ) : filtered.length === 0 ? (
           <EmptyState
-            message={`Nenhum exame encontrado para "${search || CATEGORY_MAP[activeCategory] || activeCategory}".`}
+            message={`Nenhum exame encontrado para "${search || EXAM_CATEGORY_LABELS[activeCategory] || activeCategory}".`}
           />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -224,7 +216,8 @@ export default function ExploreExams() {
                         <div>
                           {exam.category && (
                             <span className="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold mb-2">
-                              {CATEGORY_MAP[exam.category] || exam.category}
+                              {EXAM_CATEGORY_LABELS[exam.category] ||
+                                exam.category}
                             </span>
                           )}
                           <h3 className="font-bold text-slate-800 text-lg group-hover:text-indigo-600 transition-colors leading-tight">
@@ -301,7 +294,8 @@ export default function ExploreExams() {
 
               {selectedExam.category && (
                 <span className="px-3 py-1 rounded-xl bg-slate-100 text-slate-600 text-xs font-bold mb-3">
-                  {CATEGORY_MAP[selectedExam.category] || selectedExam.category}
+                  {EXAM_CATEGORY_LABELS[selectedExam.category] ||
+                    selectedExam.category}
                 </span>
               )}
 
@@ -311,6 +305,25 @@ export default function ExploreExams() {
               <p className="text-slate-500 text-sm mb-6 leading-relaxed max-w-md">
                 {selectedExam.description}
               </p>
+
+              {selectedExam.allowUnordered ? (
+                <div className="w-full flex items-center gap-3 text-left bg-violet-50 border border-violet-100 rounded-2xl px-4 py-3 mb-6">
+                  <Shuffle className="h-4 w-4 shrink-0 text-violet-600" />
+                  <p className="text-sm text-violet-900 leading-snug">
+                    <span className="font-bold">Trilha livre:</span> escolha
+                    qualquer simulado, na ordem que preferir, sem precisar
+                    concluir os anteriores.
+                  </p>
+                </div>
+              ) : (
+                <div className="w-full flex items-center gap-3 text-left bg-slate-50 border border-slate-200 rounded-2xl px-4 py-3 mb-6">
+                  <ListOrdered className="h-4 w-4 shrink-0 text-slate-500" />
+                  <p className="text-sm text-slate-600 leading-snug">
+                    <span className="font-bold">Trilha em ordem:</span> conclua
+                    cada simulado para liberar o próximo nível.
+                  </p>
+                </div>
+              )}
 
               <div className="w-full bg-slate-50 rounded-3xl p-5 mb-8 flex justify-around border border-slate-100">
                 <div>

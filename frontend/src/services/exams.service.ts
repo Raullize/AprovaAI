@@ -10,6 +10,7 @@ export interface Exam {
   iconKey?: string | null;
   colorScheme?: string | null;
   category?: string | null;
+  allowUnordered: boolean;
 }
 
 export interface CreateExamDTO {
@@ -19,6 +20,7 @@ export interface CreateExamDTO {
   iconKey?: string;
   colorScheme?: string;
   category?: string;
+  allowUnordered?: boolean;
 }
 
 export type UpdateExamDTO = Partial<CreateExamDTO>;

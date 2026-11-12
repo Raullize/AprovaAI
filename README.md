@@ -26,7 +26,7 @@ O conteúdo é organizado de forma hierárquica: **Exame → Tópico → Simulad
 
 - **Simulados por Tópico** — Estrutura `Exame > Tópico > Simulado > Questões` para aprendizado progressivo
 - **Gamificação** — Sistema de XP, estrelas e ofensivas (streaks) para motivar o estudo contínuo
-- **Prof. Sabichão** — Mascote e assistente inteligente para tirar dúvidas *(em desenvolvimento)*
+- **Prof. Sabichão (IA)** — Assistente pedagógico com Gemini para dúvidas de conteúdo e sobre o uso da plataforma (lado do aluno)
 - **Feedback Detalhado** — Explicações específicas para cada alternativa e links de aprofundamento
 - **Drag & Drop** — Reordenação intuitiva de exames, tópicos, simulados e questões pelo admin
 - **Controle de Status** — Ativação/desativação de conteúdo sem necessidade de exclusão
@@ -73,7 +73,7 @@ O AprovaAI oferece dois planos para atender às necessidades de estudo:
 - **Streak de Dias:** Visualize seu progresso contínuo de estudos (ofensiva).
 - **Correção Dedicada:** Tela de revisão que mostra questão a questão o que você acertou/errou, com navegação por teclado, filtros e explicações em destaque.
 - **Favoritar Exames:** Fixe exames favoritos (estrela) no catálogo — eles sobem para o topo da lista.
-- **Ferramentas de Estudo:** Widget flutuante com Pomodoro, bloco de anotações e chat com o Prof. Sabichão *(mock visual por enquanto)*.
+- **Ferramentas de Estudo:** Widget flutuante com Pomodoro, bloco de anotações e chat real com o Prof. Sabichão (Gemini), com histórico persistido.
 
 ### Para o Administrador
 

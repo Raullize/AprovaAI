@@ -14,7 +14,18 @@ export class PrismaSimulationAttemptRepository implements SimulationAttemptRepos
   async findById(id: string): Promise<SimulationAttempt | null> {
     const result = await this.prisma.simulationAttempt.findUnique({
       where: { id },
-      include: { answers: true },
+      include: {
+        answers: true,
+        simulation: {
+          include: {
+            topic: {
+              include: {
+                exam: true,
+              },
+            },
+          },
+        },
+      },
     });
     if (!result) return null;
     return PrismaSimulationAttemptMapper.toDomain(result);

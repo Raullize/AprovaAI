@@ -230,3 +230,26 @@ A tela de Ranking Global e o componente `LeaderboardTable.tsx` foram otimizados 
 - **Barra de ferramentas**: Em mobile, a busca ocupa largura total e os controles de filtro ("Todos/Top 3/Top 10") ficam distribuídos lado a lado com o seletor de paginação (`justify-between`), evitando quebra de linha descontrolada.
 - **Tabela responsiva**: Padding das células reduzido em mobile (`py-3 px-2 sm:px-4`). Cabeçalhos de coluna longos são abreviados automaticamente: "Experiência" → "XP" e "Recorde de Ofensiva" → "Ofensiva" em telas menores que `sm`.
 - **Eliminação de rolagem dupla**: As páginas `Leaderboard.tsx` e `Profile.tsx` não possuem mais wrappers redundantes de `min-h-screen`, delegando o controle de scroll ao `DashboardLayout.tsx` (container principal do painel).
+
+---
+
+## 10. Chat do Professor Sabichão (IA)
+
+O chat do widget flutuante (`FloatingStudyWidget.tsx` → `ProfessorChatPanel.tsx`) consome a API de IA do backend via `services/ai.service.ts`.
+
+- **Fluxo**: ao abrir, carrega o histórico (`GET /ai/chat/history`); ao enviar, chama `POST /ai/chat` e exibe a resposta com indicador de "digitando".
+- **Sugestões**: balões iniciais ("Como funciona o XP?", "Onde vejo meu histórico?", "O que é o modo treino?").
+- **Formatação**: o texto do assistente é renderizado com um parser inline seguro (negrito e código), sem `dangerouslySetInnerHTML`; o backend orienta respostas em texto simples, sem Markdown pesado nem rotas internas.
+- **Escopo**: o widget é exibido apenas para usuários cujo papel não é `ADMIN`; o backend reforça o escopo do aluno no system prompt.
+- **Erros**: falhas de rede ou do provedor exibem uma mensagem amigável, sem quebrar a conversa.
+- **Chat na correção**: `SimulationReview.tsx` reutiliza o `ProfessorChatPanel` em um widget flutuante (`AttemptChatWidget`) com o `attemptId` da tentativa. O `attemptId` é propagado de `SimulationEngine`/`SimulationsHistory` → `SimulationResults` → `SimulationReview`. Nesse modo, o painel consome `POST/GET/DELETE /ai/attempts/:attemptId/chat` e usa sugestões contextuais (explicar erro, dica de estudo, relatório de desempenho).
+- **Apagar histórico**: o cabeçalho do chat tem uma ação de limpeza com confirmação inline, que chama `DELETE /ai/chat/history` ou `DELETE /ai/attempts/:attemptId/chat/history` conforme o modo.
+- **Tela cheia e dimensões**: os dois chats compartilham `CHAT_PANEL_CLASSES` (mesma largura/altura) e o botão de tela cheia alterna entre `Expand` e `Shrink`, renderizando o painel via portal no `body` quando expandido.
+
+## 11. Geração de simulados (Admin)
+
+- **Entrada**: botão "Gerar com IA" na `SimulationList` do tópico, abrindo `GenerateSimulationModal`.
+- **Fonte**: `ENEM` (disciplina, anos e idioma, com sugestão automática da disciplina pelo nome do tópico) ou `IA` (foco opcional).
+- **Configuração**: quantidade (5 ou 10), modo, XP, aprovação e tempo limite.
+- **Resultado**: o backend cria um simulado `DRAFT`; o frontend navega para a `QuestionList` existente para revisão/edição e publicação.
+- **Badge**: o `SimulationCard` exibe `ENEM` ou `IA` conforme `simulation.source`.

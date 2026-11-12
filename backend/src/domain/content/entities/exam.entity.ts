@@ -11,6 +11,7 @@ export interface ExamProps {
   iconKey?: string | null;
   colorScheme?: string | null;
   category?: string | null;
+  allowUnordered?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -48,6 +49,9 @@ export class Exam extends AggregateRoot<ExamProps> {
   }
   get category(): string | null | undefined {
     return this.props.category;
+  }
+  get allowUnordered(): boolean {
+    return this.props.allowUnordered ?? false;
   }
 
   static create(props: ExamProps, id?: string): Exam {
@@ -93,6 +97,11 @@ export class Exam extends AggregateRoot<ExamProps> {
 
   public updateOrder(order: number): void {
     this.props.order = order;
+    this.props.updatedAt = new Date();
+  }
+
+  public setAllowUnordered(allowUnordered: boolean): void {
+    this.props.allowUnordered = allowUnordered;
     this.props.updatedAt = new Date();
   }
 }

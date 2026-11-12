@@ -12,12 +12,14 @@ import {
   type ReviewQuestion,
 } from '../../../components/simulation/ReviewQuestionCard';
 import { questionsService } from '../../../services/questions.service';
+import { AttemptChatWidget } from '../../../components/simulation/AttemptChatWidget';
 
 type ReviewFilter = 'ALL' | 'CORRECT' | 'INCORRECT';
 
 interface ReviewState {
   answers: ReviewAnswer[];
   questions?: ReviewQuestion[];
+  attemptId?: string;
   simulationName?: string;
   examId?: string;
   total?: number;
@@ -36,8 +38,10 @@ export default function SimulationReview() {
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
   const [filter, setFilter] = useState<ReviewFilter>('ALL');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isChatOpen, setIsChatOpen] = useState(false);
 
   const answers = state?.answers ?? [];
+  const attemptId = state?.attemptId;
 
   useEffect(() => {
     if (state?.questions?.length) {
@@ -320,26 +324,39 @@ export default function SimulationReview() {
       </div>
 
       {/* CTA buttons */}
-      <div className="fixed bottom-0 left-0 right-0 px-4 pb-6 pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 z-45 shadow-lg shrink-0">
-        <div className="max-w-2xl mx-auto flex flex-col sm:flex-row gap-3">
+      <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 pt-3 sm:pb-6 sm:pt-4 bg-white/90 backdrop-blur-sm border-t border-slate-200 z-45 shadow-lg shrink-0">
+        <div className="max-w-2xl mx-auto flex flex-row gap-2 sm:gap-3">
           <Button
             variant="gamified"
             onClick={() => navigate(-1)}
-            className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
+            className="flex-1 py-3 sm:py-4 rounded-2xl font-bold text-sm sm:text-base gap-1.5 sm:gap-2"
           >
-            <ArrowLeft className="h-5 w-5" />
-            {state.fromHistory ? 'Voltar' : 'Voltar ao Resultado'}
+            <ArrowLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="sm:hidden">Voltar</span>
+            <span className="hidden sm:inline">
+              {state.fromHistory ? 'Voltar' : 'Voltar ao Resultado'}
+            </span>
           </Button>
           <Button
             variant="outline"
             onClick={() => navigate('/dashboard')}
-            className="flex-1 py-4 rounded-2xl font-bold text-base gap-2"
+            className="flex-1 py-3 sm:py-4 rounded-2xl font-bold text-sm sm:text-base gap-1.5 sm:gap-2"
           >
-            <Home className="h-5 w-5" />
-            Ir para o Início
+            <Home className="h-4 w-4 sm:h-5 sm:w-5" />
+            <span className="sm:hidden">Início</span>
+            <span className="hidden sm:inline">Ir para o Início</span>
           </Button>
         </div>
       </div>
+
+      {attemptId && (
+        <AttemptChatWidget
+          attemptId={attemptId}
+          isOpen={isChatOpen}
+          onToggle={() => setIsChatOpen((current) => !current)}
+          onClose={() => setIsChatOpen(false)}
+        />
+      )}
     </div>
   );
 }

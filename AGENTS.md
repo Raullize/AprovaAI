@@ -20,8 +20,8 @@ max_lines: 150
 <!-- ai-guardrails:config:begin -->
 | Option | Value |
 |---|---|
-| Prompts | `initial-setup` |
-| Optional prompts | `tooling`, `ralph-loop` |
+| Prompts | none |
+| Optional prompts | none |
 | Stack packs | `docker-expert`, `humanize-frontend`, `modernize-legacy`, `refactor-react`, `seo-optimizer`, `ui-to-code`, `unslop` |
 | Git | versioned |
 <!-- ai-guardrails:config:end -->
@@ -32,14 +32,9 @@ max_lines: 150
 
 | File | What you learn there |
 |---|---|
-| [`.agents/prompts/initial-setup/PROMPT.md`](.agents/prompts/initial-setup/PROMPT.md) | Project bootstrap, workflow and language conventions |
 | [`.agents/rules/README.md`](.agents/rules/README.md) | Index of non-negotiable rules (blocking invariants) |
 | [`.agents/skills/README.md`](.agents/skills/README.md) | Index of skills / roles and their triggers |
-| [`.agents/prompts/README.md`](.agents/prompts/README.md) | Index of reusable prompts |
 
-> **Optional prompts installed in this project:**
-> - [`.agents/prompts/tooling/PROMPT.md`](.agents/prompts/tooling/PROMPT.md) — use the repository's own scripts as the single source of truth for commands, tests and checks.
-> - [`.agents/prompts/ralph-loop/PROMPT.md`](.agents/prompts/ralph-loop/PROMPT.md) — run the Perceive → Orient → Decide → Act → Record cycle per story.
 
 ---
 
@@ -68,20 +63,8 @@ max_lines: 150
 
 ---
 
-## 3. Quick recipe for working here
-
-| Situation | What to do |
-|---|---|
-| First time in the repo | Read section 1 in order, then the official kanban / backlog |
-| Start a story | Move the kanban item to *In progress* **before** coding |
-| Implement a story | Apply the rules; write the test first when behavior is testable |
-| Close a story | Run the applicable gates → review → commit + tag (only with human OK) |
-| New skill / rule / prompt | 1 folder per artifact + fixed name. Create `assets/` only with real content |
-| Doubt about why a decision | Look for the ADR. No ADR = create one |
-
----
 
 *Conflict between instructions? Always apply in this order:*
-`.agents/prompts/initial-setup/PROMPT.md` → blocking `RULE`s → official kanban → this `AGENTS.md`.
+blocking `RULE`s → this `AGENTS.md`.
 
 <!-- generated-by: ai-guardrails -->

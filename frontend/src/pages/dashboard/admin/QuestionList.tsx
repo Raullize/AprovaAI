@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/useToast';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
 import { SearchInput } from '@/components/admin/shared/SearchInput';
+import { ReorderHint } from '@/components/admin/shared/ReorderHint';
 import { QuestionCard } from '@/components/admin/questions/QuestionCard';
 import { QuestionFormModal } from '@/components/admin/questions/QuestionFormModal';
 
@@ -229,24 +230,35 @@ export default function QuestionList() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {filteredQuestions.map((q, idx) => (
-            <QuestionCard
-              key={q.id}
-              question={q}
-              index={idx}
-              isDragging={draggedId === q.id}
-              onDragStart={() => setDraggedId(q.id)}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(q.id)}
-              onEdit={(q) => {
-                setEditingQuestion(q);
-                setIsFormOpen(true);
-              }}
-              onDelete={setQuestionToDelete}
-              onToggleStatus={handleToggleStatus}
-            />
-          ))}
+        <div className="space-y-6">
+          <ReorderHint
+            entityLabel="questões"
+            display="list"
+            items={filteredQuestions.map((q) => ({
+              id: q.id,
+              name: q.content,
+              meta: `Questão ${q.order ?? ''}`.trim(),
+            }))}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            {filteredQuestions.map((q, idx) => (
+              <QuestionCard
+                key={q.id}
+                question={q}
+                index={idx}
+                isDragging={draggedId === q.id}
+                onDragStart={() => setDraggedId(q.id)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(q.id)}
+                onEdit={(q) => {
+                  setEditingQuestion(q);
+                  setIsFormOpen(true);
+                }}
+                onDelete={setQuestionToDelete}
+                onToggleStatus={handleToggleStatus}
+              />
+            ))}
+          </div>
         </div>
       )}
 

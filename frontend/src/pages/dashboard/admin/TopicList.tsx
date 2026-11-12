@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/useToast';
 import { PageHeader } from '@/components/admin/shared/PageHeader';
 import { DeleteConfirmModal } from '@/components/admin/shared/DeleteConfirmModal';
 import { SearchInput } from '@/components/admin/shared/SearchInput';
+import { ReorderHint } from '@/components/admin/shared/ReorderHint';
 import { TopicCard } from '@/components/admin/topics/TopicCard';
 import { TopicFormModal } from '@/components/admin/topics/TopicFormModal';
 
@@ -173,26 +174,39 @@ export default function TopicList() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredTopics.map((topic) => (
-            <TopicCard
-              key={topic.id}
-              topic={topic}
-              isDragging={draggedId === topic.id}
-              onDragStart={() => setDraggedId(topic.id)}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(topic.id)}
-              onEdit={(id) => {
-                setEditingTopicId(id);
-                setIsModalOpen(true);
-              }}
-              onDelete={setTopicToDelete}
-              onToggleStatus={handleToggleStatus}
-              onNavigate={(id) =>
-                navigate(`/dashboard/admin/topics/${id}/simulations`)
-              }
-            />
-          ))}
+        <div className="space-y-6">
+          <ReorderHint
+            entityLabel="tópicos"
+            display="list"
+            items={filteredTopics.map((topic) => ({
+              id: topic.id,
+              name: topic.name,
+              iconKey: topic.iconKey,
+              colorScheme: topic.colorScheme,
+              meta: `${topic.simulationsCount ?? 0} simulados`,
+            }))}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredTopics.map((topic) => (
+              <TopicCard
+                key={topic.id}
+                topic={topic}
+                isDragging={draggedId === topic.id}
+                onDragStart={() => setDraggedId(topic.id)}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(topic.id)}
+                onEdit={(id) => {
+                  setEditingTopicId(id);
+                  setIsModalOpen(true);
+                }}
+                onDelete={setTopicToDelete}
+                onToggleStatus={handleToggleStatus}
+                onNavigate={(id) =>
+                  navigate(`/dashboard/admin/topics/${id}/simulations`)
+                }
+              />
+            ))}
+          </div>
         </div>
       )}
 
