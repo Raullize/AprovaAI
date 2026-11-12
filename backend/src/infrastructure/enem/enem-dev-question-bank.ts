@@ -50,7 +50,8 @@ export interface EnemDevQuestionBankOptions {
 const DEFAULT_BASE_URL = 'https://api.enem.dev/v1';
 const DEFAULT_MIN_INTERVAL_MS = 1100;
 const DEFAULT_CACHE_TTL_MS = 10 * 60 * 1000;
-const DEFAULT_PAGE_SIZE = 30;
+const DEFAULT_PAGE_SIZE = 50;
+const MAX_PAGES_PER_YEAR = 20;
 
 export class EnemDevQuestionBank extends EnemQuestionBank {
   private readonly baseUrl: string;
@@ -121,23 +122,68 @@ export class EnemDevQuestionBank extends EnemQuestionBank {
     year: number,
     filter: EnemQuestionFilter,
   ): Promise<EnemQuestion[]> {
-    const params = new URLSearchParams({
-      discipline: filter.discipline,
-      limit: String(this.pageSize),
-      offset: '0',
-    });
+    const collected: EnemQuestion[] = [];
+    let offset = 0;
+    let hasMore = true;
+    let pages = 0;
 
-    if (filter.discipline === 'linguagens' && filter.language) {
-      params.set('language', filter.language);
+    while (
+      hasMore &&
+      collected.length < filter.limit &&
+      pages < MAX_PAGES_PER_YEAR
+    ) {
+      const params = new URLSearchParams({
+        limit: String(this.pageSize),
+        offset: String(offset),
+      });
+
+      const response = await this.request<EnemDevQuestionsResponse>(
+        `${this.baseUrl}/exams/${year}/questions?${params.toString()}`,
+      );
+
+      const questions = response.questions ?? [];
+
+      for (const question of questions) {
+        if (!this.matchesFilter(question, filter)) {
+          continue;
+        }
+
+        const normalized = this.normalize(question);
+        if (normalized) {
+          collected.push(normalized);
+        }
+      }
+
+      hasMore =
+        response.metadata?.hasMore ?? questions.length === this.pageSize;
+      offset += this.pageSize;
+      pages += 1;
+
+      if (questions.length === 0) {
+        break;
+      }
     }
 
-    const response = await this.request<EnemDevQuestionsResponse>(
-      `${this.baseUrl}/exams/${year}/questions?${params.toString()}`,
-    );
+    return collected;
+  }
 
-    return (response.questions ?? [])
-      .map((question) => this.normalize(question))
-      .filter((question): question is EnemQuestion => question !== null);
+  private matchesFilter(
+    question: EnemDevQuestion,
+    filter: EnemQuestionFilter,
+  ): boolean {
+    if (question.discipline !== filter.discipline) {
+      return false;
+    }
+
+    if (
+      filter.discipline === 'linguagens' &&
+      filter.language &&
+      question.language !== filter.language
+    ) {
+      return false;
+    }
+
+    return true;
   }
 
   private async request<T>(url: string): Promise<T> {

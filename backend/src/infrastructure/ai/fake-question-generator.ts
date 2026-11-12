@@ -3,6 +3,7 @@ import {
   GenerateQuestionsInput,
   GeneratedQuestion,
   QuestionGenerator,
+  SelectRelevantQuestionsInput,
 } from '../../application/content/ports/question-generator';
 
 export class FakeQuestionGenerator extends QuestionGenerator {
@@ -33,6 +34,14 @@ export class FakeQuestionGenerator extends QuestionGenerator {
       input.questions.map(
         (_, index) => `Explicação gerada para a questão ${index + 1}.`,
       ),
+    );
+  }
+
+  selectRelevantQuestions(
+    input: SelectRelevantQuestionsInput,
+  ): Promise<number[]> {
+    return Promise.resolve(
+      input.questions.map((question) => question.index).slice(0, input.limit),
     );
   }
 }

@@ -46,6 +46,15 @@ const MIN_YEAR = 2009;
 const MAX_YEAR = 2023;
 const DEFAULT_XP_REWARD = 100;
 const DEFAULT_PASSING_PERCENTAGE = 70;
+const CANDIDATE_MULTIPLIER = 4;
+const MAX_CANDIDATES = 30;
+
+const ENEM_DISCIPLINE_LABELS: Record<EnemDiscipline, string> = {
+  'ciencias-humanas': 'Ciências Humanas e suas Tecnologias',
+  'ciencias-natureza': 'Ciências da Natureza e suas Tecnologias',
+  linguagens: 'Linguagens, Códigos e suas Tecnologias',
+  matematica: 'Matemática e suas Tecnologias',
+};
 
 @Injectable()
 export class GenerateSimulationUseCase implements UseCase<
@@ -182,23 +191,48 @@ export class GenerateSimulationUseCase implements UseCase<
       discipline: enem.discipline,
       years: enem.years,
       language: enem.language,
-      limit: count,
+      limit: Math.min(count * CANDIDATE_MULTIPLIER, MAX_CANDIDATES),
     });
 
     if (candidates.length === 0) {
       return [];
     }
 
+    const selectedIndices =
+      await this.questionGenerator.selectRelevantQuestions({
+        topicName,
+        examName,
+        disciplineLabel: ENEM_DISCIPLINE_LABELS[enem.discipline],
+        limit: count,
+        questions: candidates.map((question, index) => ({
+          index: index + 1,
+          content: question.content,
+        })),
+      });
+
+    if (selectedIndices.length === 0) {
+      throw new ValidationError(
+        'Nenhuma questão compatível com a disciplina e o tópico foi encontrada. Tente outro ano.',
+      );
+    }
+
+    const selected = selectedIndices
+      .map((index) => candidates[index - 1])
+      .filter((question): question is (typeof candidates)[number] =>
+        Boolean(question),
+      )
+      .slice(0, count);
+
     const explanations = await this.questionGenerator.generateExplanations({
       topicName,
       examName,
-      questions: candidates.map((question) => ({
+      questions: selected.map((question) => ({
         content: question.content,
         options: question.options,
       })),
     });
 
-    return candidates.map((question, index) =>
+    return selected.map((question, index) =>
       this.toQuestion(
         {
           content: question.content,

@@ -25,6 +25,17 @@ export interface GenerateExplanationsInput {
   }>;
 }
 
+export interface SelectRelevantQuestionsInput {
+  topicName: string;
+  examName: string;
+  disciplineLabel: string;
+  limit: number;
+  questions: Array<{
+    index: number;
+    content: string;
+  }>;
+}
+
 export abstract class QuestionGenerator {
   abstract readonly modelName: string;
 
@@ -35,4 +46,8 @@ export abstract class QuestionGenerator {
   abstract generateExplanations(
     input: GenerateExplanationsInput,
   ): Promise<Array<string | null>>;
+
+  abstract selectRelevantQuestions(
+    input: SelectRelevantQuestionsInput,
+  ): Promise<number[]>;
 }

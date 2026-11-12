@@ -94,7 +94,7 @@ export function QuestionCard({
         )}
 
         {/* Content */}
-        <p className="text-sm text-slate-800 mb-3 line-clamp-3 leading-relaxed font-medium">
+        <p className="text-sm text-slate-800 mb-3 whitespace-pre-line leading-relaxed font-medium">
           {question.content}
         </p>
 
@@ -119,8 +119,8 @@ export function QuestionCard({
               <span
                 className={
                   opt.isCorrect
-                    ? 'text-emerald-700 font-medium line-clamp-1'
-                    : 'text-slate-500 line-clamp-1'
+                    ? 'text-emerald-700 font-medium'
+                    : 'text-slate-500'
                 }
               >
                 {opt.text}
@@ -133,7 +133,7 @@ export function QuestionCard({
         {(question.explanation || question.studyLink) && (
           <div className="mt-4 pt-3 border-t border-slate-100/50 space-y-2">
             {question.explanation && (
-              <p className="text-xs text-slate-500 line-clamp-2">
+              <p className="text-xs text-slate-500 whitespace-pre-line">
                 <strong className="text-slate-700">Explicação:</strong>{' '}
                 {question.explanation}
               </p>

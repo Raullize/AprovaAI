@@ -4,6 +4,7 @@ import {
   GenerateQuestionsInput,
   GeneratedQuestion,
   QuestionGenerator,
+  SelectRelevantQuestionsInput,
 } from '../../application/content/ports/question-generator';
 import { LlmProvider } from '../../application/ai/ports/llm-provider';
 import { ValidationError } from '../../shared/core/errors/validation.error';
@@ -32,6 +33,10 @@ const generatedExplanationsSchema = z.object({
   explanations: z.array(z.string().trim().min(5)),
 });
 
+const selectedQuestionsSchema = z.object({
+  selected: z.array(z.number().int().positive()),
+});
+
 const GENERATION_SYSTEM_PROMPT = `Você é um professor especialista em elaborar questões de múltipla escolha para o AprovaAI.
 
 Regras:
@@ -42,6 +47,15 @@ Regras:
 - Não use imagens, links, tabelas ou Markdown.
 - Responda APENAS com JSON válido, sem texto adicional, no formato:
 {"questions":[{"content":"enunciado","options":[{"text":"alternativa","isCorrect":true}],"explanation":"explicação"}]}`;
+
+const SELECTION_SYSTEM_PROMPT = `Você é um professor especialista em currículo do ENEM.
+Receberá uma lista de questões e deve selecionar as que realmente pertencem à
+disciplina e ao tópico informados. Algumas questões podem estar classificadas
+de forma incorreta pela fonte de dados; descarte apenas as que forem claramente
+de outra área. Selecione todas as compatíveis até o limite informado, preferindo
+as que melhor representam o tópico. Não invente questões. Responda APENAS com
+JSON válido no formato: {"selected":[1,3,5]} usando os números das questões
+fornecidas.`;
 
 const EXPLANATION_SYSTEM_PROMPT = `Você é um professor do AprovaAI.
 Explique de forma didática, em português do Brasil, por que a alternativa correta
@@ -107,6 +121,47 @@ export class GeminiQuestionGenerator extends QuestionGenerator {
     throw new ValidationError(
       'A IA não retornou questões em formato válido. Tente novamente.',
     );
+  }
+
+  async selectRelevantQuestions(
+    input: SelectRelevantQuestionsInput,
+  ): Promise<number[]> {
+    const questionsText = input.questions
+      .map(
+        (question) =>
+          `${question.index}. ${question.content.slice(0, 600).replace(/\s+/g, ' ').trim()}`,
+      )
+      .join('\n\n');
+
+    try {
+      const result = await this.options.llmProvider.generate({
+        system: SELECTION_SYSTEM_PROMPT,
+        messages: [
+          {
+            role: 'user',
+            content: [
+              `Disciplina: ${input.disciplineLabel}`,
+              `Tópico: ${input.topicName}`,
+              `Exame: ${input.examName}`,
+              `Selecione no máximo ${input.limit} questões.`,
+              '',
+              questionsText,
+            ].join('\n'),
+          },
+        ],
+        maxOutputTokens: 1000,
+      });
+
+      const parsed = selectedQuestionsSchema.parse(parseJson(result.text));
+
+      return [...new Set(parsed.selected)]
+        .filter((index) => index >= 1 && index <= input.questions.length)
+        .slice(0, input.limit);
+    } catch {
+      return input.questions
+        .map((question) => question.index)
+        .slice(0, input.limit);
+    }
   }
 
   async generateExplanations(

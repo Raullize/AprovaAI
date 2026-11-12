@@ -296,6 +296,8 @@ Quando um cenario estiver descrito aqui e nao houver teste cobrindo o comportame
 - Dado que o admin autenticado informa um topico, disciplina e anos do ENEM (2009-2023)
 - Quando ele solicita `POST /simulations/generate` com `source = ENEM`
 - Entao o backend deve buscar questoes reais na API publica enem.dev (respeitando 1 req/s)
+- E deve filtrar localmente pela disciplina e pelo idioma escolhidos
+- E deve usar IA para descartar questoes que nao pertencem de fato a disciplina/topico
 - E deve descartar questoes com imagem no enunciado
 - E deve gerar as explicacoes com IA
 - E deve criar o simulado e as questoes como `DRAFT`, com a proveniencia (`source = ENEM`, `sourceRef`)

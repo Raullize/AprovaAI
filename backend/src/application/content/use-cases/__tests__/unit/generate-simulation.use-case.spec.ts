@@ -49,6 +49,22 @@ class InvalidOptionQuestionGenerator extends QuestionGenerator {
   ): Promise<Array<string | null>> {
     return Promise.resolve(input.questions.map(() => null));
   }
+
+  selectRelevantQuestions(): Promise<number[]> {
+    return Promise.resolve([1]);
+  }
+}
+
+class SelectingQuestionGenerator extends FakeQuestionGenerator {
+  selectRelevantQuestions(): Promise<number[]> {
+    return Promise.resolve([2, 3]);
+  }
+}
+
+class EmptySelectionQuestionGenerator extends FakeQuestionGenerator {
+  selectRelevantQuestions(): Promise<number[]> {
+    return Promise.resolve([]);
+  }
 }
 
 describe('GenerateSimulationUseCase', () => {
@@ -199,6 +215,41 @@ describe('GenerateSimulationUseCase', () => {
 
   it('should reject when the ENEM bank returns no questions', async () => {
     const sut = buildSut(new EmptyEnemQuestionBank());
+
+    await expect(
+      sut.execute({
+        topicId: topic.id,
+        source: 'ENEM',
+        count: 3,
+        enem: { discipline: 'matematica', years: [2023] },
+      }),
+    ).rejects.toBeInstanceOf(ValidationError);
+  });
+
+  it('should keep only the questions selected by the AI curator', async () => {
+    const sut = buildSut(
+      new FakeEnemQuestionBank(),
+      new SelectingQuestionGenerator(),
+    );
+
+    await sut.execute({
+      topicId: topic.id,
+      source: 'ENEM',
+      count: 3,
+      enem: { discipline: 'matematica', years: [2023] },
+    });
+
+    const questions = [...questionRepository.items];
+    expect(questions).toHaveLength(2);
+    expect(questions[0].content).toContain('Questão 2');
+    expect(questions[1].content).toContain('Questão 3');
+  });
+
+  it('should reject when the AI curator selects no questions', async () => {
+    const sut = buildSut(
+      new FakeEnemQuestionBank(),
+      new EmptySelectionQuestionGenerator(),
+    );
 
     await expect(
       sut.execute({

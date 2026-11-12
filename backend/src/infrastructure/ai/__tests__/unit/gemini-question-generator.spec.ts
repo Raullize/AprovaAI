@@ -84,6 +84,50 @@ describe('GeminiQuestionGenerator', () => {
     ).rejects.toBeInstanceOf(ValidationError);
   });
 
+  it('should select only the indices returned by the AI curator', async () => {
+    const provider = new ScriptedLlmProvider(['{"selected":[1,3,3]}']);
+    const generator = new GeminiQuestionGenerator({
+      llmProvider: provider,
+      modelName: 'test-model',
+    });
+
+    const selected = await generator.selectRelevantQuestions({
+      topicName: 'Matemática',
+      examName: 'ENEM',
+      disciplineLabel: 'Matemática e suas Tecnologias',
+      limit: 2,
+      questions: [
+        { index: 1, content: 'Questão de matemática' },
+        { index: 2, content: 'Questão de biologia' },
+        { index: 3, content: 'Outra questão de matemática' },
+      ],
+    });
+
+    expect(selected).toEqual([1, 3]);
+  });
+
+  it('should fall back to every candidate when the curator fails', async () => {
+    const provider = new ScriptedLlmProvider(['not json']);
+    const generator = new GeminiQuestionGenerator({
+      llmProvider: provider,
+      modelName: 'test-model',
+    });
+
+    const selected = await generator.selectRelevantQuestions({
+      topicName: 'Matemática',
+      examName: 'ENEM',
+      disciplineLabel: 'Matemática e suas Tecnologias',
+      limit: 2,
+      questions: [
+        { index: 1, content: 'Questão 1' },
+        { index: 2, content: 'Questão 2' },
+        { index: 3, content: 'Questão 3' },
+      ],
+    });
+
+    expect(selected).toEqual([1, 2]);
+  });
+
   it('should return null explanations when the AI response is invalid', async () => {
     const provider = new ScriptedLlmProvider(['not json']);
     const generator = new GeminiQuestionGenerator({
