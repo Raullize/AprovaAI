@@ -29,6 +29,7 @@ O backend do AprovaAI é uma API REST construída com **Node.js + NestJS + TypeS
 | NestJS | 11 | Framework opinado e escalável |
 | Prisma | 5.22 | ORM e migrações |
 | PostgreSQL | 15+ | Banco de dados relacional |
+| Redis | 7+ | Cache distribuído e rate limiting da integração ENEM |
 | JWT (`@nestjs/jwt`) | 11 | Autenticação stateless |
 | Zod | 4 | Validação de schemas via Pipes |
 | Multer | 2 | Upload de arquivos locamente encapsulado |
@@ -40,7 +41,7 @@ O backend do AprovaAI é uma API REST construída com **Node.js + NestJS + TypeS
 
 - Node.js 18+
 - pnpm 10+
-- Docker e Docker Compose (para subir o PostgreSQL)
+- Docker e Docker Compose (para subir o PostgreSQL e o Redis)
 - Git
 
 ---
@@ -68,15 +69,23 @@ cp .env.example .env
 
 Edite o arquivo `.env` com suas credenciais (veja [Variáveis de Ambiente](#variáveis-de-ambiente)).
 
-### 4. Suba o banco de dados PostgreSQL via Docker
+### 4. Suba o PostgreSQL e o Redis via Docker
 
-A partir da raiz do projeto (`cd ..`), inicie o ambiente com o container do banco de dados em background:
+A partir da raiz do projeto (`cd ..`), inicie a infraestrutura em background:
 
 ```bash
-docker-compose up -d postgres
+docker compose up -d postgres redis
 ```
 
-> **Nota:** Este modo sobe apenas o banco em Docker e mantém a API rodando localmente (ideal para desenvolvimento). Se preferir subir tudo em container, use `docker-compose up -d` na raiz do repositório.
+Para inspecionar o Redis visualmente, suba também o Redis Insight:
+
+```bash
+docker compose up -d redis-insight
+```
+
+Acesse [http://localhost:5540](http://localhost:5540) e conecte ao host `redis`, porta `6379`.
+
+> **Nota:** Este modo sobe apenas a infraestrutura em Docker e mantém a API rodando localmente (ideal para desenvolvimento). Se preferir subir tudo em container, use `docker compose up -d` na raiz do repositório. Para usar o backend sem Redis, mantenha `CACHE_DRIVER=memory` no `.env`.
 
 ### 5. Aplique o schema ao banco de dados
 
@@ -126,6 +135,8 @@ Crie um arquivo `.env` na raiz de `backend/` baseado no `.env.example`:
 | `GEMINI_MODEL` | `gemini-3.5-flash-lite` | Modelo do Gemini (free tier) usado no chat |
 | `AI_PROVIDER` | `gemini` | `gemini` ou `fake`. Em `NODE_ENV=test` o fake é sempre usado |
 | `AI_MAX_OUTPUT_TOKENS` | `500` | Limite de tokens de saída por resposta |
+| `CACHE_DRIVER` | `memory` | `memory` (cache/rate limit locais) ou `redis` (compartilhados) |
+| `REDIS_URL` | `redis://localhost:6379` | URL do Redis; obrigatória quando `CACHE_DRIVER=redis` |
 
 ---
 
@@ -207,6 +218,8 @@ A API é estaticamente gerida por Controlles injetáveis:
 | `DELETE` | `/api/ai/attempts/:attemptId/chat/history` | Apaga o histórico do chat de uma tentativa concluída |
 
 > **IA (Prof. Sabichão):** o chat usa a API do Gemini. Sem `GEMINI_API_KEY`, o backend usa um provider fake (resposta de demonstração). Em `NODE_ENV=test`, o provider fake é sempre usado para manter os testes determinísticos e sem custo.
+
+> **Cache e rate limiting (ENEM):** com `CACHE_DRIVER=redis`, as questões ficam em chaves `aprovaai:enem:v1:<ano>:<disciplina>:<idioma>` (TTL de 10 min) e o limite de 1 req/s da enem.dev é compartilhado entre instâncias. Se o Redis falhar, o backend usa o fallback em memória e continua gerando simulados.
 
 > **Documentação Interativa (Swagger):** Quando o servidor estiver rodando, a documentação completa e interativa da API poderá ser acessada em [http://localhost:3001/api/docs](http://localhost:3001/api/docs).
 

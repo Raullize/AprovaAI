@@ -249,3 +249,31 @@ Depois do refactor de domínio (Level → Simulation / ExamResult → Simulation
 | **`/simulation-attempts/*`** | `SimulationAttemptsController` | Execução de simulado pelo aluno (start/answers/finish/history) |
 
 Evite confundir as duas: sempre confira qual controller você está testando antes de escrever asserções.
+
+---
+
+## 7. Teste de Integração do Redis (opcional)
+
+A suíte unitária usa as implementações em memória e **não exige Redis**. Para validar os adapters Redis contra um Redis real:
+
+```bash
+# 1. Suba o Redis
+docker compose up -d redis
+
+# 2. Rode apenas o teste de integração
+cd backend
+REDIS_INTEGRATION_TEST=1 REDIS_URL=redis://localhost:6379 pnpm test -- redis-enem.integration
+```
+
+No **PowerShell**:
+
+```powershell
+$env:REDIS_INTEGRATION_TEST="1"
+$env:REDIS_URL="redis://localhost:6379"
+pnpm test -- redis-enem.integration
+```
+
+O teste é pulado automaticamente quando `REDIS_INTEGRATION_TEST` não é `1` ou quando `REDIS_URL` não está definida. Ele cobre:
+
+- gravação/leitura de questões no Redis com TTL;
+- compartilhamento da janela de rate limit entre duas instâncias do limiter.

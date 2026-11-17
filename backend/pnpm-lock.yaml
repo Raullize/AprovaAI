@@ -41,6 +41,9 @@ importers:
       nestjs-zod:
         specifier: ^5.3.0
         version: 5.3.0(@nestjs/common@11.1.17(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/swagger@11.4.3(@nestjs/common@11.1.17(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.17)(reflect-metadata@0.2.2))(rxjs@7.8.2)(zod@4.3.6)
+      redis:
+        specifier: ^5.12.3
+        version: 5.12.3
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
@@ -1035,6 +1038,42 @@ packages:
   '@prisma/get-platform@5.22.0':
     resolution: {integrity: sha512-pHhpQdr1UPFpt+zFfnPazhulaZYCUqeIcPpJViYoq9R+D/yw4fjE+CtnsnKzPYm0ddUbeXUzjGVGIRVgPDCk4Q==}
 
+  '@redis/bloom@5.12.3':
+    resolution: {integrity: sha512-XgEX64JuoNsEeH3mZurmX/cfqrbJZBZeYDiUybzd1uPK/XfisqX2WnsgjR3qRlPZN995oi5EMT4vKkvLKwzlNQ==}
+    engines: {node: '>= 18.19.0'}
+    peerDependencies:
+      '@redis/client': ^5.12.3
+
+  '@redis/client@5.12.3':
+    resolution: {integrity: sha512-EFw4mJ5wgqtWRUhdxEiRsZ6StZi12PG1MMcRLXUZ2j4N2ymIOupLiL2tA22CobMyrfKlGOiwwzK+U+gGvgVruA==}
+    engines: {node: '>= 18.19.0'}
+    peerDependencies:
+      '@node-rs/xxhash': ^1.1.0
+      '@opentelemetry/api': '>=1 <2'
+    peerDependenciesMeta:
+      '@node-rs/xxhash':
+        optional: true
+      '@opentelemetry/api':
+        optional: true
+
+  '@redis/json@5.12.3':
+    resolution: {integrity: sha512-HjKbazxaB4K2FcVewLE8DAmfyxlCpEaRdfj7CYuEK/hJb8oAWIA/ZnK98r5xp6E3P2yW2s/Payjhp7BSpFr+MA==}
+    engines: {node: '>= 18.19.0'}
+    peerDependencies:
+      '@redis/client': ^5.12.3
+
+  '@redis/search@5.12.3':
+    resolution: {integrity: sha512-NRHipjwbFRLTUWkRSjDI7DQhn8I+goOpConP7RN6GTcVh2xg1eP6BrKiCJKdfUpM9VjctFBYDrnfivA8VJgSsg==}
+    engines: {node: '>= 18.19.0'}
+    peerDependencies:
+      '@redis/client': ^5.12.3
+
+  '@redis/time-series@5.12.3':
+    resolution: {integrity: sha512-V7M6Axcbiinzo7ZriL7/TC9wWaY22wJyVhUiWLHoegAo5eZLNxCQTKEl+0e/Q5sTU20FTAP1MJleGZGBMRP38w==}
+    engines: {node: '>= 18.19.0'}
+    peerDependencies:
+      '@redis/client': ^5.12.3
+
   '@scarf/scarf@1.4.0':
     resolution: {integrity: sha512-xxeapPiUXdZAE3che6f3xogoJPeZgig6omHEy1rIY5WVsB3H2BHNnZH+gHG6x91SCWyQCzWGsuL2Hh3ClO5/qQ==}
 
@@ -1702,6 +1741,10 @@ packages:
   clone@1.0.4:
     resolution: {integrity: sha512-JQHZ2QMW6l3aH/j6xCqQThY/9OH4D/9ls34cgkUBiEeocRTU04tHfKPBsUK1PqZCUQM7GiA0IIXJSuXHI64Kbg==}
     engines: {node: '>=0.8'}
+
+  cluster-key-slot@1.1.2:
+    resolution: {integrity: sha512-RMr0FhtfXemyinomL4hrWcYJxmX6deFdCxpJzhDttxgO1+bcCnkk+9drydLVDmAMG7NE6aN/fl4F7ucU/90gAA==}
+    engines: {node: '>=0.10.0'}
 
   co@4.6.0:
     resolution: {integrity: sha512-QVb0dM5HvG+uaxitm8wONl7jltx8dqhfU33DcqtOZcLSVIKSDDLDi7+0LbAKiyI8hD9u42m2YxXSkMGWThaecQ==}
@@ -2988,6 +3031,10 @@ packages:
   readdirp@4.1.2:
     resolution: {integrity: sha512-GDhwkLfywWL2s6vEjyhri+eXmfH6j1L7JE27WhqLeYzoh/A3DBaYGEj2H/HFZCn/kMfim73FXxEJTw06WtxQwg==}
     engines: {node: '>= 14.18.0'}
+
+  redis@5.12.3:
+    resolution: {integrity: sha512-dL9GfnhQrfu49ugu7guMQshMLGWfXXgSKwFtxDoWvW52tynUolB6V/NopEppZiBavaz62+AJrLDywmdEPJg98w==}
+    engines: {node: '>= 18.19.0'}
 
   reflect-metadata@0.2.2:
     resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
@@ -4463,6 +4510,26 @@ snapshots:
     dependencies:
       '@prisma/debug': 5.22.0
 
+  '@redis/bloom@5.12.3(@redis/client@5.12.3)':
+    dependencies:
+      '@redis/client': 5.12.3
+
+  '@redis/client@5.12.3':
+    dependencies:
+      cluster-key-slot: 1.1.2
+
+  '@redis/json@5.12.3(@redis/client@5.12.3)':
+    dependencies:
+      '@redis/client': 5.12.3
+
+  '@redis/search@5.12.3(@redis/client@5.12.3)':
+    dependencies:
+      '@redis/client': 5.12.3
+
+  '@redis/time-series@5.12.3(@redis/client@5.12.3)':
+    dependencies:
+      '@redis/client': 5.12.3
+
   '@scarf/scarf@1.4.0': {}
 
   '@sinclair/typebox@0.34.48': {}
@@ -5198,6 +5265,8 @@ snapshots:
       wrap-ansi: 7.0.0
 
   clone@1.0.4: {}
+
+  cluster-key-slot@1.1.2: {}
 
   co@4.6.0: {}
 
@@ -6627,6 +6696,17 @@ snapshots:
       util-deprecate: 1.0.2
 
   readdirp@4.1.2: {}
+
+  redis@5.12.3:
+    dependencies:
+      '@redis/bloom': 5.12.3(@redis/client@5.12.3)
+      '@redis/client': 5.12.3
+      '@redis/json': 5.12.3(@redis/client@5.12.3)
+      '@redis/search': 5.12.3(@redis/client@5.12.3)
+      '@redis/time-series': 5.12.3(@redis/client@5.12.3)
+    transitivePeerDependencies:
+      - '@node-rs/xxhash'
+      - '@opentelemetry/api'
 
   reflect-metadata@0.2.2: {}
 
