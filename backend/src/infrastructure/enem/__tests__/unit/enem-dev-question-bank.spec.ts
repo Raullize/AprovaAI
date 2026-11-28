@@ -1,3 +1,6 @@
+import { EnemQuestion } from '../../../../application/content/ports/enem-question-bank';
+import { EnemQuestionCache } from '../../../../application/content/ports/enem-question-cache';
+import { RateLimiter } from '../../../../application/content/ports/rate-limiter';
 import { EnemDevQuestionBank } from '../../enem-dev-question-bank';
 
 function jsonResponse(
@@ -228,5 +231,131 @@ describe('EnemDevQuestionBank', () => {
 
     expect(fetchImpl).toHaveBeenCalledTimes(2);
     expect(sleep).toHaveBeenCalledWith(10);
+  });
+
+  it('should use the injected cache with the versioned key', async () => {
+    const questions: EnemQuestion[] = [
+      {
+        sourceRef: 'enem:2023:1',
+        year: 2023,
+        index: 1,
+        discipline: 'matematica',
+        language: null,
+        content: 'Questão em cache',
+        options: [
+          { text: 'Alternativa A', isCorrect: false },
+          { text: 'Alternativa B', isCorrect: true },
+        ],
+      },
+    ];
+    const fetchImpl = jest.fn();
+    const get = jest.fn().mockResolvedValue(questions);
+    const set = jest.fn();
+    const cache = { get, set } as unknown as EnemQuestionCache;
+
+    const bank = new EnemDevQuestionBank({
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+      cache,
+      minIntervalMs: 0,
+    });
+
+    const result = await bank.fetchQuestions({
+      discipline: 'matematica',
+      years: [2023],
+      limit: 10,
+    });
+
+    expect(get).toHaveBeenCalledWith('aprovaai:enem:v1:2023:matematica:all');
+    expect(fetchImpl).not.toHaveBeenCalled();
+    expect(result).toEqual(questions);
+  });
+
+  it('should store fetched questions in the cache with the default TTL', async () => {
+    const fetchImpl = jest.fn(() =>
+      Promise.resolve(
+        jsonResponse({
+          metadata: { limit: 50, offset: 0, total: 1, hasMore: false },
+          questions: [buildQuestion()],
+        }),
+      ),
+    );
+    const get = jest.fn().mockResolvedValue(null);
+    const set = jest.fn().mockResolvedValue(undefined);
+    const cache = { get, set } as unknown as EnemQuestionCache;
+
+    const bank = new EnemDevQuestionBank({
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+      cache,
+      minIntervalMs: 0,
+    });
+
+    await bank.fetchQuestions({
+      discipline: 'matematica',
+      years: [2023],
+      limit: 10,
+    });
+
+    expect(set).toHaveBeenCalledWith(
+      'aprovaai:enem:v1:2023:matematica:all',
+      expect.any(Array),
+      10 * 60 * 1000,
+    );
+  });
+
+  it('should keep generating when the cache fails', async () => {
+    const fetchImpl = jest.fn(() =>
+      Promise.resolve(
+        jsonResponse({
+          metadata: { limit: 50, offset: 0, total: 1, hasMore: false },
+          questions: [buildQuestion()],
+        }),
+      ),
+    );
+    const cache = {
+      get: jest.fn().mockRejectedValue(new Error('cache down')),
+      set: jest.fn().mockRejectedValue(new Error('cache down')),
+    } as unknown as EnemQuestionCache;
+
+    const bank = new EnemDevQuestionBank({
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+      cache,
+      minIntervalMs: 0,
+    });
+
+    const questions = await bank.fetchQuestions({
+      discipline: 'matematica',
+      years: [2023],
+      limit: 10,
+    });
+
+    expect(questions).toHaveLength(1);
+    expect(fetchImpl).toHaveBeenCalledTimes(1);
+  });
+
+  it('should acquire the shared rate limit slot before each request', async () => {
+    const fetchImpl = jest.fn(() =>
+      Promise.resolve(
+        jsonResponse({
+          metadata: { limit: 50, offset: 0, total: 0, hasMore: false },
+          questions: [],
+        }),
+      ),
+    );
+    const acquire = jest.fn().mockResolvedValue(undefined);
+    const rateLimiter = { acquire } as unknown as RateLimiter;
+
+    const bank = new EnemDevQuestionBank({
+      fetchImpl: fetchImpl as unknown as typeof fetch,
+      rateLimiter,
+      minIntervalMs: 1_100,
+    });
+
+    await bank.fetchQuestions({
+      discipline: 'matematica',
+      years: [2023],
+      limit: 10,
+    });
+
+    expect(acquire).toHaveBeenCalledWith('aprovaai:enem:v1:rate-limit', 1_100);
   });
 });

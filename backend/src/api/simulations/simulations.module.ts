@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { SimulationsController } from './simulations.controller';
 import { FindAllSimulationsUseCase } from '../../application/content/use-cases/find-all-simulations.use-case';
 import { FindSimulationsByTopicIdUseCase } from '../../application/content/use-cases/find-simulations-by-topic-id.use-case';
@@ -19,8 +19,16 @@ import { PrismaExamRepository } from '../../infrastructure/database/prisma/repos
 import { ContentGenerationRepository } from '../../domain/content/repositories/content-generation.repository';
 import { PrismaContentGenerationRepository } from '../../infrastructure/database/prisma/repositories/prisma-content-generation.repository';
 import { EnemQuestionBank } from '../../application/content/ports/enem-question-bank';
+import { EnemQuestionCache } from '../../application/content/ports/enem-question-cache';
+import { RateLimiter } from '../../application/content/ports/rate-limiter';
 import { EnemDevQuestionBank } from '../../infrastructure/enem/enem-dev-question-bank';
 import { FakeEnemQuestionBank } from '../../infrastructure/enem/fake-enem-question-bank';
+import { InMemoryEnemQuestionCache } from '../../infrastructure/enem/cache/in-memory-enem-question-cache';
+import { RedisEnemQuestionCache } from '../../infrastructure/enem/cache/redis-enem-question-cache';
+import { InMemoryRateLimiter } from '../../infrastructure/enem/rate-limit/in-memory-rate-limiter';
+import { RedisRateLimiter } from '../../infrastructure/enem/rate-limit/redis-rate-limiter';
+import { RedisModule } from '../../infrastructure/redis/redis.module';
+import { RedisStore } from '../../infrastructure/redis/redis-store';
 import { QuestionGenerator } from '../../application/content/ports/question-generator';
 import { GeminiQuestionGenerator } from '../../infrastructure/ai/gemini-question-generator';
 import { FakeQuestionGenerator } from '../../infrastructure/ai/fake-question-generator';
@@ -30,10 +38,57 @@ import {
   getGeminiModelName,
 } from '../../infrastructure/ai/llm-provider.factory';
 
-function createEnemQuestionBank(): EnemQuestionBank {
+const logger = new Logger('EnemCache');
+let warnedMissingRedisUrl = false;
+
+function shouldUseRedis(): boolean {
+  if (process.env.NODE_ENV === 'test') {
+    return false;
+  }
+
+  const driver = (process.env.CACHE_DRIVER ?? 'memory').trim().toLowerCase();
+
+  if (driver !== 'redis') {
+    return false;
+  }
+
+  if (!process.env.REDIS_URL?.trim()) {
+    if (!warnedMissingRedisUrl) {
+      warnedMissingRedisUrl = true;
+      logger.warn(
+        'CACHE_DRIVER=redis sem REDIS_URL definida; usando fallback em memória.',
+      );
+    }
+
+    return false;
+  }
+
+  return true;
+}
+
+function createEnemQuestionCache(store: RedisStore): EnemQuestionCache {
+  if (!shouldUseRedis()) {
+    return new InMemoryEnemQuestionCache();
+  }
+
+  return new RedisEnemQuestionCache(store, new InMemoryEnemQuestionCache());
+}
+
+function createRateLimiter(store: RedisStore): RateLimiter {
+  if (!shouldUseRedis()) {
+    return new InMemoryRateLimiter();
+  }
+
+  return new RedisRateLimiter(store, new InMemoryRateLimiter());
+}
+
+function createEnemQuestionBank(
+  cache: EnemQuestionCache,
+  rateLimiter: RateLimiter,
+): EnemQuestionBank {
   return process.env.NODE_ENV === 'test'
     ? new FakeEnemQuestionBank()
-    : new EnemDevQuestionBank();
+    : new EnemDevQuestionBank({ cache, rateLimiter });
 }
 
 function createQuestionGenerator(llmProvider: LlmProvider): QuestionGenerator {
@@ -50,6 +105,7 @@ function createQuestionGenerator(llmProvider: LlmProvider): QuestionGenerator {
 }
 
 @Module({
+  imports: [RedisModule],
   controllers: [SimulationsController],
   providers: [
     FindAllSimulationsUseCase,
@@ -79,8 +135,19 @@ function createQuestionGenerator(llmProvider: LlmProvider): QuestionGenerator {
       useClass: PrismaContentGenerationRepository,
     },
     {
+      provide: EnemQuestionCache,
+      useFactory: createEnemQuestionCache,
+      inject: [RedisStore],
+    },
+    {
+      provide: RateLimiter,
+      useFactory: createRateLimiter,
+      inject: [RedisStore],
+    },
+    {
       provide: EnemQuestionBank,
       useFactory: createEnemQuestionBank,
+      inject: [EnemQuestionCache, RateLimiter],
     },
     {
       provide: LlmProvider,

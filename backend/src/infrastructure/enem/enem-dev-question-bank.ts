@@ -5,6 +5,10 @@ import {
   EnemQuestionBank,
   EnemQuestionFilter,
 } from '../../application/content/ports/enem-question-bank';
+import { EnemQuestionCache } from '../../application/content/ports/enem-question-cache';
+import { RateLimiter } from '../../application/content/ports/rate-limiter';
+import { InMemoryEnemQuestionCache } from './cache/in-memory-enem-question-cache';
+import { InMemoryRateLimiter } from './rate-limit/in-memory-rate-limiter';
 
 interface EnemDevAlternative {
   letter?: string;
@@ -45,6 +49,8 @@ export interface EnemDevQuestionBankOptions {
   cacheTtlMs?: number;
   pageSize?: number;
   now?: () => number;
+  cache?: EnemQuestionCache;
+  rateLimiter?: RateLimiter;
 }
 
 const DEFAULT_BASE_URL = 'https://api.enem.dev/v1';
@@ -52,6 +58,8 @@ const DEFAULT_MIN_INTERVAL_MS = 1100;
 const DEFAULT_CACHE_TTL_MS = 10 * 60 * 1000;
 const DEFAULT_PAGE_SIZE = 50;
 const MAX_PAGES_PER_YEAR = 20;
+const CACHE_KEY_PREFIX = 'aprovaai:enem:v1';
+const RATE_LIMIT_KEY = `${CACHE_KEY_PREFIX}:rate-limit`;
 
 export class EnemDevQuestionBank extends EnemQuestionBank {
   private readonly baseUrl: string;
@@ -61,12 +69,8 @@ export class EnemDevQuestionBank extends EnemQuestionBank {
   private readonly minIntervalMs: number;
   private readonly cacheTtlMs: number;
   private readonly pageSize: number;
-  private readonly now: () => number;
-  private readonly cache = new Map<
-    string,
-    { expiresAt: number; questions: EnemQuestion[] }
-  >();
-  private lastRequestAt = 0;
+  private readonly cache: EnemQuestionCache;
+  private readonly rateLimiter: RateLimiter;
 
   constructor(options: EnemDevQuestionBankOptions = {}) {
     super();
@@ -79,7 +83,9 @@ export class EnemDevQuestionBank extends EnemQuestionBank {
     this.minIntervalMs = options.minIntervalMs ?? DEFAULT_MIN_INTERVAL_MS;
     this.cacheTtlMs = options.cacheTtlMs ?? DEFAULT_CACHE_TTL_MS;
     this.pageSize = options.pageSize ?? DEFAULT_PAGE_SIZE;
-    this.now = options.now ?? (() => Date.now());
+    this.cache = options.cache ?? new InMemoryEnemQuestionCache(options.now);
+    this.rateLimiter =
+      options.rateLimiter ?? new InMemoryRateLimiter(this.sleep, options.now);
   }
 
   async fetchQuestions(filter: EnemQuestionFilter): Promise<EnemQuestion[]> {
@@ -103,19 +109,36 @@ export class EnemDevQuestionBank extends EnemQuestionBank {
     filter: EnemQuestionFilter,
   ): Promise<EnemQuestion[]> {
     const cacheKey = this.buildCacheKey(year, filter);
-    const cached = this.cache.get(cacheKey);
+    const cached = await this.readCache(cacheKey);
 
-    if (cached && cached.expiresAt > this.now()) {
-      return cached.questions;
+    if (cached) {
+      return cached;
     }
 
     const questions = await this.fetchYear(year, filter);
-    this.cache.set(cacheKey, {
-      expiresAt: this.now() + this.cacheTtlMs,
-      questions,
-    });
+    await this.writeCache(cacheKey, questions);
 
     return questions;
+  }
+
+  private async readCache(key: string): Promise<EnemQuestion[] | null> {
+    try {
+      return await this.cache.get(key);
+    } catch {
+      // O cache é uma otimização: falhas não devem interromper a geração.
+      return null;
+    }
+  }
+
+  private async writeCache(
+    key: string,
+    questions: EnemQuestion[],
+  ): Promise<void> {
+    try {
+      await this.cache.set(key, questions, this.cacheTtlMs);
+    } catch {
+      // O cache é uma otimização: falhas não devem interromper a geração.
+    }
   }
 
   private async fetchYear(
@@ -188,13 +211,12 @@ export class EnemDevQuestionBank extends EnemQuestionBank {
 
   private async request<T>(url: string): Promise<T> {
     for (let attempt = 0; attempt < 2; attempt += 1) {
-      await this.waitForRateLimit();
+      await this.rateLimiter.acquire(RATE_LIMIT_KEY, this.minIntervalMs);
 
       const response = await this.fetchImpl(url, {
         method: 'GET',
         headers: { Accept: 'application/json' },
       });
-      this.lastRequestAt = this.now();
 
       if (response.status === 429 && attempt === 0) {
         const retryAfter = Number(response.headers.get('retry-after'));
@@ -212,13 +234,6 @@ export class EnemDevQuestionBank extends EnemQuestionBank {
     }
 
     throw new Error('enem.dev excedeu o limite de requisições');
-  }
-
-  private async waitForRateLimit(): Promise<void> {
-    const elapsed = this.now() - this.lastRequestAt;
-    if (elapsed < this.minIntervalMs) {
-      await this.sleep(this.minIntervalMs - elapsed);
-    }
   }
 
   private normalize(raw: EnemDevQuestion): EnemQuestion | null {
@@ -274,7 +289,9 @@ export class EnemDevQuestionBank extends EnemQuestionBank {
   }
 
   private buildCacheKey(year: number, filter: EnemQuestionFilter): string {
-    return `${year}:${filter.discipline}:${filter.language ?? 'all'}`;
+    return `${CACHE_KEY_PREFIX}:${year}:${filter.discipline}:${
+      filter.language ?? 'all'
+    }`;
   }
 
   private shuffle<T>(items: T[]): T[] {
